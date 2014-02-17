@@ -1,0 +1,19 @@
+language: python
+
+install:
+  - "wget -O - http://apt.mopidy.com/mopidy.gpg | sudo apt-key add -"
+  - "sudo wget -O /etc/apt/sources.list.d/mopidy.list http://apt.mopidy.com/mopidy.list"
+  - "sudo apt-get update || true"
+  - "sudo apt-get install mopidy"
+  - "pip install --allow-unverified=mopidy coveralls flake8 mopidy==dev"
+
+before_script:
+  - "rm $VIRTUAL_ENV/lib/python$TRAVIS_PYTHON_VERSION/no-global-site-packages.txt"
+
+script:
+  - "flake8 $(find . -iname '*.py')"
+  - "nosetests --with-coverage --cover-package=mopidy_youtube"
+
+after_success:
+  - "coveralls"
+
