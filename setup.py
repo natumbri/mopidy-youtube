@@ -17,7 +17,7 @@ setup(
     license='Apache License, Version 2.0',
     author='Janez Troha',
     author_email='dz0ny@ubuntu.si',
-    description='Mopidy extension that plays sound fr',
+    description='Mopidy extension that plays sound from Youtube',
     long_description=open('README.rst').read(),
     packages=find_packages(exclude=['tests', 'tests.*']),
     zip_safe=False,

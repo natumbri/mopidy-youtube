@@ -18,7 +18,7 @@ Mopidy-Youtube
    :target: https://coveralls.io/r/dz0ny/mopidy-youtube?branch=master
    :alt: Test coverage
 
-Mopidy extension that plays sound fr
+Mopidy extension that plays sound from Youtube
 
 
 Installation
@@ -35,11 +35,9 @@ Or, if available, install the Debian/Ubuntu package from `apt.mopidy.com
 Use
 =============
 
-Simply use search for filename your MPD client.
+Simply use search for filename in your MPD client or add Youtube url to playlist prefixed by ``yt:``.
 
-.. image:: http://i.imgur.com/uUwmEpK.png
-   :target: http://imgur.com/uUwmEpK
-   :alt: Example
+Example: ``yt:http://www.youtube.com/watch?v=Njpw2PVb1c0``
 
 
 Project resources

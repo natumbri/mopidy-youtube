@@ -27,7 +27,7 @@ def resolve_url(url, stream=False):
         uri = uri.url
     track = Track(
         name=video.title,
-        comment=url,
+        comment=video.videoid,
         album=Album(
             name='Youtube',
             images=[video.bigthumb, video.bigthumbhd]
@@ -45,12 +45,14 @@ class YoutubeBackend(pykka.ThreadingActor, backend.Backend):
         self.library = YoutubeLibraryProvider(backend=self)
         self.playback = YoutubePlaybackProvider(audio=audio, backend=self)
 
-        self.uri_schemes = ['youtube']
+        self.uri_schemes = ['youtube', 'yt']
 
 
 class YoutubeLibraryProvider(backend.LibraryProvider):
 
     def lookup(self, track):
+        if 'yt:' in track:
+            track = track.replace('yt:', '')
         return [resolve_track(track)]
 
     def search(self, query=None, uris=None):
