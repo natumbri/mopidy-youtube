@@ -38,6 +38,7 @@ Use
 Simply use search for filename in your MPD client or add Youtube url to playlist prefixed by ``yt:``.
 
 Example: ``yt:http://www.youtube.com/watch?v=Njpw2PVb1c0``
+Example for playlist: ``yt:http://www.youtube.com/playlist?list=PLeCg_YDclAETQHa8VyFUHKC_Ly0HUWUnq``
 
 
 Project resources

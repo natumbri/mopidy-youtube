@@ -1,13 +1,15 @@
 from urllib import quote
-from urlparse import urlparse
+from urlparse import urlparse, parse_qs
 from mopidy import backend
 from mopidy.models import SearchResult, Track, Album
 import pykka
 import pafy
+import requests
 from mopidy_youtube import logger
 
 
 def resolve_track(track, stream=False):
+    logger.info("Resolving Youtube for track '%s'", track)
     if hasattr(track, 'uri'):
         return resolve_url(track.comment, stream)
     else:
@@ -37,6 +39,15 @@ def resolve_url(url, stream=False):
     return track
 
 
+def resolve_playlist(url):
+    logger.info("Resolving Youtube for playlist '%s'", url)
+    yt_api = 'https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=50&playlistId=' + url + '&fields=items%2Fsnippet%2FresourceId&key=AIzaSyCwu6_2lo16AVcNLnGZ34h0AGJyKwJCucc'
+    pl = requests.get(yt_api, headers={'X-JavaScript-User-Agent': 'Google APIs Explorer'})
+    playlist = []
+    for yt_id in pl.json().get('items'):
+        playlist.append(resolve_url(yt_id.get('snippet').get('resourceId').get('videoId')))
+    return playlist
+
 class YoutubeBackend(pykka.ThreadingActor, backend.Backend):
 
     def __init__(self, config, audio):
@@ -53,7 +64,16 @@ class YoutubeLibraryProvider(backend.LibraryProvider):
     def lookup(self, track):
         if 'yt:' in track:
             track = track.replace('yt:', '')
-        return [resolve_track(track)]
+
+        if 'youtube.com' in track:
+            url = urlparse(track)
+            req = parse_qs(url.query)
+            if 'list' in req:
+                return resolve_playlist(req.get('list')[0])
+            else:
+                return [resolve_url(track)]
+        else:
+            return [resolve_url(track)]
 
     def search(self, query=None, uris=None):
         if not query:
@@ -63,11 +83,18 @@ class YoutubeLibraryProvider(backend.LibraryProvider):
             search_query = ''.join(query['uri'])
             url = urlparse(search_query)
             if 'youtube.com' in url.netloc:
-                logger.info("Resolving Youtube for '%s'", search_query)
-                return SearchResult(
-                    uri='youtube:search',
-                    tracks=[resolve_url(search_query)]
-                )
+                req = parse_qs(url.query)
+                if 'list' in req:
+                    return SearchResult(
+                        uri='youtube:search',
+                        tracks=resolve_playlist(req.get('list')[0])
+                    )
+                else:
+                    logger.info("Resolving Youtube for track '%s'", search_query)
+                    return SearchResult(
+                        uri='youtube:search',
+                        tracks=[resolve_url(search_query)]
+                    )
 
 
 class YoutubePlaybackProvider(backend.PlaybackProvider):
