@@ -24,6 +24,7 @@ setup(
     include_package_data=True,
     install_requires=[
         'setuptools',
+        'requests >= 2.2.1',
         'pafy >= 0.3.35',
         'Mopidy >= 0.18',
         'Pykka >= 1.1',
