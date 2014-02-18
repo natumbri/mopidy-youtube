@@ -9,7 +9,7 @@ from mopidy_youtube import logger
 
 
 def resolve_track(track, stream=False):
-    logger.info("Resolving Youtube for track '%s'", track)
+    logger.debug("Resolving Youtube for track '%s'", track)
     if hasattr(track, 'uri'):
         return resolve_url(track.comment, stream)
     else:
@@ -26,6 +26,7 @@ def resolve_url(url, stream=False):
         uri = video.getbestaudio()
         if not uri:  # get video url
             uri = video.getbest()
+        logger.debug('%s - %s %s %s' % (video.title, uri.bitrate, uri.mediatype, uri.extension))
         uri = uri.url
     track = Track(
         name=video.title,
