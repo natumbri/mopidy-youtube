@@ -46,7 +46,11 @@ def resolve_playlist(url):
     pl = requests.get(yt_api, headers={'X-JavaScript-User-Agent': 'Google APIs Explorer'})
     playlist = []
     for yt_id in pl.json().get('items'):
-        playlist.append(resolve_url(yt_id.get('snippet').get('resourceId').get('videoId')))
+        try:
+            yt_id = yt_id.get('snippet').get('resourceId').get('videoId')
+            playlist.append(resolve_url(yt_id))
+        except Exception as e:
+            logger.info(e.message)
     return playlist
 
 class YoutubeBackend(pykka.ThreadingActor, backend.Backend):
