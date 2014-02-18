@@ -20,7 +20,7 @@ def resolve_url(url, stream=False):
     video = pafy.new(url)
     if not stream:
         uri = 'youtube:video/%s.%s' % (
-            quote(video.title, safe="-"), video.videoid
+            quote(video.title, safe="- "), video.videoid
         )
     else:
         uri = video.getbestaudio()
@@ -30,6 +30,7 @@ def resolve_url(url, stream=False):
     track = Track(
         name=video.title,
         comment=video.videoid,
+        length=video.length*1000,
         album=Album(
             name='Youtube',
             images=[video.bigthumb, video.bigthumbhd]
