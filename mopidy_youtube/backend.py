@@ -1,3 +1,6 @@
+# -*- coding: utf-8 -*-
+
+from __future__ import unicode_literals
 from urllib import quote
 from urlparse import urlparse, parse_qs
 from mopidy import backend
@@ -7,6 +10,8 @@ import pafy
 import requests
 from mopidy_youtube import logger
 
+yt_api_endpoint = 'https://www.googleapis.com/youtube/v3/'
+yt_key = 'AIzaSyCwu6_2lo16AVcNLnGZ34h0AGJyKwJCucc'
 
 def resolve_track(track, stream=False):
     logger.debug("Resolving Youtube for track '%s'", track)
@@ -41,10 +46,35 @@ def resolve_url(url, stream=False):
     return track
 
 
+def search_youtube(q):
+    query = {
+        'part': 'id',
+        'maxResults': 15,
+        'type': 'video',
+        'q': q,
+        'key': yt_key
+    }
+    pl = requests.get(yt_api_endpoint+'search', params=query)
+    playlist = []
+    for yt_id in pl.json().get('items'):
+        try:
+            track = resolve_url(yt_id.get('id').get('videoId'))
+            playlist.append(track)
+        except Exception as e:
+            logger.info(e.message)
+    return playlist
+
+
 def resolve_playlist(url):
     logger.info("Resolving Youtube for playlist '%s'", url)
-    yt_api = 'https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=50&playlistId=' + url + '&fields=items%2Fsnippet%2FresourceId&key=AIzaSyCwu6_2lo16AVcNLnGZ34h0AGJyKwJCucc'
-    pl = requests.get(yt_api, headers={'X-JavaScript-User-Agent': 'Google APIs Explorer'})
+    query = {
+        'part': 'snippet',
+        'maxResults': 50,
+        'playlistId': url,
+        'fields': 'items/snippet/resourceId',
+        'key': yt_key
+    }
+    pl = requests.get(yt_api_endpoint+'playlistItem', params=query)
     playlist = []
     for yt_id in pl.json().get('items'):
         try:
@@ -101,6 +131,13 @@ class YoutubeLibraryProvider(backend.LibraryProvider):
                         uri='youtube:search',
                         tracks=[resolve_url(search_query)]
                     )
+        else:
+            search_query = ' '.join(query.values()[0])
+            logger.info("Searching Youtube for query '%s'", search_query)
+            return SearchResult(
+                uri='youtube:search',
+                tracks=search_youtube(search_query)
+            )
 
 
 class YoutubePlaybackProvider(backend.PlaybackProvider):
