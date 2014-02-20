@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 
 from __future__ import unicode_literals
+import re
+import string
 from urllib import quote
 from urlparse import urlparse, parse_qs
 from mopidy import backend
@@ -8,6 +10,7 @@ from mopidy.models import SearchResult, Track, Album
 import pykka
 import pafy
 import requests
+import unicodedata
 from mopidy_youtube import logger
 
 yt_api_endpoint = 'https://www.googleapis.com/youtube/v3/'
@@ -20,12 +23,17 @@ def resolve_track(track, stream=False):
     else:
         return resolve_url(track.split('.')[-1], stream)
 
+def safe_url(uri):
+    valid_chars = "-_.() %s%s" % (string.ascii_letters, string.digits)
+    safe_uri = unicodedata.normalize('NFKD', uri).encode('ASCII', 'ignore')
+    return re.sub('\s+', ' ', ''.join(c for c in safe_uri if c in valid_chars)).strip()
+
 
 def resolve_url(url, stream=False):
     video = pafy.new(url)
     if not stream:
         uri = 'youtube:video/%s.%s' % (
-            quote(video.title, safe="- "), video.videoid
+            safe_url(video.title), video.videoid
         )
     else:
         uri = video.getbestaudio()
