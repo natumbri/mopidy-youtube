@@ -26,8 +26,15 @@ def resolve_track(track, stream=False):
 
 def safe_url(uri):
     valid_chars = "-_.() %s%s" % (string.ascii_letters, string.digits)
-    safe_uri = unicodedata.normalize('NFKD', unicode(uri)).encode('ASCII', 'ignore')
-    return re.sub('\s+', ' ', ''.join(c for c in safe_uri if c in valid_chars)).strip()
+    safe_uri = unicodedata.normalize(
+        'NFKD',
+        unicode(uri)
+    ).encode('ASCII', 'ignore')
+    return re.sub(
+        '\s+',
+        ' ',
+        ''.join(c for c in safe_uri if c in valid_chars)
+    ).strip()
 
 
 def resolve_url(url, stream=False):
@@ -40,7 +47,8 @@ def resolve_url(url, stream=False):
         uri = video.getbestaudio()
         if not uri:  # get video url
             uri = video.getbest()
-        logger.debug('%s - %s %s %s' % (video.title, uri.bitrate, uri.mediatype, uri.extension))
+        logger.debug('%s - %s %s %s' % (
+            video.title, uri.bitrate, uri.mediatype, uri.extension))
         uri = uri.url
     track = Track(
         name=video.title,
@@ -136,7 +144,8 @@ class YoutubeLibraryProvider(backend.LibraryProvider):
                         tracks=resolve_playlist(req.get('list')[0])
                     )
                 else:
-                    logger.info("Resolving Youtube for track '%s'", search_query)
+                    logger.info(
+                        "Resolving Youtube for track '%s'", search_query)
                     return SearchResult(
                         uri='youtube:search',
                         tracks=[resolve_url(search_query)]
