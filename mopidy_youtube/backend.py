@@ -5,7 +5,7 @@ import re
 import string
 from urlparse import urlparse, parse_qs
 from mopidy import backend
-from mopidy.models import SearchResult, Track, Album
+from mopidy.models import SearchResult, Track, Album, Artist
 import pykka
 import pafy
 import requests
@@ -50,16 +50,33 @@ def resolve_url(url, stream=False):
         logger.debug('%s - %s %s %s' % (
             video.title, uri.bitrate, uri.mediatype, uri.extension))
         uri = uri.url
-    track = Track(
-        name=video.title,
-        comment=video.videoid,
-        length=video.length*1000,
-        album=Album(
-            name='Youtube',
-            images=[video.bigthumb, video.bigthumbhd]
-        ),
-        uri=uri
-    )
+    if not uri:
+        return
+
+    if '-' in video.title:
+        title = video.title.split('-')
+        track = Track(
+            name=title[1].strip(),
+            comment=video.videoid,
+            length=video.length*1000,
+            artists=[Artist(name=title[0].strip())],
+            album=Album(
+                name='Youtube',
+                images=[video.bigthumb, video.bigthumbhd]
+            ),
+            uri=uri
+        )
+    else:
+        track = Track(
+            name=video.title,
+            comment=video.videoid,
+            length=video.length*1000,
+            album=Album(
+                name='Youtube',
+                images=[video.bigthumb, video.bigthumbhd]
+            ),
+            uri=uri
+        )
     return track
 
 
