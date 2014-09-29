@@ -108,7 +108,7 @@ def resolve_playlist(url):
         'fields': 'items/snippet/resourceId',
         'key': yt_key
     }
-    pl = requests.get(yt_api_endpoint+'playlistItem', params=query)
+    pl = requests.get(yt_api_endpoint+'playlistItems', params=query)
     playlist = []
     for yt_id in pl.json().get('items'):
         try:
