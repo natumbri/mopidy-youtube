@@ -100,23 +100,31 @@ def search_youtube(q):
 
 
 def resolve_playlist(url):
-    logger.info("Resolving Youtube for playlist '%s'", url)
-    query = {
-        'part': 'snippet',
-        'maxResults': 50,
-        'playlistId': url,
-        'fields': 'items/snippet/resourceId',
-        'key': yt_key
-    }
-    pl = requests.get(yt_api_endpoint+'playlistItem', params=query)
+    logger.info("Resolving Youtube-Playlist '%s'", url)
     playlist = []
-    for yt_id in pl.json().get('items'):
-        try:
-            yt_id = yt_id.get('snippet').get('resourceId').get('videoId')
-            playlist.append(resolve_url(yt_id))
-        except Exception as e:
-            logger.info(e.message)
-    return playlist
+
+    page = 'first'
+    while page:
+        params = {
+            'playlistId': url,
+            'maxResults': 50,
+            'key': yt_key,
+            'part': 'contentDetails'
+        }
+        if page and page != "first":
+            logger.debug("Get Youtube-Playlist '%s' page %s", url, page)
+            params['pageToken'] = page
+
+        result = requests.get(yt_api_endpoint+'playlistItems',
+                              params=params)
+        data = result.json()
+        page = data.get('nextPageToken')
+
+        for item in data["items"]:
+            video_id = item['contentDetails']['videoId']
+            playlist.append(video_id)
+
+    return [resolve_url(item) for item in playlist]
 
 
 class YoutubeBackend(pykka.ThreadingActor, backend.Backend):
