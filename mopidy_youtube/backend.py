@@ -3,6 +3,7 @@
 from __future__ import unicode_literals
 import re
 import string
+from multiprocessing.pool import ThreadPool
 from urlparse import urlparse, parse_qs
 from mopidy import backend
 from mopidy.models import SearchResult, Track, Album, Artist
@@ -11,6 +12,7 @@ import pafy
 import requests
 import unicodedata
 from mopidy_youtube import logger
+
 
 yt_api_endpoint = 'https://www.googleapis.com/youtube/v3/'
 yt_key = 'AIzaSyAl1Xq9DwdE_KD4AtPaE4EJl3WZe2zCqg4'
@@ -38,19 +40,24 @@ def safe_url(uri):
 
 
 def resolve_url(url, stream=False):
-    video = pafy.new(url)
-    if not stream:
-        uri = 'youtube:video/%s.%s' % (
-            safe_url(video.title), video.videoid
-        )
-    else:
-        uri = video.getbestaudio()
-        if not uri:  # get video url
-            uri = video.getbest()
-        logger.debug('%s - %s %s %s' % (
-            video.title, uri.bitrate, uri.mediatype, uri.extension))
-        uri = uri.url
-    if not uri:
+    try:
+        video = pafy.new(url)
+        if not stream:
+            uri = 'youtube:video/%s.%s' % (
+                safe_url(video.title), video.videoid
+            )
+        else:
+            uri = video.getbestaudio()
+            if not uri:  # get video url
+                uri = video.getbest()
+            logger.debug('%s - %s %s %s' % (
+                video.title, uri.bitrate, uri.mediatype, uri.extension))
+            uri = uri.url
+        if not uri:
+            return
+    except Exception as e:
+        # Video is private or doesn't exist
+        logger.info(e.message)
         return
 
     if '-' in video.title:
@@ -88,18 +95,18 @@ def search_youtube(q):
         'q': q,
         'key': yt_key
     }
-    pl = requests.get(yt_api_endpoint+'search', params=query)
-    playlist = []
-    for yt_id in pl.json().get('items'):
-        try:
-            track = resolve_url(yt_id.get('id').get('videoId'))
-            playlist.append(track)
-        except Exception as e:
-            logger.info(e.message)
-    return playlist
+    result = requests.get(yt_api_endpoint+'search', params=query)
+    data = result.json()
+
+    resolve_pool = ThreadPool(processes=16)
+    playlist = [item['id']['videoId'] for item in data['items']]
+
+    playlist = resolve_pool.map(resolve_url, playlist)
+    return [item for item in playlist if item]
 
 
 def resolve_playlist(url):
+    resolve_pool = ThreadPool(processes=16)
     logger.info("Resolving Youtube-Playlist '%s'", url)
     playlist = []
 
@@ -124,7 +131,8 @@ def resolve_playlist(url):
             video_id = item['contentDetails']['videoId']
             playlist.append(video_id)
 
-    return [resolve_url(item) for item in playlist]
+    playlist = resolve_pool.map(resolve_url, playlist)
+    return [item for item in playlist if item]
 
 
 class YoutubeBackend(pykka.ThreadingActor, backend.Backend):
