@@ -127,6 +127,14 @@ def resolve_playlist(url):
     return [resolve_url(item) for item in playlist]
 
 
+def is_general_search_disabled(config):
+    disable_general_search = False
+    if config.get('youtube') is not None:
+	if config.get('youtube').get('disable_general_search') is not None:
+	    disable_general_search = True
+
+    return disable_general_search
+
 class YoutubeBackend(pykka.ThreadingActor, backend.Backend):
 
     def __init__(self, config, audio):
@@ -176,12 +184,19 @@ class YoutubeLibraryProvider(backend.LibraryProvider):
                         tracks=[resolve_url(search_query)]
                     )
         else:
-            search_query = ' '.join(query.values()[0])
-            logger.info("Searching Youtube for query '%s'", search_query)
-            return SearchResult(
-                uri='youtube:search',
-                tracks=search_youtube(search_query)
-            )
+            if is_general_search_disabled(self.backend.config):
+                potential_url = ' '.join(query.values()[0])
+                url = urlparse(potential_url)
+                if 'youtube.com' in url.netloc:
+                    query['uri'] = potential_url
+                    return self.search(query, uris)
+            else:
+                search_query = ' '.join(query.values()[0])
+                logger.info("Searching Youtube for query '%s'", search_query)
+                return SearchResult(
+                    uri='youtube:search',
+                    tracks=search_youtube(search_query)
+                )
 
 
 class YoutubePlaybackProvider(backend.PlaybackProvider):
