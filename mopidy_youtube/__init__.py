@@ -22,6 +22,7 @@ class Extension(ext.Extension):
 
     def get_config_schema(self):
         schema = super(Extension, self).get_config_schema()
+        schema['disable_general_search'] = config.Boolean(True)
         return schema
 
     def setup(self, registry):
