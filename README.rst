@@ -1,3 +1,6 @@
+.. image:: https://badge.waffle.io/dz0ny/mopidy-youtube.png?label=ready&title=Ready 
+ :target: https://waffle.io/dz0ny/mopidy-youtube
+ :alt: 'Stories in Ready'
 ****************************
 Mopidy-Youtube
 ****************************
