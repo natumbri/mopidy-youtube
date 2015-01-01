@@ -102,6 +102,7 @@ def search_youtube(q):
 def resolve_playlist(url):
     logger.info("Resolving Youtube-Playlist '%s'", url)
     playlist = []
+    tracks = []
 
     page = 'first'
     while page:
@@ -124,7 +125,15 @@ def resolve_playlist(url):
             video_id = item['contentDetails']['videoId']
             playlist.append(video_id)
 
-    return [resolve_url(item) for item in playlist]
+    for item in playlist:
+        try:
+            track = resolve_url(item)
+            tracks.append(track)
+        # e.g. IOError "The [...] account [...] has been terminated..."
+        except Exception as e:
+            logger.info(e.message)
+
+    return tracks
 
 
 class YoutubeBackend(pykka.ThreadingActor, backend.Backend):
