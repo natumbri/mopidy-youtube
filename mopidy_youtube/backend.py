@@ -53,30 +53,16 @@ def resolve_url(url, stream=False):
     if not uri:
         return
 
-    if '-' in video.title:
-        title = video.title.split('-')
-        track = Track(
-            name=title[1].strip(),
-            comment=video.videoid,
-            length=video.length*1000,
-            artists=[Artist(name=title[0].strip())],
-            album=Album(
-                name='Youtube',
-                images=[video.bigthumb, video.bigthumbhd]
-            ),
-            uri=uri
-        )
-    else:
-        track = Track(
-            name=video.title,
-            comment=video.videoid,
-            length=video.length*1000,
-            album=Album(
-                name='Youtube',
-                images=[video.bigthumb, video.bigthumbhd]
-            ),
-            uri=uri
-        )
+    track = Track(
+        name=video.title,
+        comment=video.videoid,
+        length=video.length*1000,
+        album=Album(
+            name='Youtube',
+            images=[video.bigthumb, video.bigthumbhd]
+        ),
+        uri=uri
+    )
     return track
 
 
