@@ -17,7 +17,7 @@ Mopidy-Youtube
     :target: https://travis-ci.org/dz0ny/mopidy-youtube
     :alt: Travis CI build status
 
-.. image:: https://coveralls.io/repos/dz0ny/mopidy-youtube/badge.png?branch=master
+.. image:: https://img.shields.io/coveralls/dz0ny/mopidy-youtube.svg
    :target: https://coveralls.io/r/dz0ny/mopidy-youtube?branch=master
    :alt: Test coverage
 
