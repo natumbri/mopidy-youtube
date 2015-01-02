@@ -3,17 +3,22 @@
 from __future__ import unicode_literals
 import re
 import string
+from multiprocessing.pool import ThreadPool
 from urlparse import urlparse, parse_qs
-from mopidy import backend
-from mopidy.models import SearchResult, Track, Album, Artist
-import pykka
-import pafy
-import requests
 import unicodedata
+
+import pafy
+
+from mopidy import backend
+from mopidy.models import SearchResult, Track, Album
+import pykka
+import requests
 from mopidy_youtube import logger
+
 
 yt_api_endpoint = 'https://www.googleapis.com/youtube/v3/'
 yt_key = 'AIzaSyAl1Xq9DwdE_KD4AtPaE4EJl3WZe2zCqg4'
+session = requests.Session()
 
 
 def resolve_track(track, stream=False):
@@ -38,25 +43,30 @@ def safe_url(uri):
 
 
 def resolve_url(url, stream=False):
-    video = pafy.new(url)
-    if not stream:
-        uri = 'youtube:video/%s.%s' % (
-            safe_url(video.title), video.videoid
-        )
-    else:
-        uri = video.getbestaudio()
-        if not uri:  # get video url
-            uri = video.getbest()
-        logger.debug('%s - %s %s %s' % (
-            video.title, uri.bitrate, uri.mediatype, uri.extension))
-        uri = uri.url
-    if not uri:
+    try:
+        video = pafy.new(url)
+        if not stream:
+            uri = 'youtube:video/%s.%s' % (
+                safe_url(video.title), video.videoid
+            )
+        else:
+            uri = video.getbestaudio()
+            if not uri:  # get video url
+                uri = video.getbest()
+            logger.debug('%s - %s %s %s' % (
+                video.title, uri.bitrate, uri.mediatype, uri.extension))
+            uri = uri.url
+        if not uri:
+            return
+    except Exception as e:
+        # Video is private or doesn't exist
+        logger.info(e.message)
         return
 
     track = Track(
         name=video.title,
         comment=video.videoid,
-        length=video.length*1000,
+        length=video.length * 1000,
         album=Album(
             name='Youtube',
             images=[video.bigthumb, video.bigthumbhd]
@@ -74,21 +84,21 @@ def search_youtube(q):
         'q': q,
         'key': yt_key
     }
-    pl = requests.get(yt_api_endpoint+'search', params=query)
-    playlist = []
-    for yt_id in pl.json().get('items'):
-        try:
-            track = resolve_url(yt_id.get('id').get('videoId'))
-            playlist.append(track)
-        except Exception as e:
-            logger.info(e.message)
-    return playlist
+    result = session.get(yt_api_endpoint+'search', params=query)
+    data = result.json()
+
+    resolve_pool = ThreadPool(processes=16)
+    playlist = [item['id']['videoId'] for item in data['items']]
+
+    playlist = resolve_pool.map(resolve_url, playlist)
+    resolve_pool.close()
+    return [item for item in playlist if item]
 
 
 def resolve_playlist(url):
+    resolve_pool = ThreadPool(processes=16)
     logger.info("Resolving Youtube-Playlist '%s'", url)
     playlist = []
-    tracks = []
 
     page = 'first'
     while page:
@@ -102,8 +112,7 @@ def resolve_playlist(url):
             logger.debug("Get Youtube-Playlist '%s' page %s", url, page)
             params['pageToken'] = page
 
-        result = requests.get(yt_api_endpoint+'playlistItems',
-                              params=params)
+        result = session.get(yt_api_endpoint+'playlistItems', params=params)
         data = result.json()
         page = data.get('nextPageToken')
 
@@ -111,19 +120,12 @@ def resolve_playlist(url):
             video_id = item['contentDetails']['videoId']
             playlist.append(video_id)
 
-    for item in playlist:
-        try:
-            track = resolve_url(item)
-            tracks.append(track)
-        # e.g. IOError "The [...] account [...] has been terminated..."
-        except Exception as e:
-            logger.info(e.message)
-
-    return tracks
+    playlist = resolve_pool.map(resolve_url, playlist)
+    resolve_pool.close()
+    return [item for item in playlist if item]
 
 
 class YoutubeBackend(pykka.ThreadingActor, backend.Backend):
-
     def __init__(self, config, audio):
         super(YoutubeBackend, self).__init__()
         self.config = config
@@ -134,7 +136,6 @@ class YoutubeBackend(pykka.ThreadingActor, backend.Backend):
 
 
 class YoutubeLibraryProvider(backend.LibraryProvider):
-
     def lookup(self, track):
         if 'yt:' in track:
             track = track.replace('yt:', '')
@@ -180,7 +181,6 @@ class YoutubeLibraryProvider(backend.LibraryProvider):
 
 
 class YoutubePlaybackProvider(backend.PlaybackProvider):
-
     def play(self, track):
         track = resolve_track(track, True)
         return super(YoutubePlaybackProvider, self).play(track)

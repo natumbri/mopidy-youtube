@@ -33,6 +33,7 @@ setup(
     tests_require=[
         'nose',
         'mock >= 1.0',
+        'vcrpy',
     ],
     entry_points={
         'mopidy.ext': [
