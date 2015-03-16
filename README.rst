@@ -27,9 +27,14 @@ Mopidy extension that plays sound from Youtube
 Installation
 ============
 
+Make sure you already have the gstreamer plugins, if not you can install it by running::
+
+    $ sudo apt-get install gstreamer0.10-plugins-bad
+
+
 Install by running::
 
-    pip install Mopidy-Youtube
+    $ pip install Mopidy-Youtube
 
 
 Use
