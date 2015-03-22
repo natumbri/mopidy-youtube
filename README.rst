@@ -2,19 +2,19 @@
 Mopidy-Youtube
 **************
 
-.. image:: https://pypip.in/v/Mopidy-Youtube/badge.png
+.. image:: https://img.shields.io/pypi/v/Mopidy-Youtube.svg?style=flat
     :target: https://pypi.python.org/pypi/Mopidy-Youtube/
     :alt: Latest PyPI version
 
-.. image:: https://pypip.in/d/Mopidy-Youtube/badge.png
+.. image:: https://img.shields.io/pypi/dm/Mopidy-Youtube.svg?style=flat
     :target: https://pypi.python.org/pypi/Mopidy-Youtube/
     :alt: Number of PyPI downloads
 
-.. image:: https://travis-ci.org/dz0ny/mopidy-youtube.png?branch=master
+.. image:: https://img.shields.io/travis/dz0ny/mopidy-youtube/master.svg?style=flat
     :target: https://travis-ci.org/dz0ny/mopidy-youtube
     :alt: Travis CI build status
 
-.. image:: https://img.shields.io/coveralls/dz0ny/mopidy-youtube.svg
+.. image:: https://img.shields.io/coveralls/dz0ny/mopidy-youtube/master.svg?style=flat
    :target: https://coveralls.io/r/dz0ny/mopidy-youtube?branch=master
    :alt: Test coverage
 
