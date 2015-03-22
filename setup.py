@@ -26,7 +26,7 @@ setup(
         'setuptools',
         'requests >= 2.2.1',
         'pafy >= 0.3.35',
-        'Mopidy >= 0.18',
+        'Mopidy >= 1.0',
         'Pykka >= 1.1',
     ],
     test_suite='nose.collector',

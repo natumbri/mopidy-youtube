@@ -181,6 +181,10 @@ class YoutubeLibraryProvider(backend.LibraryProvider):
 
 
 class YoutubePlaybackProvider(backend.PlaybackProvider):
-    def play(self, track):
-        track = resolve_track(track, True)
-        return super(YoutubePlaybackProvider, self).play(track)
+
+    def translate_uri(self, uri):
+        track = resolve_track(uri, True)
+        if track is not None:
+            return track.uri
+        else:
+            return None
