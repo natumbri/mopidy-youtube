@@ -1,8 +1,11 @@
 include .coveragerc
+include .mailmap
 include .travis.yml
 include LICENSE
 include MANIFEST.in
 include README.rst
 include mopidy_youtube/ext.conf
+include tox.ini
 
 recursive-include tests *.py
+recursive-include tests *.yaml
