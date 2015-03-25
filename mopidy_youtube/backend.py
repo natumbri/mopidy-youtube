@@ -150,7 +150,9 @@ class YoutubeLibraryProvider(backend.LibraryProvider):
         else:
             return [resolve_url(track)]
 
-    def search(self, query=None, uris=None):
+    def search(self, query=None, uris=None, exact=False):
+        # TODO Support exact search
+
         if not query:
             return
 
@@ -181,6 +183,10 @@ class YoutubeLibraryProvider(backend.LibraryProvider):
 
 
 class YoutubePlaybackProvider(backend.PlaybackProvider):
-    def play(self, track):
-        track = resolve_track(track, True)
-        return super(YoutubePlaybackProvider, self).play(track)
+
+    def translate_uri(self, uri):
+        track = resolve_track(uri, True)
+        if track is not None:
+            return track.uri
+        else:
+            return None
