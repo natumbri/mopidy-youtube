@@ -150,7 +150,9 @@ class YoutubeLibraryProvider(backend.LibraryProvider):
         else:
             return [resolve_url(track)]
 
-    def search(self, query=None, uris=None):
+    def search(self, query=None, uris=None, exact=False):
+        # TODO Support exact search
+
         if not query:
             return
 
