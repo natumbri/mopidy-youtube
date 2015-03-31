@@ -83,6 +83,7 @@ v2.0.0 (UNRELEASED)
 v1.0.2 (2015-01-02)
 -------------------
 
+- Require Mopidy < 1.0.
 - Changelog missing.
 
 v1.0.1 (2014-05-28)
