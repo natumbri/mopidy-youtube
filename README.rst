@@ -2,6 +2,10 @@
 Mopidy-Youtube
 **************
 
+.. image:: https://app.wercker.com/status/08a31153413287cd9a6965d8b7f26586/m
+    :target: https://app.wercker.com/project/bykey/08a31153413287cd9a6965d8b7f26586
+    :alt: CI build status
+
 .. image:: https://img.shields.io/pypi/v/Mopidy-Youtube.svg?style=flat
     :target: https://pypi.python.org/pypi/Mopidy-Youtube/
     :alt: Latest PyPI version
@@ -10,17 +14,9 @@ Mopidy-Youtube
     :target: https://pypi.python.org/pypi/Mopidy-Youtube/
     :alt: Number of PyPI downloads
 
-.. image:: https://img.shields.io/travis/dz0ny/mopidy-youtube/master.svg?style=flat
-    :target: https://travis-ci.org/dz0ny/mopidy-youtube
-    :alt: Travis CI build status
-
 .. image:: https://img.shields.io/coveralls/dz0ny/mopidy-youtube/master.svg?style=flat
    :target: https://coveralls.io/r/dz0ny/mopidy-youtube?branch=master
    :alt: Test coverage
-
-.. image:: https://badge.waffle.io/dz0ny/mopidy-youtube.png?label=ready&title=Ready
-   :target: https://waffle.io/dz0ny/mopidy-youtube
-   :alt: Stories in Ready
 
 
 Mopidy extension that plays sound from Youtube.
