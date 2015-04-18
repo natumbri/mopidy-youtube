@@ -10,7 +10,7 @@ import unicodedata
 import pafy
 
 from mopidy import backend
-from mopidy.models import SearchResult, Track, Album
+from mopidy.models import SearchResult, Track, Album, Artist
 import pykka
 import requests
 from mopidy_youtube import logger
@@ -65,6 +65,7 @@ def resolve_url(url, stream=False):
 
     track = Track(
         name=video.title,
+        artists=[Artist(name=video.author)],
         comment=video.videoid,
         length=video.length * 1000,
         album=Album(
