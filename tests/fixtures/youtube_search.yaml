@@ -5,67 +5,114 @@ interactions:
       Accept: ['*/*']
       Accept-Encoding: ['gzip, deflate']
       Connection: [keep-alive]
-      User-Agent: [python-requests/2.4.3 CPython/2.7.8 Linux/3.16.0-28-generic]
+      User-Agent: [python-requests/2.7.0 CPython/2.7.9 Linux/3.19.0-21-generic]
     method: GET
-    uri: https://www.googleapis.com:443/youtube/v3/search?maxResults=15&key=AIzaSyAl1Xq9DwdE_KD4AtPaE4EJl3WZe2zCqg4&type=video&part=id&q=chvrches
+    uri: https://www.googleapis.com/youtube/v3/search?maxResults=15&type=video%2Cplaylist&key=AIzaSyAl1Xq9DwdE_KD4AtPaE4EJl3WZe2zCqg4&part=id%2Csnippet&fields=items%28id%2Csnippet%28title%2Cthumbnails%2CchannelTitle%29%29&q=chvrches
   response:
-    body: {string: !!python/unicode "{\n \"kind\": \"youtube#searchListResponse\"\
-        ,\n \"etag\": \"\\\"F9iA7pnxqNgrkOutjQAa9F2k8HY/EB27u2NyX6LmPLJhLS1uP0bFhV4\\\
-        \"\",\n \"nextPageToken\": \"CA8QAA\",\n \"pageInfo\": {\n  \"totalResults\"\
-        : 243298,\n  \"resultsPerPage\": 15\n },\n \"items\": [\n  {\n   \"kind\"\
-        : \"youtube#searchResult\",\n   \"etag\": \"\\\"F9iA7pnxqNgrkOutjQAa9F2k8HY/1L7o9RIHG0UaLLGT1d32ax2ffT4\\\
-        \"\",\n   \"id\": {\n    \"kind\": \"youtube#video\",\n    \"videoId\": \"\
-        TU3b1qyEGsE\"\n   }\n  },\n  {\n   \"kind\": \"youtube#searchResult\",\n \
-        \  \"etag\": \"\\\"F9iA7pnxqNgrkOutjQAa9F2k8HY/3IezfTBiiPjbdpd5swNI4Gjx-jk\\\
-        \"\",\n   \"id\": {\n    \"kind\": \"youtube#video\",\n    \"videoId\": \"\
-        _mTRvJ9fugM\"\n   }\n  },\n  {\n   \"kind\": \"youtube#searchResult\",\n \
-        \  \"etag\": \"\\\"F9iA7pnxqNgrkOutjQAa9F2k8HY/dnD7v3fj9beOaIe7j-LusVeUMUg\\\
-        \"\",\n   \"id\": {\n    \"kind\": \"youtube#video\",\n    \"videoId\": \"\
-        ipE-tnRh4fE\"\n   }\n  },\n  {\n   \"kind\": \"youtube#searchResult\",\n \
-        \  \"etag\": \"\\\"F9iA7pnxqNgrkOutjQAa9F2k8HY/2W6aSevqn2e3xeRG5YpZgZlBWjw\\\
-        \"\",\n   \"id\": {\n    \"kind\": \"youtube#video\",\n    \"videoId\": \"\
-        zM0O1Pqjvuw\"\n   }\n  },\n  {\n   \"kind\": \"youtube#searchResult\",\n \
-        \  \"etag\": \"\\\"F9iA7pnxqNgrkOutjQAa9F2k8HY/LGMW7H1MtkhsDLmWsw7R4IRL36o\\\
-        \"\",\n   \"id\": {\n    \"kind\": \"youtube#video\",\n    \"videoId\": \"\
-        1L9iUhiOXbE\"\n   }\n  },\n  {\n   \"kind\": \"youtube#searchResult\",\n \
-        \  \"etag\": \"\\\"F9iA7pnxqNgrkOutjQAa9F2k8HY/YSHn1TNgPRAlT93S47BuyMUzlV4\\\
-        \"\",\n   \"id\": {\n    \"kind\": \"youtube#video\",\n    \"videoId\": \"\
-        ktoaj1IpTbw\"\n   }\n  },\n  {\n   \"kind\": \"youtube#searchResult\",\n \
-        \  \"etag\": \"\\\"F9iA7pnxqNgrkOutjQAa9F2k8HY/Rg4U8fhd5B0WzXmSa8DDa3Jhrjw\\\
-        \"\",\n   \"id\": {\n    \"kind\": \"youtube#video\",\n    \"videoId\": \"\
-        RWhEUR0I9fo\"\n   }\n  },\n  {\n   \"kind\": \"youtube#searchResult\",\n \
-        \  \"etag\": \"\\\"F9iA7pnxqNgrkOutjQAa9F2k8HY/jYmtypJsIvubTpjqp_xEj01401M\\\
-        \"\",\n   \"id\": {\n    \"kind\": \"youtube#video\",\n    \"videoId\": \"\
-        CjwwmFrsX_E\"\n   }\n  },\n  {\n   \"kind\": \"youtube#searchResult\",\n \
-        \  \"etag\": \"\\\"F9iA7pnxqNgrkOutjQAa9F2k8HY/GjyLc47sdTqSDcg0cHnYVburu3A\\\
-        \"\",\n   \"id\": {\n    \"kind\": \"youtube#video\",\n    \"videoId\": \"\
-        haunJARHPm4\"\n   }\n  },\n  {\n   \"kind\": \"youtube#searchResult\",\n \
-        \  \"etag\": \"\\\"F9iA7pnxqNgrkOutjQAa9F2k8HY/qXkLEENk7SdNRzJKrt0ffs44i8Y\\\
-        \"\",\n   \"id\": {\n    \"kind\": \"youtube#video\",\n    \"videoId\": \"\
-        JyqemIbjcfg\"\n   }\n  },\n  {\n   \"kind\": \"youtube#searchResult\",\n \
-        \  \"etag\": \"\\\"F9iA7pnxqNgrkOutjQAa9F2k8HY/KWhkxmFs6poSxCh532xrpAM3qPg\\\
-        \"\",\n   \"id\": {\n    \"kind\": \"youtube#video\",\n    \"videoId\": \"\
-        JqKTLWhJYBU\"\n   }\n  },\n  {\n   \"kind\": \"youtube#searchResult\",\n \
-        \  \"etag\": \"\\\"F9iA7pnxqNgrkOutjQAa9F2k8HY/mRGhpp2ySwRlTej53an0qlUleIk\\\
-        \"\",\n   \"id\": {\n    \"kind\": \"youtube#video\",\n    \"videoId\": \"\
-        kZfSuYCx9uU\"\n   }\n  },\n  {\n   \"kind\": \"youtube#searchResult\",\n \
-        \  \"etag\": \"\\\"F9iA7pnxqNgrkOutjQAa9F2k8HY/kPwTMwlUdVdaA-3OSQV4o7fjOIQ\\\
-        \"\",\n   \"id\": {\n    \"kind\": \"youtube#video\",\n    \"videoId\": \"\
-        81RqEnvczV8\"\n   }\n  },\n  {\n   \"kind\": \"youtube#searchResult\",\n \
-        \  \"etag\": \"\\\"F9iA7pnxqNgrkOutjQAa9F2k8HY/hDedba2GGyxUlSQjXpVHFIEUf3I\\\
-        \"\",\n   \"id\": {\n    \"kind\": \"youtube#video\",\n    \"videoId\": \"\
-        Kcarb0H6-U0\"\n   }\n  },\n  {\n   \"kind\": \"youtube#searchResult\",\n \
-        \  \"etag\": \"\\\"F9iA7pnxqNgrkOutjQAa9F2k8HY/87v4Z1FHkQM3GC1O6I7axv3JIlo\\\
-        \"\",\n   \"id\": {\n    \"kind\": \"youtube#video\",\n    \"videoId\": \"\
-        Zdmg9QySDTs\"\n   }\n  }\n ]\n}\n"}
+    body: {string: !!python/unicode "{\n \"items\": [\n  {\n   \"id\": {\n    \"kind\":
+        \"youtube#video\",\n    \"videoId\": \"TU3b1qyEGsE\"\n   },\n   \"snippet\":
+        {\n    \"title\": \"CHVRCHES: The Bones of What You Believe Full Album\",\n
+        \   \"thumbnails\": {\n     \"default\": {\n      \"url\": \"https://i.ytimg.com/vi/TU3b1qyEGsE/default.jpg\"\n
+        \    },\n     \"medium\": {\n      \"url\": \"https://i.ytimg.com/vi/TU3b1qyEGsE/mqdefault.jpg\"\n
+        \    },\n     \"high\": {\n      \"url\": \"https://i.ytimg.com/vi/TU3b1qyEGsE/hqdefault.jpg\"\n
+        \    }\n    },\n    \"channelTitle\": \"goobygoooo\"\n   }\n  },\n  {\n   \"id\":
+        {\n    \"kind\": \"youtube#video\",\n    \"videoId\": \"1L9iUhiOXbE\"\n   },\n
+        \  \"snippet\": {\n    \"title\": \"Chvrches | Full Set | Pitchfork Music
+        Festival Paris 2014 | PitchforkTV\",\n    \"thumbnails\": {\n     \"default\":
+        {\n      \"url\": \"https://i.ytimg.com/vi/1L9iUhiOXbE/default.jpg\"\n     },\n
+        \    \"medium\": {\n      \"url\": \"https://i.ytimg.com/vi/1L9iUhiOXbE/mqdefault.jpg\"\n
+        \    },\n     \"high\": {\n      \"url\": \"https://i.ytimg.com/vi/1L9iUhiOXbE/hqdefault.jpg\"\n
+        \    }\n    },\n    \"channelTitle\": \"pitchforktv\"\n   }\n  },\n  {\n   \"id\":
+        {\n    \"kind\": \"youtube#video\",\n    \"videoId\": \"Kcarb0H6-U0\"\n   },\n
+        \  \"snippet\": {\n    \"title\": \"Chvrches - The Bones of What You Believe
+        (Full Album)\",\n    \"thumbnails\": {\n     \"default\": {\n      \"url\":
+        \"https://i.ytimg.com/vi/Kcarb0H6-U0/default.jpg\"\n     },\n     \"medium\":
+        {\n      \"url\": \"https://i.ytimg.com/vi/Kcarb0H6-U0/mqdefault.jpg\"\n     },\n
+        \    \"high\": {\n      \"url\": \"https://i.ytimg.com/vi/Kcarb0H6-U0/hqdefault.jpg\"\n
+        \    }\n    },\n    \"channelTitle\": \"theinfinitekids\"\n   }\n  },\n  {\n
+        \  \"id\": {\n    \"kind\": \"youtube#video\",\n    \"videoId\": \"ipE-tnRh4fE\"\n
+        \  },\n   \"snippet\": {\n    \"title\": \"CHVRCHES - Full Performance (Live
+        on KEXP)\",\n    \"thumbnails\": {\n     \"default\": {\n      \"url\": \"https://i.ytimg.com/vi/ipE-tnRh4fE/default.jpg\"\n
+        \    },\n     \"medium\": {\n      \"url\": \"https://i.ytimg.com/vi/ipE-tnRh4fE/mqdefault.jpg\"\n
+        \    },\n     \"high\": {\n      \"url\": \"https://i.ytimg.com/vi/ipE-tnRh4fE/hqdefault.jpg\"\n
+        \    }\n    },\n    \"channelTitle\": \"kexpradio\"\n   }\n  },\n  {\n   \"id\":
+        {\n    \"kind\": \"youtube#video\",\n    \"videoId\": \"zM0O1Pqjvuw\"\n   },\n
+        \  \"snippet\": {\n    \"title\": \"CHVRCHES - Get Away\",\n    \"thumbnails\":
+        {\n     \"default\": {\n      \"url\": \"https://i.ytimg.com/vi/zM0O1Pqjvuw/default.jpg\"\n
+        \    },\n     \"medium\": {\n      \"url\": \"https://i.ytimg.com/vi/zM0O1Pqjvuw/mqdefault.jpg\"\n
+        \    },\n     \"high\": {\n      \"url\": \"https://i.ytimg.com/vi/zM0O1Pqjvuw/hqdefault.jpg\"\n
+        \    }\n    },\n    \"channelTitle\": \"ChvrchesVEVO\"\n   }\n  },\n  {\n
+        \  \"id\": {\n    \"kind\": \"youtube#video\",\n    \"videoId\": \"Z8QIxNAdw6U\"\n
+        \  },\n   \"snippet\": {\n    \"title\": \"Chvrches cover Justin Timberlake's
+        Cry Me A River in the Live Lounge\",\n    \"thumbnails\": {\n     \"default\":
+        {\n      \"url\": \"https://i.ytimg.com/vi/Z8QIxNAdw6U/default.jpg\"\n     },\n
+        \    \"medium\": {\n      \"url\": \"https://i.ytimg.com/vi/Z8QIxNAdw6U/mqdefault.jpg\"\n
+        \    },\n     \"high\": {\n      \"url\": \"https://i.ytimg.com/vi/Z8QIxNAdw6U/hqdefault.jpg\"\n
+        \    }\n    },\n    \"channelTitle\": \"bbcradio1\"\n   }\n  },\n  {\n   \"id\":
+        {\n    \"kind\": \"youtube#video\",\n    \"videoId\": \"CjwwmFrsX_E\"\n   },\n
+        \  \"snippet\": {\n    \"title\": \"Chvrches cover Arctic Monkeys' 'Do I Wanna
+        Know?' for Like A Version\",\n    \"thumbnails\": {\n     \"default\": {\n
+        \     \"url\": \"https://i.ytimg.com/vi/CjwwmFrsX_E/default.jpg\"\n     },\n
+        \    \"medium\": {\n      \"url\": \"https://i.ytimg.com/vi/CjwwmFrsX_E/mqdefault.jpg\"\n
+        \    },\n     \"high\": {\n      \"url\": \"https://i.ytimg.com/vi/CjwwmFrsX_E/hqdefault.jpg\"\n
+        \    }\n    },\n    \"channelTitle\": \"triplejtv\"\n   }\n  },\n  {\n   \"id\":
+        {\n    \"kind\": \"youtube#video\",\n    \"videoId\": \"JyqemIbjcfg\"\n   },\n
+        \  \"snippet\": {\n    \"title\": \"CHVRCHES - Recover\",\n    \"thumbnails\":
+        {\n     \"default\": {\n      \"url\": \"https://i.ytimg.com/vi/JyqemIbjcfg/default.jpg\"\n
+        \    },\n     \"medium\": {\n      \"url\": \"https://i.ytimg.com/vi/JyqemIbjcfg/mqdefault.jpg\"\n
+        \    },\n     \"high\": {\n      \"url\": \"https://i.ytimg.com/vi/JyqemIbjcfg/hqdefault.jpg\"\n
+        \    }\n    },\n    \"channelTitle\": \"CHVRCHES\"\n   }\n  },\n  {\n   \"id\":
+        {\n    \"kind\": \"youtube#video\",\n    \"videoId\": \"haunJARHPm4\"\n   },\n
+        \  \"snippet\": {\n    \"title\": \"Chvrches: NPR Music Tiny Desk Concert\",\n
+        \   \"thumbnails\": {\n     \"default\": {\n      \"url\": \"https://i.ytimg.com/vi/haunJARHPm4/default.jpg\"\n
+        \    },\n     \"medium\": {\n      \"url\": \"https://i.ytimg.com/vi/haunJARHPm4/mqdefault.jpg\"\n
+        \    },\n     \"high\": {\n      \"url\": \"https://i.ytimg.com/vi/haunJARHPm4/hqdefault.jpg\"\n
+        \    }\n    },\n    \"channelTitle\": \"nprmusic\"\n   }\n  },\n  {\n   \"id\":
+        {\n    \"kind\": \"youtube#video\",\n    \"videoId\": \"kZfSuYCx9uU\"\n   },\n
+        \  \"snippet\": {\n    \"title\": \"CHVRCHES - The Bones of What You Believe
+        Full Album\",\n    \"thumbnails\": {\n     \"default\": {\n      \"url\":
+        \"https://i.ytimg.com/vi/kZfSuYCx9uU/default.jpg\"\n     },\n     \"medium\":
+        {\n      \"url\": \"https://i.ytimg.com/vi/kZfSuYCx9uU/mqdefault.jpg\"\n     },\n
+        \    \"high\": {\n      \"url\": \"https://i.ytimg.com/vi/kZfSuYCx9uU/hqdefault.jpg\"\n
+        \    }\n    },\n    \"channelTitle\": \"gioholland\"\n   }\n  },\n  {\n   \"id\":
+        {\n    \"kind\": \"youtube#video\",\n    \"videoId\": \"RWhEUR0I9fo\"\n   },\n
+        \  \"snippet\": {\n    \"title\": \"CHVRCHES - Dead Air (Audio)\",\n    \"thumbnails\":
+        {\n     \"default\": {\n      \"url\": \"https://i.ytimg.com/vi/RWhEUR0I9fo/default.jpg\"\n
+        \    },\n     \"medium\": {\n      \"url\": \"https://i.ytimg.com/vi/RWhEUR0I9fo/mqdefault.jpg\"\n
+        \    },\n     \"high\": {\n      \"url\": \"https://i.ytimg.com/vi/RWhEUR0I9fo/hqdefault.jpg\"\n
+        \    }\n    },\n    \"channelTitle\": \"ChvrchesVEVO\"\n   }\n  },\n  {\n
+        \  \"id\": {\n    \"kind\": \"youtube#playlist\",\n    \"playlistId\": \"PLY-BgrDToJMmATT90UqCciLR0Zk3tSaCY\"\n
+        \  },\n   \"snippet\": {\n    \"title\": \"Chvrches Playlist\",\n    \"thumbnails\":
+        {\n     \"default\": {\n      \"url\": \"https://i.ytimg.com/vi/PxvhprV3-Sc/default.jpg\"\n
+        \    },\n     \"medium\": {\n      \"url\": \"https://i.ytimg.com/vi/PxvhprV3-Sc/mqdefault.jpg\"\n
+        \    },\n     \"high\": {\n      \"url\": \"https://i.ytimg.com/vi/PxvhprV3-Sc/hqdefault.jpg\"\n
+        \    }\n    },\n    \"channelTitle\": \"tufkas999\"\n   }\n  },\n  {\n   \"id\":
+        {\n    \"kind\": \"youtube#video\",\n    \"videoId\": \"ioq_t_GHBtg\"\n   },\n
+        \  \"snippet\": {\n    \"title\": \"Eric Prydz VS CHVRCHES - Tether (Official
+        Video)\",\n    \"thumbnails\": {\n     \"default\": {\n      \"url\": \"https://i.ytimg.com/vi/ioq_t_GHBtg/default.jpg\"\n
+        \    },\n     \"medium\": {\n      \"url\": \"https://i.ytimg.com/vi/ioq_t_GHBtg/mqdefault.jpg\"\n
+        \    },\n     \"high\": {\n      \"url\": \"https://i.ytimg.com/vi/ioq_t_GHBtg/hqdefault.jpg\"\n
+        \    }\n    },\n    \"channelTitle\": \"EricPrydzVEVO\"\n   }\n  },\n  {\n
+        \  \"id\": {\n    \"kind\": \"youtube#video\",\n    \"videoId\": \"7uj0hOIm2kY\"\n
+        \  },\n   \"snippet\": {\n    \"title\": \"CHVRCHES - The Mother We Share\",\n
+        \   \"thumbnails\": {\n     \"default\": {\n      \"url\": \"https://i.ytimg.com/vi/7uj0hOIm2kY/default.jpg\"\n
+        \    },\n     \"medium\": {\n      \"url\": \"https://i.ytimg.com/vi/7uj0hOIm2kY/mqdefault.jpg\"\n
+        \    },\n     \"high\": {\n      \"url\": \"https://i.ytimg.com/vi/7uj0hOIm2kY/hqdefault.jpg\"\n
+        \    }\n    },\n    \"channelTitle\": \"qwertt14\"\n   }\n  },\n  {\n   \"id\":
+        {\n    \"kind\": \"youtube#video\",\n    \"videoId\": \"TTOuVP0iYQs\"\n   },\n
+        \  \"snippet\": {\n    \"title\": \"CHVRCHES - Under The Tide\",\n    \"thumbnails\":
+        {\n     \"default\": {\n      \"url\": \"https://i.ytimg.com/vi/TTOuVP0iYQs/default.jpg\"\n
+        \    },\n     \"medium\": {\n      \"url\": \"https://i.ytimg.com/vi/TTOuVP0iYQs/mqdefault.jpg\"\n
+        \    },\n     \"high\": {\n      \"url\": \"https://i.ytimg.com/vi/TTOuVP0iYQs/hqdefault.jpg\"\n
+        \    }\n    },\n    \"channelTitle\": \"ChvrchesVEVO\"\n   }\n  }\n ]\n}\n"}
     headers:
-      alternate-protocol: ['443:quic,p=0.02']
+      alternate-protocol: ['443:quic,p=1']
       cache-control: ['private, max-age=120, must-revalidate, no-transform']
-      content-length: ['3105']
+      content-length: ['7351']
       content-type: [application/json; charset=UTF-8]
-      date: ['Fri, 02 Jan 2015 12:17:02 GMT']
-      etag: ['"F9iA7pnxqNgrkOutjQAa9F2k8HY/EB27u2NyX6LmPLJhLS1uP0bFhV4"']
-      expires: ['Fri, 02 Jan 2015 12:17:02 GMT']
+      date: ['Tue, 23 Jun 2015 19:42:44 GMT']
+      etag: ['"Y3xTLFF3RLtHXX85JBgzzgp2Enw/M3fe2Si3ekQ-PH54YR1s0H1aFUg"']
+      expires: ['Tue, 23 Jun 2015 19:42:44 GMT']
       server: [GSE]
       vary: [Origin, X-Origin]
       x-content-type-options: [nosniff]
