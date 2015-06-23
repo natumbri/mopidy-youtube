@@ -1,0 +1,388 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept: ['*/*']
+      Accept-Encoding: ['gzip, deflate']
+      Connection: [keep-alive]
+      User-Agent: [python-requests/2.7.0 CPython/2.7.9 Linux/3.19.0-21-generic]
+    method: GET
+    uri: https://www.googleapis.com/youtube/v3/playlistItems?maxResults=50&key=AIzaSyAl1Xq9DwdE_KD4AtPaE4EJl3WZe2zCqg4&part=id%2Csnippet&fields=nextPageToken%2Citems%28snippet%28title%2CresourceId%28videoId%29%29%29&playlistId=PLOxORm4jpOQfMU7bpfGCzDyLropIYEHuR&pageToken=
+  response:
+    body: {string: "{\n \"nextPageToken\": \"CDIQAA\",\n \"items\": [\n  {\n   \"snippet\":
+        {\n    \"title\": \"tito puente - Cha cha cha\",\n    \"resourceId\": {\n
+        \    \"videoId\": \"vCHdH3LiUS4\"\n    }\n   }\n  },\n  {\n   \"snippet\":
+        {\n    \"title\": \"PETE RODRIGUEZ   - I Like It Like That\",\n    \"resourceId\":
+        {\n     \"videoId\": \"CIJfdVPACyw\"\n    }\n   }\n  },\n  {\n   \"snippet\":
+        {\n    \"title\": \"Miami-Nicolas-Bachatiando 2002\",\n    \"resourceId\":
+        {\n     \"videoId\": \"ns83CS3cUsA\"\n    }\n   }\n  },\n  {\n   \"snippet\":
+        {\n    \"title\": \"EL CHACAL \u25BA No Te Vayas (OFFICIAL VIDEO) \u25BA BACHATA
+        URBANA\",\n    \"resourceId\": {\n     \"videoId\": \"9QAB7OCuFfY\"\n    }\n
+        \  }\n  },\n  {\n   \"snippet\": {\n    \"title\": \"Henri Gu\xE9don   Sainte
+        Marie\",\n    \"resourceId\": {\n     \"videoId\": \"0z5r17WNvbY\"\n    }\n
+        \  }\n  },\n  {\n   \"snippet\": {\n    \"title\": \"Colman Brothers - El
+        Ninio (Cha Cha Mix)\",\n    \"resourceId\": {\n     \"videoId\": \"RqpDKTm5hZo\"\n
+        \   }\n   }\n  },\n  {\n   \"snippet\": {\n    \"title\": \"Ublabadu-HECTOR
+        LAVOE\",\n    \"resourceId\": {\n     \"videoId\": \"gOx47fiLg9k\"\n    }\n
+        \  }\n  },\n  {\n   \"snippet\": {\n    \"title\": \"Fania All-Stars Feat.
+        Hector Lavoe - Ublabadu\",\n    \"resourceId\": {\n     \"videoId\": \"gIRW9iqD0-M\"\n
+        \   }\n   }\n  },\n  {\n   \"snippet\": {\n    \"title\": \"Orquesta Arag\xF3n
+        con Cheo Feliciano - Son al Son\",\n    \"resourceId\": {\n     \"videoId\":
+        \"qr5i5chOTPo\"\n    }\n   }\n  },\n  {\n   \"snippet\": {\n    \"title\":
+        \"Joe Cuba Sextett - Gimme Some Love (My Man Speedy!) 1967\",\n    \"resourceId\":
+        {\n     \"videoId\": \"gNSTDaITU_c\"\n    }\n   }\n  },\n  {\n   \"snippet\":
+        {\n    \"title\": \"Orquesta La 33 - Anny's Boogaloo [HIGH QUALITY MUSIC]\",\n
+        \   \"resourceId\": {\n     \"videoId\": \"NiH5YtKBYCM\"\n    }\n   }\n  },\n
+        \ {\n   \"snippet\": {\n    \"title\": \"ALFREDO RODRIGUEZ - MERCEDITAS YA
+        ME VOY\",\n    \"resourceId\": {\n     \"videoId\": \"ohhSbgl_jhg\"\n    }\n
+        \  }\n  },\n  {\n   \"snippet\": {\n    \"title\": \"Marc Anthony - Hasta
+        Ayer (Original)\",\n    \"resourceId\": {\n     \"videoId\": \"mmaQjvVfV2w\"\n
+        \   }\n   }\n  },\n  {\n   \"snippet\": {\n    \"title\": \"Marc Anthony -
+        Hasta Ayer\",\n    \"resourceId\": {\n     \"videoId\": \"iR1MmlRCooY\"\n
+        \   }\n   }\n  },\n  {\n   \"snippet\": {\n    \"title\": \"Morenita   Cubismo
+        putamayo\",\n    \"resourceId\": {\n     \"videoId\": \"nvW5RDJA8i4\"\n    }\n
+        \  }\n  },\n  {\n   \"snippet\": {\n    \"title\": \"Besame Mucho Cesaria
+        Evora\",\n    \"resourceId\": {\n     \"videoId\": \"LLsg_Lk819s\"\n    }\n
+        \  }\n  },\n  {\n   \"snippet\": {\n    \"title\": \"So\xF1ando Despierto\",\n
+        \   \"resourceId\": {\n     \"videoId\": \"jry45RskN4A\"\n    }\n   }\n  },\n
+        \ {\n   \"snippet\": {\n    \"title\": \"pink martini - sympathique - no hay
+        problema\",\n    \"resourceId\": {\n     \"videoId\": \"NjZGttRSwA8\"\n    }\n
+        \  }\n  },\n  {\n   \"snippet\": {\n    \"title\": \"Quizas Quizas Quizas
+        - IBRAHIM FERRER & OMARA PORTUONDO [HD]\",\n    \"resourceId\": {\n     \"videoId\":
+        \"RQ_1XExoXws\"\n    }\n   }\n  },\n  {\n   \"snippet\": {\n    \"title\":
+        \"NG2 \\\"QUE ME GUSTAS\\\"\",\n    \"resourceId\": {\n     \"videoId\": \"yvOMqR2yCKI\"\n
+        \   }\n   }\n  },\n  {\n   \"snippet\": {\n    \"title\": \"NG2 Video Oficial
+        HD Quien Te Quiera Mas Que Yo\",\n    \"resourceId\": {\n     \"videoId\":
+        \"ctVatg4N6jg\"\n    }\n   }\n  },\n  {\n   \"snippet\": {\n    \"title\":
+        \"Hot Salsa Music Video - Orquesta D'Soul from San Francisco\",\n    \"resourceId\":
+        {\n     \"videoId\": \"hEMI7w4xeXo\"\n    }\n   }\n  },\n  {\n   \"snippet\":
+        {\n    \"title\": \"The Juju Orchestra - This is not a tango\",\n    \"resourceId\":
+        {\n     \"videoId\": \"WArlszvt4u4\"\n    }\n   }\n  },\n  {\n   \"snippet\":
+        {\n    \"title\": \"Louie Ram\xEDrez \\\"Chin Chon Chow\\\"\",\n    \"resourceId\":
+        {\n     \"videoId\": \"r8MhNe6umOk\"\n    }\n   }\n  },\n  {\n   \"snippet\":
+        {\n    \"title\": \"Deleted video\",\n    \"resourceId\": {\n     \"videoId\":
+        \"77RYfTXGuUs\"\n    }\n   }\n  },\n  {\n   \"snippet\": {\n    \"title\":
+        \"Deleted video\",\n    \"resourceId\": {\n     \"videoId\": \"t09DIJdjmOA\"\n
+        \   }\n   }\n  },\n  {\n   \"snippet\": {\n    \"title\": \"lo mejor de la
+        musica salsa romantica 01\",\n    \"resourceId\": {\n     \"videoId\": \"nxXx7QfnxIQ\"\n
+        \   }\n   }\n  },\n  {\n   \"snippet\": {\n    \"title\": \"NEVER LEAVE YOU
+        - EuroCuban project\",\n    \"resourceId\": {\n     \"videoId\": \"XtBXNRqzTbI\"\n
+        \   }\n   }\n  },\n  {\n   \"snippet\": {\n    \"title\": \"har-you percussion
+        group / welcome to the party\",\n    \"resourceId\": {\n     \"videoId\":
+        \"krC1w3ww7AE\"\n    }\n   }\n  },\n  {\n   \"snippet\": {\n    \"title\":
+        \"Vente Negra -  La Nova Tradicional (salsa)\",\n    \"resourceId\": {\n     \"videoId\":
+        \"XixGgMfaJck\"\n    }\n   }\n  },\n  {\n   \"snippet\": {\n    \"title\":
+        \"Como Los Quiero (video oficial) - N\u0303ejo\",\n    \"resourceId\": {\n
+        \    \"videoId\": \"txGu-XVyVoI\"\n    }\n   }\n  },\n  {\n   \"snippet\":
+        {\n    \"title\": \"Carita De Pasaporte - Havana D' Primera (Video Oficial)\",\n
+        \   \"resourceId\": {\n     \"videoId\": \"bzUZlBlpY5c\"\n    }\n   }\n  },\n
+        \ {\n   \"snippet\": {\n    \"title\": \"Locos por mi Habana - Manolito y
+        su Trabuco\",\n    \"resourceId\": {\n     \"videoId\": \"CLU56IiKczg\"\n
+        \   }\n   }\n  },\n  {\n   \"snippet\": {\n    \"title\": \"Soledad - La 33\",\n
+        \   \"resourceId\": {\n     \"videoId\": \"bPNVnX-f_BM\"\n    }\n   }\n  },\n
+        \ {\n   \"snippet\": {\n    \"title\": \"Crystal Sierra - Playa No More featuring
+        Styles Skillz\",\n    \"resourceId\": {\n     \"videoId\": \"vQfDOlOXLvc\"\n
+        \   }\n   }\n  },\n  {\n   \"snippet\": {\n    \"title\": \"India - Turn off
+        the lights\",\n    \"resourceId\": {\n     \"videoId\": \"uSsSwPHeIhw\"\n
+        \   }\n   }\n  },\n  {\n   \"snippet\": {\n    \"title\": \"NUEVO!!!!! Se
+        Me Va La Voz, Michel El Buenon\",\n    \"resourceId\": {\n     \"videoId\":
+        \"2TfBh8D8Idg\"\n    }\n   }\n  },\n  {\n   \"snippet\": {\n    \"title\":
+        \"LKM \u25BA Iqual Que Antes (OFFICIAL VIDEO) \u25BA SALSA HIT 2015\",\n    \"resourceId\":
+        {\n     \"videoId\": \"-EJ4aJwf_Fw\"\n    }\n   }\n  },\n  {\n   \"snippet\":
+        {\n    \"title\": \"LOS JEFES \u25BA Yo te Prometo (OFFICIAL VIDEO) \u25BA
+        SALSA HIT 2015\",\n    \"resourceId\": {\n     \"videoId\": \"Z_MeTaViUas\"\n
+        \   }\n   }\n  },\n  {\n   \"snippet\": {\n    \"title\": \"Hoved\xF8en Social
+        Club & KORK - neste sommer\",\n    \"resourceId\": {\n     \"videoId\": \"l2NohJnGxvg\"\n
+        \   }\n   }\n  },\n  {\n   \"snippet\": {\n    \"title\": \"Blue Danube -
+        Symphonic SALSA Cha Cha Cha Version\",\n    \"resourceId\": {\n     \"videoId\":
+        \"JbScP6NT0OY\"\n    }\n   }\n  },\n  {\n   \"snippet\": {\n    \"title\":
+        \"jeg vil ha en bl\xE5 ballong Hoved\xF8en Social Club & KORK\",\n    \"resourceId\":
+        {\n     \"videoId\": \"xDkYbRtQLQ4\"\n    }\n   }\n  },\n  {\n   \"snippet\":
+        {\n    \"title\": \"Bizet Carmen-suites as salsa\",\n    \"resourceId\": {\n
+        \    \"videoId\": \"3Re5ERoAfig\"\n    }\n   }\n  },\n  {\n   \"snippet\":
+        {\n    \"title\": \"Cinco Salsa--5th Simphony of Beethoven\",\n    \"resourceId\":
+        {\n     \"videoId\": \"HBPu7LiTQHM\"\n    }\n   }\n  },\n  {\n   \"snippet\":
+        {\n    \"title\": \"Gilberto Santa Rosa - Conteo Regresivo (Salsa Version)\",\n
+        \   \"resourceId\": {\n     \"videoId\": \"Zc13NAc7dvM\"\n    }\n   }\n  },\n
+        \ {\n   \"snippet\": {\n    \"title\": \"Marc Anthony Dimelo\",\n    \"resourceId\":
+        {\n     \"videoId\": \"-dBcYHr075Y\"\n    }\n   }\n  },\n  {\n   \"snippet\":
+        {\n    \"title\": \"Ricky Martin - Livin' La Vida Loca\",\n    \"resourceId\":
+        {\n     \"videoId\": \"p47fEXGabaY\"\n    }\n   }\n  },\n  {\n   \"snippet\":
+        {\n    \"title\": \"Marc Anthony - Que Precio Tiene El Cielo\",\n    \"resourceId\":
+        {\n     \"videoId\": \"joucE2oAYDY\"\n    }\n   }\n  },\n  {\n   \"snippet\":
+        {\n    \"title\": \"Marc Anthony - Vivir Mi Vida\",\n    \"resourceId\": {\n
+        \    \"videoId\": \"YXnjy5YlDwk\"\n    }\n   }\n  },\n  {\n   \"snippet\":
+        {\n    \"title\": \"Celos - Marc Anthony\",\n    \"resourceId\": {\n     \"videoId\":
+        \"U7R3BtSlcOA\"\n    }\n   }\n  }\n ]\n}\n"}
+    headers:
+      alternate-protocol: ['443:quic,p=1']
+      cache-control: ['private, max-age=0, must-revalidate, no-transform']
+      content-length: ['7114']
+      content-type: [application/json; charset=UTF-8]
+      date: ['Tue, 23 Jun 2015 19:42:43 GMT']
+      etag: ['"Y3xTLFF3RLtHXX85JBgzzgp2Enw/PLWITleyxo2ZlJtbQe8G10LEiQg"']
+      expires: ['Tue, 23 Jun 2015 19:42:43 GMT']
+      server: [GSE]
+      vary: [Origin, X-Origin]
+      x-content-type-options: [nosniff]
+      x-frame-options: [SAMEORIGIN]
+      x-xss-protection: [1; mode=block]
+    status: {code: 200, message: OK}
+- request:
+    body: null
+    headers:
+      Accept: ['*/*']
+      Accept-Encoding: ['gzip, deflate']
+      Connection: [keep-alive]
+      User-Agent: [python-requests/2.7.0 CPython/2.7.9 Linux/3.19.0-21-generic]
+    method: GET
+    uri: https://www.googleapis.com/youtube/v3/playlistItems?maxResults=10&key=AIzaSyAl1Xq9DwdE_KD4AtPaE4EJl3WZe2zCqg4&part=id%2Csnippet&fields=nextPageToken%2Citems%28snippet%28title%2CresourceId%28videoId%29%29%29&playlistId=PLOxORm4jpOQfMU7bpfGCzDyLropIYEHuR&pageToken=CDIQAA
+  response:
+    body: {string: !!python/unicode "{\n \"nextPageToken\": \"CDwQAA\",\n \"items\":
+        [\n  {\n   \"snippet\": {\n    \"title\": \"marc anthony - aguanile\",\n    \"resourceId\":
+        {\n     \"videoId\": \"4Nx8URjepjo\"\n    }\n   }\n  },\n  {\n   \"snippet\":
+        {\n    \"title\": \"Marc Anthony - Tu Amor Me Hace Bien (LETRA)\",\n    \"resourceId\":
+        {\n     \"videoId\": \"bOKutdlQEvY\"\n    }\n   }\n  },\n  {\n   \"snippet\":
+        {\n    \"title\": \"LA INDIA & MARC ANTHONY / VIVIR LO NUESTRO\",\n    \"resourceId\":
+        {\n     \"videoId\": \"uIA0vaNzhOk\"\n    }\n   }\n  },\n  {\n   \"snippet\":
+        {\n    \"title\": \"Marc Anthony - Tragedy\",\n    \"resourceId\": {\n     \"videoId\":
+        \"VjK40bQ8Aas\"\n    }\n   }\n  },\n  {\n   \"snippet\": {\n    \"title\":
+        \"Marc Anthony - I Need to Know\",\n    \"resourceId\": {\n     \"videoId\":
+        \"fLVzw9wVd9o\"\n    }\n   }\n  },\n  {\n   \"snippet\": {\n    \"title\":
+        \"Marc Anthony - Valio La Pena (Salsa Version)\",\n    \"resourceId\": {\n
+        \    \"videoId\": \"Ns9YYSqLxyI\"\n    }\n   }\n  },\n  {\n   \"snippet\":
+        {\n    \"title\": \"Marc Anthony - Ahora Quien (Salsa Version)\",\n    \"resourceId\":
+        {\n     \"videoId\": \"toLrTToaN0M\"\n    }\n   }\n  },\n  {\n   \"snippet\":
+        {\n    \"title\": \"AVENTURA - CONTROVERSIA\",\n    \"resourceId\": {\n     \"videoId\":
+        \"o3lV7bCiQJA\"\n    }\n   }\n  },\n  {\n   \"snippet\": {\n    \"title\":
+        \"Aventura - El Perdedor\",\n    \"resourceId\": {\n     \"videoId\": \"elGZbcpGzdU\"\n
+        \   }\n   }\n  },\n  {\n   \"snippet\": {\n    \"title\": \"Orishas - La vacuna\",\n
+        \   \"resourceId\": {\n     \"videoId\": \"IBZaQsi7iS0\"\n    }\n   }\n  }\n
+        ]\n}\n"}
+    headers:
+      alternate-protocol: ['443:quic,p=1']
+      cache-control: ['private, max-age=0, must-revalidate, no-transform']
+      content-length: ['1385']
+      content-type: [application/json; charset=UTF-8]
+      date: ['Tue, 23 Jun 2015 19:42:43 GMT']
+      etag: ['"Y3xTLFF3RLtHXX85JBgzzgp2Enw/xmU2SH9cp8dqvNE-_wIn0Rrap5k"']
+      expires: ['Tue, 23 Jun 2015 19:42:43 GMT']
+      server: [GSE]
+      vary: [Origin, X-Origin]
+      x-content-type-options: [nosniff]
+      x-frame-options: [SAMEORIGIN]
+      x-xss-protection: [1; mode=block]
+    status: {code: 200, message: OK}
+- request:
+    body: null
+    headers:
+      Accept: ['*/*']
+      Accept-Encoding: ['gzip, deflate']
+      Connection: [keep-alive]
+      User-Agent: [python-requests/2.7.0 CPython/2.7.9 Linux/3.19.0-21-generic]
+    method: GET
+    uri: https://www.googleapis.com/youtube/v3/videos?key=AIzaSyAl1Xq9DwdE_KD4AtPaE4EJl3WZe2zCqg4&id=4Nx8URjepjo%2CbOKutdlQEvY%2CuIA0vaNzhOk%2CVjK40bQ8Aas%2CfLVzw9wVd9o%2CNs9YYSqLxyI%2CtoLrTToaN0M%2Co3lV7bCiQJA%2CelGZbcpGzdU%2CIBZaQsi7iS0&part=id%2Csnippet%2CcontentDetails&fields=items%28id%2Csnippet%28title%2CchannelTitle%29%2CcontentDetails%28duration%29%29
+  response:
+    body: {string: !!python/unicode "{\n \"items\": [\n  {\n   \"id\": \"4Nx8URjepjo\",\n
+        \  \"snippet\": {\n    \"title\": \"marc anthony - aguanile\",\n    \"channelTitle\":
+        \"arielshp\"\n   },\n   \"contentDetails\": {\n    \"duration\": \"PT5M21S\"\n
+        \  }\n  },\n  {\n   \"id\": \"bOKutdlQEvY\",\n   \"snippet\": {\n    \"title\":
+        \"Marc Anthony - Tu Amor Me Hace Bien (LETRA)\",\n    \"channelTitle\": \"Los
+        Baez\"\n   },\n   \"contentDetails\": {\n    \"duration\": \"PT5M4S\"\n   }\n
+        \ },\n  {\n   \"id\": \"uIA0vaNzhOk\",\n   \"snippet\": {\n    \"title\":
+        \"LA INDIA & MARC ANTHONY / VIVIR LO NUESTRO\",\n    \"channelTitle\": \"Angel
+        Corona\"\n   },\n   \"contentDetails\": {\n    \"duration\": \"PT6M8S\"\n
+        \  }\n  },\n  {\n   \"id\": \"VjK40bQ8Aas\",\n   \"snippet\": {\n    \"title\":
+        \"Marc Anthony - Tragedy\",\n    \"channelTitle\": \"marcanthonyVEVO\"\n   },\n
+        \  \"contentDetails\": {\n    \"duration\": \"PT3M43S\"\n   }\n  },\n  {\n
+        \  \"id\": \"fLVzw9wVd9o\",\n   \"snippet\": {\n    \"title\": \"Marc Anthony
+        - I Need to Know\",\n    \"channelTitle\": \"marcanthonyVEVO\"\n   },\n   \"contentDetails\":
+        {\n    \"duration\": \"PT3M17S\"\n   }\n  },\n  {\n   \"id\": \"Ns9YYSqLxyI\",\n
+        \  \"snippet\": {\n    \"title\": \"Marc Anthony - Valio La Pena (Salsa Version)\",\n
+        \   \"channelTitle\": \"marcanthonyVEVO\"\n   },\n   \"contentDetails\": {\n
+        \   \"duration\": \"PT4M53S\"\n   }\n  },\n  {\n   \"id\": \"toLrTToaN0M\",\n
+        \  \"snippet\": {\n    \"title\": \"Marc Anthony - Ahora Quien (Salsa Version)\",\n
+        \   \"channelTitle\": \"marcanthonyVEVO\"\n   },\n   \"contentDetails\": {\n
+        \   \"duration\": \"PT5M12S\"\n   }\n  },\n  {\n   \"id\": \"o3lV7bCiQJA\",\n
+        \  \"snippet\": {\n    \"title\": \"AVENTURA - CONTROVERSIA\",\n    \"channelTitle\":
+        \"nohely15aventura\"\n   },\n   \"contentDetails\": {\n    \"duration\": \"PT4M4S\"\n
+        \  }\n  },\n  {\n   \"id\": \"elGZbcpGzdU\",\n   \"snippet\": {\n    \"title\":
+        \"Aventura - El Perdedor\",\n    \"channelTitle\": \"Aventura\"\n   },\n   \"contentDetails\":
+        {\n    \"duration\": \"PT3M54S\"\n   }\n  },\n  {\n   \"id\": \"IBZaQsi7iS0\",\n
+        \  \"snippet\": {\n    \"title\": \"Orishas - La vacuna\",\n    \"channelTitle\":
+        \"sundakan\"\n   },\n   \"contentDetails\": {\n    \"duration\": \"PT4M7S\"\n
+        \  }\n  }\n ]\n}\n"}
+    headers:
+      alternate-protocol: ['443:quic,p=1']
+      cache-control: ['private, max-age=300, must-revalidate, no-transform']
+      content-length: ['1933']
+      content-type: [application/json; charset=UTF-8]
+      date: ['Tue, 23 Jun 2015 19:42:43 GMT']
+      etag: ['"Y3xTLFF3RLtHXX85JBgzzgp2Enw/_eOw0bBuVRdSRprpgSJR3WG_8TY"']
+      expires: ['Tue, 23 Jun 2015 19:42:43 GMT']
+      server: [GSE]
+      vary: [Origin, X-Origin]
+      x-content-type-options: [nosniff]
+      x-frame-options: [SAMEORIGIN]
+      x-xss-protection: [1; mode=block]
+    status: {code: 200, message: OK}
+- request:
+    body: null
+    headers:
+      Accept: ['*/*']
+      Accept-Encoding: ['gzip, deflate']
+      Connection: [keep-alive]
+      User-Agent: [python-requests/2.7.0 CPython/2.7.9 Linux/3.19.0-21-generic]
+    method: GET
+    uri: https://www.googleapis.com/youtube/v3/videos?key=AIzaSyAl1Xq9DwdE_KD4AtPaE4EJl3WZe2zCqg4&id=vCHdH3LiUS4%2CCIJfdVPACyw%2Cns83CS3cUsA%2C9QAB7OCuFfY%2C0z5r17WNvbY%2CRqpDKTm5hZo%2CgOx47fiLg9k%2CgIRW9iqD0-M%2Cqr5i5chOTPo%2CgNSTDaITU_c%2CNiH5YtKBYCM%2CohhSbgl_jhg%2CmmaQjvVfV2w%2CiR1MmlRCooY%2CnvW5RDJA8i4%2CLLsg_Lk819s%2Cjry45RskN4A%2CNjZGttRSwA8%2CRQ_1XExoXws%2CyvOMqR2yCKI%2CctVatg4N6jg%2ChEMI7w4xeXo%2CWArlszvt4u4%2Cr8MhNe6umOk%2C77RYfTXGuUs%2Ct09DIJdjmOA%2CnxXx7QfnxIQ%2CXtBXNRqzTbI%2CkrC1w3ww7AE%2CXixGgMfaJck%2CtxGu-XVyVoI%2CbzUZlBlpY5c%2CCLU56IiKczg%2CbPNVnX-f_BM%2CvQfDOlOXLvc%2CuSsSwPHeIhw%2C2TfBh8D8Idg%2C-EJ4aJwf_Fw%2CZ_MeTaViUas%2Cl2NohJnGxvg%2CJbScP6NT0OY%2CxDkYbRtQLQ4%2C3Re5ERoAfig%2CHBPu7LiTQHM%2CZc13NAc7dvM%2C-dBcYHr075Y%2Cp47fEXGabaY%2CjoucE2oAYDY%2CYXnjy5YlDwk%2CU7R3BtSlcOA&part=id%2Csnippet%2CcontentDetails&fields=items%28id%2Csnippet%28title%2CchannelTitle%29%2CcontentDetails%28duration%29%29
+  response:
+    body: {string: "{\n \"items\": [\n  {\n   \"id\": \"vCHdH3LiUS4\",\n   \"snippet\":
+        {\n    \"title\": \"tito puente - Cha cha cha\",\n    \"channelTitle\": \"sandrobxk\"\n
+        \  },\n   \"contentDetails\": {\n    \"duration\": \"PT6M40S\"\n   }\n  },\n
+        \ {\n   \"id\": \"CIJfdVPACyw\",\n   \"snippet\": {\n    \"title\": \"PETE
+        RODRIGUEZ   - I Like It Like That\",\n    \"channelTitle\": \"ramoburg\"\n
+        \  },\n   \"contentDetails\": {\n    \"duration\": \"PT4M21S\"\n   }\n  },\n
+        \ {\n   \"id\": \"ns83CS3cUsA\",\n   \"snippet\": {\n    \"title\": \"Miami-Nicolas-Bachatiando
+        2002\",\n    \"channelTitle\": \"lilmexicanboy2004\"\n   },\n   \"contentDetails\":
+        {\n    \"duration\": \"PT3M42S\"\n   }\n  },\n  {\n   \"id\": \"9QAB7OCuFfY\",\n
+        \  \"snippet\": {\n    \"title\": \"EL CHACAL \u25BA No Te Vayas (OFFICIAL
+        VIDEO) \u25BA BACHATA URBANA\",\n    \"channelTitle\": \"CUBATON CUBAN REGGAETON\"\n
+        \  },\n   \"contentDetails\": {\n    \"duration\": \"PT5M\"\n   }\n  },\n
+        \ {\n   \"id\": \"0z5r17WNvbY\",\n   \"snippet\": {\n    \"title\": \"Henri
+        Gu\xE9don   Sainte Marie\",\n    \"channelTitle\": \"CapitaineWobert\"\n   },\n
+        \  \"contentDetails\": {\n    \"duration\": \"PT7M18S\"\n   }\n  },\n  {\n
+        \  \"id\": \"RqpDKTm5hZo\",\n   \"snippet\": {\n    \"title\": \"Colman Brothers
+        - El Ninio (Cha Cha Mix)\",\n    \"channelTitle\": \"kondora1\"\n   },\n   \"contentDetails\":
+        {\n    \"duration\": \"PT4M37S\"\n   }\n  },\n  {\n   \"id\": \"gOx47fiLg9k\",\n
+        \  \"snippet\": {\n    \"title\": \"Ublabadu-HECTOR LAVOE\",\n    \"channelTitle\":
+        \"4512198\"\n   },\n   \"contentDetails\": {\n    \"duration\": \"PT5M56S\"\n
+        \  }\n  },\n  {\n   \"id\": \"gIRW9iqD0-M\",\n   \"snippet\": {\n    \"title\":
+        \"Fania All-Stars Feat. Hector Lavoe - Ublabadu\",\n    \"channelTitle\":
+        \"TheSalsaKing70\"\n   },\n   \"contentDetails\": {\n    \"duration\": \"PT5M51S\"\n
+        \  }\n  },\n  {\n   \"id\": \"qr5i5chOTPo\",\n   \"snippet\": {\n    \"title\":
+        \"Orquesta Arag\xF3n con Cheo Feliciano - Son al Son\",\n    \"channelTitle\":
+        \"Irakereisthebest\"\n   },\n   \"contentDetails\": {\n    \"duration\": \"PT6M12S\"\n
+        \  }\n  },\n  {\n   \"id\": \"gNSTDaITU_c\",\n   \"snippet\": {\n    \"title\":
+        \"Joe Cuba Sextett - Gimme Some Love (My Man Speedy!) 1967\",\n    \"channelTitle\":
+        \"Dirty4Harri\"\n   },\n   \"contentDetails\": {\n    \"duration\": \"PT3M1S\"\n
+        \  }\n  },\n  {\n   \"id\": \"NiH5YtKBYCM\",\n   \"snippet\": {\n    \"title\":
+        \"Orquesta La 33 - Anny's Boogaloo [HIGH QUALITY MUSIC]\",\n    \"channelTitle\":
+        \"Chino Ijobi\"\n   },\n   \"contentDetails\": {\n    \"duration\": \"PT3M52S\"\n
+        \  }\n  },\n  {\n   \"id\": \"ohhSbgl_jhg\",\n   \"snippet\": {\n    \"title\":
+        \"ALFREDO RODRIGUEZ - MERCEDITAS YA ME VOY\",\n    \"channelTitle\": \"may
+        estiben restrepo roldan\"\n   },\n   \"contentDetails\": {\n    \"duration\":
+        \"PT7M18S\"\n   }\n  },\n  {\n   \"id\": \"mmaQjvVfV2w\",\n   \"snippet\":
+        {\n    \"title\": \"Marc Anthony - Hasta Ayer (Original)\",\n    \"channelTitle\":
+        \"Genesis Suarez\"\n   },\n   \"contentDetails\": {\n    \"duration\": \"PT4M31S\"\n
+        \  }\n  },\n  {\n   \"id\": \"iR1MmlRCooY\",\n   \"snippet\": {\n    \"title\":
+        \"Marc Anthony - Hasta Ayer\",\n    \"channelTitle\": \"01FAGE\"\n   },\n
+        \  \"contentDetails\": {\n    \"duration\": \"PT4M31S\"\n   }\n  },\n  {\n
+        \  \"id\": \"LLsg_Lk819s\",\n   \"snippet\": {\n    \"title\": \"Besame Mucho
+        Cesaria Evora\",\n    \"channelTitle\": \"Ton Blancke\"\n   },\n   \"contentDetails\":
+        {\n    \"duration\": \"PT4M53S\"\n   }\n  },\n  {\n   \"id\": \"jry45RskN4A\",\n
+        \  \"snippet\": {\n    \"title\": \"So\xF1ando Despierto\",\n    \"channelTitle\":
+        \"GabrielMedallaR\"\n   },\n   \"contentDetails\": {\n    \"duration\": \"PT4M7S\"\n
+        \  }\n  },\n  {\n   \"id\": \"NjZGttRSwA8\",\n   \"snippet\": {\n    \"title\":
+        \"pink martini - sympathique - no hay problema\",\n    \"channelTitle\": \"yachbusim
+        jazz\"\n   },\n   \"contentDetails\": {\n    \"duration\": \"PT6M9S\"\n   }\n
+        \ },\n  {\n   \"id\": \"RQ_1XExoXws\",\n   \"snippet\": {\n    \"title\":
+        \"Quizas Quizas Quizas - IBRAHIM FERRER & OMARA PORTUONDO [HD]\",\n    \"channelTitle\":
+        \"Salsa Chimpum Callao\"\n   },\n   \"contentDetails\": {\n    \"duration\":
+        \"PT4M1S\"\n   }\n  },\n  {\n   \"id\": \"yvOMqR2yCKI\",\n   \"snippet\":
+        {\n    \"title\": \"NG2 \\\"QUE ME GUSTAS\\\"\",\n    \"channelTitle\": \"OSCAR
+        SALSEROMX\"\n   },\n   \"contentDetails\": {\n    \"duration\": \"PT4M10S\"\n
+        \  }\n  },\n  {\n   \"id\": \"ctVatg4N6jg\",\n   \"snippet\": {\n    \"title\":
+        \"NG2 Video Oficial HD Quien Te Quiera Mas Que Yo\",\n    \"channelTitle\":
+        \"NG2TV\"\n   },\n   \"contentDetails\": {\n    \"duration\": \"PT4M23S\"\n
+        \  }\n  },\n  {\n   \"id\": \"hEMI7w4xeXo\",\n   \"snippet\": {\n    \"title\":
+        \"Hot Salsa Music Video - Orquesta D'Soul from San Francisco\",\n    \"channelTitle\":
+        \"marinagarza\"\n   },\n   \"contentDetails\": {\n    \"duration\": \"PT5M47S\"\n
+        \  }\n  },\n  {\n   \"id\": \"WArlszvt4u4\",\n   \"snippet\": {\n    \"title\":
+        \"The Juju Orchestra - This is not a tango\",\n    \"channelTitle\": \"Ruslan
+        Dimitrov\"\n   },\n   \"contentDetails\": {\n    \"duration\": \"PT5M30S\"\n
+        \  }\n  },\n  {\n   \"id\": \"r8MhNe6umOk\",\n   \"snippet\": {\n    \"title\":
+        \"Louie Ram\xEDrez \\\"Chin Chon Chow\\\"\",\n    \"channelTitle\": \"psychedelicpucho\"\n
+        \  },\n   \"contentDetails\": {\n    \"duration\": \"PT2M54S\"\n   }\n  },\n
+        \ {\n   \"id\": \"nxXx7QfnxIQ\",\n   \"snippet\": {\n    \"title\": \"lo mejor
+        de la musica salsa romantica 01\",\n    \"channelTitle\": \"carmelin7\"\n
+        \  },\n   \"contentDetails\": {\n    \"duration\": \"PT5M29S\"\n   }\n  },\n
+        \ {\n   \"id\": \"XtBXNRqzTbI\",\n   \"snippet\": {\n    \"title\": \"NEVER
+        LEAVE YOU - EuroCuban project\",\n    \"channelTitle\": \"Tony Velardi\"\n
+        \  },\n   \"contentDetails\": {\n    \"duration\": \"PT5M24S\"\n   }\n  },\n
+        \ {\n   \"id\": \"krC1w3ww7AE\",\n   \"snippet\": {\n    \"title\": \"har-you
+        percussion group / welcome to the party\",\n    \"channelTitle\": \"touhi\"\n
+        \  },\n   \"contentDetails\": {\n    \"duration\": \"PT4M\"\n   }\n  },\n
+        \ {\n   \"id\": \"XixGgMfaJck\",\n   \"snippet\": {\n    \"title\": \"Vente
+        Negra -  La Nova Tradicional (salsa)\",\n    \"channelTitle\": \"Mauricio
+        Ramos\"\n   },\n   \"contentDetails\": {\n    \"duration\": \"PT4M5S\"\n   }\n
+        \ },\n  {\n   \"id\": \"txGu-XVyVoI\",\n   \"snippet\": {\n    \"title\":
+        \"Como Los Quiero (video oficial) - N\u0303ejo\",\n    \"channelTitle\": \"TheDancingIrishman\"\n
+        \  },\n   \"contentDetails\": {\n    \"duration\": \"PT4M45S\"\n   }\n  },\n
+        \ {\n   \"id\": \"CLU56IiKczg\",\n   \"snippet\": {\n    \"title\": \"Locos
+        por mi Habana - Manolito y su Trabuco\",\n    \"channelTitle\": \"TheDancingIrishman\"\n
+        \  },\n   \"contentDetails\": {\n    \"duration\": \"PT4M39S\"\n   }\n  },\n
+        \ {\n   \"id\": \"bPNVnX-f_BM\",\n   \"snippet\": {\n    \"title\": \"Soledad
+        - La 33\",\n    \"channelTitle\": \"TheDancingIrishman\"\n   },\n   \"contentDetails\":
+        {\n    \"duration\": \"PT4M51S\"\n   }\n  },\n  {\n   \"id\": \"vQfDOlOXLvc\",\n
+        \  \"snippet\": {\n    \"title\": \"Crystal Sierra - Playa No More featuring
+        Styles Skillz\",\n    \"channelTitle\": \"SelatinTV\"\n   },\n   \"contentDetails\":
+        {\n    \"duration\": \"PT4M3S\"\n   }\n  },\n  {\n   \"id\": \"uSsSwPHeIhw\",\n
+        \  \"snippet\": {\n    \"title\": \"India - Turn off the lights\",\n    \"channelTitle\":
+        \"MsUli2010\"\n   },\n   \"contentDetails\": {\n    \"duration\": \"PT4M6S\"\n
+        \  }\n  },\n  {\n   \"id\": \"2TfBh8D8Idg\",\n   \"snippet\": {\n    \"title\":
+        \"NUEVO!!!!! Se Me Va La Voz, Michel El Buenon\",\n    \"channelTitle\": \"Michel
+        Batista\"\n   },\n   \"contentDetails\": {\n    \"duration\": \"PT5M57S\"\n
+        \  }\n  },\n  {\n   \"id\": \"-EJ4aJwf_Fw\",\n   \"snippet\": {\n    \"title\":
+        \"LKM \u25BA Iqual Que Antes (OFFICIAL VIDEO) \u25BA SALSA HIT 2015\",\n    \"channelTitle\":
+        \"\u25BA URBAN LATIN & URBAN DANCE\"\n   },\n   \"contentDetails\": {\n    \"duration\":
+        \"PT3M41S\"\n   }\n  },\n  {\n   \"id\": \"Z_MeTaViUas\",\n   \"snippet\":
+        {\n    \"title\": \"LOS JEFES \u25BA Yo te Prometo (OFFICIAL VIDEO) \u25BA
+        SALSA HIT 2015\",\n    \"channelTitle\": \"\u25BA URBAN LATIN & URBAN DANCE\"\n
+        \  },\n   \"contentDetails\": {\n    \"duration\": \"PT5M35S\"\n   }\n  },\n
+        \ {\n   \"id\": \"l2NohJnGxvg\",\n   \"snippet\": {\n    \"title\": \"Hoved\xF8en
+        Social Club & KORK - neste sommer\",\n    \"channelTitle\": \"indris63\"\n
+        \  },\n   \"contentDetails\": {\n    \"duration\": \"PT4M9S\"\n   }\n  },\n
+        \ {\n   \"id\": \"JbScP6NT0OY\",\n   \"snippet\": {\n    \"title\": \"Blue
+        Danube - Symphonic SALSA Cha Cha Cha Version\",\n    \"channelTitle\": \"Linkisss\"\n
+        \  },\n   \"contentDetails\": {\n    \"duration\": \"PT5M37S\"\n   }\n  },\n
+        \ {\n   \"id\": \"xDkYbRtQLQ4\",\n   \"snippet\": {\n    \"title\": \"jeg
+        vil ha en bl\xE5 ballong Hoved\xF8en Social Club & KORK\",\n    \"channelTitle\":
+        \"tangoholico\"\n   },\n   \"contentDetails\": {\n    \"duration\": \"PT4M26S\"\n
+        \  }\n  },\n  {\n   \"id\": \"3Re5ERoAfig\",\n   \"snippet\": {\n    \"title\":
+        \"Bizet Carmen-suites as salsa\",\n    \"channelTitle\": \"indris63\"\n   },\n
+        \  \"contentDetails\": {\n    \"duration\": \"PT8M19S\"\n   }\n  },\n  {\n
+        \  \"id\": \"HBPu7LiTQHM\",\n   \"snippet\": {\n    \"title\": \"Cinco Salsa--5th
+        Simphony of Beethoven\",\n    \"channelTitle\": \"dvjbarkley\"\n   },\n   \"contentDetails\":
+        {\n    \"duration\": \"PT4M23S\"\n   }\n  },\n  {\n   \"id\": \"Zc13NAc7dvM\",\n
+        \  \"snippet\": {\n    \"title\": \"Gilberto Santa Rosa - Conteo Regresivo
+        (Salsa Version)\",\n    \"channelTitle\": \"gsantarosaVEVO\"\n   },\n   \"contentDetails\":
+        {\n    \"duration\": \"PT4M28S\"\n   }\n  },\n  {\n   \"id\": \"-dBcYHr075Y\",\n
+        \  \"snippet\": {\n    \"title\": \"Marc Anthony Dimelo\",\n    \"channelTitle\":
+        \"costeidaespnha\"\n   },\n   \"contentDetails\": {\n    \"duration\": \"PT3M49S\"\n
+        \  }\n  },\n  {\n   \"id\": \"p47fEXGabaY\",\n   \"snippet\": {\n    \"title\":
+        \"Ricky Martin - Livin' La Vida Loca\",\n    \"channelTitle\": \"RickyMartinVEVO\"\n
+        \  },\n   \"contentDetails\": {\n    \"duration\": \"PT3M43S\"\n   }\n  },\n
+        \ {\n   \"id\": \"joucE2oAYDY\",\n   \"snippet\": {\n    \"title\": \"Marc
+        Anthony - Que Precio Tiene El Cielo\",\n    \"channelTitle\": \"marcanthonyVEVO\"\n
+        \  },\n   \"contentDetails\": {\n    \"duration\": \"PT5M5S\"\n   }\n  },\n
+        \ {\n   \"id\": \"YXnjy5YlDwk\",\n   \"snippet\": {\n    \"title\": \"Marc
+        Anthony - Vivir Mi Vida\",\n    \"channelTitle\": \"marcanthonyVEVO\"\n   },\n
+        \  \"contentDetails\": {\n    \"duration\": \"PT5M27S\"\n   }\n  },\n  {\n
+        \  \"id\": \"U7R3BtSlcOA\",\n   \"snippet\": {\n    \"title\": \"Celos - Marc
+        Anthony\",\n    \"channelTitle\": \"Lmar55\"\n   },\n   \"contentDetails\":
+        {\n    \"duration\": \"PT4M50S\"\n   }\n  }\n ]\n}\n"}
+    headers:
+      alternate-protocol: ['443:quic,p=1']
+      cache-control: ['private, max-age=300, must-revalidate, no-transform']
+      content-length: ['9283']
+      content-type: [application/json; charset=UTF-8]
+      date: ['Tue, 23 Jun 2015 19:42:44 GMT']
+      etag: ['"Y3xTLFF3RLtHXX85JBgzzgp2Enw/enFcUFYgtu8S8hjm0bRW9sdJj0s"']
+      expires: ['Tue, 23 Jun 2015 19:42:44 GMT']
+      server: [GSE]
+      vary: [Origin, X-Origin]
+      x-content-type-options: [nosniff]
+      x-frame-options: [SAMEORIGIN]
+      x-xss-protection: [1; mode=block]
+    status: {code: 200, message: OK}
+version: 1
