@@ -8,12 +8,12 @@ import pytest
 
 import vcr
 
-from mopidy_youtube import backend
+from mopidy_youtube import youtube
 
 
 @pytest.yield_fixture
 def pafy_mock():
-    patcher = mock.patch.object(backend, 'pafy', spec=pafy)
+    patcher = mock.patch.object(youtube, 'pafy', spec=pafy)
     yield patcher.start()
     patcher.stop()
 
@@ -31,38 +31,60 @@ def pafy_mock_with_video(pafy_mock):
     return pafy_mock
 
 
-@vcr.use_cassette('tests/fixtures/youtube_playlist_resolve.yaml')
-def test_playlist_resolver(pafy_mock_with_video):
-    videos = backend.resolve_playlist('PLOxORm4jpOQfMU7bpfGCzDyLropIYEHuR')
+@vcr.use_cassette('tests/fixtures/youtube_playlist.yaml')
+def test_get_playlist():
+    pl = youtube.Playlist.get('PLOxORm4jpOQfMU7bpfGCzDyLropIYEHuR')
 
-    assert len(videos) == 104
+    assert len(pl.videos.get()) == 60
+    return
+    assert pl.videos.get()[0].title.get()
+
+    # Playlist.videos starts loading video info in the background
+    video = pl.videos.get()[0]
+    assert video._length                # should be ready
+    assert video.length.get() == 400
+
+    pl2 = youtube.Playlist.get('PLOxORm4jpOQfMU7bpfGCzDyLropIYEHuR')
+
+    assert pl2 is pl                    # fetch from cache
+    assert pl._videos                   # should be ready
 
 
 @vcr.use_cassette('tests/fixtures/youtube_search.yaml')
-def test_search_yt(pafy_mock_with_video):
-    videos = backend.search_youtube('chvrches')
+def test_search():
+    videos = youtube.Entry.search('chvrches')
 
     assert len(videos) == 15
+    assert videos[0]._title             # should be ready
+    assert videos[0]._channel           # should be ready
+
+    video = youtube.Video.get('TU3b1qyEGsE')
+
+    assert video in videos              # cached
 
 
-@vcr.use_cassette('tests/fixtures/resolve_track.yaml')
-def test_resolve_track(pafy_mock_with_video):
-    video = backend.resolve_track('TU3b1qyEGsE')
+@vcr.use_cassette('tests/fixtures/youtube_get_video.yaml')
+def test_get_video():
+    video = youtube.Video.get('TU3b1qyEGsE')
 
-    assert video
+    assert video.length.get()
+
+    # get again, should fetch from cache, _length should be ready
+    video2 = youtube.Video.get('TU3b1qyEGsE')
+
+    assert video2 is video
+    assert video2._length
 
 
-@vcr.use_cassette('tests/fixtures/resolve_track_failed.yaml')
-def test_resolve_track_failed(pafy_mock):
+def test_audio_url(pafy_mock_with_video):
+    video = youtube.Video.get('TU3b1qyEGsE')
+
+    assert video.audio_url.get()
+
+
+def test_audio_url_fail(pafy_mock):
     pafy_mock.new.side_effect = Exception('Removed')
 
-    video = backend.resolve_track('unknown')
+    video = youtube.Video.get('unknown')
 
-    assert not video
-
-
-@vcr.use_cassette('tests/fixtures/resolve_track_stream.yaml')
-def test_resolve_track_stream(pafy_mock_with_video):
-    video = backend.resolve_track('TU3b1qyEGsE', stream=True)
-
-    assert video
+    assert not video.audio_url.get()
