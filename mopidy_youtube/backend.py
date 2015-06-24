@@ -21,7 +21,7 @@ def extract_id(uri):
 
 
 def safe_url(uri):
-    valid_chars = "-_.() %s%s" % (string.ascii_letters, string.digits)
+    valid_chars = '-_.() %s%s' % (string.ascii_letters, string.digits)
     safe_uri = unicodedata.normalize(
         'NFKD',
         unicode(uri)
@@ -60,7 +60,7 @@ class YoutubeLibraryProvider(backend.LibraryProvider):
     # be ready for playback.
     #
     def lookup(self, uri):
-        logger.info("youtube LibraryProvider.lookup '%s'", uri)
+        logger.info('youtube LibraryProvider.lookup "%s"', uri)
 
         video_id = playlist_id = None
 
@@ -95,7 +95,7 @@ class YoutubeLibraryProvider(backend.LibraryProvider):
         else:
             playlist = youtube.Playlist.get(playlist_id)
             if not playlist.videos:
-                logger.info("cannot load playlist: %s" % uri)
+                logger.info('cannot load playlist "%s"', uri)
                 return []
 
             # ignore videos for which no info was found (removed, etc)
@@ -134,13 +134,13 @@ class YoutubeLibraryProvider(backend.LibraryProvider):
     #
     def search(self, query=None, uris=None, exact=False):
         # TODO Support exact search
-        logger.info("youtube LibraryProvider.search '%s'", query)
+        logger.info('youtube LibraryProvider.search "%s"', query)
 
         if not (query and 'any' in query):
             return None
 
         search_query = ' '.join(query['any'])
-        logger.info("Searching Youtube for query '%s'", search_query)
+        logger.info('Searching Youtube for query "%s"', search_query)
 
         try:
             entries = youtube.API.search(search_query)
@@ -194,7 +194,7 @@ class YoutubePlaybackProvider(backend.PlaybackProvider):
     # YoutubeLibraryProvider.lookup)
     #
     def translate_uri(self, uri):
-        logger.info("youtube PlaybackProvider.translate_uri %s", uri)
+        logger.info('youtube PlaybackProvider.translate_uri "%s"', uri)
 
         if 'youtube:video/' not in uri:
             return None
@@ -202,5 +202,5 @@ class YoutubePlaybackProvider(backend.PlaybackProvider):
         try:
             return youtube.Video.get(extract_id(uri)).audio_url
         except Exception as e:
-            logger.error("translate_uri error: %s", e)
+            logger.error('translate_uri error "%s"', e)
             return None

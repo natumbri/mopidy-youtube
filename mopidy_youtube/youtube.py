@@ -17,7 +17,7 @@ from mopidy_youtube import logger
 # threads), and use it later.
 #
 # eg
-#   video = youtube.Video.get("7uj0hOIm2kY")
+#   video = youtube.Video.get('7uj0hOIm2kY')
 #   video.load_info()   # non-blocking
 #   ... later ...
 #   print video.length  # blocks until info arrives, if it hasn't already
@@ -148,7 +148,7 @@ class Video(Entry):
             for x in sublist:
                 x._info_event = event
 
-    # converts "PT1H2M10S" to 3730
+    # converts PT1H2M10S to 3730
     @classmethod
     def dur_to_secs(self, dur):
         if not dur:
@@ -189,7 +189,7 @@ class Video(Entry):
             try:
                 self._pafy = pafy.new(self.id)
             except:
-                logger.error("youtube: video %s deleted/restricted", self.id)
+                logger.error('youtube: video "%s" deleted/restricted', self.id)
 
         self._pafy_event = ThreadPool.run(job)
         return self._pafy_event
@@ -384,7 +384,7 @@ class ThreadPool:
             try:
                 apply(f, args)
             except Exception as e:
-                logger.error("youtube thread error: %s\n%s",
+                logger.error('youtube thread error: %s\n%s',
                              e, traceback.format_exc())
             event.set()
 
