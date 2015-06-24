@@ -24,6 +24,11 @@ class ExtensionTest(unittest.TestCase):
             pl = youtube.Playlist.get('PLOxORm4jpOQfMU7bpfGCzDyLropIYEHuR')
             self.assertEquals(len(pl.videos), 60)
 
+            # get again, should fetch from cache, _videos should be ready
+            pl2 = youtube.Playlist.get('PLOxORm4jpOQfMU7bpfGCzDyLropIYEHuR')
+            self.assertIs(pl2, pl)
+            self.assertEquals(len(pl._videos), 60)
+
             # Playlist.videos starts loading video info in the background. Get
             # the first video's length to wait until this is finished
             self.assertEquals(pl.videos[0].length, 400)

@@ -1,11 +1,12 @@
 # -*- coding: utf-8 -*-
 
 import threading
-import datetime
 import pafy
 import requests
 import re
 import traceback
+import cachetools
+
 from mopidy_youtube import logger
 
 # Wrapper for loading data of youtube videos/playlists via either the Youtube
@@ -58,18 +59,15 @@ class API:
 
 # video or playlist
 class Entry(object):
-    cache = {}
     cache_max_len = 400
 
     # Use Video.get(id), Playlist.get(id), instead of Video(id), Playlist(id),
     # to fetch a cached object, if available
     #
     @classmethod
+    @cachetools.lru_cache(maxsize=cache_max_len)
     def get(self, id):
-        obj = self.cache.get(id)
-        if obj:
-            obj.last_accessed = datetime.datetime.now()
-        return obj or self(id)
+        return self(id)
 
     @classmethod
     def make_async_prop(self, prop, method):
@@ -87,18 +85,9 @@ class Entry(object):
 
     def __init__(self, id):
         self.id = id
-        self.last_accessed = datetime.datetime.now()
-
         self._title = None
         self._channel = None
         self._info_event = None
-
-        # add object to cache. delete oldest value if too many
-        cache = self.cache
-        cache[id] = self
-        while len(cache) > self.cache_max_len:
-            to_del = min(cache, key=lambda k: cache[k].last_accessed)
-            del cache[to_del]
 
     def _load_api_data(self, item):
         snip = item.get('snippet')
