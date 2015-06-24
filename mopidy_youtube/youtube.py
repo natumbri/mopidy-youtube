@@ -1,11 +1,14 @@
 # -*- coding: utf-8 -*-
 
-import threading
-import pafy
-import requests
 import re
+import threading
 import traceback
+
 import cachetools
+
+import pafy
+
+import requests
 
 from mopidy_youtube import logger
 

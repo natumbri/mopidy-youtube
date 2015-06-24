@@ -1,14 +1,17 @@
 # -*- coding: utf-8 -*-
 
 from __future__ import unicode_literals
+
 import re
 import string
-from urlparse import urlparse, parse_qs
 import unicodedata
+from urlparse import parse_qs, urlparse
 
 from mopidy import backend
-from mopidy.models import SearchResult, Track, Album, Artist
+from mopidy.models import Album, Artist, SearchResult, Track
+
 import pykka
+
 from mopidy_youtube import logger, youtube
 
 

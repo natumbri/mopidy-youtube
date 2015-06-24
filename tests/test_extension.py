@@ -3,6 +3,7 @@ from __future__ import unicode_literals
 import unittest
 
 import mock
+
 import vcr
 
 from mopidy_youtube import Extension
