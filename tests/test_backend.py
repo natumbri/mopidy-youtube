@@ -37,6 +37,12 @@ def test_playlist_resolver(pafy_mock_with_video):
 
     assert len(pl.videos) == 60
 
+    # get again, should fetch from cache, _videos should be ready
+    pl2 = youtube.Playlist.get('PLOxORm4jpOQfMU7bpfGCzDyLropIYEHuR')
+
+    assert pl2 is pl
+    assert len(pl._videos) == 60
+
     # Playlist.videos starts loading video info in the background. Get
     # the first video's length to wait until this is finished
     assert pl.videos[0].length == 400
