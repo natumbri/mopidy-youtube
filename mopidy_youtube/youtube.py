@@ -8,6 +8,8 @@ import cachetools
 
 import pafy
 
+import pykka
+
 import requests
 
 from mopidy_youtube import logger
@@ -18,9 +20,9 @@ from mopidy_youtube import logger
 #
 # eg
 #   video = youtube.Video.get('7uj0hOIm2kY')
-#   video.load_info()   # non-blocking
+#   video.length   # non-blocking, returns future
 #   ... later ...
-#   print video.length  # blocks until info arrives, if it hasn't already
+#   print video.length.get()  # blocks until info arrives, if it hasn't already
 #
 
 yt_api_endpoint = 'https://www.googleapis.com/youtube/v3/'
@@ -36,11 +38,11 @@ class API:
     # video_count)
     #
     @classmethod
-    def search(self, q):
+    def search(cls, q):
         query = {
             'part': 'id,snippet',
             'fields': 'items(id,snippet(title,thumbnails,channelTitle))',
-            'maxResults': self.search_results,
+            'maxResults': cls.search_results,
             'type': 'video,playlist',
             'q': q,
             'key': yt_key
@@ -51,13 +53,28 @@ class API:
         def f(item):
             if item['id']['kind'] == 'youtube#video':
                 obj = Video.get(item['id']['videoId'])
+                obj._set_api_data(['title', 'channel'], item)
             else:
                 obj = Playlist.get(item['id']['playlistId'])
-
-            obj._load_api_data(item)
+                obj._set_api_data(['title', 'channel', 'thumbnails'], item)
             return obj
 
         return map(f, data['items'])
+
+
+# decorator for creating async properties using pykka.ThreadingFuture
+# the method of property foo should create future _foo
+# on first call we invoke the method, then we just return the future
+#
+def async_property(f):
+    _name = '_' + f.__name__
+
+    def inner(self):
+        if _name not in self.__dict__:
+            apply(f, (self,))   # should create the future
+        return self.__dict__[_name]
+
+    return property(inner)
 
 
 # video or playlist
@@ -69,38 +86,54 @@ class Entry(object):
     #
     @classmethod
     @cachetools.lru_cache(maxsize=cache_max_len)
-    def get(self, id):
-        return self(id)
+    def get(cls, id):
+        obj = cls()
+        obj.id = id
+        return obj
 
-    @classmethod
-    def make_async_prop(self, prop, method):
-        _prop = '_' + prop
+    @async_property
+    def title(self):
+        self.load_info([self])
 
-        def f(self):
-            # if property is not set, call the method and wait on the event
-            if self.__dict__[_prop] is None:
-                event = getattr(self, method)()
-                if event:
-                    event.wait()
-            return self.__dict__[_prop]
+    @async_property
+    def channel(self):
+        self.load_info([self])
 
-        setattr(self, prop, property(f))
+    def _set_api_data(self, fields, item):
+        for k in fields:
+            _k = '_' + k
+            future = self.__dict__.get(_k)
+            if not future:
+                future = self.__dict__[_k] = pykka.ThreadingFuture()
 
-    def __init__(self, id):
-        self.id = id
-        self._title = None
-        self._channel = None
-        self._info_event = None
+            if not future._queue.empty():  # hack, no public is_set()
+                continue
 
-    def _load_api_data(self, item):
-        snip = item.get('snippet')
-        if not snip:
-            return
+            if not item:
+                val = None
+            elif k == 'title':
+                val = item['snippet']['title']
+            elif k == 'channel':
+                val = item['snippet']['channelTitle']
+            elif k == 'length':
+                # convert PT1H2M10S to 3730
+                m = re.search('PT((?P<hours>\d+)H)?' +
+                              '((?P<minutes>\d+)M)?' +
+                              '((?P<seconds>\d+)S)?',
+                              item['contentDetails']['duration'])
+                val = (int(m.group('hours') or 0) * 3600 +
+                       int(m.group('minutes') or 0) * 60 +
+                       int(m.group('seconds') or 0))
+            elif k == 'video_count':
+                val = min(item['contentDetails']['itemCount'], self.max_videos)
+            elif k == 'thumbnails':
+                val = [
+                    val['url']
+                    for (key, val) in item['snippet']['thumbnails'].items()
+                    if key in ['medium', 'high']
+                ]
 
-        if self._title is None:
-            self._title = snip.get('title')
-        if self._channel is None:
-            self._channel = snip.get('channelTitle')
+            future.set(val)
 
 
 class Video(Entry):
@@ -109,97 +142,85 @@ class Video(Entry):
     # every 50 videos. API calls are split in separate threads.
     #
     @classmethod
-    def load_info_mult(self, list):
-        list = [x for x in list
-                if None in [x._title, x._length, x._channel]
-                and x._info_event is None]
+    def load_info(cls, list):
+        # determine which fields we need to load and add futures for these
+        # fields. if a video has all fields loaded then no need to process it
+        # then no need to process it
+        fields = {}
+
+        def add_futures(vid):
+            added = False
+            for k in ['title', 'length', 'channel']:
+                _k = '_' + k
+                if _k not in vid.__dict__:
+                    vid.__dict__[_k] = pykka.ThreadingFuture()
+                    fields[k] = added = True
+            return added
+
+        list = [x for x in list if add_futures(x)]
         if not list:
             return
 
         # load snippet/contentDetails only if needed
-        part = fields = 'id'
-        if [1 for v in list if None in [v._title, v._channel]]:
-            part += ',snippet'
-            fields += ',snippet(title,channelTitle)'
-        if [1 for v in list if v._length is None]:
-            part += ',contentDetails'
-            fields += ',contentDetails(duration)'
+        qpart = qfields = 'id'
+        if 'title' in fields or 'channel' in fields:
+            qpart += ',snippet'
+            qfields += ',snippet(title,channelTitle)'
+        if 'length' in fields:
+            qpart += ',contentDetails'
+            qfields += ',contentDetails(duration)'
 
         def job(sublist):
             query = {
-                'part': part,
-                'fields': 'items(%s)' % fields,
+                'part': qpart,
+                'fields': 'items(%s)' % qfields,
                 'id': ','.join([x.id for x in sublist]),
                 'key': yt_key
             }
-            result = session.get(yt_api_endpoint+'videos', params=query)
-            data = result.json()
+            try:
+                result = session.get(yt_api_endpoint+'videos', params=query)
+                data = result.json()
+                dict = {item['id']: item for item in data['items']}
+            except:
+                dict = {}
 
-            dict = {x.id: x for x in sublist}
-
-            for item in data['items']:
-                dict[item['id']]._load_api_data(item)
+            for video in sublist:
+                video._set_api_data(fields.keys(), dict.get(video.id))
 
         # 50 items at a time, make sure order is deterministic so that HTTP
         # requests are replayable in tests
         for i in range(0, len(list), 50):
             sublist = list[i:i+50]
-            event = ThreadPool.run(job, (sublist,))
-            for x in sublist:
-                x._info_event = event
+            ThreadPool.run(job, (sublist,))
 
-    # converts PT1H2M10S to 3730
-    @classmethod
-    def dur_to_secs(self, dur):
-        if not dur:
-            return None
-        m = re.search('PT((?P<hours>\d+)H)?' +
-                      '((?P<minutes>\d+)M)?' +
-                      '((?P<seconds>\d+)S)?',
-                      dur)
-        return(int(m.group('hours') or 0) * 3600 +
-               int(m.group('minutes') or 0) * 60 +
-               int(m.group('seconds') or 0))
+    @async_property
+    def title(self):
+        self.load_info([self])
 
-    def __init__(self, id):
-        super(Video, self).__init__(id)
+    @async_property
+    def length(self):
+        self.load_info([self])
 
-        self._pafy = None
-        self._length = None
-        self._pafy_event = None
-
-    def _load_api_data(self, item):
-        super(Video, self)._load_api_data(item)
-
-        det = item.get('contentDetails')
-        if det and self._length is None:
-            self._length = self.dur_to_secs(det.get('duration'))
-
-    def load_info(self):
-        self.load_info_mult([self])
-        return self._info_event
-
-    # loads pafy object in a separate thread
-    #
-    def load_pafy(self):
-        if self._pafy is not None or self._pafy_event:
-            return self._pafy_event
+    @async_property
+    def pafy(self):
+        self._pafy = pykka.ThreadingFuture()
 
         def job():
             try:
-                self._pafy = pafy.new(self.id)
+                self._pafy.set(pafy.new(self.id))
             except:
                 logger.error('youtube: video "%s" deleted/restricted', self.id)
+                self._pafy.set(None)
+        ThreadPool.run(job)
 
-        self._pafy_event = ThreadPool.run(job)
-        return self._pafy_event
-
-    @property
+    @async_property
     def thumbnails(self):
-        return [
+        # make it "async" for uniformity with Playlist.thumbnails
+        self._thumbnails = pykka.ThreadingFuture()
+        self._thumbnails.set([
             'https://i.ytimg.com/vi/%s/%s.jpg' % (self.id, type)
             for type in ['mqdefault', 'hqdefault']
-        ]
+        ])
 
     @property
     def audio_url(self):
@@ -211,9 +232,9 @@ class Video(Entry):
         #   "gstreamer|0.10|mopidy|audio/x-unknown
         #   decoder|decoder-audio/x-unknown, codec-id=(string)A_OPUS"
         #
-        uri = self.pafy.getbestaudio('m4a', True)
+        uri = self.pafy.get().getbestaudio('m4a', True)
         if not uri:  # get video url
-            uri = self.pafy.getbest('m4a', True)
+            uri = self.pafy.get().getbest('m4a', True)
         return uri.url
 
     @property
@@ -228,83 +249,64 @@ class Playlist(Entry):
     # one API call for every 50 lists. API calls are split in separate threads.
     #
     @classmethod
-    def load_info_mult(self, list):
-        list = [
-            x for x in list
-            if None in [x._title, x._video_count, x._thumbnails, x._channel]
-            and x._info_event is None
-        ]
+    def load_info(cls, list):
+        # determine which fields we need to load and add futures for these
+        # fields. if a video has all fields loaded then no need to process it
+        # then no need to process it
+        fields = {}
+
+        def add_futures(vid):
+            added = False
+            for k in ['title', 'video_count', 'thumbnails', 'channel']:
+                _k = '_' + k
+                if _k not in vid.__dict__:
+                    vid.__dict__[_k] = pykka.ThreadingFuture()
+                    fields[k] = added = True
+            return added
+
+        list = [x for x in list if add_futures(x)]
         if not list:
             return
 
         # load snippet/contentDetails only if needed
-        part = fields = 'id'
-        if [1 for v in list if None in [v._title, v._thumbnails, v._channel]]:
-            part += ',snippet'
-            fields += ',snippet(title,thumbnails,channelTitle)'
-        if [1 for v in list if v._video_count is None]:
-            part += ',contentDetails'
-            fields += ',contentDetails(itemCount)'
+        qpart = qfields = 'id'
+        if [1 for k in ['title', 'thumbnails', 'channel'] if k in fields]:
+            qpart += ',snippet'
+            qfields += ',snippet(title,thumbnails,channelTitle)'
+        if 'video_count' in fields:
+            qpart += ',contentDetails'
+            qfields += ',contentDetails(itemCount)'
 
         def job(sublist):
             query = {
-                'part': part,
-                'fields': 'items(%s)' % fields,
+                'part': qpart,
+                'fields': 'items(%s)' % qfields,
                 'id': ','.join([x.id for x in sublist]),
                 'key': yt_key
             }
-            result = session.get(yt_api_endpoint+'playlists', params=query)
-            data = result.json()
+            try:
+                result = session.get(yt_api_endpoint+'playlists', params=query)
+                data = result.json()
+                dict = {item['id']: item for item in data['items']}
+            except:
+                dict = {}
 
-            dict = {x.id: x for x in sublist}
-
-            for item in data['items']:
-                dict[item['id']]._load_api_data(item)
+            for pl in sublist:
+                pl._set_api_data(fields.keys(), dict.get(pl.id))
 
         # 50 items at a time, make sure order is deterministic so that HTTP
         # requests are replayable in tests
         for i in range(0, len(list), 50):
             sublist = list[i:i+50]
-            event = ThreadPool.run(job, (sublist,))
-            for x in list:
-                x._info_event = event
-
-    def _load_api_data(self, item):
-        super(Playlist, self)._load_api_data(item)
-
-        snip, det = item.get('snippet'), item.get('contentDetails')
-
-        if det and self._video_count is None:
-            self._video_count = min(det['itemCount'], self.max_videos)
-
-        if snip and 'thumbnails' in snip and self._thumbnails is None:
-            self._thumbnails = [
-                val['url']
-                for (key, val) in snip['thumbnails'].items()
-                if key in ['medium', 'high']
-            ]
-
-    def __init__(self, id):
-        super(Playlist, self).__init__(id)
-
-        self._title = None
-        self._thumbnails = None
-        self._video_count = None
-        self._videos = None
-        self._videos_event = None
-        self._info_event = None
-
-    def load_info(self):
-        self.load_info_mult([self])
-        return self._info_event
+            ThreadPool.run(job, (sublist,))
 
     # loads list of videos of a playlist using one API call for every 50
     # fetched videos. For every page fetched, Video.load_info_mult is called to
     # start loading video info in a separate thread.
     #
-    def load_videos(self):
-        if self._videos is not None or self._videos_event:
-            return self._videos_event
+    @async_property
+    def videos(self):
+        self._videos = pykka.ThreadingFuture()
 
         def job():
             all_videos = []
@@ -319,43 +321,39 @@ class Playlist(Entry):
                     'key': yt_key,
                     'pageToken': page,
                 }
-                result = session.get(yt_api_endpoint+'playlistItems',
-                                     params=query)
-                data = result.json()
+                try:
+                    result = session.get(yt_api_endpoint+'playlistItems',
+                                         params=query)
+                    data = result.json()
+                except:
+                    break
                 page = data.get('nextPageToken') or None
 
-                videos = []
+                myvideos = []
                 for item in data['items']:
                     video = Video.get(item['snippet']['resourceId']['videoId'])
-                    video._load_api_data(item)
-                    videos.append(video)
-                all_videos += videos
+                    video._set_api_data(['title'], item)
+                    myvideos.append(video)
+                all_videos += myvideos
 
                 # start loading video info for this batch in the background
-                Video.load_info_mult(videos)
+                Video.load_info(myvideos)
 
-            self._videos = all_videos
+            self._videos.set(all_videos)
 
-        self._videos_event = ThreadPool.run(job)
-        return self._videos_event
+        ThreadPool.run(job)
+
+    @async_property
+    def video_count(self):
+        self.load_info([self])
+
+    @async_property
+    def thumbnails(self):
+        self.load_info([self])
 
     @property
     def is_video(self):
         return False
-
-
-# create methods for fetching properties loaded asynchronously
-# eg video.pafy, playlist.videos
-#
-Entry.make_async_prop('title', 'load_info')
-Entry.make_async_prop('channel', 'load_info')
-
-Video.make_async_prop('pafy', 'load_pafy')
-Video.make_async_prop('length', 'load_info')
-
-Playlist.make_async_prop('videos', 'load_videos')
-Playlist.make_async_prop('thumbnails', 'load_info')
-Playlist.make_async_prop('video_count', 'load_info')
 
 
 # simple 'dynamic' thread pool. Threads are created when new jobs arrive, stay
@@ -369,37 +367,34 @@ class ThreadPool:
     lock = threading.Lock()     # controls access to threads_active and jobs
 
     @classmethod
-    def worker(self):
+    def worker(cls):
         while True:
-            self.lock.acquire()
-            if len(self.jobs):
-                f, args, event = self.jobs.pop()
+            cls.lock.acquire()
+            if len(cls.jobs):
+                f, args = cls.jobs.pop()
             else:
                 # no more jobs, exit thread
-                self.threads_active -= 1
-                self.lock.release()
+                cls.threads_active -= 1
+                cls.lock.release()
                 break
-            self.lock.release()
+            cls.lock.release()
 
             try:
                 apply(f, args)
             except Exception as e:
                 logger.error('youtube thread error: %s\n%s',
                              e, traceback.format_exc())
-            event.set()
 
-    # returns threding.Event object that we can .wait() on
     @classmethod
-    def run(self, f, args=()):
-        self.lock.acquire()
+    def run(cls, f, args=()):
+        cls.lock.acquire()
 
-        event = threading.Event()
-        self.jobs.append((f, args, event))
+        cls.jobs.append((f, args))
 
-        if self.threads_active < self.threads_max:
-            threading.Thread(target=self.worker).start()
-            self.threads_active += 1
+        if cls.threads_active < cls.threads_max:
+            thread = threading.Thread(target=cls.worker)
+            thread.daemon = True
+            thread.start()
+            cls.threads_active += 1
 
-        self.lock.release()
-
-        return event
+        cls.lock.release()
