@@ -25,13 +25,14 @@ from mopidy_youtube import logger
 #   print video.length.get()  # blocks until info arrives, if it hasn't already
 #
 
-yt_api_endpoint = 'https://www.googleapis.com/youtube/v3/'
-yt_key = 'AIzaSyAl1Xq9DwdE_KD4AtPaE4EJl3WZe2zCqg4'
-session = requests.Session()
-
 
 class API:
+    endpoint = 'https://www.googleapis.com/youtube/v3/'
+    session = requests.Session()
+
+    # overridable by config
     search_results = 15
+    key = 'AIzaSyAl1Xq9DwdE_KD4AtPaE4EJl3WZe2zCqg4'
 
     # search for both videos and playlists using a single API call. fetches
     # only title, thumbnails, channel (extra queries are needed for length and
@@ -45,9 +46,9 @@ class API:
             'maxResults': cls.search_results,
             'type': 'video,playlist',
             'q': q,
-            'key': yt_key
+            'key': API.key
         }
-        result = session.get(yt_api_endpoint+'search', params=query)
+        result = API.session.get(API.endpoint+'search', params=query)
         data = result.json()
 
         def f(item):
@@ -175,10 +176,10 @@ class Video(Entry):
                 'part': qpart,
                 'fields': 'items(%s)' % qfields,
                 'id': ','.join([x.id for x in sublist]),
-                'key': yt_key
+                'key': API.key
             }
             try:
-                result = session.get(yt_api_endpoint+'videos', params=query)
+                result = API.session.get(API.endpoint+'videos', params=query)
                 data = result.json()
                 dict = {item['id']: item for item in data['items']}
             except:
@@ -243,6 +244,7 @@ class Video(Entry):
 
 
 class Playlist(Entry):
+    # overridable by config
     max_videos = 60     # max number of videos per playlist
 
     # loads title, thumbnails, video_count, channel of multiple playlists using
@@ -282,10 +284,11 @@ class Playlist(Entry):
                 'part': qpart,
                 'fields': 'items(%s)' % qfields,
                 'id': ','.join([x.id for x in sublist]),
-                'key': yt_key
+                'key': API.key
             }
             try:
-                result = session.get(yt_api_endpoint+'playlists', params=query)
+                result = API.session.get(API.endpoint+'playlists',
+                                         params=query)
                 data = result.json()
                 dict = {item['id']: item for item in data['items']}
             except:
@@ -318,12 +321,12 @@ class Playlist(Entry):
                               'items(snippet(title,resourceId(videoId)))',
                     'maxResults': min(self.max_videos - len(all_videos), 50),
                     'playlistId': self.id,
-                    'key': yt_key,
+                    'key': API.key,
                     'pageToken': page,
                 }
                 try:
-                    result = session.get(yt_api_endpoint+'playlistItems',
-                                         params=query)
+                    result = API.session.get(API.endpoint+'playlistItems',
+                                             params=query)
                     data = result.json()
                 except:
                     break
