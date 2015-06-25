@@ -18,6 +18,8 @@ class ExtensionTest(unittest.TestCase):
 
         self.assertIn('[youtube]', config)
         self.assertIn('enabled = true', config)
+        self.assertIn('search_results = 15', config)
+        self.assertIn('playlist_max_videos = 60', config)
 
     @vcr.use_cassette('tests/fixtures/youtube_playlist.yaml')
     def test_playlist_resolver(self):

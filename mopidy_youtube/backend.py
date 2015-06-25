@@ -40,6 +40,11 @@ class YoutubeBackend(pykka.ThreadingActor, backend.Backend):
         self.library = YoutubeLibraryProvider(backend=self)
         self.playback = YoutubePlaybackProvider(audio=audio, backend=self)
 
+        ytconf = config['youtube']
+        youtube.API.key = ytconf['api_key']
+        youtube.API.search_results = ytconf['search_results']
+        youtube.Playlist.max_videos = ytconf['playlist_max_videos']
+
         self.uri_schemes = ['youtube', 'yt']
 
 
