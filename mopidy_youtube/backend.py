@@ -79,43 +79,46 @@ class YoutubeLibraryProvider(backend.LibraryProvider):
 
         if video_id:
             video = youtube.Video.get(video_id)
-            video.load_pafy()
+            video.pafy  # start loading
 
             return [Track(
-                name=video.title,
+                name=video.title.get(),
                 comment=video.id,
-                length=video.length * 1000,
-                artists=[Artist(name=video.channel)],
+                length=video.length.get() * 1000,
+                artists=[Artist(name=video.channel.get())],
                 album=Album(
                     name='Youtube Video',
-                    images=video.thumbnails,
+                    images=video.thumbnails.get(),
                 ),
-                uri='youtube:video/%s.%s' % (safe_url(video.title), video.id)
+                uri='youtube:video/%s.%s' %
+                    (safe_url(video.title.get()), video.id)
             )]
         else:
             playlist = youtube.Playlist.get(playlist_id)
-            if not playlist.videos:
+            if not playlist.videos.get():
                 logger.info('cannot load playlist "%s"', uri)
                 return []
 
             # ignore videos for which no info was found (removed, etc)
-            videos = [v for v in playlist.videos if v.length is not None]
+            videos = [v for v in playlist.videos.get()
+                      if v.length.get() is not None]
 
             # load pafy in the background to be ready for playback
             for video in videos:
-                video.load_pafy()
+                video.pafy  # start loading
 
             return [Track(
-                name=video.title,
+                name=video.title.get(),
                 comment=video.id,
-                length=video.length * 1000,
+                length=video.length.get() * 1000,
                 track_no=count,
-                artists=[Artist(name=video.channel)],
+                artists=[Artist(name=video.channel.get())],
                 album=Album(
-                    name=playlist.title,
-                    images=playlist.thumbnails,
+                    name=playlist.title.get(),
+                    images=playlist.thumbnails.get(),
                 ),
-                uri='youtube:video/%s.%s' % (safe_url(video.title), video.id)
+                uri='youtube:video/%s.%s' %
+                    (safe_url(video.title.get()), video.id)
             ) for count, video in enumerate(videos, 1)]
 
     # Called when browsing or searching the library. To avoid horrible browsing
@@ -125,7 +128,7 @@ class YoutubeLibraryProvider(backend.LibraryProvider):
     #
     # For performance we only do 2 API calls before we reply, one for search
     # (youtube.API.search) and one to fetch video_count of all playlists
-    # (youtube.Playlist.load_info_mult).
+    # (youtube.Playlist.load_info).
     #
     # We also start loading 2 things in the background: info for all videos and
     # video list for all playlists. Hence, adding search results to the playing
@@ -149,7 +152,7 @@ class YoutubeLibraryProvider(backend.LibraryProvider):
 
         # load playlist info (to get video_count) of all playlists together
         playlists = [e for e in entries if not e.is_video]
-        youtube.Playlist.load_info_mult(playlists)
+        youtube.Playlist.load_info(playlists)
 
         tracks = []
         for entry in entries:
@@ -158,27 +161,29 @@ class YoutubeLibraryProvider(backend.LibraryProvider):
                 album = 'Youtube Video'
             else:
                 uri_base = 'youtube:playlist'
-                album = 'Youtube Playlist (%s videos)' % entry.video_count
+                album = 'Youtube Playlist (%s videos)' % \
+                        entry.video_count.get()
 
             tracks.append(Track(
-                name=entry.title,
+                name=entry.title.get(),
                 comment=entry.id,
                 length=0,
-                artists=[Artist(name=entry.channel)],
+                artists=[Artist(name=entry.channel.get())],
                 album=Album(
                     name=album,
-                    images=entry.thumbnails,
+                    images=entry.thumbnails.get(),
                 ),
-                uri='%s/%s.%s' % (uri_base, safe_url(entry.title), entry.id)
+                uri='%s/%s.%s' %
+                    (uri_base, safe_url(entry.title.get()), entry.id)
             ))
 
         # load video info/playlist videos in the background. they should be
         # ready by the time the user adds search results to the playing queue
         videos = [e for e in entries if e.is_video]
-        youtube.Video.load_info_mult(videos)
+        youtube.Video.load_info(videos)
 
         for pl in playlists:
-            pl.load_videos()
+            pl.videos  # start loading
 
         return SearchResult(
             uri='youtube:search',
@@ -200,7 +205,8 @@ class YoutubePlaybackProvider(backend.PlaybackProvider):
             return None
 
         try:
-            return youtube.Video.get(extract_id(uri)).audio_url
+            id = extract_id(uri)
+            return youtube.Video.get(id).audio_url
         except Exception as e:
             logger.error('translate_uri error "%s"', e)
             return None
