@@ -146,9 +146,9 @@ class YoutubeLibraryProvider(backend.LibraryProvider):
             if 'list' in req:
                 return resolve_playlist(req.get('list')[0])
             else:
-                return [resolve_url(track)]
+                return [item for item in [resolve_url(track)] if item]
         else:
-            return [resolve_url(track)]
+            return [item for item in [resolve_url(track)] if item]
 
     def search(self, query=None, uris=None, exact=False):
         # TODO Support exact search
@@ -171,7 +171,7 @@ class YoutubeLibraryProvider(backend.LibraryProvider):
                         "Resolving Youtube for track '%s'", search_query)
                     return SearchResult(
                         uri='youtube:search',
-                        tracks=[resolve_url(search_query)]
+                        tracks=[item for item in [resolve_url(search_query)] if item]
                     )
         else:
             search_query = ' '.join(query.values()[0])
