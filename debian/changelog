@@ -1,0 +1,5 @@
+mopidy-youtube (2.0.0-1) unstable; urgency=low
+
+  * Initial release. (Closes: #794125)
+
+ -- Stein Magnus Jodal <stein.magnus@jodal.no>  Thu, 30 Jul 2015 21:38:50 +0200

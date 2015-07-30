@@ -1,0 +1,24 @@
+Source: mopidy-youtube
+Section: sound
+Priority: optional
+Maintainer: Stein Magnus Jodal <stein.magnus@jodal.no>
+Build-Depends: debhelper (>= 9),
+               dh-python,
+               python-all (>= 2.7),
+               python-setuptools,
+Standards-Version: 3.9.6
+Homepage: https://github.com/dz0ny/mopidy-youtube
+Vcs-Git: git://github.com/jodal/mopidy-youtube.git
+Vcs-Browser: https://github.com/jodal/mopidy-youtube
+X-Python-Version: >= 2.7
+
+Package: mopidy-youtube
+Architecture: all
+Depends: ${misc:Depends},
+         ${python:Depends},
+Description: Mopidy extension for playing music from YouTube
+ Mopidy is a music server which can play music from multiple sources, like your
+ local hard drive, radio streams, and from Spotify and SoundCloud.
+ .
+ This package provides a Mopidy extension for playing sound from YouTube
+ videos.

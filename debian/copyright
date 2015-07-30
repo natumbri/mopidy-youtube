@@ -1,0 +1,16 @@
+Format: http://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: mopidy-youtube
+Upstream-Contact: Janez Troha <dz0ny@ubuntu.si>
+Source: https://github.com/dz0ny/mopidy-youtube
+
+Files: *
+Copyright: 2014-2015 Janez Troha and contributors
+License: Apache-2.0
+
+Files: debian/*
+Copyright: 2015 Stein Magnus Jodal <stein.magnus@jodal.no>
+License: Apache-2.0
+
+License: Apache-2.0
+ On Debian systems the full text of the Apache License (Version 2) can be found
+ in the `/usr/share/common-licenses/Apache-2.0' file.
