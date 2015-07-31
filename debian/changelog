@@ -1,3 +1,10 @@
+mopidy-youtube (2.0.0-2) unstable; urgency=medium
+
+  * Add mopidy (>= 1.0.8-2) as a Build-Depends so the mopidy pydist file is
+    available when building.
+
+ -- Stein Magnus Jodal <stein.magnus@jodal.no>  Fri, 31 Jul 2015 11:10:21 +0200
+
 mopidy-youtube (2.0.0-1) unstable; urgency=low
 
   * Initial release. (Closes: #794125)
