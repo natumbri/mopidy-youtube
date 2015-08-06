@@ -13,7 +13,7 @@ def get_version(filename):
 setup(
     name='Mopidy-Youtube',
     version=get_version('mopidy_youtube/__init__.py'),
-    url='https://github.com/dz0ny/mopidy-youtube',
+    url='https://github.com/mopidy/mopidy-youtube',
     license='Apache License, Version 2.0',
     author='Janez Troha',
     author_email='dz0ny@ubuntu.si',
