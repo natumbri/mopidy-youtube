@@ -1,20 +1,23 @@
 # -*- coding: utf-8 -*-
 
 from __future__ import unicode_literals
+
 import re
 import string
-from multiprocessing.pool import ThreadPool
-from urlparse import urlparse, parse_qs
 import unicodedata
+from multiprocessing.pool import ThreadPool
+from urlparse import parse_qs, urlparse
+
+from mopidy import backend
+from mopidy.models import Album, SearchResult, Track
 
 import pafy
 
-from mopidy import backend
-from mopidy.models import SearchResult, Track, Album
 import pykka
-import requests
-from mopidy_youtube import logger
 
+import requests
+
+from mopidy_youtube import logger
 
 yt_api_endpoint = 'https://www.googleapis.com/youtube/v3/'
 yt_key = 'AIzaSyAl1Xq9DwdE_KD4AtPaE4EJl3WZe2zCqg4'
