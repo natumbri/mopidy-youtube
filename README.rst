@@ -25,35 +25,46 @@ Mopidy extension that plays sound from YouTube.
 Installation
 ============
 
-Make sure you already have the GStreamer plugins, if not you can install it by
+Make sure you already have the GStreamer plugins, especially the "bad"
+collection of plugins. For example, on Debian/Ubuntu you can install it by
 running::
 
-    $ sudo apt-get install gstreamer0.10-plugins-bad
-
+    sudo apt-get install gstreamer0.10-plugins-bad
 
 Install by running::
 
-    $ pip install Mopidy-YouTube
+    pip install Mopidy-YouTube
 
 
-How to use
-==========
+Configuration
+=============
+
+No configuration needed. The only supported config value is ``youtube/enabled``
+which can be set to ``false`` to disable the extension.
+
+
+Usage
+=====
 
 Simply use search for filename in your MPD client or add YouTube URL to
 playlist prefixed by ``yt:``.
 
-Example: ``yt:http://www.youtube.com/watch?v=Njpw2PVb1c0``
+Example video::
 
-Example for playlist:
-``yt:http://www.youtube.com/playlist?list=PLeCg_YDclAETQHa8VyFUHKC_Ly0HUWUnq``
+    yt:http://www.youtube.com/watch?v=Njpw2PVb1c0
+
+Example for playlist::
+
+    yt:http://www.youtube.com/playlist?list=PLeCg_YDclAETQHa8VyFUHKC_Ly0HUWUnq
 
 
-If resolving stops working
-==========================
+Troubleshooting
+===============
 
-Update pafy library::
+If resolving of URIs stops working, always try to update the pafy library
+first::
 
-   pip install pafy -U
+   pip install --upgrade pafy
 
 
 Project resources
