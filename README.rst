@@ -61,7 +61,7 @@ Project resources
 
 - `Source code <https://github.com/mopidy/mopidy-youtube>`_
 - `Issue tracker <https://github.com/mopidy/mopidy-youtube/issues>`_
-- `Download development snapshot <https://github.com/mopidy/mopidy-youtube/archive/master.tar.gz#egg=Mopidy-Youtube-dev>`_
+- `Download development snapshot <https://github.com/mopidy/mopidy-youtube/archive/develop.tar.gz#egg=Mopidy-Youtube-dev>`_
 
 
 Changelog
