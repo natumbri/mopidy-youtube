@@ -1,13 +1,13 @@
 **************
-Mopidy-Youtube
+Mopidy-YouTube
 **************
 
-.. image:: https://img.shields.io/pypi/v/Mopidy-Youtube.svg?style=flat
-    :target: https://pypi.python.org/pypi/Mopidy-Youtube/
+.. image:: https://img.shields.io/pypi/v/Mopidy-YouTube.svg?style=flat
+    :target: https://pypi.python.org/pypi/Mopidy-YouTube/
     :alt: Latest PyPI version
 
-.. image:: https://img.shields.io/pypi/dm/Mopidy-Youtube.svg?style=flat
-    :target: https://pypi.python.org/pypi/Mopidy-Youtube/
+.. image:: https://img.shields.io/pypi/dm/Mopidy-YouTube.svg?style=flat
+    :target: https://pypi.python.org/pypi/Mopidy-YouTube/
     :alt: Number of PyPI downloads
 
 .. image:: https://img.shields.io/travis/mopidy/mopidy-youtube/develop.svg?style=flat
@@ -19,7 +19,7 @@ Mopidy-Youtube
    :alt: Test coverage
 
 
-Mopidy extension that plays sound from Youtube.
+Mopidy extension that plays sound from YouTube.
 
 
 Installation
@@ -33,13 +33,13 @@ running::
 
 Install by running::
 
-    $ pip install Mopidy-Youtube
+    $ pip install Mopidy-YouTube
 
 
 How to use
 ==========
 
-Simply use search for filename in your MPD client or add Youtube url to
+Simply use search for filename in your MPD client or add YouTube URL to
 playlist prefixed by ``yt:``.
 
 Example: ``yt:http://www.youtube.com/watch?v=Njpw2PVb1c0``
