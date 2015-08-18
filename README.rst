@@ -2,10 +2,6 @@
 Mopidy-Youtube
 **************
 
-.. image:: https://app.wercker.com/status/08a31153413287cd9a6965d8b7f26586/m
-    :target: https://app.wercker.com/project/bykey/08a31153413287cd9a6965d8b7f26586
-    :alt: CI build status
-
 .. image:: https://img.shields.io/pypi/v/Mopidy-Youtube.svg?style=flat
     :target: https://pypi.python.org/pypi/Mopidy-Youtube/
     :alt: Latest PyPI version
@@ -13,6 +9,10 @@ Mopidy-Youtube
 .. image:: https://img.shields.io/pypi/dm/Mopidy-Youtube.svg?style=flat
     :target: https://pypi.python.org/pypi/Mopidy-Youtube/
     :alt: Number of PyPI downloads
+
+.. image:: https://img.shields.io/travis/mopidy/mopidy-youtube/develop.svg?style=flat
+    :target: https://travis-ci.org/mopidy/mopidy-youtube
+    :alt: Travis CI build status
 
 .. image:: https://img.shields.io/coveralls/mopidy/mopidy-youtube/develop.svg?style=flat
    :target: https://coveralls.io/r/mopidy/mopidy-youtube?branch=develop
