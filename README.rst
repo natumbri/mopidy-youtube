@@ -15,8 +15,8 @@ Mopidy-YouTube
     :alt: Travis CI build status
 
 .. image:: https://img.shields.io/coveralls/mopidy/mopidy-youtube/develop.svg?style=flat
-   :target: https://coveralls.io/r/mopidy/mopidy-youtube?branch=develop
-   :alt: Test coverage
+    :target: https://coveralls.io/r/mopidy/mopidy-youtube?branch=develop
+    :alt: Test coverage
 
 
 Mopidy extension that plays sound from YouTube.

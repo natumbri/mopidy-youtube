@@ -5,7 +5,6 @@ from __future__ import unicode_literals
 import re
 import string
 import unicodedata
-
 from multiprocessing.pool import ThreadPool
 from urlparse import parse_qs, urlparse
 
@@ -19,7 +18,6 @@ import pykka
 import requests
 
 from mopidy_youtube import logger
-
 
 yt_api_endpoint = 'https://www.googleapis.com/youtube/v3/'
 yt_key = 'AIzaSyAl1Xq9DwdE_KD4AtPaE4EJl3WZe2zCqg4'
@@ -176,7 +174,7 @@ class YouTubeLibraryProvider(backend.LibraryProvider):
                         "Resolving YouTube for track '%s'", search_query)
                     return SearchResult(
                         uri='youtube:search',
-                        tracks=[item for item in [resolve_url(search_query)] if item]
+                        tracks=[t for t in [resolve_url(search_query)] if t]
                     )
         else:
             search_query = ' '.join(query.values()[0])
