@@ -14,8 +14,8 @@ Mopidy-Youtube
     :target: https://pypi.python.org/pypi/Mopidy-Youtube/
     :alt: Number of PyPI downloads
 
-.. image:: https://img.shields.io/coveralls/dz0ny/mopidy-youtube/master.svg?style=flat
-   :target: https://coveralls.io/r/dz0ny/mopidy-youtube?branch=master
+.. image:: https://img.shields.io/coveralls/mopidy/mopidy-youtube/master.svg?style=flat
+   :target: https://coveralls.io/r/mopidy/mopidy-youtube?branch=master
    :alt: Test coverage
 
 
@@ -59,13 +59,18 @@ Update pafy library::
 Project resources
 =================
 
-- `Source code <https://github.com/dz0ny/mopidy-youtube>`_
-- `Issue tracker <https://github.com/dz0ny/mopidy-youtube/issues>`_
-- `Download development snapshot <https://github.com/dz0ny/mopidy-youtube/archive/master.tar.gz#egg=Mopidy-Youtube-dev>`_
+- `Source code <https://github.com/mopidy/mopidy-youtube>`_
+- `Issue tracker <https://github.com/mopidy/mopidy-youtube/issues>`_
+- `Download development snapshot <https://github.com/mopidy/mopidy-youtube/archive/master.tar.gz#egg=Mopidy-Youtube-dev>`_
 
 
 Changelog
 =========
+
+v2.0.1 (UNRELEASED)
+-------------------
+
+- Update links to GitHub repository.
 
 v2.0.0 (2015-04-01)
 -------------------
