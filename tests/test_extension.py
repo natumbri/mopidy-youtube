@@ -3,12 +3,12 @@ from __future__ import unicode_literals
 import unittest
 
 import mock
+
 import vcr
 
 from mopidy_youtube import Extension
-from mopidy_youtube.backend import resolve_playlist
-from mopidy_youtube.backend import search_youtube
-from mopidy_youtube.backend import resolve_track
+from mopidy_youtube.backend import (
+    resolve_playlist, resolve_track, search_youtube)
 
 
 class ExtensionTest(unittest.TestCase):
