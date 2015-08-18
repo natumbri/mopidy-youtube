@@ -30,12 +30,6 @@ setup(
         'Mopidy >= 1.0',
         'Pykka >= 1.1',
     ],
-    test_suite='nose.collector',
-    tests_require=[
-        'nose',
-        'mock >= 1.0',
-        'vcrpy',
-    ],
     entry_points={
         'mopidy.ext': [
             'youtube = mopidy_youtube:Extension',
