@@ -2,10 +2,6 @@
 Mopidy-Youtube
 **************
 
-.. image:: https://app.wercker.com/status/08a31153413287cd9a6965d8b7f26586/m
-    :target: https://app.wercker.com/project/bykey/08a31153413287cd9a6965d8b7f26586
-    :alt: CI build status
-
 .. image:: https://img.shields.io/pypi/v/Mopidy-Youtube.svg?style=flat
     :target: https://pypi.python.org/pypi/Mopidy-Youtube/
     :alt: Latest PyPI version
