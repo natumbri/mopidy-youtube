@@ -1,18 +1,23 @@
 # -*- coding: utf-8 -*-
 
 from __future__ import unicode_literals
+
 import re
 import string
-from multiprocessing.pool import ThreadPool
-from urlparse import urlparse, parse_qs
 import unicodedata
+
+from multiprocessing.pool import ThreadPool
+from urlparse import parse_qs, urlparse
+
+from mopidy import backend
+from mopidy.models import Album, SearchResult, Track
 
 import pafy
 
-from mopidy import backend
-from mopidy.models import SearchResult, Track, Album
 import pykka
+
 import requests
+
 from mopidy_youtube import logger
 
 
