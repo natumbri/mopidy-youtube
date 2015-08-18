@@ -14,8 +14,8 @@ Mopidy-Youtube
     :target: https://pypi.python.org/pypi/Mopidy-Youtube/
     :alt: Number of PyPI downloads
 
-.. image:: https://img.shields.io/coveralls/mopidy/mopidy-youtube/master.svg?style=flat
-   :target: https://coveralls.io/r/mopidy/mopidy-youtube?branch=master
+.. image:: https://img.shields.io/coveralls/mopidy/mopidy-youtube/develop.svg?style=flat
+   :target: https://coveralls.io/r/mopidy/mopidy-youtube?branch=develop
    :alt: Test coverage
 
 
