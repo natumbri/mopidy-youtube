@@ -74,7 +74,7 @@ v2.0.1 (UNRELEASED)
 
 - Don't return ``None`` values to Mopidy when lookup or search returns invalid
   data. In Mopidy 1.0, this caused a crash. In Mopidy 1.1, this caused warnings
-  about the YouTube backend returning invalid data. (PR: #35)
+  about the YouTube backend returning invalid data. (Fixes: #28, PR: #35)
 
 v2.0.0 (2015-04-01)
 -------------------
