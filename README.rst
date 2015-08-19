@@ -78,7 +78,7 @@ Project resources
 Changelog
 =========
 
-v2.0.1 (UNRELEASED)
+v2.0.1 (2015-08-19)
 -------------------
 
 - Update links to GitHub repository.
