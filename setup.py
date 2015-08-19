@@ -12,13 +12,13 @@ def get_version(filename):
 
 
 setup(
-    name='Mopidy-Youtube',
+    name='Mopidy-Youtube',  # Casing as originally registrered on PyPI
     version=get_version('mopidy_youtube/__init__.py'),
     url='https://github.com/mopidy/mopidy-youtube',
     license='Apache License, Version 2.0',
     author='Janez Troha',
     author_email='dz0ny@ubuntu.si',
-    description='Mopidy extension that plays sound from Youtube',
+    description='Mopidy extension that plays sound from YouTube',
     long_description=open('README.rst').read(),
     packages=find_packages(exclude=['tests', 'tests.*']),
     zip_safe=False,
@@ -29,12 +29,6 @@ setup(
         'pafy >= 0.3.35',
         'Mopidy >= 1.0',
         'Pykka >= 1.1',
-    ],
-    test_suite='nose.collector',
-    tests_require=[
-        'nose',
-        'mock >= 1.0',
-        'vcrpy',
     ],
     entry_points={
         'mopidy.ext': [

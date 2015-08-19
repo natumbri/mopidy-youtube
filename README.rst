@@ -1,59 +1,70 @@
 **************
-Mopidy-Youtube
+Mopidy-YouTube
 **************
 
-.. image:: https://app.wercker.com/status/08a31153413287cd9a6965d8b7f26586/m
-    :target: https://app.wercker.com/project/bykey/08a31153413287cd9a6965d8b7f26586
-    :alt: CI build status
-
-.. image:: https://img.shields.io/pypi/v/Mopidy-Youtube.svg?style=flat
-    :target: https://pypi.python.org/pypi/Mopidy-Youtube/
+.. image:: https://img.shields.io/pypi/v/Mopidy-YouTube.svg?style=flat
+    :target: https://pypi.python.org/pypi/Mopidy-YouTube/
     :alt: Latest PyPI version
 
-.. image:: https://img.shields.io/pypi/dm/Mopidy-Youtube.svg?style=flat
-    :target: https://pypi.python.org/pypi/Mopidy-Youtube/
+.. image:: https://img.shields.io/pypi/dm/Mopidy-YouTube.svg?style=flat
+    :target: https://pypi.python.org/pypi/Mopidy-YouTube/
     :alt: Number of PyPI downloads
 
-.. image:: https://img.shields.io/coveralls/mopidy/mopidy-youtube/master.svg?style=flat
-   :target: https://coveralls.io/r/mopidy/mopidy-youtube?branch=master
-   :alt: Test coverage
+.. image:: https://img.shields.io/travis/mopidy/mopidy-youtube/develop.svg?style=flat
+    :target: https://travis-ci.org/mopidy/mopidy-youtube
+    :alt: Travis CI build status
+
+.. image:: https://img.shields.io/coveralls/mopidy/mopidy-youtube/develop.svg?style=flat
+    :target: https://coveralls.io/r/mopidy/mopidy-youtube?branch=develop
+    :alt: Test coverage
 
 
-Mopidy extension that plays sound from Youtube.
+Mopidy extension that plays sound from YouTube.
 
 
 Installation
 ============
 
-Make sure you already have the GStreamer plugins, if not you can install it by
+Make sure you already have the GStreamer plugins, especially the "bad"
+collection of plugins. For example, on Debian/Ubuntu you can install it by
 running::
 
-    $ sudo apt-get install gstreamer0.10-plugins-bad
-
+    sudo apt-get install gstreamer0.10-plugins-bad
 
 Install by running::
 
-    $ pip install Mopidy-Youtube
+    pip install Mopidy-YouTube
 
 
-How to use
-==========
+Configuration
+=============
 
-Simply use search for filename in your MPD client or add Youtube url to
+No configuration needed. The only supported config value is ``youtube/enabled``
+which can be set to ``false`` to disable the extension.
+
+
+Usage
+=====
+
+Simply use search for filename in your MPD client or add YouTube URL to
 playlist prefixed by ``yt:``.
 
-Example: ``yt:http://www.youtube.com/watch?v=Njpw2PVb1c0``
+Example video::
 
-Example for playlist:
-``yt:http://www.youtube.com/playlist?list=PLeCg_YDclAETQHa8VyFUHKC_Ly0HUWUnq``
+    yt:http://www.youtube.com/watch?v=Njpw2PVb1c0
+
+Example for playlist::
+
+    yt:http://www.youtube.com/playlist?list=PLeCg_YDclAETQHa8VyFUHKC_Ly0HUWUnq
 
 
-If resolving stops working
-==========================
+Troubleshooting
+===============
 
-Update pafy library::
+If resolving of URIs stops working, always try to update the pafy library
+first::
 
-   pip install pafy -U
+   pip install --upgrade pafy
 
 
 Project resources
@@ -61,11 +72,20 @@ Project resources
 
 - `Source code <https://github.com/mopidy/mopidy-youtube>`_
 - `Issue tracker <https://github.com/mopidy/mopidy-youtube/issues>`_
-- `Download development snapshot <https://github.com/mopidy/mopidy-youtube/archive/master.tar.gz#egg=Mopidy-Youtube-dev>`_
+- `Download development snapshot <https://github.com/mopidy/mopidy-youtube/archive/develop.tar.gz#egg=Mopidy-Youtube-dev>`_
 
 
 Changelog
 =========
+
+v2.0.1 (2015-08-19)
+-------------------
+
+- Update links to GitHub repository.
+
+- Don't return ``None`` values to Mopidy when lookup or search returns invalid
+  data. In Mopidy 1.0, this caused a crash. In Mopidy 1.1, this caused warnings
+  about the YouTube backend returning invalid data. (Fixes: #28, PR: #35)
 
 v2.0.0 (2015-04-01)
 -------------------

@@ -6,14 +6,14 @@ import os
 from mopidy import config, ext
 
 
-__version__ = '2.0.0'
+__version__ = '2.0.1'
 
 logger = logging.getLogger(__name__)
 
 
 class Extension(ext.Extension):
 
-    dist_name = 'Mopidy-Youtube'
+    dist_name = 'Mopidy-YouTube'
     ext_name = 'youtube'
     version = __version__
 
@@ -26,5 +26,5 @@ class Extension(ext.Extension):
         return schema
 
     def setup(self, registry):
-        from .backend import YoutubeBackend
-        registry.add('backend', YoutubeBackend)
+        from .backend import YouTubeBackend
+        registry.add('backend', YouTubeBackend)

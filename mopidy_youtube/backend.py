@@ -25,7 +25,7 @@ session = requests.Session()
 
 
 def resolve_track(track, stream=False):
-    logger.debug("Resolving Youtube for track '%s'", track)
+    logger.debug("Resolving YouTube for track '%s'", track)
     if hasattr(track, 'uri'):
         return resolve_url(track.comment, stream)
     else:
@@ -71,7 +71,7 @@ def resolve_url(url, stream=False):
         comment=video.videoid,
         length=video.length * 1000,
         album=Album(
-            name='Youtube',
+            name='YouTube',
             images=[video.bigthumb, video.bigthumbhd]
         ),
         uri=uri
@@ -100,7 +100,7 @@ def search_youtube(q):
 
 def resolve_playlist(url):
     resolve_pool = ThreadPool(processes=16)
-    logger.info("Resolving Youtube-Playlist '%s'", url)
+    logger.info("Resolving YouTube-Playlist '%s'", url)
     playlist = []
 
     page = 'first'
@@ -112,7 +112,7 @@ def resolve_playlist(url):
             'part': 'contentDetails'
         }
         if page and page != "first":
-            logger.debug("Get Youtube-Playlist '%s' page %s", url, page)
+            logger.debug("Get YouTube-Playlist '%s' page %s", url, page)
             params['pageToken'] = page
 
         result = session.get(yt_api_endpoint+'playlistItems', params=params)
@@ -128,17 +128,17 @@ def resolve_playlist(url):
     return [item for item in playlist if item]
 
 
-class YoutubeBackend(pykka.ThreadingActor, backend.Backend):
+class YouTubeBackend(pykka.ThreadingActor, backend.Backend):
     def __init__(self, config, audio):
-        super(YoutubeBackend, self).__init__()
+        super(YouTubeBackend, self).__init__()
         self.config = config
-        self.library = YoutubeLibraryProvider(backend=self)
-        self.playback = YoutubePlaybackProvider(audio=audio, backend=self)
+        self.library = YouTubeLibraryProvider(backend=self)
+        self.playback = YouTubePlaybackProvider(audio=audio, backend=self)
 
         self.uri_schemes = ['youtube', 'yt']
 
 
-class YoutubeLibraryProvider(backend.LibraryProvider):
+class YouTubeLibraryProvider(backend.LibraryProvider):
     def lookup(self, track):
         if 'yt:' in track:
             track = track.replace('yt:', '')
@@ -149,9 +149,9 @@ class YoutubeLibraryProvider(backend.LibraryProvider):
             if 'list' in req:
                 return resolve_playlist(req.get('list')[0])
             else:
-                return [resolve_url(track)]
+                return [item for item in [resolve_url(track)] if item]
         else:
-            return [resolve_url(track)]
+            return [item for item in [resolve_url(track)] if item]
 
     def search(self, query=None, uris=None, exact=False):
         # TODO Support exact search
@@ -171,21 +171,21 @@ class YoutubeLibraryProvider(backend.LibraryProvider):
                     )
                 else:
                     logger.info(
-                        "Resolving Youtube for track '%s'", search_query)
+                        "Resolving YouTube for track '%s'", search_query)
                     return SearchResult(
                         uri='youtube:search',
-                        tracks=[resolve_url(search_query)]
+                        tracks=[t for t in [resolve_url(search_query)] if t]
                     )
         else:
             search_query = ' '.join(query.values()[0])
-            logger.info("Searching Youtube for query '%s'", search_query)
+            logger.info("Searching YouTube for query '%s'", search_query)
             return SearchResult(
                 uri='youtube:search',
                 tracks=search_youtube(search_query)
             )
 
 
-class YoutubePlaybackProvider(backend.PlaybackProvider):
+class YouTubePlaybackProvider(backend.PlaybackProvider):
 
     def translate_uri(self, uri):
         track = resolve_track(uri, True)
