@@ -66,13 +66,19 @@ def resolve_url(url, stream=False):
         logger.info(e.message)
         return
 
+    images = []
+    if video.bigthumb:
+        images.append(video.bigthumb)
+    if video.bigthumbhd:
+        images.append(video.bigthumbhd)
+
     track = Track(
         name=video.title,
         comment=video.videoid,
         length=video.length * 1000,
         album=Album(
             name='YouTube',
-            images=[video.bigthumb, video.bigthumbhd]
+            images=images
         ),
         uri=uri
     )
