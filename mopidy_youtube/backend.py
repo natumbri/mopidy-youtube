@@ -67,9 +67,9 @@ def resolve_url(url, stream=False):
         return
 
     images = []
-    if video.bigthumb:
+    if video.bigthumb is not None:
         images.append(video.bigthumb)
-    if video.bigthumbhd:
+    if video.bigthumbhd is not None:
         images.append(video.bigthumbhd)
 
     track = Track(
