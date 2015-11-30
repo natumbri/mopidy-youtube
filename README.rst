@@ -77,6 +77,11 @@ Project resources
 Changelog
 =========
 
+v2.0.2 (2015-11-30)
+-------------------
+
+- Fix resolving of ``youtube:video`` URIs when looking up tracks. (Fixes: #21, PR: #50)
+
 v2.0.1 (2015-08-19)
 -------------------
 

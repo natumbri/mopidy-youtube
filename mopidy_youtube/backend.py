@@ -52,7 +52,7 @@ def resolve_url(url, stream=False):
     try:
         video = pafy.new(url)
         if not stream:
-            uri = video_uri_prefix + ':%s.%s' % (
+            uri = video_uri_prefix + '/%s.%s' % (
                 safe_url(video.title), video.videoid
             )
         else:
