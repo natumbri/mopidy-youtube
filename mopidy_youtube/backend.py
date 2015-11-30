@@ -23,6 +23,9 @@ yt_api_endpoint = 'https://www.googleapis.com/youtube/v3/'
 yt_key = 'AIzaSyAl1Xq9DwdE_KD4AtPaE4EJl3WZe2zCqg4'
 session = requests.Session()
 
+video_uri_prefix = 'youtube:video'
+search_uri = 'youtube:search'
+
 
 def resolve_track(track, stream=False):
     logger.debug("Resolving YouTube for track '%s'", track)
@@ -49,7 +52,7 @@ def resolve_url(url, stream=False):
     try:
         video = pafy.new(url)
         if not stream:
-            uri = 'youtube:video/%s.%s' % (
+            uri = video_uri_prefix + ':%s.%s' % (
                 safe_url(video.title), video.videoid
             )
         else:
@@ -151,7 +154,7 @@ class YouTubeLibraryProvider(backend.LibraryProvider):
             else:
                 return [item for item in [resolve_url(track)] if item]
         else:
-            return [item for item in [resolve_url(track)] if item]
+            return [item for item in [resolve_track(track)] if item]
 
     def search(self, query=None, uris=None, exact=False):
         # TODO Support exact search
@@ -166,21 +169,21 @@ class YouTubeLibraryProvider(backend.LibraryProvider):
                 req = parse_qs(url.query)
                 if 'list' in req:
                     return SearchResult(
-                        uri='youtube:search',
+                        uri=search_uri,
                         tracks=resolve_playlist(req.get('list')[0])
                     )
                 else:
                     logger.info(
                         "Resolving YouTube for track '%s'", search_query)
                     return SearchResult(
-                        uri='youtube:search',
+                        uri=search_uri,
                         tracks=[t for t in [resolve_url(search_query)] if t]
                     )
         else:
             search_query = ' '.join(query.values()[0])
             logger.info("Searching YouTube for query '%s'", search_query)
             return SearchResult(
-                uri='youtube:search',
+                uri=search_uri,
                 tracks=search_youtube(search_query)
             )
 

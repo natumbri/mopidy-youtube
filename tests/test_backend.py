@@ -66,3 +66,11 @@ def test_resolve_track_stream(pafy_mock_with_video):
     video = backend.resolve_track('TU3b1qyEGsE', stream=True)
 
     assert video
+
+
+def test_resolve_video_track_stream(pafy_mock_with_video):
+    video = backend.resolve_track('youtube:video/a title.a video id',
+                                  stream=True)
+
+    assert video
+    assert video.uri == "http://example.com/"
