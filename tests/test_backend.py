@@ -9,6 +9,7 @@ import pytest
 import vcr
 
 from mopidy_youtube import backend
+from mopidy_youtube.backend import YouTubeLibraryProvider
 
 
 @pytest.yield_fixture
@@ -47,7 +48,7 @@ def test_search_yt(pafy_mock_with_video):
 
 @vcr.use_cassette('tests/fixtures/resolve_track.yaml')
 def test_resolve_track(pafy_mock_with_video):
-    video = backend.resolve_track('TU3b1qyEGsE')
+    video = backend.resolve_track('C0DPdy98e4c')
 
     assert video
 
@@ -63,6 +64,31 @@ def test_resolve_track_failed(pafy_mock):
 
 @vcr.use_cassette('tests/fixtures/resolve_track_stream.yaml')
 def test_resolve_track_stream(pafy_mock_with_video):
-    video = backend.resolve_track('TU3b1qyEGsE', stream=True)
+    video = backend.resolve_track('C0DPdy98e4c', stream=True)
 
     assert video
+
+
+@vcr.use_cassette('tests/fixtures/resolve_video_track_stream.yaml')
+def test_resolve_video_track_stream(pafy_mock_with_video):
+    video = backend.resolve_track('youtube:video/a title.a video id',
+                                  stream=True)
+
+    assert video
+    assert video.uri == "http://example.com/"
+
+
+@vcr.use_cassette('tests/fixtures/lookup_video_uri.yaml')
+def test_lookup_video_uri(caplog):
+    provider = YouTubeLibraryProvider(mock.PropertyMock())
+
+    track = provider.lookup(backend.video_uri_prefix +
+                            '/a title.C0DPdy98e4c')
+
+    assert 'Need 11 character video id or the URL of the video.' \
+           not in caplog.text()
+
+    assert track
+
+    assert track[0].uri == backend.video_uri_prefix + \
+        '/TEST VIDEO.C0DPdy98e4c'
