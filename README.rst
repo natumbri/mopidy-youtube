@@ -83,6 +83,8 @@ v2.0.2 (UNRELEASED)
 - Fix resolving of ``youtube:video`` URIs when looking up tracks. (Fixes: #21,
   PR: #50)
 
+- Ensure ``None`` doesn't get includes in track image lists. (PR: #48)
+
 v2.0.1 (2015-08-19)
 -------------------
 
