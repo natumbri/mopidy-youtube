@@ -26,6 +26,8 @@ session = requests.Session()
 video_uri_prefix = 'youtube:video'
 search_uri = 'youtube:search'
 
+pafy.set_api_key(yt_key)
+
 
 def resolve_track(track, stream=False):
     logger.debug("Resolving YouTube for track '%s'", track)
@@ -87,27 +89,33 @@ def resolve_url(url, stream=False):
     return track
 
 
-def search_youtube(q):
+def search_youtube(q, max_results=15, processes=16):
     query = {
         'part': 'id',
-        'maxResults': 15,
+        'maxResults': max_results,
         'type': 'video',
         'q': q,
         'key': yt_key
     }
-    result = session.get(yt_api_endpoint+'search', params=query)
+    result = session.get(yt_api_endpoint + 'search', params=query)
     data = result.json()
 
-    resolve_pool = ThreadPool(processes=16)
     playlist = [item['id']['videoId'] for item in data['items']]
+    if processes:
+        resolve_pool = ThreadPool(processes=processes)
+        playlist = resolve_pool.map(resolve_url, playlist)
+        resolve_pool.close()
+    else:
+        playlist = map(resolve_url, playlist)
 
-    playlist = resolve_pool.map(resolve_url, playlist)
-    resolve_pool.close()
     return [item for item in playlist if item]
 
 
-def resolve_playlist(url):
-    resolve_pool = ThreadPool(processes=16)
+def resolve_playlist(url, processes=16):
+    if processes:
+        resolve_pool = ThreadPool(processes=processes)
+    else:
+        resolve_pool = None
     logger.info("Resolving YouTube-Playlist '%s'", url)
     playlist = []
 
@@ -123,7 +131,7 @@ def resolve_playlist(url):
             logger.debug("Get YouTube-Playlist '%s' page %s", url, page)
             params['pageToken'] = page
 
-        result = session.get(yt_api_endpoint+'playlistItems', params=params)
+        result = session.get(yt_api_endpoint + 'playlistItems', params=params)
         data = result.json()
         page = data.get('nextPageToken')
 
@@ -131,8 +139,12 @@ def resolve_playlist(url):
             video_id = item['contentDetails']['videoId']
             playlist.append(video_id)
 
-    playlist = resolve_pool.map(resolve_url, playlist)
-    resolve_pool.close()
+    if resolve_pool:
+        playlist = resolve_pool.map(resolve_url, playlist)
+        resolve_pool.close()
+    else:
+        playlist = map(resolve_url, playlist)
+
     return [item for item in playlist if item]
 
 
@@ -140,6 +152,8 @@ class YouTubeBackend(pykka.ThreadingActor, backend.Backend):
     def __init__(self, config, audio):
         super(YouTubeBackend, self).__init__()
         self.config = config
+        self.max_results = config['youtube']['max_results']
+        self.processes = config['youtube']['processes']
         self.library = YouTubeLibraryProvider(backend=self)
         self.playback = YouTubePlaybackProvider(audio=audio, backend=self)
 
@@ -155,7 +169,7 @@ class YouTubeLibraryProvider(backend.LibraryProvider):
             url = urlparse(track)
             req = parse_qs(url.query)
             if 'list' in req:
-                return resolve_playlist(req.get('list')[0])
+                return resolve_playlist(req.get('list')[0], self.backend.processes)
             else:
                 return [item for item in [resolve_url(track)] if item]
         else:
@@ -175,7 +189,7 @@ class YouTubeLibraryProvider(backend.LibraryProvider):
                 if 'list' in req:
                     return SearchResult(
                         uri=search_uri,
-                        tracks=resolve_playlist(req.get('list')[0])
+                        tracks=resolve_playlist(req.get('list')[0], self.backend.processes)
                     )
                 else:
                     logger.info(
@@ -189,7 +203,11 @@ class YouTubeLibraryProvider(backend.LibraryProvider):
             logger.info("Searching YouTube for query '%s'", search_query)
             return SearchResult(
                 uri=search_uri,
-                tracks=search_youtube(search_query)
+                tracks=search_youtube(
+                    search_query,
+                    processes=self.backend.processes,
+                    max_results=self.backend.max_results
+                )
             )
 
 
