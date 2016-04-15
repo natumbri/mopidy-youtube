@@ -46,8 +46,12 @@ Installation
 ============
 
 Make sure you already have the GStreamer plugins, especially the "bad"
-collection of plugins. For example, on Debian/Ubuntu you can install it by
-running::
+collection of plugins. For example, on Debian/Ubuntu you can install it
+by running::
+
+    sudo apt-get install gstreamer1.0-plugins-bad
+    
+For older versions of Mopidy (pre v2.0), install the plugins by running::
 
     sudo apt-get install gstreamer0.10-plugins-bad
 
