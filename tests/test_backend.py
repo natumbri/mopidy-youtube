@@ -34,6 +34,7 @@ def youtube_dl_mock_with_video(youtube_dl_mock):
     video_mock['title'] = 'a title'
     video_mock['videoid'] = 'a video id'
     video_mock['abr'] = 200
+    video_mock['webpage_url'] = "http://example.com/id"    
 
     return youtube_dl_mock
 
