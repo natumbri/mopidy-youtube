@@ -26,14 +26,14 @@ def youtube_dl_mock_with_video(youtube_dl_mock):
 
     video_mock = ydl_mock.extract_info.return_value
 
-    video_mock['thumbnails'] = [{'url': 'http://big_thumb'}, {'url': 'http://big_thumb_in_hd' }]
-    video_mock['description'] = "description" 
+    video_mock['thumbnails'] = [{'url': 'http://big_thumb'},
+                                {'url': 'http://big_thumb_in_hd'}]
+    video_mock['description'] = "description"
     video_mock['url'] = 'http://example.com/'
     video_mock['duration'] = 2000
     video_mock['title'] = 'a title'
     video_mock['videoid'] = 'a video id'
     video_mock['abr'] = 200
-    
 
     return youtube_dl_mock
 
