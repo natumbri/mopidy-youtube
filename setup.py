@@ -26,7 +26,7 @@ setup(
     install_requires=[
         'setuptools',
         'requests >= 2.2.1',
-        'pafy >= 0.3.35',
+        'youtube-dl',
         'Mopidy >= 1.0',
         'Pykka >= 1.1',
     ],
