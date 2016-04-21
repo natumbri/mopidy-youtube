@@ -2,9 +2,9 @@ from __future__ import unicode_literals
 
 import mock
 
-import youtube_dl
-
 import pytest
+
+import youtube_dl
 
 import vcr
 
@@ -55,6 +55,6 @@ def test_lookup_video_uri(caplog):
 
     assert tracks
     track = tracks[0]
-    
+
     assert track.title == 'TEST VIDEO'
     assert track.uri == 'yt:https://www.youtube.com/watch?v=C0DPdy98e4c'

@@ -10,9 +10,9 @@ from mopidy.models import Album, SearchResult, Track
 
 import pykka
 
-import youtube_dl
-
 import requests
+
+import youtube_dl
 
 from mopidy_youtube import logger
 
@@ -22,6 +22,7 @@ session = requests.Session()
 
 video_uri_prefix = 'youtube:video'
 search_uri = 'youtube:search'
+
 
 def search_youtube(self, q):
     query = {
