@@ -21,13 +21,19 @@ def youtube_dl_mock():
 
 @pytest.fixture
 def youtube_dl_mock_with_video(youtube_dl_mock):
-    video_mock = youtube_dl_mock.new.return_value
-    video_mock.bigthumb = 'big thumb'
-    video_mock.bigthumbhd = 'big thumb in hd'
-    video_mock.getbestaudio.return_value.url = 'http://example.com/'
-    video_mock.length = 2000
-    video_mock.title = 'a title'
-    video_mock.videoid = 'a video id'
+    YoutubeDL_mock = youtube_dl_mock.YoutubeDL.return_value
+    ydl_mock = YoutubeDL_mock.__enter__.return_value
+
+    video_mock = ydl_mock.extract_info.return_value
+
+    video_mock['thumbnails'] = [{'url': 'http://big_thumb'}, {'url': 'http://big_thumb_in_hd' }]
+    video_mock['description'] = "description" 
+    video_mock['url'] = 'http://example.com/'
+    video_mock['duration'] = 2000
+    video_mock['title'] = 'a title'
+    video_mock['videoid'] = 'a video id'
+    video_mock['abr'] = 200
+    
 
     return youtube_dl_mock
 
@@ -48,7 +54,7 @@ def test_search_yt(youtube_dl_mock_with_video):
 
 
 @vcr.use_cassette('tests/fixtures/lookup_video_uri.yaml')
-def test_lookup_video_uri(caplog):
+def test_lookup_video_uri():
     provider = YouTubeLibraryProvider(mock.PropertyMock())
 
     tracks = provider.lookup('C0DPdy98e4c')
