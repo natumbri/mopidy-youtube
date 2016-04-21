@@ -24,7 +24,7 @@ video_uri_prefix = 'youtube:video'
 search_uri = 'youtube:search'
 
 
-def search_youtube(self, q):
+def search_youtube(q):
     query = {
         'part': 'id',
         'maxResults': 15,
