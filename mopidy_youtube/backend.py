@@ -23,6 +23,19 @@ session = requests.Session()
 video_uri_prefix = 'youtube:video'
 search_uri = 'youtube:search'
 
+def search_youtube(self, q):
+    query = {
+        'part': 'id',
+        'maxResults': 15,
+        'type': 'video',
+        'q': q,
+        'key': yt_key
+    }
+    result = session.get(yt_api_endpoint + 'search', params=query)
+    data = result.json()
+
+    return [item['id']['videoId'] for item in data['items']]
+
 
 class YouTubeBackend(pykka.ThreadingActor, backend.Backend):
     def __init__(self, config, audio):
@@ -74,19 +87,6 @@ class YouTubeLibraryProvider(backend.LibraryProvider):
 
         return result
 
-    def _search_youtube(self, q):
-        query = {
-            'part': 'id',
-            'maxResults': 15,
-            'type': 'video',
-            'q': q,
-            'key': yt_key
-        }
-        result = session.get(yt_api_endpoint + 'search', params=query)
-        data = result.json()
-
-        return [item['id']['videoId'] for item in data['items']]
-
     def search(self, query=None, uris=None, exact=False):
         # TODO Support exact search
 
@@ -102,7 +102,7 @@ class YouTubeLibraryProvider(backend.LibraryProvider):
             logger.debug("Searching YouTube for query '%s'", search_query)
 
             try:
-                videoIds = self._search_youtube(search_query)
+                videoIds = search_youtube(search_query)
             except Exception as e:
                 logger.error("Error when searching in youtube: %s", str(e))
                 return None
