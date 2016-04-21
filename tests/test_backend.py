@@ -4,9 +4,9 @@ import mock
 
 import pytest
 
-import youtube_dl
-
 import vcr
+
+import youtube_dl
 
 from mopidy_youtube import backend
 from mopidy_youtube.backend import YouTubeLibraryProvider
