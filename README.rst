@@ -6,10 +6,6 @@ Mopidy-YouTube
     :target: https://pypi.python.org/pypi/Mopidy-YouTube/
     :alt: Latest PyPI version
 
-.. image:: https://img.shields.io/pypi/dm/Mopidy-YouTube.svg?style=flat
-    :target: https://pypi.python.org/pypi/Mopidy-YouTube/
-    :alt: Number of PyPI downloads
-
 .. image:: https://img.shields.io/travis/mopidy/mopidy-youtube/develop.svg?style=flat
     :target: https://travis-ci.org/mopidy/mopidy-youtube
     :alt: Travis CI build status
