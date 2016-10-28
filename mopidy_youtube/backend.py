@@ -9,7 +9,7 @@ from multiprocessing.pool import ThreadPool
 from urlparse import parse_qs, urlparse
 
 from mopidy import backend
-from mopidy.models import Album, SearchResult, Track
+from mopidy.models import Album, SearchResult, Track, Artist
 
 import pafy
 
@@ -78,6 +78,7 @@ def resolve_url(url, stream=False):
         name=video.title,
         comment=video.videoid,
         length=video.length * 1000,
+        artists=[Artist(name=video.author)],
         album=Album(
             name='YouTube',
             images=images
