@@ -91,7 +91,17 @@ def resolve_url(url, stream=False):
     return track
 
 
-def search_youtube(query):
+def search_youtube(search_params):
+
+    query = {
+        'part': 'id',
+        'maxResults': 15,
+        'type': 'video',
+        'key': yt_key
+    }
+
+    query.update(search_params)
+
     result = session.get(yt_api_endpoint+'search', params=query)
     data = result.json()
 
@@ -157,15 +167,8 @@ class YouTubeLibraryProvider(backend.LibraryProvider):
                 return [item for item in [resolve_url(track)] if item]
         elif track.startswith('channel/'):
             channel = track.replace('channel/', '')
-            channel_query = {
-                'part': 'id',
-                'maxResults': 15,
-                'type': 'video',
-                'channelId': channel,
-                'key': yt_key
-            }
             logger.info("Lookup YouTube on channel '%s'", channel)
-            tracks=search_youtube(channel_query)
+            tracks=search_youtube({'channelId': channel})
             return tracks
         else:
             return [item for item in [resolve_track(track)] if item]
@@ -195,17 +198,10 @@ class YouTubeLibraryProvider(backend.LibraryProvider):
                     )
         else:
             search_query = ' '.join(query.values()[0])
-            yt_query = {
-                'part': 'id',
-                'maxResults': 15,
-                'type': 'video',
-                'q': search_query,
-                'key': yt_key
-            }
             logger.info("Searching YouTube for query '%s'", search_query)
             return SearchResult(
                 uri=search_uri,
-                tracks=search_youtube(yt_query)
+                tracks=search_youtube({'q': search_query})
             )
 
 
