@@ -78,7 +78,10 @@ def resolve_url(url, stream=False):
         name=video.title,
         comment=video.videoid,
         length=video.length * 1000,
-        artists=[Artist(name=video.author)],
+        artists=[Artist(
+            name=video.author,
+            uri='yt:channel/%s' % video.username
+        )],
         album=Album(
             name='YouTube',
             images=images
@@ -88,14 +91,7 @@ def resolve_url(url, stream=False):
     return track
 
 
-def search_youtube(q):
-    query = {
-        'part': 'id',
-        'maxResults': 15,
-        'type': 'video',
-        'q': q,
-        'key': yt_key
-    }
+def search_youtube(query):
     result = session.get(yt_api_endpoint+'search', params=query)
     data = result.json()
 
@@ -159,6 +155,18 @@ class YouTubeLibraryProvider(backend.LibraryProvider):
                 return resolve_playlist(req.get('list')[0])
             else:
                 return [item for item in [resolve_url(track)] if item]
+        elif track.startswith('channel/'):
+            channel = track.replace('channel/', '')
+            channel_query = {
+                'part': 'id',
+                'maxResults': 15,
+                'type': 'video',
+                'channelId': channel,
+                'key': yt_key
+            }
+            logger.info("Lookup YouTube on channel '%s'", channel)
+            tracks=search_youtube(channel_query)
+            return tracks
         else:
             return [item for item in [resolve_track(track)] if item]
 
@@ -187,10 +195,17 @@ class YouTubeLibraryProvider(backend.LibraryProvider):
                     )
         else:
             search_query = ' '.join(query.values()[0])
+            yt_query = {
+                'part': 'id',
+                'maxResults': 15,
+                'type': 'video',
+                'q': search_query,
+                'key': yt_key
+            }
             logger.info("Searching YouTube for query '%s'", search_query)
             return SearchResult(
                 uri=search_uri,
-                tracks=search_youtube(search_query)
+                tracks=search_youtube(yt_query)
             )
 
 
