@@ -91,7 +91,7 @@ def resolve_url(url, stream=False):
     return track
 
 
-def search_youtube(search_params):
+def search_youtube(**search_params):
 
     query = {
         'part': 'id',
@@ -168,7 +168,7 @@ class YouTubeLibraryProvider(backend.LibraryProvider):
         elif track.startswith('channel/'):
             channel = track.replace('channel/', '')
             logger.info("Lookup YouTube on channel '%s'", channel)
-            tracks=search_youtube({'channelId': channel})
+            tracks=search_youtube(channelId=channel)
             return tracks
         else:
             return [item for item in [resolve_track(track)] if item]
@@ -201,7 +201,7 @@ class YouTubeLibraryProvider(backend.LibraryProvider):
             logger.info("Searching YouTube for query '%s'", search_query)
             return SearchResult(
                 uri=search_uri,
-                tracks=search_youtube({'q': search_query})
+                tracks=search_youtube(q=search_query),
             )
 
 
