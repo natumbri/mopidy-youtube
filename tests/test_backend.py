@@ -1,9 +1,13 @@
 from __future__ import unicode_literals
+
 import os.path
 
 import mock
+
 import pafy
+
 import pytest
+
 import vcr
 
 from mopidy_youtube import backend
@@ -29,13 +33,14 @@ def pafy_mock_with_video(pafy_mock):
 
     return pafy_mock
 
+
 here = os.path.abspath(os.path.dirname(__file__))
 
 my_vcr = vcr.VCR(
     serializer='yaml',
     cassette_library_dir=os.path.join(here, 'fixtures'),
     record_mode='once',
-    match_on=['uri', 'method'],
+    match_on=['method', 'scheme', 'host', 'port', 'path', 'query'],
 )
 
 
@@ -43,7 +48,7 @@ my_vcr = vcr.VCR(
 def test_playlist_resolver(pafy_mock_with_video):
     videos = backend.resolve_playlist('PLOxORm4jpOQfMU7bpfGCzDyLropIYEHuR')
 
-    assert len(videos) == 104
+    assert len(videos) == 108
 
 
 @my_vcr.use_cassette('youtube_search.yaml')
