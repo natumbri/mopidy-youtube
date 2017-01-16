@@ -1,5 +1,7 @@
 from __future__ import unicode_literals
 
+import os.path
+
 import mock
 
 import pafy
@@ -32,28 +34,38 @@ def pafy_mock_with_video(pafy_mock):
     return pafy_mock
 
 
-@vcr.use_cassette('tests/fixtures/youtube_playlist_resolve.yaml')
+here = os.path.abspath(os.path.dirname(__file__))
+
+my_vcr = vcr.VCR(
+    serializer='yaml',
+    cassette_library_dir=os.path.join(here, 'fixtures'),
+    record_mode='once',
+    match_on=['method', 'scheme', 'host', 'port', 'path', 'query'],
+)
+
+
+@my_vcr.use_cassette('youtube_playlist_resolve.yaml')
 def test_playlist_resolver(pafy_mock_with_video):
     videos = backend.resolve_playlist('PLOxORm4jpOQfMU7bpfGCzDyLropIYEHuR')
 
-    assert len(videos) == 104
+    assert len(videos) == 108
 
 
-@vcr.use_cassette('tests/fixtures/youtube_search.yaml')
+@my_vcr.use_cassette('youtube_search.yaml')
 def test_search_yt(pafy_mock_with_video):
     videos = backend.search_youtube('chvrches')
 
     assert len(videos) == 15
 
 
-@vcr.use_cassette('tests/fixtures/resolve_track.yaml')
+@my_vcr.use_cassette('resolve_track.yaml')
 def test_resolve_track(pafy_mock_with_video):
     video = backend.resolve_track('C0DPdy98e4c')
 
     assert video
 
 
-@vcr.use_cassette('tests/fixtures/resolve_track_failed.yaml')
+@my_vcr.use_cassette('resolve_track_failed.yaml')
 def test_resolve_track_failed(pafy_mock):
     pafy_mock.new.side_effect = Exception('Removed')
 
@@ -62,14 +74,14 @@ def test_resolve_track_failed(pafy_mock):
     assert not video
 
 
-@vcr.use_cassette('tests/fixtures/resolve_track_stream.yaml')
+@my_vcr.use_cassette('resolve_track_stream.yaml')
 def test_resolve_track_stream(pafy_mock_with_video):
     video = backend.resolve_track('C0DPdy98e4c', stream=True)
 
     assert video
 
 
-@vcr.use_cassette('tests/fixtures/resolve_video_track_stream.yaml')
+@my_vcr.use_cassette('resolve_video_track_stream.yaml')
 def test_resolve_video_track_stream(pafy_mock_with_video):
     video = backend.resolve_track('youtube:video/a title.a video id',
                                   stream=True)
@@ -78,7 +90,7 @@ def test_resolve_video_track_stream(pafy_mock_with_video):
     assert video.uri == "http://example.com/"
 
 
-@vcr.use_cassette('tests/fixtures/lookup_video_uri.yaml')
+@my_vcr.use_cassette('lookup_video_uri.yaml')
 def test_lookup_video_uri(caplog):
     provider = YouTubeLibraryProvider(mock.PropertyMock())
 

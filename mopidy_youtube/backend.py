@@ -95,7 +95,7 @@ def search_youtube(q):
         'q': q,
         'key': yt_key
     }
-    result = session.get(yt_api_endpoint+'search', params=query)
+    result = session.get(yt_api_endpoint + 'search', params=query)
     data = result.json()
 
     resolve_pool = ThreadPool(processes=16)
@@ -123,7 +123,7 @@ def resolve_playlist(url):
             logger.debug("Get YouTube-Playlist '%s' page %s", url, page)
             params['pageToken'] = page
 
-        result = session.get(yt_api_endpoint+'playlistItems', params=params)
+        result = session.get(yt_api_endpoint + 'playlistItems', params=params)
         data = result.json()
         page = data.get('nextPageToken')
 
