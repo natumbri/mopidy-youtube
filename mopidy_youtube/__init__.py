@@ -23,6 +23,7 @@ class Extension(ext.Extension):
 
     def get_config_schema(self):
         schema = super(Extension, self).get_config_schema()
+        schema['max_results'] = config.Integer(optional=True)
         return schema
 
     def setup(self, registry):

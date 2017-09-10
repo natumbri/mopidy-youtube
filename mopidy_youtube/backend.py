@@ -87,10 +87,10 @@ def resolve_url(url, stream=False):
     return track
 
 
-def search_youtube(q):
+def search_youtube(q, l=15):
     query = {
         'part': 'id',
-        'maxResults': 15,
+        'maxResults': l,
         'type': 'video',
         'q': q,
         'key': yt_key
@@ -189,7 +189,9 @@ class YouTubeLibraryProvider(backend.LibraryProvider):
             logger.info("Searching YouTube for query '%s'", search_query)
             return SearchResult(
                 uri=search_uri,
-                tracks=search_youtube(search_query)
+                tracks=search_youtube(
+                    search_query,
+                    self.backend.config['youtube']['max_results'])
             )
 
 

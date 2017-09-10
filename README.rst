@@ -46,7 +46,7 @@ collection of plugins. For example, on Debian/Ubuntu you can install it
 by running::
 
     sudo apt-get install gstreamer1.0-plugins-bad
-    
+
 For older versions of Mopidy (pre v2.0), install the plugins by running::
 
     sudo apt-get install gstreamer0.10-plugins-bad
@@ -59,8 +59,11 @@ Install by running::
 Configuration
 =============
 
-No configuration needed. The only supported config value is ``youtube/enabled``
-which can be set to ``false`` to disable the extension.
+max_results - the number of max results returned from search
+
+    [youtube]
+    enabled = true
+    max_results = 15
 
 
 Usage
