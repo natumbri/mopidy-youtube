@@ -95,12 +95,14 @@ def search_youtube(q):
         'q': q,
         'key': yt_key
     }
-    result = session.get(yt_api_endpoint + 'search', params=query)
+    result = session.get(yt_api_endpoint+'search', params=query)
     data = result.json()
-
-    resolve_pool = ThreadPool(processes=16)
-    playlist = [item['id']['videoId'] for item in data['items']]
-
+    playlist = []
+    for item in data['items']:
+        if item['id']['kind'] == 'youtube#video':
+            playlist.append(item['id']['videoId'])
+    num_proc = len(playlist) + 1
+    resolve_pool = ThreadPool(processes=num_proc)
     playlist = resolve_pool.map(resolve_url, playlist)
     resolve_pool.close()
     return [item for item in playlist if item]
