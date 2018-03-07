@@ -20,7 +20,6 @@ import requests
 from mopidy_youtube import logger
 
 yt_api_endpoint = 'https://www.googleapis.com/youtube/v3/'
-yt_key = 'AIzaSyAl1Xq9DwdE_KD4AtPaE4EJl3WZe2zCqg4'
 session = requests.Session()
 
 video_uri_prefix = 'youtube:video'
@@ -93,7 +92,7 @@ def search_youtube(q):
         'maxResults': 15,
         'type': 'video',
         'q': q,
-        'key': yt_key
+        'key': self.config['youtube']['api_key']
     }
     result = session.get(yt_api_endpoint + 'search', params=query)
     data = result.json()
@@ -116,7 +115,7 @@ def resolve_playlist(url):
         params = {
             'playlistId': url,
             'maxResults': 50,
-            'key': yt_key,
+            'key': self.config['youtube']['api_key'],
             'part': 'contentDetails'
         }
         if page and page != "first":
