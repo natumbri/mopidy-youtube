@@ -46,7 +46,7 @@ collection of plugins. For example, on Debian/Ubuntu you can install it
 by running::
 
     sudo apt-get install gstreamer1.0-plugins-bad
-    
+
 For older versions of Mopidy (pre v2.0), install the plugins by running::
 
     sudo apt-get install gstreamer0.10-plugins-bad
@@ -59,9 +59,14 @@ Install by running::
 Configuration
 =============
 
-No configuration needed. The only supported config value is ``youtube/enabled``
-which can be set to ``false`` to disable the extension.
+Before starting Mopidy you must add working youtube API key. You can generate your own key here: https://console.developers.google.com . Default key is not working anymore.
 
+The following configuration values are available:
+
+- ``youtube/enabled``: If the Youtube extension should be enabled or not.
+  Defaults to ``true``.
+
+- ``youtube/api_key``: Your youtube API key.
 
 Usage
 =====
