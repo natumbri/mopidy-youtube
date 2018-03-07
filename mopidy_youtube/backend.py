@@ -86,13 +86,13 @@ def resolve_url(url, stream=False):
     return track
 
 
-def search_youtube(q):
+def search_youtube(api_key, q):
     query = {
         'part': 'id',
         'maxResults': 15,
         'type': 'video',
         'q': q,
-        'key': self.config['youtube']['api_key']
+        'key': api_key
     }
     result = session.get(yt_api_endpoint + 'search', params=query)
     data = result.json()
@@ -105,7 +105,7 @@ def search_youtube(q):
     return [item for item in playlist if item]
 
 
-def resolve_playlist(url):
+def resolve_playlist(api_key, url):
     resolve_pool = ThreadPool(processes=16)
     logger.info("Resolving YouTube-Playlist '%s'", url)
     playlist = []
@@ -115,7 +115,7 @@ def resolve_playlist(url):
         params = {
             'playlistId': url,
             'maxResults': 50,
-            'key': self.config['youtube']['api_key'],
+            'key': api_key,
             'part': 'contentDetails'
         }
         if page and page != "first":
@@ -146,6 +146,10 @@ class YouTubeBackend(pykka.ThreadingActor, backend.Backend):
 
 
 class YouTubeLibraryProvider(backend.LibraryProvider):
+    def __init__(self, backend):
+        self._backend = backend
+        self._api_key = backend.config['youtube']['api_key']
+
     def lookup(self, track):
         if 'yt:' in track:
             track = track.replace('yt:', '')
@@ -154,7 +158,7 @@ class YouTubeLibraryProvider(backend.LibraryProvider):
             url = urlparse(track)
             req = parse_qs(url.query)
             if 'list' in req:
-                return resolve_playlist(req.get('list')[0])
+                return resolve_playlist(self._api_key, req.get('list')[0])
             else:
                 return [item for item in [resolve_url(track)] if item]
         else:
@@ -174,7 +178,7 @@ class YouTubeLibraryProvider(backend.LibraryProvider):
                 if 'list' in req:
                     return SearchResult(
                         uri=search_uri,
-                        tracks=resolve_playlist(req.get('list')[0])
+                        tracks=resolve_playlist(self._api_key, req.get('list')[0])
                     )
                 else:
                     logger.info(
@@ -188,7 +192,7 @@ class YouTubeLibraryProvider(backend.LibraryProvider):
             logger.info("Searching YouTube for query '%s'", search_query)
             return SearchResult(
                 uri=search_uri,
-                tracks=search_youtube(search_query)
+                tracks=search_youtube(self._api_key, search_query)
             )
 
 
