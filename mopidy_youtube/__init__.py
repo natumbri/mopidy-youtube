@@ -23,6 +23,7 @@ class Extension(ext.Extension):
 
     def get_config_schema(self):
         schema = super(Extension, self).get_config_schema()
+        schema['api_key'] = config.String()
         return schema
 
     def setup(self, registry):
