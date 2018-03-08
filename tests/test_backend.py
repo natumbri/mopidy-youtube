@@ -10,7 +10,7 @@ import pytest
 
 import vcr
 
-from mopidy_youtube import backend, logger
+from mopidy_youtube import backend
 from mopidy_youtube.backend import YouTubeLibraryProvider
 
 
