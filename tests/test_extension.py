@@ -10,3 +10,4 @@ def test_get_default_config():
 
     assert '[youtube]' in config
     assert 'enabled = true' in config
+    assert 'api_key = AIzaSyAl1Xq9DwdE_KD4AtPaE4EJl3WZe2zCqg4' in config
