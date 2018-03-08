@@ -10,7 +10,7 @@ import pytest
 
 import vcr
 
-from mopidy_youtube import backend
+from mopidy_youtube import backend, logger
 from mopidy_youtube.backend import YouTubeLibraryProvider
 
 
@@ -102,7 +102,7 @@ def test_lookup_video_uri(caplog):
                             '/a title.C0DPdy98e4c')
 
     assert 'Need 11 character video id or the URL of the video.' \
-           not in caplog.text()
+           not in caplog.text
 
     assert track
 
