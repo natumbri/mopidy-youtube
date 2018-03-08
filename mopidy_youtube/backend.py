@@ -155,7 +155,9 @@ class YouTubeLibraryProvider(backend.LibraryProvider):
             url = urlparse(track)
             req = parse_qs(url.query)
             if 'list' in req:
-                return resolve_playlist(req.get('list')[0], self.backend.yt_key)
+                return resolve_playlist(
+                            req.get('list')[0],
+                            self.backend.yt_key)
             else:
                 return [item for item in [resolve_url(track)] if item]
         else:
@@ -175,7 +177,9 @@ class YouTubeLibraryProvider(backend.LibraryProvider):
                 if 'list' in req:
                     return SearchResult(
                         uri=search_uri,
-                        tracks=resolve_playlist(req.get('list')[0], self.backend.yt_key)
+                        tracks=resolve_playlist(
+                            req.get('list')[0],
+                            self.backend.yt_key)
                     )
                 else:
                     logger.info(
@@ -186,7 +190,9 @@ class YouTubeLibraryProvider(backend.LibraryProvider):
                     )
         else:
             search_query = ' '.join(query.values()[0])
-            logger.info("Searching YouTube for query '%s' with API key '%s'", search_query, self.backend.yt_key)
+            logger.info(
+                "Searching YouTube for query '%s' with API key '%s'",
+                search_query, self.backend.yt_key)
             return SearchResult(
                 uri=search_uri,
                 tracks=search_youtube(search_query, self.backend.yt_key)
