@@ -20,7 +20,7 @@ import requests
 from mopidy_youtube import logger
 
 yt_api_endpoint = 'https://www.googleapis.com/youtube/v3/'
-yt_key = 'AIzaSyAl1Xq9DwdE_KD4AtPaE4EJl3WZe2zCqg4'
+yt_key = 'AIzaSyAlwpbCQ6M_9v3kumk_uC1odreeBI0CAsw'
 session = requests.Session()
 
 video_uri_prefix = 'youtube:video'
