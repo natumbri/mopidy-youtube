@@ -147,6 +147,12 @@ class YouTubeBackend(pykka.ThreadingActor, backend.Backend):
 
 
 class YouTubeLibraryProvider(backend.LibraryProvider):
+
+
+    def __init__(self, backend):
+        self._backend = backend
+        self._config = backend.config['youtube']
+
     def lookup(self, track):
         if 'yt:' in track:
             track = track.replace('yt:', '')
@@ -163,8 +169,10 @@ class YouTubeLibraryProvider(backend.LibraryProvider):
 
     def search(self, query=None, uris=None, exact=False):
         # TODO Support exact search
-
-        if not query:
+        
+        if not query or not self._config["enable_search"]:
+            if not self._config["enable_search"]:
+                logger.info("SEARCH DISABLED!")
             return
 
         if 'uri' in query:
