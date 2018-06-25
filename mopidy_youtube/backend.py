@@ -171,8 +171,6 @@ class YouTubeLibraryProvider(backend.LibraryProvider):
         # TODO Support exact search
         
         if not query or not self._config["enable_search"]:
-            if not self._config["enable_search"]:
-                logger.info("SEARCH DISABLED!")
             return
 
         if 'uri' in query:
