@@ -147,24 +147,36 @@ class YouTubeBackend(pykka.ThreadingActor, backend.Backend):
 
 
 class YouTubeLibraryProvider(backend.LibraryProvider):
+
+
+    def __init__(self, backend):
+        self._backend = backend
+        self._config = backend.config['youtube']
+
     def lookup(self, track):
         if 'yt:' in track:
             track = track.replace('yt:', '')
 
-        if 'youtube.com' in track:
+        if 'youtube.com' in track: 
             url = urlparse(track)
             req = parse_qs(url.query)
             if 'list' in req:
                 return resolve_playlist(req.get('list')[0])
             else:
                 return [item for item in [resolve_url(track)] if item]
+        elif 'youtu.be' in track:
+            url = urlparse(track)
+            # get path component of url
+            track = url.path
+            if track[0] == '/': track = track[1:] # Remove starting /
+            return [item for item in [resolve_url(track)] if item]
         else:
             return [item for item in [resolve_track(track)] if item]
 
     def search(self, query=None, uris=None, exact=False):
         # TODO Support exact search
-
-        if not query:
+        
+        if not query or not self._config["enable_search"]:
             return
 
         if 'uri' in query:
