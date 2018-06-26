@@ -157,13 +157,19 @@ class YouTubeLibraryProvider(backend.LibraryProvider):
         if 'yt:' in track:
             track = track.replace('yt:', '')
 
-        if 'youtube.com' in track:
+        if 'youtube.com' in track: 
             url = urlparse(track)
             req = parse_qs(url.query)
             if 'list' in req:
                 return resolve_playlist(req.get('list')[0])
             else:
                 return [item for item in [resolve_url(track)] if item]
+        elif 'youtu.be' in track:
+            url = urlparse(track)
+            # get path component of url
+            track = url.path
+            if track[0] == '/': track = track[1:] # Remove starting /
+            return [item for item in [resolve_url(track)] if item]
         else:
             return [item for item in [resolve_track(track)] if item]
 
