@@ -158,6 +158,12 @@ class YouTubeLibraryProvider(backend.LibraryProvider):
                 return resolve_playlist(req.get('list')[0])
             else:
                 return [item for item in [resolve_url(track)] if item]
+        elif 'youtu.be' in track:
+            url = urlparse(track)
+            # get path component of url
+            track = url.path
+            if track[0] == '/': track = track[1:] # Remove starting /
+            return [item for item in [resolve_url(track)] if item]
         else:
             return [item for item in [resolve_track(track)] if item]
 
