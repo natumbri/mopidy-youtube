@@ -99,7 +99,7 @@ def search_youtube(q):
     data = result.json()
 
     resolve_pool = ThreadPool(processes=16)
-    if 'data' in items:
+    if 'items' in data:
         playlist = [item['id']['videoId'] for item in data['items']]
     else:
         playlist = []
