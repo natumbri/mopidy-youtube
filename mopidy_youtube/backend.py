@@ -20,7 +20,6 @@ import requests
 from mopidy_youtube import logger
 
 yt_api_endpoint = 'https://www.googleapis.com/youtube/v3/'
-yt_key = 'AIzaSyAl1Xq9DwdE_KD4AtPaE4EJl3WZe2zCqg4'
 session = requests.Session()
 
 video_uri_prefix = 'youtube:video'
@@ -139,7 +138,8 @@ def resolve_playlist(url):
 class YouTubeBackend(pykka.ThreadingActor, backend.Backend):
     def __init__(self, config, audio):
         super(YouTubeBackend, self).__init__()
-        self.config = config
+        ytconf = config['youtube']
+        yt_key = ytconf['api_key']
         self.library = YouTubeLibraryProvider(backend=self)
         self.playback = YouTubePlaybackProvider(audio=audio, backend=self)
 
