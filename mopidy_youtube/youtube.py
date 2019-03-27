@@ -363,9 +363,10 @@ class Playlist(Entry):
 # https://developers.google.com/youtube/v3/docs/
 #
 class API:
+    proxy_config = None
     endpoint = 'https://www.googleapis.com/youtube/v3/'
     session = get_requests_session(
-        proxy_config=config['proxy'],
+        proxy_config=proxy_config,
         user_agent='%s/%s' % (
             mopidy_youtube.Extension.dist_name,
             mopidy_youtube.Extension.version)
@@ -439,9 +440,9 @@ class API:
 #
 class scrAPI:
     endpoint = 'https://www.youtube.com/'
-
+    proxy_config = None
     session = get_requests_session(
-        proxy_config=config['proxy'],
+        proxy_config=proxy_config,
         user_agent='%s/%s' % (
             mopidy_youtube.Extension.dist_name,
             mopidy_youtube.Extension.version)
