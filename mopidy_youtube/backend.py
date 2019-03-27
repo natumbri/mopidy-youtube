@@ -109,13 +109,14 @@ class YouTubeLibraryProvider(backend.LibraryProvider):
                 album = 'YouTube Playlist (%s videos)' % \
                         entry.video_count.get()
 
-            track_title = entry.title.get()
+            # track_title = entry.title.get().replace(';', '')
 
-            if ';' in track_title:
-                track_title = track_title.replace(';', '')
+            # if ';' in track_title:
+            #     track_title = track_title.replace(';', '')
 
             tracks.append(Track(
-                name=track_title,
+                # name=track_title,
+                name=entry.title.get().replace(';', ''),
                 comment=entry.id,
                 length=0,
                 artists=[Artist(name=entry.channel.get())],
@@ -181,13 +182,14 @@ class YouTubeLibraryProvider(backend.LibraryProvider):
             video = youtube.Video.get(video_id)
             video.audio_url  # start loading
 
-            track_title = video.title.get()
-
-            if ';' in track_title:
-                track_title = track_title.replace(';', '')
+            # track_title = video.title.get()
+            # 
+            # if ';' in track_title:
+            #     track_title = track_title.replace(';', '')
 
             return [Track(
-                name=track_title,
+                # name=track_title,
+                name=video.title.get().replace(';', ''),
                 comment=video.id,
                 length=video.length.get() * 1000,
                 artists=[Artist(name=video.channel.get())],
@@ -213,13 +215,14 @@ class YouTubeLibraryProvider(backend.LibraryProvider):
                 video.audio_url  # start loading
 
             return [Track(
-                name=video.title.get(),
+                # name=video.title.get(),entry.title.get().replace(';', '')
+                name=video.title.get().replace(';', ''),
                 comment=video.id,
                 length=video.length.get() * 1000,
                 track_no=count,
                 artists=[Artist(name=video.channel.get())],
                 album=Album(
-                    name=playlist.title.get(),
+                    name=playlist.title.get().replace(';', ''),
                     images=playlist.thumbnails.get(),
                 ),
                 uri='youtube:video/%s.%s' %

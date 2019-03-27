@@ -14,21 +14,21 @@ import pykka
 
 import requests
 
-from mopidy_youtube import logger, Extension
+from mopidy_youtube import logger
 from mopidy import httpclient
 
-# Making HTTP requests from extensions
-# https://docs.mopidy.com/en/latest/extensiondev/#making-http-requests-from-extensions
-
-def get_requests_session(proxy_config, user_agent):
-    proxy = httpclient.format_proxy(proxy_config)
-    full_user_agent = httpclient.format_user_agent(user_agent)
-
-    session = requests.Session()
-    session.proxies.update({'http': proxy, 'https': proxy})
-    session.headers.update({'user-agent': full_user_agent})
-    
-    return session
+# # Making HTTP requests from extensions
+# # https://docs.mopidy.com/en/latest/extensiondev/#making-http-requests-from-extensions
+# 
+# def get_requests_session(proxy_config, user_agent):
+#     proxy = httpclient.format_proxy(proxy_config)
+#     full_user_agent = httpclient.format_user_agent(user_agent)
+# 
+#     session = requests.Session()
+#     session.proxies.update({'http': proxy, 'https': proxy})
+#     session.headers.update({'user-agent': full_user_agent})
+#     
+#     return session
 
 # decorator for creating async properties using pykka.ThreadingFuture
 # A property 'foo' should have a future '_foo'
@@ -365,12 +365,14 @@ class Playlist(Entry):
 class API:
     proxy_config = None
     endpoint = 'https://www.googleapis.com/youtube/v3/'
-    session = get_requests_session(
-        proxy_config=proxy_config,
-        user_agent='%s/%s' % (
-            mopidy_youtube.Extension.dist_name,
-            mopidy_youtube.Extension.version)
-        )
+    session = requests.Session()
+    # session = get_requests_session(
+    #     proxy_config=proxy_config,
+    #     user_agent='Mopidy-YouTube/2.0.2'
+    #     # user_agent='%s/%s' % (
+    #     #     mopidy_youtube.Extension.dist_name,
+    #     #     mopidy_youtube.Extension.version)
+    # )
 
     # overridable by config
     search_results = 15
@@ -441,12 +443,14 @@ class API:
 class scrAPI:
     endpoint = 'https://www.youtube.com/'
     proxy_config = None
-    session = get_requests_session(
-        proxy_config=proxy_config,
-        user_agent='%s/%s' % (
-            mopidy_youtube.Extension.dist_name,
-            mopidy_youtube.Extension.version)
-        )
+    session = requests.Session()
+    # session = get_requests_session(
+    #     proxy_config=proxy_config,
+    #     user_agent='Mopidy-YouTube/2.0.2'
+    #     # user_agent='%s/%s' % (
+    #     #     mopidy_youtube.Extension.dist_name,
+    #     #     mopidy_youtube.Extension.version)
+    # )
 
     # search for videos and playlists
     #
