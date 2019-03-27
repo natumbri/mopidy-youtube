@@ -23,6 +23,8 @@ class Extension(ext.Extension):
 
     def get_config_schema(self):
         schema = super(Extension, self).get_config_schema()
+        schema['search_results'] = config.Integer()
+        schema['playlist_max_videos'] = config.Integer()
         schema['api_key'] = config.String()
         return schema
 
