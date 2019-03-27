@@ -22,8 +22,6 @@ from mopidy_youtube import logger, youtube
 # step 1 requires only 2 API calls. Data for the next steps are loaded in the
 # background, so steps 2/3 are usually instantaneous.
 
-video_uri_prefix = 'youtube:video'
-search_uri = 'youtube:search'
 
 
 # youtube:video/<title>.<id> ==> <id>
@@ -47,8 +45,7 @@ def safe_url(uri):
 class YouTubeBackend(pykka.ThreadingActor, backend.Backend):
     def __init__(self, config, audio):
         super(YouTubeBackend, self).__init__()
-        ytconf = config['youtube']
-        yt_key = ytconf['api_key']
+        self.config = config
         self.library = YouTubeLibraryProvider(backend=self)
         self.playback = YouTubePlaybackProvider(audio=audio, backend=self)
 
@@ -57,6 +54,8 @@ class YouTubeBackend(pykka.ThreadingActor, backend.Backend):
         youtube.API.search_results = ytconf['search_results']
         youtube.Playlist.max_videos = ytconf['playlist_max_videos']
 
+        youtube.ThreadPool.threads_max = ytconf['threads_max']
+        youtube.api_enabled = ytconf['api_enabled']
         self.uri_schemes = ['youtube', 'yt']
 
 
@@ -108,8 +107,13 @@ class YouTubeLibraryProvider(backend.LibraryProvider):
                 album = 'YouTube Playlist (%s videos)' % \
                         entry.video_count.get()
 
+            track_title = entry.title.get()
+
+            if ';' in track_title:
+                track_title = track_title.replace(';', '')
+
             tracks.append(Track(
-                name=entry.title.get(),
+                name=track_title,
                 comment=entry.id,
                 length=0,
                 artists=[Artist(name=entry.channel.get())],
@@ -153,6 +157,11 @@ class YouTubeLibraryProvider(backend.LibraryProvider):
 
         video_id = playlist_id = None
 
+        # Support adding youtu.be urls
+        #
+        if 'youtu.be/' in uri:
+            uri = uri.replace('youtu.be/', 'www.youtube.com/watch?v=')
+            
         if 'youtube.com' in uri:
             url = urlparse(uri.replace('yt:', '').replace('youtube:', ''))
             req = parse_qs(url.query)
@@ -170,8 +179,13 @@ class YouTubeLibraryProvider(backend.LibraryProvider):
             video = youtube.Video.get(video_id)
             video.audio_url  # start loading
 
+            track_title = video.title.get()
+
+            if ';' in track_title:
+                track_title = track_title.replace(';', '')
+
             return [Track(
-                name=video.title.get(),
+                name=track_title,
                 comment=video.id,
                 length=video.length.get() * 1000,
                 artists=[Artist(name=video.channel.get())],
