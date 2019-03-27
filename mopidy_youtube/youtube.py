@@ -14,7 +14,7 @@ import pykka
 
 import requests
 
-from mopidy_youtube import logger
+from mopidy_youtube import logger, Extension
 from mopidy import httpclient
 
 # Making HTTP requests from extensions
