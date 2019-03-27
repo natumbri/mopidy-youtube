@@ -1,0 +1,31 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept: ['*/*']
+      Accept-Encoding: ['gzip, deflate']
+      Connection: [keep-alive]
+      User-Agent: [python-requests/2.7.0 CPython/2.7.9 Linux/3.19.0-28-generic]
+    method: GET
+    uri: https://www.googleapis.com/youtube/v3/videos?part=id%2Csnippet%2CcontentDetails&id=TU3b1qyEGsE&key=AIzaSyAl1Xq9DwdE_KD4AtPaE4EJl3WZe2zCqg4&fields=items%28id%2Csnippet%28title%2CchannelTitle%29%2CcontentDetails%28duration%29%29
+  response:
+    body: {string: !!python/unicode "{\n \"items\": [\n  {\n   \"id\": \"TU3b1qyEGsE\",\n
+        \  \"snippet\": {\n    \"title\": \"CHVRCHES: The Bones of What You Believe
+        Full Album\",\n    \"channelTitle\": \"Brave New World\"\n   },\n   \"contentDetails\":
+        {\n    \"duration\": \"PT48M6S\"\n   }\n  }\n ]\n}\n"}
+    headers:
+      alt-svc: ['quic=":443"; p="1"; ma=604800']
+      alternate-protocol: ['443:quic,p=1']
+      cache-control: ['private, max-age=300, must-revalidate, no-transform']
+      content-length: ['232']
+      content-type: [application/json; charset=UTF-8]
+      date: ['Thu, 17 Sep 2015 14:46:02 GMT']
+      etag: ['"jOXstHOM20qemPbHbyzf7ztZ7rI/-KV4D0Tk06NYH4tgAaEiNOPoZX0"']
+      expires: ['Thu, 17 Sep 2015 14:46:02 GMT']
+      server: [GSE]
+      vary: [Origin, X-Origin]
+      x-content-type-options: [nosniff]
+      x-frame-options: [SAMEORIGIN]
+      x-xss-protection: [1; mode=block]
+    status: {code: 200, message: OK}
+version: 1
