@@ -21,7 +21,6 @@ from mopidy_youtube import logger
 
 yt_api_endpoint = 'https://www.googleapis.com/youtube/v3/'
 session = requests.Session()
-
 video_uri_prefix = 'youtube:video'
 search_uri = 'youtube:search'
 
@@ -139,15 +138,12 @@ class YouTubeBackend(pykka.ThreadingActor, backend.Backend):
     def __init__(self, config, audio):
         super(YouTubeBackend, self).__init__()
         self.config = config
+        self.youtube_api_key = config['youtube']['youtube_api_key']
         self.library = YouTubeLibraryProvider(backend=self)
         self.playback = YouTubePlaybackProvider(audio=audio, backend=self)
         self.uri_schemes = ['youtube', 'yt']
 
-
 class YouTubeLibraryProvider(backend.LibraryProvider):
-    def __init__(self, config, audio):
-        youtube_api_key = YouTubeBackend.config['youtube']['youtube_api_key']
-
     def lookup(self, track):
         if 'yt:' in track:
             track = track.replace('yt:', '')
@@ -156,7 +152,7 @@ class YouTubeLibraryProvider(backend.LibraryProvider):
             url = urlparse(track)
             req = parse_qs(url.query)
             if 'list' in req:
-                return resolve_playlist(req.get('list')[0], youtube_api_key)
+                return resolve_playlist(req.get('list')[0], self.backend.youtube_api_key)
             else:
                 return [item for item in [resolve_url(track)] if item]
         else:
@@ -190,7 +186,7 @@ class YouTubeLibraryProvider(backend.LibraryProvider):
             logger.info("Searching YouTube for query '%s'", search_query)
             return SearchResult(
                 uri=search_uri,
-                tracks=search_youtube(search_query, youtube_api_key)
+                tracks=search_youtube(search_query, self.backend.youtube_api_key)
             )
 
 
