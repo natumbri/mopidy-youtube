@@ -10,3 +10,4 @@ dist/
 xunit-*.xml
 .Rproj.user
 mopidy-youtube.Rproj
+.Rhistory
