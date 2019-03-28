@@ -29,7 +29,6 @@ setup(
         'pafy >= 0.3.35',
         'Mopidy >= 1.0',
         'Pykka >= 1.1',
-        'cachetools',
     ],
     entry_points={
         'mopidy.ext': [

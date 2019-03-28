@@ -21,6 +21,7 @@ from mopidy_youtube import logger
 
 yt_api_endpoint = 'https://www.googleapis.com/youtube/v3/'
 session = requests.Session()
+
 video_uri_prefix = 'youtube:video'
 search_uri = 'youtube:search'
 

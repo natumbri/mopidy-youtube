@@ -8,3 +8,5 @@ MANIFEST
 build/
 dist/
 xunit-*.xml
+.Rproj.user
+mopidy-youtube.Rproj
