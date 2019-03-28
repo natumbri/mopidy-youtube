@@ -64,7 +64,7 @@ to your Mopidy configuration file::
 
     [youtube]
     enabled = true
-    api_key = api key you got from Google
+    youtube_api_key = api key you got from Google
 
 
 
