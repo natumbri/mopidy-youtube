@@ -5,6 +5,7 @@ from __future__ import unicode_literals
 import re
 import string
 import unicodedata
+from collections import OrderedDict
 from multiprocessing.pool import ThreadPool
 from urlparse import parse_qs, urlparse
 
@@ -64,7 +65,7 @@ def resolve_url(url, stream=False):
             return
     except Exception as e:
         # Video is private or doesn't exist
-        logger.info(e.message)
+        logger.info('Video is private or does not exist: ' + str(e))
         return
 
     images = []
@@ -87,6 +88,7 @@ def resolve_url(url, stream=False):
 
 
 def search_youtube(q, youtube_api_key, processes, max_results):
+    query = OrderedDict()
     query = {
         'part': 'id',
         'maxResults': max_results,
@@ -111,6 +113,7 @@ def resolve_playlist(url, youtube_api_key, processes, max_results):
     playlist = []
 
     page = 'first'
+    params = OrderedDict()
     while page:
         params = {
             'playlistId': url,
@@ -147,6 +150,7 @@ class YouTubeBackend(pykka.ThreadingActor, backend.Backend):
         self.playback = YouTubePlaybackProvider(audio=audio, backend=self)
         self.uri_schemes = ['youtube', 'yt']
 
+
 class YouTubeLibraryProvider(backend.LibraryProvider):
     def lookup(self, track):
         if 'yt:' in track:
@@ -155,6 +159,7 @@ class YouTubeLibraryProvider(backend.LibraryProvider):
         if 'youtube.com' in track:
             url = urlparse(track)
             req = parse_qs(url.query)
+
             if 'list' in req:
                 return resolve_playlist(
                     url=req.get('list')[0],
@@ -201,8 +206,8 @@ class YouTubeLibraryProvider(backend.LibraryProvider):
             return SearchResult(
                 uri=search_uri,
                 tracks=search_youtube(
-                    q=search_query, 
-                    youtube_api_key=self.backend.youtube_api_key, 
+                    q=search_query,
+                    youtube_api_key=self.backend.youtube_api_key,
                     processes=self.backend.threads_max,
                     max_results=self.backend.search_results
                 )
