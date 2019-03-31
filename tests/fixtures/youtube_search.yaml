@@ -2,60 +2,68 @@ interactions:
 - request:
     body: null
     headers:
-      Accept: ['*/*']
-      Accept-Encoding: ['gzip, deflate']
-      Connection: [keep-alive]
-      User-Agent: [python-requests/2.9.1]
+      Connection:
+      - close
+      Host:
+      - www.googleapis.com
+      User-Agent:
+      - Python-urllib/2.7
     method: GET
-    uri: https://www.googleapis.com/youtube/v3/search?part=id&q=chvrches&maxResults=15&type=video&key=AIzaSyAl1Xq9DwdE_KD4AtPaE4EJl3WZe2zCqg4
+    uri: https://www.googleapis.com/youtube/v3/search?q=chvrches&key=mock_api_key_for_tests&part=id&maxResults=10&type=video
   response:
-    body: {string: !!python/unicode "{\n \"kind\": \"youtube#searchListResponse\",\n
-        \"etag\": \"\\\"gMxXHe-zinKdE9lTnzKu8vjcmDI/VsP4qcJf6cr5ebPm-aH1WTFBsP8\\\"\",\n
-        \"nextPageToken\": \"CA8QAA\",\n \"regionCode\": \"DE\",\n \"pageInfo\": {\n
-        \ \"totalResults\": 367059,\n  \"resultsPerPage\": 15\n },\n \"items\": [\n
-        \ {\n   \"kind\": \"youtube#searchResult\",\n   \"etag\": \"\\\"gMxXHe-zinKdE9lTnzKu8vjcmDI/N62nNRIBR6JMMA3QHwCDamuj_Rc\\\"\",\n
+    body:
+      string: !!python/unicode "{\n \"kind\": \"youtube#searchListResponse\",\n \"etag\":
+        \"\\\"XpPGQXPnxQJhLgs6enD_n8JR4Qk/5HnDLFkzZTtDvdelnqH5zRicPJY\\\"\",\n \"nextPageToken\":
+        \"CAoQAA\",\n \"regionCode\": \"US\",\n \"pageInfo\": {\n  \"totalResults\":
+        1000000,\n  \"resultsPerPage\": 10\n },\n \"items\": [\n  {\n   \"kind\":
+        \"youtube#searchResult\",\n   \"etag\": \"\\\"XpPGQXPnxQJhLgs6enD_n8JR4Qk/w2Ad1Oy55aR_2Gn9cpLvrhsaCCc\\\"\",\n
+        \  \"id\": {\n    \"kind\": \"youtube#video\",\n    \"videoId\": \"e1YqueG2gtQ\"\n
+        \  }\n  },\n  {\n   \"kind\": \"youtube#searchResult\",\n   \"etag\": \"\\\"XpPGQXPnxQJhLgs6enD_n8JR4Qk/Z5hW9opnsnRKeeeA0CgAJpWFpk8\\\"\",\n
+        \  \"id\": {\n    \"kind\": \"youtube#video\",\n    \"videoId\": \"HHnjuUVgSJ4\"\n
+        \  }\n  },\n  {\n   \"kind\": \"youtube#searchResult\",\n   \"etag\": \"\\\"XpPGQXPnxQJhLgs6enD_n8JR4Qk/N62nNRIBR6JMMA3QHwCDamuj_Rc\\\"\",\n
         \  \"id\": {\n    \"kind\": \"youtube#video\",\n    \"videoId\": \"4Eo84jDIMKI\"\n
-        \  }\n  },\n  {\n   \"kind\": \"youtube#searchResult\",\n   \"etag\": \"\\\"gMxXHe-zinKdE9lTnzKu8vjcmDI/W9dQENrUpeEpmfU_HUrA86qf6qs\\\"\",\n
-        \  \"id\": {\n    \"kind\": \"youtube#video\",\n    \"videoId\": \"B9BLMNn0PrQ\"\n
-        \  }\n  },\n  {\n   \"kind\": \"youtube#searchResult\",\n   \"etag\": \"\\\"gMxXHe-zinKdE9lTnzKu8vjcmDI/3IezfTBiiPjbdpd5swNI4Gjx-jk\\\"\",\n
+        \  }\n  },\n  {\n   \"kind\": \"youtube#searchResult\",\n   \"etag\": \"\\\"XpPGQXPnxQJhLgs6enD_n8JR4Qk/rAJJUXaM9VA38z9UTJ32XxDeUQw\\\"\",\n
+        \  \"id\": {\n    \"kind\": \"youtube#video\",\n    \"videoId\": \"LDSVLQoPc8w\"\n
+        \  }\n  },\n  {\n   \"kind\": \"youtube#searchResult\",\n   \"etag\": \"\\\"XpPGQXPnxQJhLgs6enD_n8JR4Qk/3IezfTBiiPjbdpd5swNI4Gjx-jk\\\"\",\n
         \  \"id\": {\n    \"kind\": \"youtube#video\",\n    \"videoId\": \"_mTRvJ9fugM\"\n
-        \  }\n  },\n  {\n   \"kind\": \"youtube#searchResult\",\n   \"etag\": \"\\\"gMxXHe-zinKdE9lTnzKu8vjcmDI/_8h0hU7fZscgrbr6Ni8AcZ8SZek\\\"\",\n
-        \  \"id\": {\n    \"kind\": \"youtube#video\",\n    \"videoId\": \"BZyzX4c1vIs\"\n
-        \  }\n  },\n  {\n   \"kind\": \"youtube#searchResult\",\n   \"etag\": \"\\\"gMxXHe-zinKdE9lTnzKu8vjcmDI/YSHn1TNgPRAlT93S47BuyMUzlV4\\\"\",\n
-        \  \"id\": {\n    \"kind\": \"youtube#video\",\n    \"videoId\": \"ktoaj1IpTbw\"\n
-        \  }\n  },\n  {\n   \"kind\": \"youtube#searchResult\",\n   \"etag\": \"\\\"gMxXHe-zinKdE9lTnzKu8vjcmDI/7EQ7MT5JIRPIsfBOzoAGbmyrKZI\\\"\",\n
-        \  \"id\": {\n    \"kind\": \"youtube#video\",\n    \"videoId\": \"KNHxwSp-6Og\"\n
-        \  }\n  },\n  {\n   \"kind\": \"youtube#searchResult\",\n   \"etag\": \"\\\"gMxXHe-zinKdE9lTnzKu8vjcmDI/kPwTMwlUdVdaA-3OSQV4o7fjOIQ\\\"\",\n
-        \  \"id\": {\n    \"kind\": \"youtube#video\",\n    \"videoId\": \"81RqEnvczV8\"\n
-        \  }\n  },\n  {\n   \"kind\": \"youtube#searchResult\",\n   \"etag\": \"\\\"gMxXHe-zinKdE9lTnzKu8vjcmDI/6lLxsx4-nzLoy20iBcp6DevuCGQ\\\"\",\n
-        \  \"id\": {\n    \"kind\": \"youtube#video\",\n    \"videoId\": \"p_A1PDN2aXw\"\n
-        \  }\n  },\n  {\n   \"kind\": \"youtube#searchResult\",\n   \"etag\": \"\\\"gMxXHe-zinKdE9lTnzKu8vjcmDI/qXkLEENk7SdNRzJKrt0ffs44i8Y\\\"\",\n
-        \  \"id\": {\n    \"kind\": \"youtube#video\",\n    \"videoId\": \"JyqemIbjcfg\"\n
-        \  }\n  },\n  {\n   \"kind\": \"youtube#searchResult\",\n   \"etag\": \"\\\"gMxXHe-zinKdE9lTnzKu8vjcmDI/yw8l2TamUNuR1pdri9uul3Y324c\\\"\",\n
-        \  \"id\": {\n    \"kind\": \"youtube#video\",\n    \"videoId\": \"pWAkPRKx1HI\"\n
-        \  }\n  },\n  {\n   \"kind\": \"youtube#searchResult\",\n   \"etag\": \"\\\"gMxXHe-zinKdE9lTnzKu8vjcmDI/jYmtypJsIvubTpjqp_xEj01401M\\\"\",\n
-        \  \"id\": {\n    \"kind\": \"youtube#video\",\n    \"videoId\": \"CjwwmFrsX_E\"\n
-        \  }\n  },\n  {\n   \"kind\": \"youtube#searchResult\",\n   \"etag\": \"\\\"gMxXHe-zinKdE9lTnzKu8vjcmDI/nFRQICKOptZ_1Ql3WYQRy-xTMeQ\\\"\",\n
-        \  \"id\": {\n    \"kind\": \"youtube#video\",\n    \"videoId\": \"3UNP2aJKzyA\"\n
-        \  }\n  },\n  {\n   \"kind\": \"youtube#searchResult\",\n   \"etag\": \"\\\"gMxXHe-zinKdE9lTnzKu8vjcmDI/Wl1rkawwplyT-s8cZWZIutMx84M\\\"\",\n
-        \  \"id\": {\n    \"kind\": \"youtube#video\",\n    \"videoId\": \"AU9_0pxiDjY\"\n
-        \  }\n  },\n  {\n   \"kind\": \"youtube#searchResult\",\n   \"etag\": \"\\\"gMxXHe-zinKdE9lTnzKu8vjcmDI/GjyLc47sdTqSDcg0cHnYVburu3A\\\"\",\n
+        \  }\n  },\n  {\n   \"kind\": \"youtube#searchResult\",\n   \"etag\": \"\\\"XpPGQXPnxQJhLgs6enD_n8JR4Qk/fCQdEu4ewMoE-QBLSE1rJSxQQ4k\\\"\",\n
+        \  \"id\": {\n    \"kind\": \"youtube#video\",\n    \"videoId\": \"naOZNWYGutg\"\n
+        \  }\n  },\n  {\n   \"kind\": \"youtube#searchResult\",\n   \"etag\": \"\\\"XpPGQXPnxQJhLgs6enD_n8JR4Qk/W9dQENrUpeEpmfU_HUrA86qf6qs\\\"\",\n
+        \  \"id\": {\n    \"kind\": \"youtube#video\",\n    \"videoId\": \"B9BLMNn0PrQ\"\n
+        \  }\n  },\n  {\n   \"kind\": \"youtube#searchResult\",\n   \"etag\": \"\\\"XpPGQXPnxQJhLgs6enD_n8JR4Qk/QdcyGEy7ozvlcW3AmZtys37_-Zo\\\"\",\n
+        \  \"id\": {\n    \"kind\": \"youtube#video\",\n    \"videoId\": \"zYXgyh-Tot8\"\n
+        \  }\n  },\n  {\n   \"kind\": \"youtube#searchResult\",\n   \"etag\": \"\\\"XpPGQXPnxQJhLgs6enD_n8JR4Qk/GjyLc47sdTqSDcg0cHnYVburu3A\\\"\",\n
         \  \"id\": {\n    \"kind\": \"youtube#video\",\n    \"videoId\": \"haunJARHPm4\"\n
-        \  }\n  },\n  {\n   \"kind\": \"youtube#searchResult\",\n   \"etag\": \"\\\"gMxXHe-zinKdE9lTnzKu8vjcmDI/1bC-AatWfiadKMhhPyURN4GztXM\\\"\",\n
-        \  \"id\": {\n    \"kind\": \"youtube#video\",\n    \"videoId\": \"fB4gjiMVKFI\"\n
-        \  }\n  }\n ]\n}\n"}
+        \  }\n  },\n  {\n   \"kind\": \"youtube#searchResult\",\n   \"etag\": \"\\\"XpPGQXPnxQJhLgs6enD_n8JR4Qk/7EQ7MT5JIRPIsfBOzoAGbmyrKZI\\\"\",\n
+        \  \"id\": {\n    \"kind\": \"youtube#video\",\n    \"videoId\": \"KNHxwSp-6Og\"\n
+        \  }\n  }\n ]\n}\n"
     headers:
-      alt-svc: ['quic=":443"; ma=2592000; v="35,34"']
-      cache-control: ['private, max-age=120, must-revalidate, no-transform']
-      content-length: ['3126']
-      content-type: [application/json; charset=UTF-8]
-      date: ['Fri, 13 Jan 2017 22:12:22 GMT']
-      etag: ['"gMxXHe-zinKdE9lTnzKu8vjcmDI/VsP4qcJf6cr5ebPm-aH1WTFBsP8"']
-      expires: ['Fri, 13 Jan 2017 22:12:22 GMT']
-      server: [GSE]
-      vary: [Origin, X-Origin]
-      x-content-type-options: [nosniff]
-      x-frame-options: [SAMEORIGIN]
-      x-xss-protection: [1; mode=block]
-    status: {code: 200, message: OK}
+      cache-control:
+      - private, max-age=120, must-revalidate, no-transform
+      connection:
+      - close
+      content-length:
+      - '2167'
+      content-type:
+      - application/json; charset=UTF-8
+      date:
+      - Sun, 31 Mar 2019 02:04:27 GMT
+      etag:
+      - '"XpPGQXPnxQJhLgs6enD_n8JR4Qk/5HnDLFkzZTtDvdelnqH5zRicPJY"'
+      expires:
+      - Sun, 31 Mar 2019 02:04:27 GMT
+      server:
+      - GSE
+      vary:
+      - Origin
+      - X-Origin
+      x-content-type-options:
+      - nosniff
+      x-frame-options:
+      - SAMEORIGIN
+      x-xss-protection:
+      - 1; mode=block
+    status:
+      code: 200
+      message: OK
 version: 1

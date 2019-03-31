@@ -5,6 +5,7 @@ from __future__ import unicode_literals
 import re
 import string
 import unicodedata
+from collections import OrderedDict
 from multiprocessing.pool import ThreadPool
 from urlparse import parse_qs, urlparse
 
@@ -20,7 +21,6 @@ import requests
 from mopidy_youtube import logger
 
 yt_api_endpoint = 'https://www.googleapis.com/youtube/v3/'
-yt_key = 'AIzaSyAl1Xq9DwdE_KD4AtPaE4EJl3WZe2zCqg4'
 session = requests.Session()
 
 video_uri_prefix = 'youtube:video'
@@ -65,7 +65,7 @@ def resolve_url(url, stream=False):
             return
     except Exception as e:
         # Video is private or doesn't exist
-        logger.info(e.message)
+        logger.info('Video is private or does not exist: ' + str(e))
         return
 
     images = []
@@ -87,18 +87,19 @@ def resolve_url(url, stream=False):
     return track
 
 
-def search_youtube(q):
+def search_youtube(q, youtube_api_key, processes, max_results):
+    query = OrderedDict()
     query = {
         'part': 'id',
-        'maxResults': 15,
+        'maxResults': max_results,
         'type': 'video',
         'q': q,
-        'key': yt_key
+        'key': youtube_api_key
     }
     result = session.get(yt_api_endpoint + 'search', params=query)
     data = result.json()
 
-    resolve_pool = ThreadPool(processes=16)
+    resolve_pool = ThreadPool(processes=processes)
     playlist = [item['id']['videoId'] for item in data['items']]
 
     playlist = resolve_pool.map(resolve_url, playlist)
@@ -106,17 +107,18 @@ def search_youtube(q):
     return [item for item in playlist if item]
 
 
-def resolve_playlist(url):
-    resolve_pool = ThreadPool(processes=16)
+def resolve_playlist(url, youtube_api_key, processes, max_results):
+    resolve_pool = ThreadPool(processes=processes)
     logger.info("Resolving YouTube-Playlist '%s'", url)
     playlist = []
 
     page = 'first'
+    params = OrderedDict()
     while page:
         params = {
             'playlistId': url,
-            'maxResults': 50,
-            'key': yt_key,
+            'maxResults': max_results,
+            'key': youtube_api_key,
             'part': 'contentDetails'
         }
         if page and page != "first":
@@ -140,9 +142,12 @@ class YouTubeBackend(pykka.ThreadingActor, backend.Backend):
     def __init__(self, config, audio):
         super(YouTubeBackend, self).__init__()
         self.config = config
+        self.search_results = config['youtube']['search_results']
+        self.playlist_max_videos = config['youtube']['playlist_max_videos']
+        self.youtube_api_key = config['youtube']['youtube_api_key']
+        self.threads_max = config['youtube']['threads_max']
         self.library = YouTubeLibraryProvider(backend=self)
         self.playback = YouTubePlaybackProvider(audio=audio, backend=self)
-
         self.uri_schemes = ['youtube', 'yt']
 
 
@@ -154,8 +159,14 @@ class YouTubeLibraryProvider(backend.LibraryProvider):
         if 'youtube.com' in track:
             url = urlparse(track)
             req = parse_qs(url.query)
+
             if 'list' in req:
-                return resolve_playlist(req.get('list')[0])
+                return resolve_playlist(
+                    url=req.get('list')[0],
+                    youtube_api_key=self.backend.youtube_api_key,
+                    processes=self.backend.threads_max,
+                    max_results=self.backend.playlist_max_videos
+                )
             else:
                 return [item for item in [resolve_url(track)] if item]
         else:
@@ -175,7 +186,12 @@ class YouTubeLibraryProvider(backend.LibraryProvider):
                 if 'list' in req:
                     return SearchResult(
                         uri=search_uri,
-                        tracks=resolve_playlist(req.get('list')[0])
+                        tracks=resolve_playlist(
+                            url=req.get('list')[0],
+                            youtube_api_key=self.backend.youtube_api_key,
+                            processes=self.backend.threads_max,
+                            max_results=self.backend.playlist_max_videos
+                        )
                     )
                 else:
                     logger.info(
@@ -189,7 +205,12 @@ class YouTubeLibraryProvider(backend.LibraryProvider):
             logger.info("Searching YouTube for query '%s'", search_query)
             return SearchResult(
                 uri=search_uri,
-                tracks=search_youtube(search_query)
+                tracks=search_youtube(
+                    q=search_query,
+                    youtube_api_key=self.backend.youtube_api_key,
+                    processes=self.backend.threads_max,
+                    max_results=self.backend.search_results
+                )
             )
 
 

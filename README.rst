@@ -59,8 +59,15 @@ Install by running::
 Configuration
 =============
 
-No configuration needed. The only supported config value is ``youtube/enabled``
-which can be set to ``false`` to disable the extension.
+Before starting Mopidy, you must add your Google API key
+to your Mopidy configuration file::
+
+    [youtube]
+    enabled = true
+    search_results = 15
+    playlist_max_videos = 20
+    youtube_api_key = <api key you got from Google>
+    threads_max = 2
 
 
 Usage
