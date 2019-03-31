@@ -48,7 +48,7 @@ my_vcr = vcr.VCR(
 def test_playlist_resolver(pafy_mock_with_video):
     videos = backend.resolve_playlist(
         url='PLOxORm4jpOQfMU7bpfGCzDyLropIYEHuR',
-        youtube_api_key='AIzaSyCIM4EzNqi1in22f4Z3Ru3iYvLaY8tc3bo',
+        youtube_api_key='mock_api_key_for_tests',
         processes=1,
         max_results=10
     )
@@ -60,7 +60,7 @@ def test_playlist_resolver(pafy_mock_with_video):
 def test_search_yt(pafy_mock_with_video):
     videos = backend.search_youtube(
         q='chvrches',
-        youtube_api_key='AIzaSyCIM4EzNqi1in22f4Z3Ru3iYvLaY8tc3bo',
+        youtube_api_key='mock_api_key_for_tests',
         processes=1,
         max_results=10
     )

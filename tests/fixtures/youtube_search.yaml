@@ -9,7 +9,7 @@ interactions:
       User-Agent:
       - Python-urllib/2.7
     method: GET
-    uri: https://www.googleapis.com/youtube/v3/search?q=chvrches&key=AIzaSyCIM4EzNqi1in22f4Z3Ru3iYvLaY8tc3bo&part=id&maxResults=10&type=video
+    uri: https://www.googleapis.com/youtube/v3/search?q=chvrches&key=mock_api_key_for_tests&part=id&maxResults=10&type=video
   response:
     body:
       string: !!python/unicode "{\n \"kind\": \"youtube#searchListResponse\",\n \"etag\":
