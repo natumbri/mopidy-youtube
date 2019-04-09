@@ -96,15 +96,17 @@ def search_youtube(q, youtube_api_key, processes, max_results):
         'key': youtube_api_key
     }
     result = session.get(yt_api_endpoint + 'search', params=query)
-    data = result.json()
+    try:
+        data = result.json()
 
-    resolve_pool = ThreadPool(processes=processes)
-    playlist = [item['id']['videoId'] for item in data['items']]
+        resolve_pool = ThreadPool(processes=processes)
+        playlist = [item['id']['videoId'] for item in data['items']]
 
-    playlist = resolve_pool.map(resolve_url, playlist)
-    resolve_pool.close()
-    return [item for item in playlist if item]
-
+        playlist = resolve_pool.map(resolve_url, playlist)
+        resolve_pool.close()
+        return [item for item in playlist if item]
+    except Exception as e:
+        return result.text
 
 def resolve_playlist(url, youtube_api_key, processes, max_results):
     resolve_pool = ThreadPool(processes=processes)
