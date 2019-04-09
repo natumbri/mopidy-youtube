@@ -8,10 +8,11 @@ import unicodedata
 from multiprocessing.pool import ThreadPool
 from urlparse import parse_qs, urlparse
 
-from mopidy import backend
+from mopidy import backend, exceptions
 from mopidy.models import Album, SearchResult, Track
 
 import pafy
+import youtube
 
 import pykka
 
@@ -146,6 +147,8 @@ class YouTubeBackend(pykka.ThreadingActor, backend.Backend):
         self.search_results = config['youtube']['search_results']
         self.playlist_max_videos = config['youtube']['playlist_max_videos']
         self.uri_schemes = ['youtube', 'yt']
+        if youtube.API.test_api_key(self) is False:
+            raise exceptions.BackendError('Failed to verify YouTube API key')
 
 
 class YouTubeLibraryProvider(backend.LibraryProvider):
