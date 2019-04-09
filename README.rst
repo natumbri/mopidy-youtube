@@ -65,7 +65,7 @@ to your Mopidy configuration file::
     [youtube]
     enabled = true
     youtube_api_key = <api key you got from Google>
-
+    threads_max = 2
 
 Usage
 =====
