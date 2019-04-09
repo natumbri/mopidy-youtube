@@ -86,10 +86,10 @@ def resolve_url(url, stream=False):
     return track
 
 
-def search_youtube(q, youtube_api_key, processes):
+def search_youtube(q, youtube_api_key, processes, max_results):
     query = {
         'part': 'id',
-        'maxResults': 15,
+        'maxResults': max_results,
         'type': 'video',
         'q': q,
         'key': youtube_api_key
@@ -143,6 +143,7 @@ class YouTubeBackend(pykka.ThreadingActor, backend.Backend):
         self.playback = YouTubePlaybackProvider(audio=audio, backend=self)
         self.youtube_api_key = config['youtube']['youtube_api_key']
         self.threads_max = config['youtube']['threads_max'] 
+        self.search_results = config['youtube']['search_results']
         self.uri_schemes = ['youtube', 'yt']
 
 
@@ -200,7 +201,8 @@ class YouTubeLibraryProvider(backend.LibraryProvider):
                 tracks=search_youtube(
                     q=search_query,
                     youtube_api_key=self.backend.youtube_api_key,
-                    processes=self.backend.threads_max
+                    processes=self.backend.threads_max,
+                    max_results=self.backend.search_results
                 )
             )
 
