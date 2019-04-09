@@ -67,6 +67,7 @@ to your Mopidy configuration file::
     youtube_api_key = <api key you got from Google>
     threads_max = 2
     search_results = 15
+    playlist_max_videos = 20
 
 
 Usage

@@ -26,6 +26,7 @@ class Extension(ext.Extension):
         schema['youtube_api_key'] = config.String()
         schema['threads_max'] = config.Integer()
         schema['search_results'] = config.Integer()
+        schema['playlist_max_videos'] = config.Integer()
         return schema
 
     def setup(self, registry):

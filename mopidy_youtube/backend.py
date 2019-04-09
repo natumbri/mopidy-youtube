@@ -105,7 +105,7 @@ def search_youtube(q, youtube_api_key, processes, max_results):
     return [item for item in playlist if item]
 
 
-def resolve_playlist(url, youtube_api_key, processes):
+def resolve_playlist(url, youtube_api_key, processes, max_results):
     resolve_pool = ThreadPool(processes=processes)
     logger.info("Resolving YouTube-Playlist '%s'", url)
     playlist = []
@@ -114,7 +114,7 @@ def resolve_playlist(url, youtube_api_key, processes):
     while page:
         params = {
             'playlistId': url,
-            'maxResults': 50,
+            'maxResults': max_results,
             'key': youtube_api_key,
             'part': 'contentDetails'
         }
@@ -144,6 +144,7 @@ class YouTubeBackend(pykka.ThreadingActor, backend.Backend):
         self.youtube_api_key = config['youtube']['youtube_api_key']
         self.threads_max = config['youtube']['threads_max'] 
         self.search_results = config['youtube']['search_results']
+        self.playlist_max_videos = config['youtube']['playlist_max_videos']
         self.uri_schemes = ['youtube', 'yt']
 
 
@@ -159,7 +160,8 @@ class YouTubeLibraryProvider(backend.LibraryProvider):
                 return resolve_playlist(
                     req.get('list')[0],
                     youtube_api_key=self.backend.youtube_api_key,
-                    processes=self.backend.threads_max
+                    processes=self.backend.threads_max,
+                    max_results=self.backend.playlist_max_videos
                 )
             else:
                 return [item for item in [resolve_url(track)] if item]
@@ -183,7 +185,8 @@ class YouTubeLibraryProvider(backend.LibraryProvider):
                         tracks=resolve_playlist(
                             req.get('list')[0],
                             youtube_api_key=self.backend.youtube_api_key,
-                            processes=self.backend.threads_max
+                            processes=self.backend.threads_max,
+                            max_results=self.backend.playlist_max_videos
                         )
                     )
                 else:
