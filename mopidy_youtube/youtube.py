@@ -6,7 +6,7 @@ import traceback
 
 from cachetools import LRUCache, cached
 
-import pafy
+import youtube_dl
 
 import pykka
 
@@ -179,7 +179,7 @@ class Video(Entry):
             for type in ['mqdefault', 'hqdefault']
         ])
 
-    # audio_url is the only property retrived using pafy, it's much more
+    # audio_url is the only property retrived using youtube_dl, it's much more
     # expensive than the rest
     #
     @async_property
@@ -188,24 +188,21 @@ class Video(Entry):
 
         def job():
             try:
-                info = pafy.new(self.id)
-            except Exception:
-                logger.error('youtube: video "%s" deleted/restricted', self.id)
+                info = youtube_dl.YoutubeDL(
+                    {'format': 'm4a/vorbis/bestaudio/best'}
+                ).extract_info(
+                    url = "https://www.youtube.com/watch?v=%s" % self.id,
+                    download = False,
+                    ie_key=None, 
+                    extra_info={}, 
+                    process=True, 
+                    force_generic_extractor=False
+                )
+            except Exception as e:
+                logger.error('audio_url error "%s"', e)
                 self._audio_url.set(None)
                 return
-
-            # get aac stream (.m4a) cause gstreamer 0.10 has issues with ogg
-            # containing opus format!
-            #  test id: cF9z1b5HL7M, playback gives error:
-            #   Could not find a audio/x-unknown decoder to handle media.
-            #   You might be able to fix this by running: gst-installer
-            #   "gstreamer|0.10|mopidy|audio/x-unknown
-            #   decoder|decoder-audio/x-unknown, codec-id=(string)A_OPUS"
-            #
-            uri = info.getbestaudio('m4a', True)
-            if not uri:  # get video url
-                uri = info.getbest('m4a', True)
-            self._audio_url.set(uri.url)
+            self._audio_url.set(info['url'])
 
         ThreadPool.run(job)
 
@@ -215,9 +212,6 @@ class Video(Entry):
 
 
 class Playlist(Entry):
-    # overridable by config
-    max_videos = 49     # max number of videos per playlist
-
     # loads title, thumbnails, video_count, channel of multiple playlists using
     # one API call for every 50 lists. API calls are split in separate threads.
     #
@@ -295,14 +289,10 @@ class API:
     endpoint = 'https://www.googleapis.com/youtube/v3/'
     session = requests.Session()
 
-    # overridable by config
-    # search_results = 15
-    # youtube_api_key = None
-
     # test if API key works
     #
     @classmethod
-    def test_api_key(cls, self):
+    def test_api_key(cls):
         search_result = API.search(
             q = ['VqfuExE7j0g']
         )
