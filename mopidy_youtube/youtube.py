@@ -91,7 +91,7 @@ class Entry(object):
             return None
             
         try:
-            return mapped_return = map(create_object, data['items'])
+            return map(create_object, data['items'])
         except Exception as e:
             logger.error('map error "%s"', e)
             return None
