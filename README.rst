@@ -59,8 +59,8 @@ Install by running::
 Configuration
 =============
 
-Before starting Mopidy, you must add your Google API key
-to your Mopidy configuration file::
+If you want modipy-youtube to use the YouTube API, before starting Mopidy, 
+you must set ``api_enabled = True``, and add your Google API key to your Mopidy configuration file::
 
     [youtube]
     enabled = true
@@ -68,7 +68,10 @@ to your Mopidy configuration file::
     threads_max = 2
     search_results = 15
     playlist_max_videos = 20
+    api_enabled = false
 
+If api_enabled is ``True`` but the youtube_api_key supplied is not valid, the 
+plugin will report an error and the API will not be used.
 
 Usage
 =====
@@ -88,10 +91,10 @@ Example for playlist::
 Troubleshooting
 ===============
 
-If resolving of URIs stops working, always try to update the pafy library
+If resolving of URIs stops working, always try to update the youtube-dl library
 first::
 
-   pip install --upgrade pafy
+   pip install --upgrade youtube-dl
 
 
 Project resources
