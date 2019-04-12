@@ -279,7 +279,7 @@ class Playlist(Entry):
             page = ''
             while page is not None and len(all_videos) < self.playlist_max_videos:
                 try:
-                    max_results = min(self.max_videos - len(all_videos), 50)
+                    max_results = min(self.playlist_max_videos - len(all_videos), 50)
                     if api_enabled:
                         data = API.list_playlistitems(self.id, page, max_results)
                     else:
