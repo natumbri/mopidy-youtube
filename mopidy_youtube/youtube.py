@@ -259,6 +259,8 @@ class Playlist(Entry):
                     data = API.list_playlistitems(self.id, page, max_results)
                 except Exception:
                     break
+                if 'error' in data:
+                    break
                 page = data.get('nextPageToken') or None
 
                 myvideos = []
