@@ -129,7 +129,7 @@ class Entry(object):
                        + int(m.group('minutes') or 0) * 60
                        + int(m.group('seconds') or 0))
             elif k == 'video_count':
-                val = min(item['contentDetails']['itemCount'], self.max_videos)
+                val = min(item['contentDetails']['itemCount'], self.playlist_max_videos)
             elif k == 'thumbnails':
                 val = [
                     val['url']
@@ -212,6 +212,7 @@ class Video(Entry):
 
 
 class Playlist(Entry):
+
     # loads title, thumbnails, video_count, channel of multiple playlists using
     # one API call for every 50 lists. API calls are split in separate threads.
     #
@@ -247,11 +248,13 @@ class Playlist(Entry):
         def job():
             all_videos = []
             page = ''
-            while page is not None and len(all_videos) < self.max_videos:
+            while page is not None and len(all_videos) < self.playlist_max_videos:
                 try:
-                    max_results = min(self.max_videos - len(all_videos), 50)
+                    max_results = min(self.playlist_max_videos - len(all_videos), 50)
                     data = API.list_playlistitems(self.id, page, max_results)
                 except Exception:
+                    break
+                if 'error' in data:
                     break
                 page = data.get('nextPageToken') or None
 

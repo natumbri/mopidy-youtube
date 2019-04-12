@@ -182,7 +182,7 @@ class YouTubeLibraryProvider(backend.LibraryProvider):
         else:
             playlist = youtube.Playlist.get(playlist_id)
             if not playlist.videos.get():
-                logger.info('cannot load playlist "%s"', uri)
+                logger.error('Cannot load "%s"', uri)
                 return []
 
             # ignore videos for which no info was found (removed, etc)
