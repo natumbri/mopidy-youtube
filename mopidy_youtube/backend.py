@@ -41,7 +41,7 @@ def safe_url(uri):
         unicode(uri)
     ).encode('ASCII', 'ignore')
     return re.sub(
-        '\s+',
+        r'\s+',
         ' ',
         ''.join(c for c in safe_uri if c in valid_chars)
     ).strip()
@@ -86,7 +86,7 @@ def resolve_url(url, stream=False):
     return track
 
 
-def search_youtube(q,youtube_api_key):
+def search_youtube(q, youtube_api_key):
     query = {
         'part': 'id',
         'maxResults': 15,
@@ -141,7 +141,7 @@ class YouTubeBackend(pykka.ThreadingActor, backend.Backend):
         self.config = config
         self.library = YouTubeLibraryProvider(backend=self)
         self.playback = YouTubePlaybackProvider(audio=audio, backend=self)
-        self.youtube_api_key = config['youtube']['youtube_api_key']
+        self.library.youtube_api_key = config['youtube']['youtube_api_key']
         self.uri_schemes = ['youtube', 'yt']
 
 
@@ -156,7 +156,7 @@ class YouTubeLibraryProvider(backend.LibraryProvider):
             if 'list' in req:
                 return resolve_playlist(
                     req.get('list')[0],
-                    youtube_api_key=self.backend.youtube_api_key
+                    self.youtube_api_key
                 )
             else:
                 return [item for item in [resolve_url(track)] if item]
@@ -179,7 +179,7 @@ class YouTubeLibraryProvider(backend.LibraryProvider):
                         uri=search_uri,
                         tracks=resolve_playlist(
                             req.get('list')[0],
-                            youtube_api_key=self.backend.youtube_api_key
+                            self.youtube_api_key
                         )
                     )
                 else:
@@ -195,8 +195,8 @@ class YouTubeLibraryProvider(backend.LibraryProvider):
             return SearchResult(
                 uri=search_uri,
                 tracks=search_youtube(
-                    q=search_query,
-                    youtube_api_key=self.backend.youtube_api_key
+                    search_query,
+                    self.youtube_api_key
                 )
             )
 
