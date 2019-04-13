@@ -41,7 +41,7 @@ def safe_url(uri):
         unicode(uri)
     ).encode('ASCII', 'ignore')
     return re.sub(
-        '\s+',
+        r'\s+',
         ' ',
         ''.join(c for c in safe_uri if c in valid_chars)
     ).strip()
@@ -141,7 +141,7 @@ class YouTubeBackend(pykka.ThreadingActor, backend.Backend):
         self.config = config
         self.library = YouTubeLibraryProvider(backend=self)
         self.playback = YouTubePlaybackProvider(audio=audio, backend=self)
-        self.youtube_api_key = config['youtube']['youtube_api_key']
+        self.library.youtube_api_key = config['youtube']['youtube_api_key']
         self.threads_max = config['youtube']['threads_max'] 
         self.search_results = config['youtube']['search_results']
         self.uri_schemes = ['youtube', 'yt']
@@ -158,8 +158,8 @@ class YouTubeLibraryProvider(backend.LibraryProvider):
             if 'list' in req:
                 return resolve_playlist(
                     req.get('list')[0],
-                    youtube_api_key=self.backend.youtube_api_key,
-                    processes=self.backend.threads_max
+                    self.youtube_api_key,
+                    self.backend.threads_max
                 )
             else:
                 return [item for item in [resolve_url(track)] if item]
@@ -182,8 +182,8 @@ class YouTubeLibraryProvider(backend.LibraryProvider):
                         uri=search_uri,
                         tracks=resolve_playlist(
                             req.get('list')[0],
-                            youtube_api_key=self.backend.youtube_api_key,
-                            processes=self.backend.threads_max
+                            self.youtube_api_key,
+                            self.backend.threads_max
                         )
                     )
                 else:
@@ -199,10 +199,10 @@ class YouTubeLibraryProvider(backend.LibraryProvider):
             return SearchResult(
                 uri=search_uri,
                 tracks=search_youtube(
-                    q=search_query,
-                    youtube_api_key=self.backend.youtube_api_key,
-                    processes=self.backend.threads_max,
-                    max_results=self.backend.search_results
+                    search_query,
+                    self.youtube_api_key,
+                    self.backend.threads_max,
+                    self.backend.search_results
                 )
             )
 
