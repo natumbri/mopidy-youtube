@@ -158,7 +158,7 @@ class YouTubeLibraryProvider(backend.LibraryProvider):
                 return resolve_playlist(
                     req.get('list')[0],
                     self.youtube_api_key,
-                    processes=self.backend.threads_max
+                    self.backend.threads_max
                 )
             else:
                 return [item for item in [resolve_url(track)] if item]
@@ -182,7 +182,7 @@ class YouTubeLibraryProvider(backend.LibraryProvider):
                         tracks=resolve_playlist(
                             req.get('list')[0],
                             self.youtube_api_key,
-                            processes=self.backend.threads_max
+                            self.backend.threads_max
                         )
                     )
                 else:
@@ -200,7 +200,7 @@ class YouTubeLibraryProvider(backend.LibraryProvider):
                 tracks=search_youtube(
                     search_query,
                     self.youtube_api_key,
-                    processes=self.backend.threads_max
+                    self.backend.threads_max
                 )
             )
 
