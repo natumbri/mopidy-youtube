@@ -12,7 +12,6 @@ from mopidy import backend, exceptions
 from mopidy.models import Album, SearchResult, Track
 
 import pafy
-import youtube
 
 import pykka
 
@@ -95,18 +94,13 @@ def search_youtube(q, youtube_api_key, processes, max_results):
         'q': q,
         'key': youtube_api_key
     }
-    result = session.get(yt_api_endpoint + 'search', params=query)
-    try:
-        data = result.json()
+    data = session.get(yt_api_endpoint + 'search', params=query).json()
+    resolve_pool = ThreadPool(processes=processes)
+    playlist = [item['id']['videoId'] for item in data['items']]
+    playlist = resolve_pool.map(resolve_url, playlist)
+    resolve_pool.close()
+    return [item for item in playlist if item]
 
-        resolve_pool = ThreadPool(processes=processes)
-        playlist = [item['id']['videoId'] for item in data['items']]
-
-        playlist = resolve_pool.map(resolve_url, playlist)
-        resolve_pool.close()
-        return [item for item in playlist if item]
-    except Exception as e:
-        return result.text
 
 def resolve_playlist(url, youtube_api_key, processes, max_results):
     resolve_pool = ThreadPool(processes=processes)
@@ -149,7 +143,15 @@ class YouTubeBackend(pykka.ThreadingActor, backend.Backend):
         self.search_results = config['youtube']['search_results']
         self.playlist_max_videos = config['youtube']['playlist_max_videos']
         self.uri_schemes = ['youtube', 'yt']
-        if youtube.API.test_api_key(self) is False:
+
+    def on_start(self):
+        if 'error' in session.get(yt_api_endpoint + 'search', params={
+            'part': 'id',
+            'maxResults': 1,
+            'type': 'video',
+            'q': 'test',
+            'key': self.library.youtube_api_key
+        }).json():
             raise exceptions.BackendError('Failed to verify YouTube API key')
 
 
