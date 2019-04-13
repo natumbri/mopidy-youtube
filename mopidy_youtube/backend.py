@@ -142,7 +142,7 @@ class YouTubeBackend(pykka.ThreadingActor, backend.Backend):
         self.library = YouTubeLibraryProvider(backend=self)
         self.playback = YouTubePlaybackProvider(audio=audio, backend=self)
         self.library.youtube_api_key = config['youtube']['youtube_api_key']
-        self.threads_max = config['youtube']['threads_max'] 
+        self.threads_max = config['youtube']['threads_max']
         self.uri_schemes = ['youtube', 'yt']
 
 
