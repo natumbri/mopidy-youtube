@@ -108,7 +108,7 @@ class YouTubeLibraryProvider(backend.LibraryProvider):
                         entry.video_count.get()
 
             tracks.append(Track(
-                name=entry.title.get().replace(';', ''),
+                name=entry.title.get().replace(';', '') or None,
                 comment=entry.id,
                 length=0,
                 artists=[Artist(name=entry.channel.get())],
@@ -170,7 +170,7 @@ class YouTubeLibraryProvider(backend.LibraryProvider):
             video.audio_url  # start loading
 
             return [Track(
-                name=video.title.get().replace(';', ''),
+                name=video.title.get().replace(';', '') or None,
                 comment=video.id,
                 length=video.length.get() * 1000,
                 artists=[Artist(name=video.channel.get())],
