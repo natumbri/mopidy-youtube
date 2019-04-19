@@ -47,7 +47,7 @@ class YouTubeBackend(pykka.ThreadingActor, backend.Backend):
         self.config = config
         self.library = YouTubeLibraryProvider(backend=self)
         self.playback = YouTubePlaybackProvider(audio=audio, backend=self)
-        youtube.API.youtube_api_key = config['youtube']['youtube_api_key']
+        youtube.API.youtube_api_key = config['youtube']['youtube_api_key'] or None
         youtube.ThreadPool.threads_max = config['youtube']['threads_max']
         youtube.Video.search_results = config['youtube']['search_results']
         youtube.Playlist.playlist_max_videos = \
@@ -56,6 +56,11 @@ class YouTubeBackend(pykka.ThreadingActor, backend.Backend):
         self.uri_schemes = ['youtube', 'yt']
 
     def on_start(self):
+        if youtube.API.youtube_api_key is None \
+                and youtube.api_enabled is True:
+            logger.info('No YouTube API key provided, disabling API')
+            youtube.api_enabled = False
+
         if youtube.api_enabled is True \
                 and 'error' in youtube.API.search(q='test'):
             logger.info('Failed to verify YouTube API key, disabling API')
