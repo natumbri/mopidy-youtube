@@ -47,7 +47,8 @@ class YouTubeBackend(pykka.ThreadingActor, backend.Backend):
         self.config = config
         self.library = YouTubeLibraryProvider(backend=self)
         self.playback = YouTubePlaybackProvider(audio=audio, backend=self)
-        youtube.API.youtube_api_key = config['youtube']['youtube_api_key'] or None
+        youtube.API.youtube_api_key = \
+            config['youtube']['youtube_api_key'] or None
         youtube.ThreadPool.threads_max = config['youtube']['threads_max']
         youtube.Video.search_results = config['youtube']['search_results']
         youtube.Playlist.playlist_max_videos = \
@@ -58,12 +59,12 @@ class YouTubeBackend(pykka.ThreadingActor, backend.Backend):
     def on_start(self):
         if youtube.API.youtube_api_key is None \
                 and youtube.api_enabled is True:
-            logger.info('No YouTube API key provided, disabling API')
+            logger.error('No YouTube API key provided, disabling API')
             youtube.api_enabled = False
 
         if youtube.api_enabled is True \
                 and 'error' in youtube.API.search(q='test'):
-            logger.info('Failed to verify YouTube API key, disabling API')
+            logger.error('Failed to verify YouTube API key, disabling API')
             youtube.api_enabled = False
 
 
@@ -116,7 +117,7 @@ class YouTubeLibraryProvider(backend.LibraryProvider):
                         entry.video_count.get()
 
             tracks.append(Track(
-                name=entry.title.get().replace(';', ''),
+                name=entry.title.get().replace(';', '') or None,
                 comment=entry.id,
                 length=0,
                 artists=[Artist(name=entry.channel.get())],
@@ -178,7 +179,7 @@ class YouTubeLibraryProvider(backend.LibraryProvider):
             video.audio_url  # start loading
 
             return [Track(
-                name=video.title.get().replace(';', ''),
+                name=video.title.get().replace(';', '') or None,
                 comment=video.id,
                 length=video.length.get() * 1000,
                 artists=[Artist(name=video.channel.get())],
