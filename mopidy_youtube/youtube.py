@@ -6,11 +6,11 @@ import traceback
 
 from cachetools import LRUCache, cached
 
-import youtube_dl
-
 import pykka
 
 import requests
+
+import youtube_dl
 
 from mopidy_youtube import logger
 
@@ -25,7 +25,7 @@ def async_property(func):
 
     def wrapper(self):
         if _future_name not in self.__dict__:
-            apply(func, (self,))   # should create the future
+            func(self)   # should create the future
         return self.__dict__[_future_name]
 
     return property(wrapper)
@@ -121,15 +121,18 @@ class Entry(object):
                 val = item['snippet']['channelTitle']
             elif k == 'length':
                 # convert PT1H2M10S to 3730
-                m = re.search('PT((?P<hours>\d+)H)?'
-                              + '((?P<minutes>\d+)M)?'
-                              + '((?P<seconds>\d+)S)?',
+                m = re.search(r'PT((?P<hours>\d+)H)?'
+                              + r'((?P<minutes>\d+)M)?'
+                              + r'((?P<seconds>\d+)S)?',
                               item['contentDetails']['duration'])
                 val = (int(m.group('hours') or 0) * 3600
                        + int(m.group('minutes') or 0) * 60
                        + int(m.group('seconds') or 0))
             elif k == 'video_count':
-                val = min(item['contentDetails']['itemCount'], self.playlist_max_videos)
+                val = min(
+                    item['contentDetails']['itemCount'],
+                    self.playlist_max_videos
+                )
             elif k == 'thumbnails':
                 val = [
                     val['url']
@@ -191,11 +194,11 @@ class Video(Entry):
                 info = youtube_dl.YoutubeDL(
                     {'format': 'm4a/vorbis/bestaudio/best'}
                 ).extract_info(
-                    url = "https://www.youtube.com/watch?v=%s" % self.id,
-                    download = False,
-                    ie_key=None, 
-                    extra_info={}, 
-                    process=True, 
+                    url="https://www.youtube.com/watch?v=%s" % self.id,
+                    download=False,
+                    ie_key=None,
+                    extra_info={},
+                    process=True,
                     force_generic_extractor=False
                 )
             except Exception as e:
@@ -248,9 +251,13 @@ class Playlist(Entry):
         def job():
             all_videos = []
             page = ''
-            while page is not None and len(all_videos) < self.playlist_max_videos:
+            while page is not None \
+                    and len(all_videos) < self.playlist_max_videos:
                 try:
-                    max_results = min(self.playlist_max_videos - len(all_videos), 50)
+                    max_results = min(
+                        self.playlist_max_videos - len(all_videos),
+                        50
+                    )
                     data = API.list_playlistitems(self.id, page, max_results)
                 except Exception:
                     break
@@ -297,11 +304,14 @@ class API:
     @classmethod
     def test_api_key(cls):
         search_result = API.search(
-            q = ['VqfuExE7j0g']
+            q=['VqfuExE7j0g']
         )
         try:
             if 'error' in search_result:
-                logger.error('Error testing YouTube API key: %s', search_result)
+                logger.error(
+                    'Error testing YouTube API key: %s',
+                    search_result
+                )
                 return False
             else:
                 logger.info('Test API key successful')
@@ -395,7 +405,7 @@ class ThreadPool:
             cls.lock.release()
 
             try:
-                apply(f, args)
+                f(*args)
             except Exception as e:
                 logger.error('youtube thread error: %s\n%s',
                              e, traceback.format_exc())
@@ -413,4 +423,3 @@ class ThreadPool:
             cls.threads_active += 1
 
         cls.lock.release()
-

@@ -65,7 +65,10 @@ to your Mopidy configuration file::
     [youtube]
     enabled = true
     youtube_api_key = <api key you got from Google>
-    threads_max = 2
+
+Other configuration options are::
+
+    threads_max = 16
     search_results = 15
     playlist_max_videos = 20
 
@@ -87,6 +90,9 @@ Example for playlist::
 
 Troubleshooting
 ===============
+
+If the extension is slow, try setting lower values for threads_max, search_results 
+and playlist_max_videos.
 
 If resolving of URIs stops working, always try to update the pafy library
 first::
