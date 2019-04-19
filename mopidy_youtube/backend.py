@@ -7,7 +7,7 @@ import string
 import unicodedata
 from urlparse import parse_qs, urlparse
 
-from mopidy import backend, exceptions
+from mopidy import backend
 from mopidy.models import Album, Artist, SearchResult, Track
 
 import pykka
@@ -32,10 +32,10 @@ def safe_url(uri):
     valid_chars = "-_.() %s%s" % (string.ascii_letters, string.digits)
     safe_uri = unicodedata.normalize(
         'NFKD',
-        unicode(uri)
+        uri
     ).encode('ASCII', 'ignore')
     return re.sub(
-        '\s+',
+        r'\s+',
         ' ',
         ''.join(c for c in safe_uri if c in valid_chars)
     ).strip()
@@ -48,12 +48,16 @@ class YouTubeBackend(pykka.ThreadingActor, backend.Backend):
         self.library = YouTubeLibraryProvider(backend=self)
         self.playback = YouTubePlaybackProvider(audio=audio, backend=self)
         youtube.API.youtube_api_key = config['youtube']['youtube_api_key']
-        youtube.ThreadPool.threads_max = config['youtube']['threads_max'] 
+        youtube.ThreadPool.threads_max = config['youtube']['threads_max']
         youtube.Video.search_results = config['youtube']['search_results']
-        youtube.Playlist.playlist_max_videos = config['youtube']['playlist_max_videos']
+        youtube.Playlist.playlist_max_videos = \
+            config['youtube']['playlist_max_videos']
         youtube.api_enabled = config['youtube']['api_enabled']
         self.uri_schemes = ['youtube', 'yt']
-        if youtube.api_enabled is True and youtube.API.test_api_key() is False:
+
+    def on_start(self):
+        if youtube.api_enabled is True \
+                and 'error' in youtube.API.search(q='test'):
             logger.info('Failed to verify YouTube API key, disabling API')
             youtube.api_enabled = False
 
@@ -159,7 +163,6 @@ class YouTubeLibraryProvider(backend.LibraryProvider):
                 playlist_id = req.get('list')[0]
             else:
                 video_id = req.get('v')[0]
-
         elif 'video/' in uri:
             video_id = extract_id(uri)
         else:
@@ -229,4 +232,3 @@ class YouTubePlaybackProvider(backend.PlaybackProvider):
         except Exception as e:
             logger.error('translate_uri error "%s"', e)
             return None
-

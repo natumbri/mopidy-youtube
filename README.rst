@@ -65,7 +65,10 @@ you must set ``api_enabled = True``, and add your Google API key to your Mopidy 
     [youtube]
     enabled = true
     youtube_api_key = <api key you got from Google>
-    threads_max = 2
+
+Other configuration options are::
+
+    threads_max = 16
     search_results = 15
     playlist_max_videos = 20
     api_enabled = false
@@ -91,7 +94,10 @@ Example for playlist::
 Troubleshooting
 ===============
 
-If resolving of URIs stops working, always try to update the youtube-dl library
+If the extension is slow, try setting lower values for threads_max, search_results 
+and playlist_max_videos.
+
+If resolving of URIs stops working, always try to update the pafy library
 first::
 
    pip install --upgrade youtube-dl
