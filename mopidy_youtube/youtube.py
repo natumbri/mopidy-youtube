@@ -10,8 +10,6 @@ from cachetools import LRUCache, cached
 
 import pykka
 
-import requests
-
 import youtube_dl
 
 from mopidy_youtube import logger
@@ -350,7 +348,6 @@ class Playlist(Entry):
 #
 class API:
     endpoint = 'https://www.googleapis.com/youtube/v3/'
-    session = requests.Session()
 
     # search for both videos and playlists using a single API call
     # https://developers.google.com/youtube/v3/docs/search
@@ -417,8 +414,6 @@ class API:
 #
 class scrAPI:
     endpoint = 'https://www.youtube.com/'
-    proxy_config = None
-    session = requests.Session()
 
     # search for videos and playlists
     #

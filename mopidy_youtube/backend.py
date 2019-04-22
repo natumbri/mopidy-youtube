@@ -7,12 +7,14 @@ import string
 import unicodedata
 from urlparse import parse_qs, urlparse
 
-from mopidy import backend
+from mopidy import backend, httpclient
 from mopidy.models import Album, Artist, SearchResult, Track
 
 import pykka
 
-from mopidy_youtube import logger, youtube
+import requests
+
+from mopidy_youtube import Extension, logger, youtube
 
 # A typical interaction:
 # 1. User searches for a keyword (YouTubeLibraryProvider.search)
@@ -55,8 +57,23 @@ class YouTubeBackend(pykka.ThreadingActor, backend.Backend):
             config['youtube']['playlist_max_videos']
         youtube.api_enabled = config['youtube']['api_enabled']
         self.uri_schemes = ['youtube', 'yt']
+        youtube.API.session = requests.Session()
+        youtube.scrAPI.session = requests.Session()
+        self.user_agent = '%s/%s' % (
+            Extension.dist_name,
+            Extension.version
+        )
 
     def on_start(self):
+
+        proxy = httpclient.format_proxy(self.config['proxy'])
+        agent = httpclient.format_user_agent(self.user_agent)
+
+        youtube.API.session.proxies = {'http': proxy, 'https': proxy}
+        youtube.API.session.headers = {'user-agent': agent}
+        youtube.scrAPI.session.proxies = {'http': proxy, 'https': proxy}
+        youtube.scrAPI.session.headers = {'user-agent': agent}
+
         if youtube.API.youtube_api_key is None \
                 and youtube.api_enabled is True:
             logger.error('No YouTube API key provided, disabling API')
@@ -117,7 +134,7 @@ class YouTubeLibraryProvider(backend.LibraryProvider):
                         entry.video_count.get()
 
             tracks.append(Track(
-                name=entry.title.get().replace(';', '') or None,
+                name=entry.title.get().replace(';', ''),
                 comment=entry.id,
                 length=0,
                 artists=[Artist(name=entry.channel.get())],
@@ -179,7 +196,7 @@ class YouTubeLibraryProvider(backend.LibraryProvider):
             video.audio_url  # start loading
 
             return [Track(
-                name=video.title.get().replace(';', '') or None,
+                name=video.title.get().replace(';', ''),
                 comment=video.id,
                 length=video.length.get() * 1000,
                 artists=[Artist(name=video.channel.get())],
