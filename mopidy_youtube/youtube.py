@@ -12,6 +12,8 @@ import pykka
 
 import youtube_dl
 
+import requests
+
 from mopidy_youtube import logger
 
 api_enabled = False
@@ -228,9 +230,10 @@ class Video(Entry):
 
         def job():
             try:
-                info = youtube_dl.YoutubeDL(
-                    {'format': 'm4a/vorbis/bestaudio/best'}
-                ).extract_info(
+                info = youtube_dl.YoutubeDL({
+                    'format': 'm4a/vorbis/bestaudio/best',
+                    'proxy': self.proxy
+                }).extract_info(
                     url="https://www.youtube.com/watch?v=%s" % self.id,
                     download=False,
                     ie_key=None,
@@ -343,10 +346,15 @@ class Playlist(Entry):
         return False
 
 
+class Client:
+
+    session = requests.Session()
+
+
 # Direct access to YouTube Data API
 # https://developers.google.com/youtube/v3/docs/
 #
-class API:
+class API(Client):
     endpoint = 'https://www.googleapis.com/youtube/v3/'
 
     # search for both videos and playlists using a single API call
@@ -412,7 +420,7 @@ class API:
 
 # Indirect access to YouTube data, without API
 #
-class scrAPI:
+class scrAPI(Client):
     endpoint = 'https://www.youtube.com/'
 
     # search for videos and playlists

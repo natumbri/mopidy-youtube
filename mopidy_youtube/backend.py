@@ -57,8 +57,6 @@ class YouTubeBackend(pykka.ThreadingActor, backend.Backend):
             config['youtube']['playlist_max_videos']
         youtube.api_enabled = config['youtube']['api_enabled']
         self.uri_schemes = ['youtube', 'yt']
-        youtube.API.session = requests.Session()
-        youtube.scrAPI.session = requests.Session()
         self.user_agent = '%s/%s' % (
             Extension.dist_name,
             Extension.version
@@ -68,21 +66,17 @@ class YouTubeBackend(pykka.ThreadingActor, backend.Backend):
 
         proxy = httpclient.format_proxy(self.config['proxy'])
         agent = httpclient.format_user_agent(self.user_agent)
+        youtube.Client.session.proxies = {'http': proxy, 'https': proxy}
+        youtube.Client.session.headers = {'user-agent': agent}
+        youtube.Video.proxy = proxy
 
-        youtube.API.session.proxies = {'http': proxy, 'https': proxy}
-        youtube.API.session.headers = {'user-agent': agent}
-        youtube.scrAPI.session.proxies = {'http': proxy, 'https': proxy}
-        youtube.scrAPI.session.headers = {'user-agent': agent}
-
-        if youtube.API.youtube_api_key is None \
-                and youtube.api_enabled is True:
-            logger.error('No YouTube API key provided, disabling API')
-            youtube.api_enabled = False
-
-        if youtube.api_enabled is True \
-                and 'error' in youtube.API.search(q='test'):
-            logger.error('Failed to verify YouTube API key, disabling API')
-            youtube.api_enabled = False
+        if youtube.api_enabled is True:
+            if youtube.API.youtube_api_key is None:
+                logger.error('No YouTube API key provided, disabling API')
+                youtube.api_enabled = False
+            elif 'error' in youtube.API.search(q='test'):
+                logger.error('Failed to verify YouTube API key, disabling API')
+                youtube.api_enabled = False
 
 
 class YouTubeLibraryProvider(backend.LibraryProvider):
