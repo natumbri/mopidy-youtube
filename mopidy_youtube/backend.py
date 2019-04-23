@@ -12,8 +12,6 @@ from mopidy.models import Album, Artist, SearchResult, Track
 
 import pykka
 
-import requests
-
 from mopidy_youtube import Extension, logger, youtube
 
 # A typical interaction:
