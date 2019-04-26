@@ -46,14 +46,14 @@ my_vcr = vcr.VCR(
 
 @my_vcr.use_cassette('youtube_playlist_resolve.yaml')
 def test_playlist_resolver(pafy_mock_with_video):
-    videos = backend.resolve_playlist('PLOxORm4jpOQfMU7bpfGCzDyLropIYEHuR')
+    videos = backend.resolve_playlist('PLOxORm4jpOQfMU7bpfGCzDyLropIYEHuR', 'fake-api-key')
 
     assert len(videos) == 108
 
 
 @my_vcr.use_cassette('youtube_search.yaml')
 def test_search_yt(pafy_mock_with_video):
-    videos = backend.search_youtube('chvrches')
+    videos = backend.search_youtube('chvrches', 'fake-api-key')
 
     assert len(videos) == 15
 
@@ -98,7 +98,7 @@ def test_lookup_video_uri(caplog):
                             '/a title.C0DPdy98e4c')
 
     assert 'Need 11 character video id or the URL of the video.' \
-           not in caplog.text()
+           not in caplog.text
 
     assert track
 
