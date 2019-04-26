@@ -112,7 +112,7 @@ def resolve_playlist(url, youtube_api_key, processes, max_results):
         params = {
             'playlistId': url,
             'maxResults': max_results,
-            'part': 'contentDetails'
+            'part': 'contentDetails',
             'key': youtube_api_key
         }
         if page and page != "first":
@@ -167,12 +167,8 @@ class YouTubeLibraryProvider(backend.LibraryProvider):
                 return resolve_playlist(
                     req.get('list')[0],
                     self.youtube_api_key,
-<<<<<<< HEAD
                     self.backend.threads_max,
                     self.backend.playlist_max_videos
-=======
-                    self.backend.threads_max
->>>>>>> feature/config-options-search-results
                 )
             else:
                 return [item for item in [resolve_url(track)] if item]
