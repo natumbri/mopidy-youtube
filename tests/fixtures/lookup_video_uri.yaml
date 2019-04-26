@@ -144,7 +144,7 @@ interactions:
       Host: [www.youtube.com]
       User-Agent: [pafy 0.5.2]
     method: GET
-    uri: http://www.youtube.com/watch?v=C0DPdy98e4c
+    uri: http://www.youtube.com/watch?bpctr=9999999999&gl=US&hl=en&has_verified=1&v=C0DPdy98e4c&disable_polymer=true
   response:
     body: {string: !!python/unicode ''}
     headers:
