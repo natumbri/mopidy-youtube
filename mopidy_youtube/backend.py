@@ -64,7 +64,7 @@ def resolve_url(url, stream=False):
             return
     except Exception as e:
         # Video is private or doesn't exist
-        logger.info(e.message)
+        logger.info(e)
         return
 
     images = []
