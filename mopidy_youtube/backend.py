@@ -115,8 +115,8 @@ def resolve_playlist(url, youtube_api_key):
         params = {
             'playlistId': url,
             'maxResults': 50,
-            'key': youtube_api_key,
-            'part': 'contentDetails'
+            'part': 'contentDetails',
+            'key': youtube_api_key
         }
         if page and page != "first":
             logger.debug("Get YouTube-Playlist '%s' page %s", url, page)
