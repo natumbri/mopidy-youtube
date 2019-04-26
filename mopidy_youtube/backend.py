@@ -64,7 +64,7 @@ def resolve_url(url, stream=False):
             return
     except Exception as e:
         # Video is private or doesn't exist
-        logger.info(e.message)
+        logger.info(e)
         return
 
     images = []
@@ -115,8 +115,8 @@ def resolve_playlist(url, youtube_api_key, processes, max_results):
         params = {
             'playlistId': url,
             'maxResults': max_results,
-            'key': youtube_api_key,
             'part': 'contentDetails'
+            'key': youtube_api_key
         }
         if page and page != "first":
             logger.debug("Get YouTube-Playlist '%s' page %s", url, page)
@@ -160,8 +160,12 @@ class YouTubeLibraryProvider(backend.LibraryProvider):
                 return resolve_playlist(
                     req.get('list')[0],
                     self.youtube_api_key,
+<<<<<<< HEAD
                     self.backend.threads_max,
                     self.backend.playlist_max_videos
+=======
+                    self.backend.threads_max
+>>>>>>> feature/config-options-search-results
                 )
             else:
                 return [item for item in [resolve_url(track)] if item]
