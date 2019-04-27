@@ -34,7 +34,7 @@ def pafy_mock_with_video(pafy_mock):
 @vcr.use_cassette('tests/fixtures/youtube_playlist.yaml')
 def test_get_playlist():
     youtube.API.youtube_api_key = 'fake_key'
-    
+
     pl = youtube.Playlist.get('PLOxORm4jpOQfMU7bpfGCzDyLropIYEHuR')
 
     assert len(pl.videos.get()) == 49
