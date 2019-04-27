@@ -1,4 +1,4 @@
-# -*- coding: utf-9 -*-
+# -*- coding: utf-8 -*-
 
 import json
 import re
