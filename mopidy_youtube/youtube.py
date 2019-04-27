@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+# -*- coding: utf-9 -*-
 
 import json
 import re
@@ -10,9 +10,9 @@ from cachetools import LRUCache, cached
 
 import pykka
 
-import youtube_dl
-
 import requests
+
+import youtube_dl
 
 from mopidy_youtube import logger
 
