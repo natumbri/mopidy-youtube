@@ -98,7 +98,10 @@ def search_youtube(q, youtube_api_key):
     data = result.json()
 
     resolve_pool = ThreadPool(processes=16)
-    playlist = [item['id']['videoId'] for item in data['items']]
+    if 'items' in data:
+        playlist = [item['id']['videoId'] for item in data['items']]
+    else:
+        playlist = []
 
     playlist = resolve_pool.map(resolve_url, playlist)
     resolve_pool.close()
