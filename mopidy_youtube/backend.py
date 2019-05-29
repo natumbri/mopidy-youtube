@@ -102,15 +102,17 @@ class YouTubeLibraryProvider(backend.LibraryProvider):
             if entry.is_video:
                 uri_base = 'youtube:video'
                 album = 'YouTube Video'
+                length = int(entry.length.get())*1000
             else:
                 uri_base = 'youtube:playlist'
                 album = 'YouTube Playlist (%s videos)' % \
                         entry.video_count.get()
+                length = 0
 
             tracks.append(Track(
                 name=entry.title.get().replace(';', '') or None,
                 comment=entry.id,
-                length=int(entry.length.get())*1000,
+                length=length,
                 artists=[Artist(name=entry.channel.get())],
                 album=Album(
                     name=album,
