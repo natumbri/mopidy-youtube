@@ -156,11 +156,15 @@ class Entry(object):
                 val = item['snippet']['channelTitle']
             elif k == 'length':
                 # convert PT1H2M10S to 3730
-                m = re.search(r'PT((?P<hours>\d+)H)?'
+                m = re.search(r'P((?P<weeks>\d+)W)?'
+                              + r'((?P<days>\d+)D)?'
+                              + r'T((?P<hours>\d+)H)?'
                               + r'((?P<minutes>\d+)M)?'
                               + r'((?P<seconds>\d+)S)?',
                               item['contentDetails']['duration'])
-                val = (int(m.group('hours') or 0) * 3600
+                val = (int(m.group('weeks') or 0) * 604800
+                       + int(m.group('days') or 0) * 86400
+                       + int(m.group('hours') or 0) * 3600
                        + int(m.group('minutes') or 0) * 60
                        + int(m.group('seconds') or 0))
             elif k == 'video_count':
@@ -432,7 +436,7 @@ class scrAPI(Client):
             # 'sp': 'EgIQAQ%253D%253D',
             'search_query': q.replace(' ', '+')
         }
-
+        scrAPI.session.headers.update({'Cookie': 'PREF=hl=en;', 'Accept-Language':'en;q=0.8'})
         result = scrAPI.session.get(scrAPI.endpoint+'results', params=query)
         regex = (
             r'(?:video-count.*<b>(?:(?P<itemCount>[0-9]+)</b>)?(.|\n)*?)?'
