@@ -110,7 +110,7 @@ class YouTubeLibraryProvider(backend.LibraryProvider):
             tracks.append(Track(
                 name=entry.title.get().replace(';', '') or None,
                 comment=entry.id,
-                length=0,
+                length=int(entry.length.get())*1000,
                 artists=[Artist(name=entry.channel.get())],
                 album=Album(
                     name=album,
