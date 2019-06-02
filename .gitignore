@@ -9,3 +9,5 @@ build/
 dist/
 xunit-*.xml
 mopidy-youtube.Rproj
+.Rproj.user
+.Rhistory

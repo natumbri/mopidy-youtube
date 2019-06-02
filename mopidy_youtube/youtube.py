@@ -363,6 +363,11 @@ class Client:
     session = requests.Session()
 
 
+class Client:
+
+    session = requests.Session()
+
+
 # Direct access to YouTube Data API
 # https://developers.google.com/youtube/v3/docs/
 #
