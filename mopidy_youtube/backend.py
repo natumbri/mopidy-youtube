@@ -66,7 +66,10 @@ class YouTubeBackend(pykka.ThreadingActor, backend.Backend):
         agent = httpclient.format_user_agent(self.user_agent)
         youtube.Client.session.proxies = {'http': proxy, 'https': proxy}
         youtube.Client.session.headers = {'user-agent': agent}
-        youtube.Client.session.headers.update({'Cookie': 'PREF=hl=en;', 'Accept-Language':'en;q=0.8'})
+        youtube.Client.session.headers.update({
+            'Cookie': 'PREF=hl=en;',
+            'Accept-Language': 'en;q=0.8'
+        })
         youtube.Video.proxy = proxy
 
         if youtube.api_enabled is True:
