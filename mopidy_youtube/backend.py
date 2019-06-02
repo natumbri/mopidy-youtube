@@ -76,11 +76,18 @@ class YouTubeBackend(pykka.ThreadingActor, backend.Backend):
             if youtube.API.youtube_api_key is None:
                 logger.error('No YouTube API key provided, disabling API')
                 youtube.api_enabled = False
+                youtube.Entry.api = youtube.scrAPI()
             elif 'error' in youtube.API.search(q='test'):
                 logger.error('Failed to verify YouTube API key, disabling API')
                 youtube.api_enabled = False
+                youtube.Entry.api = youtube.scrAPI()
+            else:
+                logger.info('YouTube API key verified')
+                youtube.Entry.api = youtube.API()
+        else:
+            logger.info('Using scrAPI')
+            youtube.Entry.api = youtube.scrAPI()
 
-        self.api = youtube.api_factory("API")
 
 class YouTubeLibraryProvider(backend.LibraryProvider):
 
@@ -102,7 +109,6 @@ class YouTubeLibraryProvider(backend.LibraryProvider):
     #
     def search(self, query=None, uris=None, exact=False):
         # TODO Support exact search
-        logger.info(self.backend.api)
         logger.info('youtube LibraryProvider.search "%s"', query)
 
         # handle only searching (queries with 'any') not browsing!
@@ -113,8 +119,9 @@ class YouTubeLibraryProvider(backend.LibraryProvider):
         logger.info('Searching YouTube for query "%s"', search_query)
 
         try:
-            entries = youtube.Entry.search(search_query, self.backend.api)
-        except Exception:
+            entries = youtube.Entry.search(search_query)
+        except Exception as e:
+            logger.error('search error "%s"', e)
             return None
 
         # load playlist info (to get video_count) of all playlists together
@@ -150,7 +157,6 @@ class YouTubeLibraryProvider(backend.LibraryProvider):
         # load video info and playlist videos in the background. they should be
         # ready by the time the user adds search results to the playing queue
         videos = [e for e in entries if e.is_video]
-        youtube.Video.load_info(videos)
 
         for pl in playlists:
             pl.videos  # start loading

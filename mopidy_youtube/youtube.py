@@ -67,7 +67,7 @@ class Entry(object):
     # video_count)
     #
     @classmethod
-    def search(cls, q, api):
+    def search(cls, q):
         def create_object(item):
             if item['id']['kind'] == 'youtube#video':
                 obj = Video.get(item['id']['videoId'])
@@ -81,7 +81,7 @@ class Entry(object):
                         ['title', 'channel'],
                         item
                     )
-            else:
+            elif item['id']['kind'] == 'youtube#playlist':
                 obj = Playlist.get(item['id']['playlistId'])
                 if 'contentDetails' in item:
                     obj._set_api_data(
@@ -93,19 +93,18 @@ class Entry(object):
                         ['title', 'channel', 'thumbnails'],
                         item
                     )
+            else:
+                obj = {}
             return obj
 
         try:
-            data = api.search(q)
-            #if api_enabled:
-            #    data = API.search(q)
-            #else:
-            #    data = scrAPI.search(q)
+            data = cls.api.search(q)
         except Exception as e:
             logger.error('search error "%s"', e)
             return None
 
         try:
+            logger.info(data['items'])
             return map(create_object, data['items'])
         except Exception as e:
             logger.error('map error "%s"', e)
@@ -195,10 +194,7 @@ class Video(Entry):
 
         def job(sublist):
             try:
-                if api_enabled:
-                    data = API.list_videos([x.id for x in sublist])
-                else:
-                    data = scrAPI.list_videos([x.id for x in sublist])
+                data = cls.api.list_videos([x.id for x in sublist])
                 dict = {item['id']: item for item in data['items']}
             except Exception as e:
                 logger.error('list_videos error "%s"', e)
@@ -271,12 +267,10 @@ class Playlist(Entry):
 
         def job(sublist):
             try:
-                if api_enabled:
-                    data = API.list_playlists([x.id for x in sublist])
-                else:
-                    data = scrAPI.list_playlists([x.id for x in sublist])
+                data = cls.api.list_playlists([x.id for x in sublist])
                 dict = {item['id']: item for item in data['items']}
-            except Exception:
+            except Exception as e:
+                logger.error('list_playlists error "%s"', e)
                 dict = {}
 
             for pl in sublist:
@@ -306,21 +300,16 @@ class Playlist(Entry):
                         self.playlist_max_videos - len(all_videos),
                         50
                     )
-                    if api_enabled:
-                        data = API.list_playlistitems(
-                            self.id,
-                            page,
-                            max_results
-                        )
-                    else:
-                        data = scrAPI.list_playlistitems(
-                            self.id,
-                            page,
-                            max_results
-                        )
-                except Exception:
+                    data = self.api.list_playlistitems(
+                        self.id,
+                        page,
+                        max_results
+                    )
+                except Exception as e:
+                    logger.error('list playlist items error "%s"', e)
                     break
                 if 'error' in data:
+                    logger.error('error in list playlist items data')
                     break
                 page = data.get('nextPageToken') or None
 
@@ -350,18 +339,6 @@ class Playlist(Entry):
     def is_video(self):
         return False
 
-def api_factory(style):
-  if style == "API":
-    return API()
-  if style == "scrAPI":
-    return scrAPI()
-  else:
-    raise Exception("Unrecognized chart style.")
-
-class Client:
-
-    session = requests.Session()
-
 
 class Client:
 
@@ -387,7 +364,7 @@ class API(Client):
             'q': q,
             'key': API.youtube_api_key
         }
-        result = API.session.get(API.endpoint + 'search', params=query)
+        result = cls.session.get(API.endpoint + 'search', params=query)
         return result.json()
 
     # list videos
@@ -401,7 +378,7 @@ class API(Client):
             'id': ','.join(ids),
             'key': API.youtube_api_key
         }
-        result = API.session.get(API.endpoint + 'videos', params=query)
+        result = cls.session.get(API.endpoint + 'videos', params=query)
         return result.json()
 
     # list playlists
@@ -415,7 +392,7 @@ class API(Client):
             'id': ','.join(ids),
             'key': API.youtube_api_key
         }
-        result = API.session.get(API.endpoint + 'playlists', params=query)
+        result = cls.session.get(API.endpoint + 'playlists', params=query)
         return result.json()
 
     # list playlist items
@@ -431,7 +408,7 @@ class API(Client):
             'key': API.youtube_api_key,
             'pageToken': page,
         }
-        result = API.session.get(API.endpoint + 'playlistItems', params=query)
+        result = cls.session.get(API.endpoint + 'playlistItems', params=query)
         return result.json()
 
 
