@@ -7,12 +7,12 @@ import string
 import unicodedata
 from urlparse import parse_qs, urlparse
 
-from mopidy import backend
+from mopidy import backend, httpclient
 from mopidy.models import Album, Artist, SearchResult, Track
 
 import pykka
 
-from mopidy_youtube import logger, youtube
+from mopidy_youtube import Extension, logger, youtube
 
 # A typical interaction:
 # 1. User searches for a keyword (YouTubeLibraryProvider.search)
@@ -55,18 +55,32 @@ class YouTubeBackend(pykka.ThreadingActor, backend.Backend):
             config['youtube']['playlist_max_videos']
         youtube.api_enabled = config['youtube']['api_enabled']
         self.uri_schemes = ['youtube', 'yt']
+        self.user_agent = '%s/%s' % (
+            Extension.dist_name,
+            Extension.version
+        )
 
     def on_start(self):
-        if youtube.API.youtube_api_key is None \
-                and youtube.api_enabled is True:
-            logger.error('No YouTube API key provided, disabling API')
-            youtube.api_enabled = False
 
-        if youtube.api_enabled is True \
-                and 'error' in youtube.API.search(q='test'):
-            logger.error('Failed to verify YouTube API key, disabling API')
-            youtube.api_enabled = False
+        proxy = httpclient.format_proxy(self.config['proxy'])
+        agent = httpclient.format_user_agent(self.user_agent)
+        youtube.Client.session.proxies = {'http': proxy, 'https': proxy}
+        youtube.Client.session.headers = {'user-agent': agent}
+        youtube.Client.session.headers.update({
+            'Cookie': 'PREF=hl=en;',
+            'Accept-Language': 'en;q=0.8'
+        })
+        youtube.Video.proxy = proxy
 
+        if youtube.api_enabled is True:
+            if youtube.API.youtube_api_key is None:
+                logger.error('No YouTube API key provided, disabling API')
+                youtube.api_enabled = False
+            elif 'error' in youtube.API.search(q='test'):
+                logger.error('Failed to verify YouTube API key, disabling API')
+                youtube.api_enabled = False
+
+        self.api = youtube.api_factory("API")
 
 class YouTubeLibraryProvider(backend.LibraryProvider):
 
@@ -88,6 +102,7 @@ class YouTubeLibraryProvider(backend.LibraryProvider):
     #
     def search(self, query=None, uris=None, exact=False):
         # TODO Support exact search
+        logger.info(self.backend.api)
         logger.info('youtube LibraryProvider.search "%s"', query)
 
         # handle only searching (queries with 'any') not browsing!
@@ -98,7 +113,7 @@ class YouTubeLibraryProvider(backend.LibraryProvider):
         logger.info('Searching YouTube for query "%s"', search_query)
 
         try:
-            entries = youtube.Entry.search(search_query)
+            entries = youtube.Entry.search(search_query, self.backend.api)
         except Exception:
             return None
 
@@ -108,18 +123,21 @@ class YouTubeLibraryProvider(backend.LibraryProvider):
 
         tracks = []
         for entry in entries:
+            logger.info(entry)
             if entry.is_video:
                 uri_base = 'youtube:video'
                 album = 'YouTube Video'
+                length = int(entry.length.get())*1000
             else:
                 uri_base = 'youtube:playlist'
                 album = 'YouTube Playlist (%s videos)' % \
                         entry.video_count.get()
+                length = 0
 
             tracks.append(Track(
-                name=entry.title.get().replace(';', '') or None,
+                name=entry.title.get().replace(';', ''),
                 comment=entry.id,
-                length=0,
+                length=length,
                 artists=[Artist(name=entry.channel.get())],
                 album=Album(
                     name=album,
@@ -179,7 +197,7 @@ class YouTubeLibraryProvider(backend.LibraryProvider):
             video.audio_url  # start loading
 
             return [Track(
-                name=video.title.get().replace(';', '') or None,
+                name=video.title.get().replace(';', ''),
                 comment=video.id,
                 length=video.length.get() * 1000,
                 artists=[Artist(name=video.channel.get())],

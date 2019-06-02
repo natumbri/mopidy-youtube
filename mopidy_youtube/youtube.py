@@ -67,7 +67,7 @@ class Entry(object):
     # video_count)
     #
     @classmethod
-    def search(cls, q):
+    def search(cls, q, api):
         def create_object(item):
             if item['id']['kind'] == 'youtube#video':
                 obj = Video.get(item['id']['videoId'])
@@ -96,10 +96,11 @@ class Entry(object):
             return obj
 
         try:
-            if api_enabled:
-                data = API.search(q)
-            else:
-                data = scrAPI.search(q)
+            data = api.search(q)
+            #if api_enabled:
+            #    data = API.search(q)
+            #else:
+            #    data = scrAPI.search(q)
         except Exception as e:
             logger.error('search error "%s"', e)
             return None
@@ -156,11 +157,15 @@ class Entry(object):
                 val = item['snippet']['channelTitle']
             elif k == 'length':
                 # convert PT1H2M10S to 3730
-                m = re.search(r'PT((?P<hours>\d+)H)?'
+                m = re.search(r'P((?P<weeks>\d+)W)?'
+                              + r'((?P<days>\d+)D)?'
+                              + r'T((?P<hours>\d+)H)?'
                               + r'((?P<minutes>\d+)M)?'
                               + r'((?P<seconds>\d+)S)?',
                               item['contentDetails']['duration'])
-                val = (int(m.group('hours') or 0) * 3600
+                val = (int(m.group('weeks') or 0) * 604800
+                       + int(m.group('days') or 0) * 86400
+                       + int(m.group('hours') or 0) * 3600
                        + int(m.group('minutes') or 0) * 60
                        + int(m.group('seconds') or 0))
             elif k == 'video_count':
@@ -230,9 +235,10 @@ class Video(Entry):
 
         def job():
             try:
-                info = youtube_dl.YoutubeDL(
-                    {'format': 'm4a/vorbis/bestaudio/best'}
-                ).extract_info(
+                info = youtube_dl.YoutubeDL({
+                    'format': 'm4a/vorbis/bestaudio/best',
+                    'proxy': self.proxy
+                }).extract_info(
                     url="https://www.youtube.com/watch?v=%s" % self.id,
                     download=False,
                     ie_key=None,
@@ -344,13 +350,24 @@ class Playlist(Entry):
     def is_video(self):
         return False
 
+def api_factory(style):
+  if style == "API":
+    return API()
+  if style == "scrAPI":
+    return scrAPI()
+  else:
+    raise Exception("Unrecognized chart style.")
+
+class Client:
+
+    session = requests.Session()
+
 
 # Direct access to YouTube Data API
 # https://developers.google.com/youtube/v3/docs/
 #
-class API:
+class API(Client):
     endpoint = 'https://www.googleapis.com/youtube/v3/'
-    session = requests.Session()
 
     # search for both videos and playlists using a single API call
     # https://developers.google.com/youtube/v3/docs/search
@@ -415,10 +432,8 @@ class API:
 
 # Indirect access to YouTube data, without API
 #
-class scrAPI:
+class scrAPI(Client):
     endpoint = 'https://www.youtube.com/'
-    proxy_config = None
-    session = requests.Session()
 
     # search for videos and playlists
     #
@@ -429,7 +444,6 @@ class scrAPI:
             # 'sp': 'EgIQAQ%253D%253D',
             'search_query': q.replace(' ', '+')
         }
-
         result = scrAPI.session.get(scrAPI.endpoint+'results', params=query)
         regex = (
             r'(?:video-count.*<b>(?:(?P<itemCount>[0-9]+)</b>)?(.|\n)*?)?'
