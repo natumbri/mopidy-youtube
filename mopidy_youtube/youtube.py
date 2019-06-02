@@ -433,7 +433,10 @@ class scrAPI:
             # 'sp': 'EgIQAQ%253D%253D',
             'search_query': q.replace(' ', '+')
         }
-        scrAPI.session.headers.update({'Cookie': 'PREF=hl=en;', 'Accept-Language':'en;q=0.8'})
+        scrAPI.session.headers.update({
+            'Cookie': 'PREF=hl=en;',
+            'Accept-Language': 'en;q=0.8'
+        })
         result = scrAPI.session.get(scrAPI.endpoint+'results', params=query)
         regex = (
             r'(?:video-count.*<b>(?:(?P<itemCount>[0-9]+)</b>)?(.|\n)*?)?'
