@@ -629,6 +629,78 @@ class scrAPI(Client):
         ))
 
 
+## JSON based scrAPI
+class jAPI(scrAPI):
+
+    # search for videos and playlists
+    #
+    @classmethod
+    def search(cls, q):
+        query = {
+            # get videos only
+            # 'sp': 'EgIQAQ%253D%253D',
+            'search_query': q.replace(' ','+')
+        }
+
+        jAPI.session.headers = {
+            'user-agent': "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:66.0) Gecko/20100101 Firefox/66.0",
+            'Cookie': 'PREF=hl=en;',
+            'Accept-Language': 'en;q=0.5',
+            'content_type': 'application/json'
+        }
+
+        result = jAPI.session.get(jAPI.endpoint+'results', params=query)
+
+        json_regex = r'window\["ytInitialData"] = (.*?);'
+        extracted_json = re.search(json_regex, result.text).group(1)
+        result_json = json.loads(extracted_json)['contents']['twoColumnSearchResultsRenderer']['primaryContents']['sectionListRenderer']['contents'][0]['itemSectionRenderer']['contents']
+        
+        items = []
+        for content in result_json:
+            if 'videoRenderer' in content:
+                print(content['videoRenderer']['title']['simpleText'])
+                item = {
+                    'id': {
+                        'kind': 'youtube#video',
+                        'videoId': content['videoRenderer']['videoId']
+                    },
+                    # 'contentDetails': {
+                    #     'duration': 'PT'+duration
+                    # }
+                    'snippet': {
+                        'title': content['videoRenderer']['title']['simpleText'],
+                        # TODO: full support for thumbnails
+                        'thumbnails': content['videoRenderer']['thumbnail']['thumbnails'],
+                        'channelTitle': content['videoRenderer']['longBylineText']['runs'][0]['text'],
+                    },
+                }
+            elif 'radioRenderer' in content:
+               pass
+            elif 'playlistRenderer' in content:
+                item = {
+                    'id': {
+                        'kind': 'youtube#playlist',
+                        'playlistId': content['playlistRenderer']['playlistId']
+                    },
+                    'contentDetails': {
+                        'itemCount': content['playlistRenderer']['videoCount']
+                    },
+                    'snippet': {
+                        'title': content['playlistRenderer']['title']['simpleText'],
+                        # TODO: full support for thumbnails
+                        'thumbnails': content['playlistRenderer']['thumbnails'][0]['thumbnails'],
+                        'channelTitle': content['playlistRenderer']['longBylineText']['runs'][0]['text'],
+                    },
+                }
+ 
+            items.append(item)
+        return json.loads(json.dumps(
+            {'items': items},
+            sort_keys=False,
+            indent=1
+        ))
+
+
 # simple 'dynamic' thread pool. Threads are created when new jobs arrive, stay
 # active for as long as there are active jobs, and get destroyed afterwards
 # (so that there are no long-term threads staying active)
