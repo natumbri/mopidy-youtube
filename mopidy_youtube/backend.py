@@ -88,8 +88,8 @@ class YouTubeBackend(pykka.ThreadingActor, backend.Backend):
             logger.info('Using scrAPI')
             youtube.Entry.api = youtube.scrAPI()
 
-        logger.info('using jAPI')
-        youtube.Entry.api = youtube.jAPI()
+        # logger.info('using jAPI')
+        # youtube.Entry.api = youtube.jAPI()
 
 
 class YouTubeLibraryProvider(backend.LibraryProvider):

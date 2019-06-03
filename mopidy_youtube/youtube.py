@@ -657,9 +657,9 @@ class jAPI(scrAPI):
         
         items = []
         for content in result_json:
+            item = {}
             if 'videoRenderer' in content:
-                print(content['videoRenderer']['title']['simpleText'])
-                item = {
+                item.update({
                     'id': {
                         'kind': 'youtube#video',
                         'videoId': content['videoRenderer']['videoId']
@@ -670,14 +670,16 @@ class jAPI(scrAPI):
                     'snippet': {
                         'title': content['videoRenderer']['title']['simpleText'],
                         # TODO: full support for thumbnails
-                        'thumbnails': content['videoRenderer']['thumbnail']['thumbnails'],
+                        'thumbnails': {
+                            'default': content['videoRenderer']['thumbnail']['thumbnails'][0]
+                        },
                         'channelTitle': content['videoRenderer']['longBylineText']['runs'][0]['text'],
                     },
-                }
+                })
             elif 'radioRenderer' in content:
                pass
             elif 'playlistRenderer' in content:
-                item = {
+                item.update({
                     'id': {
                         'kind': 'youtube#playlist',
                         'playlistId': content['playlistRenderer']['playlistId']
@@ -688,14 +690,15 @@ class jAPI(scrAPI):
                     'snippet': {
                         'title': content['playlistRenderer']['title']['simpleText'],
                         # TODO: full support for thumbnails
-                        'thumbnails': content['playlistRenderer']['thumbnails'][0]['thumbnails'],
+                        'thumbnails': {
+                            'default': content['playlistRenderer']['thumbnails'][0]['thumbnails'][0]
+                        },
                         'channelTitle': content['playlistRenderer']['longBylineText']['runs'][0]['text'],
                     },
-                }
- 
+                }) 
             items.append(item)
         return json.loads(json.dumps(
-            {'items': items},
+            {'items': [i for i in items if i]},
             sort_keys=False,
             indent=1
         ))
