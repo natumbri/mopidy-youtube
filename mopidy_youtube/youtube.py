@@ -81,7 +81,7 @@ class Entry(object):
                         ['title', 'channel'],
                         item
                     )
-            else:
+            elif item['id']['kind'] == 'youtube#playlist':
                 obj = Playlist.get(item['id']['playlistId'])
                 if 'contentDetails' in item:
                     obj._set_api_data(
@@ -93,6 +93,9 @@ class Entry(object):
                         ['title', 'channel', 'thumbnails'],
                         item
                     )
+            else:
+                obj = []
+                
             return obj
 
         try:
