@@ -439,22 +439,20 @@ class scrAPI:
         })
         result = scrAPI.session.get(scrAPI.endpoint+'results', params=query)
         regex = (
-            r'(?:video-count.*<b>(?:(?P<itemCount>[0-9]+)</b>)?(.|\n)*?)?'
-            r'<a href="/watch\?v='
-            r'(?P<id>.{11})'
-            r'(?:&amp;list=(?P<playlist>PL.{32}))?'
-            r'" class=".*?" data-sessionlink=".*?"  title="'
-            r'(?P<title>.+?)'
-            r'" .+?'
-            r'((?:Duration: '
-            r'(?:(?P<durationHours>[0-9]+):)?'
-            r'(?P<durationMinutes>[0-9]+):'
-            r'(?P<durationSeconds>[0-9]{2}).</span>.*?)?'
-            r'<a href="'
-            r'(?P<uploaderUrl>/(?:user|channel)/[^"]+)"[^>]+>'
-            r'(?P<uploader>.*?)</a>.*?class="'
-            r'(yt-lockup-description|yt-uix-sessionlink)[^>]*>'
-            r'(?P<description>.*?))?</div>'
+            r'(?:\<li\>\<div class\=\"yt-lockup yt-lockup-tile yt-lockup-'
+            r'(?:playlist|video) vve-check clearfix)'
+            r'(?:.|\n)*?(?:\<a href\=\"\/watch\?v\=)(?P<id>.{11})'
+            r'(?:\&amp\;list\=(?:(?P<playlist>PL.*?)\")?'
+            r'(?:(?P<radiolist>RD.*?)\&)?(?:.|\n)'
+            r'(?:.|\n)*?span class\=\"formatted-video-count-label\"\>\<b\>'
+            r'(?P<itemCount>\d*))?(?:.|\n)*?\"\s*title\=\"(?P<title>.+?)" .+?'
+            r'(?:(?:Duration\:\s*(?:(?P<durationHours>[0-9]+)\:)?'
+            r'(?P<durationMinutes>[0-9]+)\:'
+            r'(?P<durationSeconds>[0-9]{2}).\<\/span\>.*?)?)?\<a href\=\"'
+            r'(?:(?:(?P<uploaderUrl>/(?:user|channel)/[^"]+)"[^>]+>)?'
+            r'(?P<uploader>.*?)\<\/a\>.*?class\=\"'
+            r'(?:yt-lockup-description|yt-uix-sessionlink)[^>]*>'
+            r'(?P<description>.*?)\<\/div\>)?'
         )
         items = []
 
@@ -472,6 +470,20 @@ class scrAPI:
                       'kind': 'youtube#playlist',
                       'playlistId': match.group('playlist')
                     },
+                    'contentDetails': {
+                        'itemCount': match.group('itemCount')
+                    }
+                }
+            elif match.group('radiolist') is not None:
+                item = {
+                    'id': {
+                      'kind': 'youtube#radiolist',
+                      'playlistId': match.group('radiolist'),
+                      'videoId': match.group('id')
+                    },
+                    'contentDetails': {
+                        'itemCount': match.group('itemCount')
+                    }
                 }
             else:
                 item = {
@@ -480,18 +492,12 @@ class scrAPI:
                       'videoId': match.group('id')
                     },
                 }
-            if duration != '':
-                item.update({
-                    'contentDetails': {
-                        'duration': 'PT'+duration,
-                    },
-                })
-            if match.group('itemCount') is not None:
-                item.update({
-                    'contentDetails': {
-                        'itemCount': match.group('itemCount'),
-                    },
-                })
+                if duration != '':
+                    item.update ({
+                        'contentDetails': {
+                            'duration': 'PT'+duration,
+                        },
+                    })
             item.update({
                 'snippet': {
                       'title': match.group('title'),
