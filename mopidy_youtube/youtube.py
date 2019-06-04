@@ -93,6 +93,12 @@ class Entry(object):
                         ['title', 'channel', 'thumbnails'],
                         item
                     )
+            elif item['id']['kind'] == 'youtube#radiolist':
+                obj = Video.get(item['id']['videoId'])
+                obj._set_api_data(
+                    ['title', 'video_count'],
+                    item
+                )
             else:
                 obj = []
                 
@@ -106,7 +112,6 @@ class Entry(object):
         except Exception as e:
             logger.error('search error "%s"', e)
             return None
-
         try:
             return map(create_object, data['items'])
         except Exception as e:
@@ -179,7 +184,7 @@ class Entry(object):
                 val = [
                     val['url']
                     for (key, val) in item['snippet']['thumbnails'].items()
-                    if key in ['medium', 'high']
+                    if key in ['default', 'medium', 'high']
                 ]
 
             future.set(val)
@@ -446,7 +451,8 @@ class scrAPI:
             r'(?:playlist|video) vve-check clearfix)'
             r'(?:.|\n)*?(?:\<a href\=\"\/watch\?v\=)(?P<id>.{11})'
             r'(?:\&amp\;list\=(?:(?P<playlist>PL.*?)\")?'
-            r'(?:(?P<radiolist>RD.*?)\&)?(?:.|\n)'
+            r'(?:.|\n)'
+            # r'(?:(?P<radiolist>RD.*?)\&)?(?:.|\n)'
             r'(?:.|\n)*?span class\=\"formatted-video-count-label\"\>\<b\>'
             r'(?P<itemCount>\d*))?(?:.|\n)*?\"\s*title\=\"(?P<title>.+?)" .+?'
             r'(?:(?:Duration\:\s*(?:(?P<durationHours>[0-9]+)\:)?'
@@ -477,17 +483,17 @@ class scrAPI:
                         'itemCount': match.group('itemCount')
                     }
                 }
-            elif match.group('radiolist') is not None:
-                item = {
-                    'id': {
-                      'kind': 'youtube#radiolist',
-                      'playlistId': match.group('radiolist'),
-                      'videoId': match.group('id')
-                    },
-                    'contentDetails': {
-                        'itemCount': match.group('itemCount')
-                    }
-                }
+            # elif match.group('radiolist') is not None:
+            #     item = {
+            #         'id': {
+            #           'kind': 'youtube#radiolist',
+            #           'playlistId': match.group('radiolist'),
+            #           'videoId': match.group('id')
+            #         },
+            #         'contentDetails': {
+            #             'itemCount': match.group('itemCount')
+            #         }
+            #     }
             else:
                 item = {
                     'id': {
@@ -501,6 +507,7 @@ class scrAPI:
                             'duration': 'PT'+duration,
                         },
                     })
+            print(match.group('title'))
             item.update({
                 'snippet': {
                       'title': match.group('title'),
@@ -514,9 +521,13 @@ class scrAPI:
                               'height': 90,
                           },
                       },
-                      'channelTitle': match.group('uploader'),
                 },
             })
+            if match.group('uploader') is not None:
+                item['snippet'].update({
+                    'channelTitle': match.group('uploader')
+                })
+
             items.append(item)
         return json.loads(json.dumps(
             {'items': items},
