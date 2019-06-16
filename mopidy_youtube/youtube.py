@@ -687,7 +687,13 @@ class jAPI(scrAPI):
                         'title': content['videoRenderer']['title']['simpleText'],
                         # TODO: full support for thumbnails
                         'thumbnails': {
-                            'default': content['videoRenderer']['thumbnail']['thumbnails'][0]
+                            'default': {
+                                'url': 'https://i.ytimg.com/vi/'
+                                       + content['videoRenderer']['videoId']
+                                       + '/default.jpg',
+                                'width': 120,
+                                'height': 90,
+                            },
                         },
                         'channelTitle': content['videoRenderer']['longBylineText']['runs'][0]['text'],
                     },
@@ -706,10 +712,16 @@ class jAPI(scrAPI):
                     'snippet': {
                         'title': content['playlistRenderer']['title']['simpleText'],
                         # TODO: full support for thumbnails
-                        'thumbnails': {
-                            'default': content['playlistRenderer']['thumbnails'][0]['thumbnails'][0]
-                        },
+                       'thumbnails': {
+                            'default': {
+                                'url': 'https://i.ytimg.com/vi/'
+                                       + content['playlistRenderer']['navigationEndpoint']['watchEndpoint']['videoId']
+                                       + '/default.jpg',
+                                'width': 120,
+                                'height': 90,
+                            },
                         'channelTitle': content['playlistRenderer']['longBylineText']['runs'][0]['text'],
+                        }
                     },
                 }) 
             items.append(item)
