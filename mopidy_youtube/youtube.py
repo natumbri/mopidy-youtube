@@ -73,7 +73,7 @@ class Entry(object):
             if item['id']['kind'] == 'youtube#video':
                 obj = Video.get(item['id']['videoId'])
                 if 'contentDetails' in item:
-                    set_api_data.append('lenght')
+                    set_api_data.append('length')
             elif item['id']['kind'] == 'youtube#playlist':
                 obj = Playlist.get(item['id']['playlistId'])
                 if 'contentDetails' in item:
