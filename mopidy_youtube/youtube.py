@@ -97,7 +97,6 @@ class Entry(object):
             logger.error('search error "%s"', e)
             return None
         try:
-            logger.info(data['items'])
             return map(create_object, data['items'])
         except Exception as e:
             logger.error('map error "%s"', e)

@@ -133,7 +133,6 @@ class YouTubeLibraryProvider(backend.LibraryProvider):
 
         tracks = []
         for entry in entries:
-            logger.info(entry)
             if entry.is_video:
                 uri_base = 'youtube:video'
                 album = 'YouTube Video'
