@@ -334,8 +334,17 @@ class Playlist(Entry):
 
 class Client:
 
-    session = requests.Session()
+    # session = requests.Session()
+    def __init__(self):
+        if not hasattr(type(self), 'session'):
+            self._create_session()
 
+    @classmethod
+    def _create_session(cls):
+        cls.session = requests.Session()
+
+    # def get(self, endpoint, params):
+    #     self.session.get(endpoint, params=params)
 
 # Direct access to YouTube Data API
 # https://developers.google.com/youtube/v3/docs/
@@ -357,6 +366,7 @@ class API(Client):
             'key': API.youtube_api_key
         }
         result = cls.session.get(API.endpoint + 'search', params=query)
+        # result = cls.get(Entry.api, API.endpoint + 'search', params=query)
         return result.json()
 
     # list videos

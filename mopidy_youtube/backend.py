@@ -64,29 +64,39 @@ class YouTubeBackend(pykka.ThreadingActor, backend.Backend):
 
         proxy = httpclient.format_proxy(self.config['proxy'])
         agent = httpclient.format_user_agent(self.user_agent)
-        youtube.Client.session.proxies = {'http': proxy, 'https': proxy}
-        youtube.Client.session.headers = {
-            'user-agent': agent,
-            'Cookie': 'PREF=hl=en;',
-            'Accept-Language': 'en;q=0.8'
-        }
-        youtube.Video.proxy = proxy
+        # youtube.Client.session.proxies = {'http': proxy, 'https': proxy}
+        # youtube.Client.session.headers = {
+        #     'user-agent': agent,
+        #     'Cookie': 'PREF=hl=en;',
+        #     'Accept-Language': 'en;q=0.8'
+        # }
+        # youtube.Video.proxy = proxy
 
         if youtube.api_enabled is True:
             if youtube.API.youtube_api_key is None:
                 logger.error('No YouTube API key provided, disabling API')
                 youtube.api_enabled = False
                 youtube.Entry.api = youtube.scrAPI()
-            elif 'error' in youtube.API.search(q='test'):
-                logger.error('Failed to verify YouTube API key, disabling API')
-                youtube.api_enabled = False
-                youtube.Entry.api = youtube.scrAPI()
             else:
-                logger.info('YouTube API key verified')
                 youtube.Entry.api = youtube.API()
+                if youtube.Entry.search(q='test') == None:
+                  logger.error('Failed to verify YouTube API key, disabling API')
+                  youtube.api_enabled = False
+                  youtube.Entry.api = youtube.scrAPI()
+                else:
+                  logger.info('YouTube API key verified')
         else:
             logger.info('Using scrAPI')
             youtube.Entry.api = youtube.scrAPI()
+
+        youtube.Entry.api.session.proxies = {'http': proxy, 'https': proxy}
+        youtube.Entry.api.session.headers = {
+            'user-agent': agent,
+            'Cookie': 'PREF=hl=en;',
+            'Accept-Language': 'en;q=0.8'
+        }
+        youtube.Video.proxy = proxy
+
 
         # logger.info('using jAPI')
         # youtube.Entry.api = youtube.jAPI()
