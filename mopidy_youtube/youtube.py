@@ -69,40 +69,28 @@ class Entry(object):
     @classmethod
     def search(cls, q):
         def create_object(item):
+            set_api_data = ['title', 'channel']
             if item['id']['kind'] == 'youtube#video':
                 obj = Video.get(item['id']['videoId'])
                 if 'contentDetails' in item:
-                    obj._set_api_data(
-                        ['title', 'channel', 'length'],
-                        item
-                    )
-                else:
-                    obj._set_api_data(
-                        ['title', 'channel'],
-                        item
-                    )
+                    set_api_data.append('lenght')
             elif item['id']['kind'] == 'youtube#playlist':
                 obj = Playlist.get(item['id']['playlistId'])
                 if 'contentDetails' in item:
-                    obj._set_api_data(
-                        ['title', 'channel', 'thumbnails', 'video_count'],
-                        item
-                    )
-                else:
-                    obj._set_api_data(
-                        ['title', 'channel', 'thumbnails'],
-                        item
-                    )
-            elif item['id']['kind'] == 'youtube#radiolist':
-                obj = Video.get(item['id']['videoId'])
-                obj._set_api_data(
-                    ['title', 'video_count'],
-                    item
-                )
+                    set_api_data.append('video_count')
+                if 'thumbnails' in item:
+                    set_api_data.append('thumbnails')
+            # elif item['id']['kind'] == 'youtube#radiolist':
+            #     obj = Video.get(item['id']['videoId'])
+            #     set_api_data = ['title', 'video_count']
             else:
                 obj = []
+                return obj
+            obj._set_api_data(
+                set_api_data,
+                item
+            )
             return obj
-
         try:
             data = cls.api.search(q)
         except Exception as e:
@@ -363,7 +351,7 @@ class API(Client):
     def search(cls, q):
         query = {
             'part': 'id,snippet',
-            'fields': 'items(id,snippet(title,thumbnails,channelTitle))',
+            'fields': 'items(id,snippet(title,thumbnails(default),channelTitle))',
             'maxResults': Video.search_results,
             'type': 'video,playlist',
             'q': q,
@@ -407,7 +395,7 @@ class API(Client):
         query = {
             'part': 'id,snippet',
             'fields': 'nextPageToken,'
-                      + 'items(snippet(title,resourceId(videoId)))',
+                      + 'items(snippet(title, resourceId(videoId)))',
             'maxResults': max_results,
             'playlistId': id,
             'key': API.youtube_api_key,
@@ -512,7 +500,10 @@ class scrAPI(Client):
                 item['snippet'].update({
                     'channelTitle': match.group('uploader')
                 })
-
+            else:
+                item['snippet'].update({
+                    'channelTitle': 'NA'
+                })
             items.append(item)
         return json.loads(json.dumps(
             {'items': items},
