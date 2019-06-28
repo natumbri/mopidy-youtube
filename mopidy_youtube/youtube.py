@@ -445,7 +445,7 @@ class scrAPI(Client):
             # 'sp': 'EgIQAQ%253D%253D',
             'search_query': q.replace(' ', '+')
         }
-        result = scrAPI.session.get(scrAPI.endpoint+'results', params=query)
+        result = cls.session.get(scrAPI.endpoint+'results', params=query)
         regex = (
             r'(?:\<li\>\<div class\=\"yt-lockup yt-lockup-tile yt-lockup-'
             r'(?:playlist|video) vve-check clearfix)'
@@ -558,7 +558,7 @@ class scrAPI(Client):
             query = {
                 'v': id,
             }
-            result = scrAPI.session.get(
+            result = cls.session.get(
                 scrAPI.endpoint+'watch',
                 params=query
             )
@@ -600,7 +600,7 @@ class scrAPI(Client):
             query = {
                 'list': id,
             }
-            result = scrAPI.session.get(
+            result = cls.session.get(
                 scrAPI.endpoint+'playlist',
                 params=query
             )
@@ -638,7 +638,7 @@ class scrAPI(Client):
             'list': id
         }
 
-        result = scrAPI.session.get(scrAPI.endpoint+'playlist', params=query)
+        result = cls.session.get(scrAPI.endpoint+'playlist', params=query)
         regex = (
             r'" data-title="(?P<title>.+?)".*?'
             r'<a href="/watch\?v=(?P<id>.{11})\&amp;'
@@ -675,14 +675,14 @@ class jAPI(scrAPI):
             'search_query': q.replace(' ','+')
         }
 
-        jAPI.session.headers = {
+        cls.session.headers = {
             'user-agent': "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:66.0) Gecko/20100101 Firefox/66.0",
             'Cookie': 'PREF=hl=en;',
             'Accept-Language': 'en;q=0.5',
             'content_type': 'application/json'
         }
 
-        result = jAPI.session.get(jAPI.endpoint+'results', params=query)
+        result = cls.session.get(jAPI.endpoint+'results', params=query)
 
         json_regex = r'window\["ytInitialData"] = (.*?);'
         extracted_json = re.search(json_regex, result.text).group(1)
