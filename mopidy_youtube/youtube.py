@@ -11,6 +11,8 @@ from cachetools import LRUCache, cached
 import pykka
 
 import requests
+from requests.adapters import HTTPAdapter
+from requests.packages.urllib3.util.retry import Retry
 
 import youtube_dl
 
@@ -339,8 +341,26 @@ class Client:
             self._create_session(proxy, headers)
 
     @classmethod
-    def _create_session(cls, proxy, headers):
-        cls.session = requests.Session()
+    def _create_session(
+        cls,
+        proxy,
+        headers,
+        retries=3,
+        backoff_factor=0.3,
+        status_forcelist=(500, 502, 504),
+        session=None
+    ):
+        cls.session = session or requests.Session()
+        retry = Retry(
+            total=retries,
+            read=retries,
+            connect=retries,
+            backoff_factor=backoff_factor,
+            status_forcelist=status_forcelist
+        )
+        adapter = HTTPAdapter(max_retries=retry)
+        cls.session.mount('http://', adapter)
+        cls.session.mount('https://', adapter)
         cls.session.proxies = {'http': proxy, 'https': proxy}
         cls.session.headers = headers
 
