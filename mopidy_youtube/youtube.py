@@ -14,8 +14,9 @@ import pykka
 import requests
 from requests.adapters import HTTPAdapter
 from requests.packages.urllib3.util.retry import Retry
-# import requests_cache
-# requests_cache.install_cache() 
+import requests_cache
+requests_cache.install_cache('/var/cache/mopidy/mopidy-youtube_cache') 
+
 
 import youtube_dl
 
