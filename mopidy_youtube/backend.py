@@ -63,22 +63,31 @@ class YouTubeBackend(pykka.ThreadingActor, backend.Backend):
     def on_start(self):
 
         proxy = httpclient.format_proxy(self.config['proxy'])
-        agent = httpclient.format_user_agent(self.user_agent)
-        youtube.Client.session.proxies = {'http': proxy, 'https': proxy}
-        youtube.Client.session.headers = {'user-agent': agent}
-        youtube.Client.session.headers.update({
+        youtube.Video.proxy = proxy
+        headers = {
+            'user-agent': httpclient.format_user_agent(self.user_agent),
             'Cookie': 'PREF=hl=en;',
             'Accept-Language': 'en;q=0.8'
-        })
-        youtube.Video.proxy = proxy
+        }
 
         if youtube.api_enabled is True:
             if youtube.API.youtube_api_key is None:
                 logger.error('No YouTube API key provided, disabling API')
                 youtube.api_enabled = False
-            elif 'error' in youtube.API.search(q='test'):
-                logger.error('Failed to verify YouTube API key, disabling API')
-                youtube.api_enabled = False
+            else:
+                youtube.Entry.api = youtube.API(proxy, headers)
+                if youtube.Entry.search(q='test') == None:
+                    logger.error('Failed to verify YouTube API key, disabling API')
+                    youtube.api_enabled = False
+                else:
+                    logger.info('YouTube API key verified')
+
+        if youtube.api_enabled is False:
+            logger.info('Using scrAPI')
+            youtube.Entry.api = youtube.scrAPI(proxy, headers)
+
+        # logger.info('using jAPI')
+        # youtube.Entry.api = youtube.jAPI()
 
 
 class YouTubeLibraryProvider(backend.LibraryProvider):
@@ -112,7 +121,8 @@ class YouTubeLibraryProvider(backend.LibraryProvider):
 
         try:
             entries = youtube.Entry.search(search_query)
-        except Exception:
+        except Exception as e:
+            logger.error('search error "%s"', e)
             return None
 
         # load playlist info (to get video_count) of all playlists together
@@ -147,7 +157,6 @@ class YouTubeLibraryProvider(backend.LibraryProvider):
         # load video info and playlist videos in the background. they should be
         # ready by the time the user adds search results to the playing queue
         videos = [e for e in entries if e.is_video]
-        youtube.Video.load_info(videos)
 
         for pl in playlists:
             pl.videos  # start loading

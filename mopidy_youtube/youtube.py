@@ -5,12 +5,18 @@ import re
 import threading
 import traceback
 from itertools import islice
+import io
 
 from cachetools import LRUCache, cached
 
 import pykka
 
 import requests
+from requests.adapters import HTTPAdapter
+from requests.packages.urllib3.util.retry import Retry
+import requests_cache
+requests_cache.install_cache('/var/cache/mopidy/mopidy-youtube_cache') 
+
 
 import youtube_dl
 
@@ -78,25 +84,21 @@ class Entry(object):
                 obj = Playlist.get(item['id']['playlistId'])
                 if 'contentDetails' in item:
                     set_api_data.append('video_count')
-                if 'thumbnails' in item:
-                    set_api_data.append('thumbnails')
             # elif item['id']['kind'] == 'youtube#radiolist':
             #     obj = Video.get(item['id']['videoId'])
             #     set_api_data = ['title', 'video_count']
             else:
                 obj = []
                 return obj
-
+            if 'thumbnails' in item:
+                set_api_data.append('thumbnails')
             obj._set_api_data(
                 set_api_data,
                 item
             )
             return obj
         try:
-            if api_enabled:
-                data = API.search(q)
-            else:
-                data = scrAPI.search(q)
+            data = cls.api.search(q)
         except Exception as e:
             logger.error('search error "%s"', e)
             return None
@@ -190,10 +192,7 @@ class Video(Entry):
 
         def job(sublist):
             try:
-                if api_enabled:
-                    data = API.list_videos([x.id for x in sublist])
-                else:
-                    data = scrAPI.list_videos([x.id for x in sublist])
+                data = cls.api.list_videos([x.id for x in sublist])
                 dict = {item['id']: item for item in data['items']}
             except Exception as e:
                 logger.error('list_videos error "%s"', e)
@@ -218,7 +217,7 @@ class Video(Entry):
         self._thumbnails = pykka.ThreadingFuture()
         self._thumbnails.set([
             'https://i.ytimg.com/vi/%s/%s.jpg' % (self.id, type)
-            for type in ['mqdefault', 'hqdefault']
+            for type in ['default', 'mqdefault', 'hqdefault']
         ])
 
     # audio_url is the only property retrived using youtube_dl, it's much more
@@ -266,16 +265,19 @@ class Playlist(Entry):
 
         def job(sublist):
             try:
-                if api_enabled:
-                    data = API.list_playlists([x.id for x in sublist])
-                else:
-                    data = scrAPI.list_playlists([x.id for x in sublist])
+                data = cls.api.list_playlists([x.id for x in sublist])
                 dict = {item['id']: item for item in data['items']}
-            except Exception:
+            except Exception as e:
+                logger.error('list_playlists error "%s"', e)
                 dict = {}
 
             for pl in sublist:
                 pl._set_api_data(fields, dict.get(pl.id))
+                
+            # If the API in use also returns information for Videos, 
+            # create the video objects here
+            # for video in data:
+            # 
 
         # 50 items at a time, make sure order is deterministic so that HTTP
         # requests are replayable in tests
@@ -301,29 +303,31 @@ class Playlist(Entry):
                         self.playlist_max_videos - len(all_videos),
                         50
                     )
-                    if api_enabled:
-                        data = API.list_playlistitems(
-                            self.id,
-                            page,
-                            max_results
-                        )
-                    else:
-                        data = scrAPI.list_playlistitems(
-                            self.id,
-                            page,
-                            max_results
-                        )
-                except Exception:
+                    data = self.api.list_playlistitems(
+                        self.id,
+                        page,
+                        max_results
+                    )
+                except Exception as e:
+                    logger.error('list playlist items error "%s"', e)
                     break
                 if 'error' in data:
+                    logger.error('error in list playlist items data')
                     break
                 page = data.get('nextPageToken') or None
 
                 myvideos = []
+
                 for item in data['items']:
+                    set_api_data = ['title', 'channel']
+                    if 'contentDetails' in item:
+                        set_api_data.append('length')
+                    if 'thumbnails' in item['snippet']:
+                        set_api_data.append('thumbnails')
                     video = Video.get(item['snippet']['resourceId']['videoId'])
-                    video._set_api_data(['title'], item)
+                    video._set_api_data(set_api_data, item)
                     myvideos.append(video)
+
                 all_videos += myvideos
 
                 # start loading video info for this batch in the background
@@ -348,8 +352,36 @@ class Playlist(Entry):
 
 class Client:
 
-    session = requests.Session()
+    def __init__(self, proxy, headers):
+        if not hasattr(type(self), 'session'):
+            self._create_session(proxy, headers)
 
+    @classmethod
+    def _create_session(
+        cls,
+        proxy,
+        headers,
+        retries=3,
+        backoff_factor=0.3,
+        status_forcelist=(500, 502, 504),
+        session=None
+    ):
+        cls.session = session or requests.Session()
+        retry = Retry(
+            total=retries,
+            read=retries,
+            connect=retries,
+            backoff_factor=backoff_factor,
+            status_forcelist=status_forcelist
+        )
+        adapter = HTTPAdapter(
+            max_retries=retry,
+            pool_maxsize=ThreadPool.threads_max
+        )
+        cls.session.mount('http://', adapter)
+        cls.session.mount('https://', adapter)
+        cls.session.proxies = {'http': proxy, 'https': proxy}
+        cls.session.headers = headers
 
 # Direct access to YouTube Data API
 # https://developers.google.com/youtube/v3/docs/
@@ -370,7 +402,8 @@ class API(Client):
             'q': q,
             'key': API.youtube_api_key
         }
-        result = API.session.get(API.endpoint + 'search', params=query)
+        logger.info('session.get triggered: search')
+        result = cls.session.get(API.endpoint + 'search', params=query)
         return result.json()
 
     # list videos
@@ -384,7 +417,9 @@ class API(Client):
             'id': ','.join(ids),
             'key': API.youtube_api_key
         }
-        result = API.session.get(API.endpoint + 'videos', params=query)
+        logger.info('session.get triggered: list_videos')
+        result = cls.session.get(API.endpoint + 'videos', params=query)
+        # logger.info(result.json())
         return result.json()
 
     # list playlists
@@ -398,7 +433,8 @@ class API(Client):
             'id': ','.join(ids),
             'key': API.youtube_api_key
         }
-        result = API.session.get(API.endpoint + 'playlists', params=query)
+        logger.info('session.get triggered: list_playlists')
+        result = cls.session.get(API.endpoint + 'playlists', params=query)
         return result.json()
 
     # list playlist items
@@ -414,7 +450,8 @@ class API(Client):
             'key': API.youtube_api_key,
             'pageToken': page,
         }
-        result = API.session.get(API.endpoint + 'playlistItems', params=query)
+        logger.info('session.get triggered: list_playlistitems')
+        result = cls.session.get(API.endpoint + 'playlistItems', params=query)
         return result.json()
 
 
@@ -432,23 +469,34 @@ class scrAPI(Client):
             # 'sp': 'EgIQAQ%253D%253D',
             'search_query': q.replace(' ', '+')
         }
-        result = scrAPI.session.get(scrAPI.endpoint+'results', params=query)
+        logger.info('session.get triggered: search')
+        result = cls.session.get(scrAPI.endpoint+'results', params=query)
         regex = (
-            r'(?:\<li\>\<div class\=\"yt-lockup yt-lockup-tile yt-lockup-'
-            r'(?:playlist|video) vve-check clearfix)'
-            r'(?:.|\n)*?(?:\<a href\=\"\/watch\?v\=)(?P<id>.{11})'
-            r'(?:\&amp\;list\=(?:(?P<playlist>PL.*?)\")?'
-            r'(?:.|\n)'
-            # r'(?:(?P<radiolist>RD.*?)\&)?(?:.|\n)'
-            r'(?:.|\n)*?span class\=\"formatted-video-count-label\"\>\<b\>'
-            r'(?P<itemCount>\d*))?(?:.|\n)*?\"\s*title\=\"(?P<title>.+?)" .+?'
-            r'(?:(?:Duration\:\s*(?:(?P<durationHours>[0-9]+)\:)?'
-            r'(?P<durationMinutes>[0-9]+)\:'
-            r'(?P<durationSeconds>[0-9]{2}).\<\/span\>.*?)?)?\<a href\=\"'
-            r'(?:(?:(?P<uploaderUrl>/(?:user|channel)/[^"]+)"[^>]+>)?'
-            r'(?P<uploader>.*?)\<\/a\>.*?class\=\"'
-            r'(?:yt-lockup-description|yt-uix-sessionlink)[^>]*>'
-            r'(?P<description>.*?)\<\/div\>)?'
+            r'(?:\<li\>)(?:.|\n)*?\<a href\=(["\'])\/watch\?v\=(?P<id>.{11})'
+            r'(?:\&amp\;list\=(?:(?P<playlist>PL.*?)\1)?'
+            # r'(?:(?P<radiolist>RD.*?)\&)?'
+            r'(?:.|\n)*?class\=\1formatted-video-count-label\1\>[^\d]*'
+            r'(?P<itemCount>\d*))?(?:.|\n)*?title\=\1(?P<title>.+?)\1.+?'
+            r'(?:(?:Duration[^\d]+(?:(?P<durationHours>\d+)\:)?'
+            r'(?P<durationMinutes>\d{1,2})\:(?P<durationSeconds>\d{2})[^\d].*?)?)?'
+            r'\<a href\=\1(?:(?:(?P<uploaderUrl>/(?:user|channel)/[^"\']+)\1[^>]+>)?'
+            r'(?P<uploader>[^<]+).+class\=\1(?:yt-lockup-description|yt-uix-sessionlink)'
+            r'[^>]*>(?P<description>.*?)\<\/div\>)?'
+            # r'(?:\<li\>\<div class\=\"yt-lockup yt-lockup-tile yt-lockup-'
+            # r'(?:playlist|video) vve-check clearfix)'
+            # r'(?:.|\n)*?(?:\<a href\=\"\/watch\?v\=)(?P<id>.{11})'
+            # r'(?:\&amp\;list\='
+            # r'(?:(?P<playlist>PL.*?)\")?'
+            # # r'(?:(?P<radiolist>RD.*?)\&)?'
+            # r'(?:.|\n)*?span class\=\"formatted-video-count-label\"\>\<b\>'
+            # r'(?P<itemCount>\d*))?(?:.|\n)*?\"\s*title\=\"(?P<title>.+?)" .+?'
+            # r'(?:(?:Duration\:\s*(?:(?P<durationHours>[0-9]+)\:)?'
+            # r'(?P<durationMinutes>[0-9]+)\:'
+            # r'(?P<durationSeconds>[0-9]{2}).\<\/span\>.*?)?)?\<a href\=\"'
+            # r'(?:(?:(?P<uploaderUrl>/(?:user|channel)/[^"]+)"[^>]+>)?'
+            # r'(?P<uploader>.*?)\<\/a\>.*?class\=\"'
+            # r'(?:yt-lockup-description|yt-uix-sessionlink)[^>]*>'
+            # r'(?P<description>.*?)\<\/div\>)?'
         )
         items = []
 
@@ -470,6 +518,7 @@ class scrAPI(Client):
                         'itemCount': match.group('itemCount')
                     }
                 }
+            # # Not too sure how to support radiolists, at this stage
             # elif match.group('radiolist') is not None:
             #     item = {
             #         'id': {
@@ -509,6 +558,11 @@ class scrAPI(Client):
                       },
                 },
             })
+
+            # # Instead of if/else, could this just be: 
+            # item['snippet'].update({
+            #     'channelTitle': match.group('uploader') or 'NA'
+            # })
             if match.group('uploader') is not None:
                 item['snippet'].update({
                     'channelTitle': match.group('uploader')
@@ -518,6 +572,11 @@ class scrAPI(Client):
                     'channelTitle': 'NA'
                 })
             items.append(item)
+        # logger.info('search results, %s', json.loads(json.dumps(
+        #     {'items': items},
+        #     sort_keys=False,
+        #     indent=1
+        # )))    
         return json.loads(json.dumps(
             {'items': items},
             sort_keys=False,
@@ -542,10 +601,12 @@ class scrAPI(Client):
         items = []
 
         for id in ids:
+        # def job(id):
             query = {
                 'v': id,
             }
-            result = scrAPI.session.get(
+            logger.info('session.get triggered: list_videos')
+            result = cls.session.get(
                 scrAPI.endpoint+'watch',
                 params=query
             )
@@ -561,6 +622,15 @@ class scrAPI(Client):
                     }
                 }
                 items.append(item)
+                # logger.info('list_videos item, %s', item)
+
+            # for id in ids:
+            #     ThreadPool.run(job, (id,))
+        # logger.info('list_videos finished, %s', json.loads(json.dumps(
+        #     {'items': items},
+        #     sort_keys=False,
+        #     indent=1
+        # )))
         return json.loads(json.dumps(
             {'items': items},
             sort_keys=False,
@@ -583,11 +653,13 @@ class scrAPI(Client):
         )
         items = []
 
-        for id in ids:
+        # for id in ids:
+        def job(id):
             query = {
                 'list': id,
             }
-            result = scrAPI.session.get(
+            logger.info('session.get triggered: list_playlists')
+            result = cls.session.get(
                 scrAPI.endpoint+'playlist',
                 params=query
             )
@@ -610,6 +682,10 @@ class scrAPI(Client):
                     }
                 }
                 items.append(item)
+
+        for id in ids:
+            ThreadPool.run(job, (id,))
+
         return json.loads(json.dumps(
             {'items': items},
             sort_keys=False,
@@ -624,26 +700,160 @@ class scrAPI(Client):
         query = {
             'list': id
         }
-
-        result = scrAPI.session.get(scrAPI.endpoint+'playlist', params=query)
+        logger.info('session.get triggered: list_playlist_items')
+        result = cls.session.get(scrAPI.endpoint+'playlist', params=query)
+        
+        # # to save things, for testing purposes
+        # f = io.open('/home/natumbri/test.'+id+'.txt','w+',encoding='utf-8')
+        # f.write(result.text)
+        # f.close
+        
         regex = (
-            r'" data-title="(?P<title>.+?)".*?'
-            r'<a href="/watch\?v=(?P<id>.{11})\&amp;'
+            r'<tr class\=\"pl-video.*\" data-title\=\"(?P<title>.+?)".*?'
+            r'<a href\=\"\/watch\?v\=(?P<id>.{11})\&amp;(?:.|\n)*?'
+            r'(?P<thumbnail>https://i\.ytimg\.com\/vi\/.{11}/).*?\.jpg'
+            r'(?:.|\n)*?<div class="pl-video-owner">(?:.|\n)*?'
+            r'/(?:user|channel)/(?:.|\n)*? >(?P<channelTitle>.*?)</a>'
+            r'(?:.|\n)*?<div class="timestamp">.*?">(?:(?:'
+            r'(?P<durationHours>[0-9]+)\:)?'
+            r'(?P<durationMinutes>[0-9]+)\:'
+            r'(?P<durationSeconds>[0-9]{2}))'
+            r'(?:.|\n)*?</div></td></tr>'
         )
         items = []
 
         for match in islice(re.finditer(regex, result.text), max_results):
+            duration = ''
+            if match.group('durationHours') is not None:
+                duration += match.group('durationHours')+'H'
+            if match.group('durationMinutes') is not None:
+                duration += match.group('durationMinutes')+'M'
+            if match.group('durationSeconds') is not None:
+                duration += match.group('durationSeconds')+'S'
             item = {
+                'id': match.group('id'),
                 'snippet': {
                     'resourceId': {
                         'videoId': match.group('id'),
-                        },
+                    },
                     'title': match.group('title'),
+                    'channelTitle': match.group('channelTitle'),
+                    'thumbnails': {
+                        'default': {
+                            'url': match.group('thumbnail')+'default.jpg',
+                            'width': 120,
+                            'height': 90,
+                        },
+                    },
                 },
             }
+            if duration != '':
+                item.update ({
+                    'contentDetails': {
+                        'duration': 'PT'+duration,
+                }
+            })
+            
             items.append(item)
+            # logger.info('list_playlistitems, items.append(%s)', item)
+            # item = {
+            #     'snippet': {
+            #         'resourceId': {
+            #             'videoId': match.group('id'),
+            #             },
+            #         'title': match.group('title'),
+            #     },
+            # }
+            # items.append(item)
         return json.loads(json.dumps(
             {'nextPageToken': None, 'items': items},
+            sort_keys=False,
+            indent=1
+        ))
+
+
+## JSON based scrAPI
+class jAPI(scrAPI):
+
+    # search for videos and playlists
+    #
+    @classmethod
+    def search(cls, q):
+        query = {
+            # get videos only
+            # 'sp': 'EgIQAQ%253D%253D',
+            'search_query': q.replace(' ','+')
+        }
+
+        cls.session.headers = {
+            'user-agent': "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:66.0) Gecko/20100101 Firefox/66.0",
+            'Cookie': 'PREF=hl=en;',
+            'Accept-Language': 'en;q=0.5',
+            'content_type': 'application/json'
+        }
+        logger.info('session.get triggered: search')
+        result = cls.session.get(jAPI.endpoint+'results', params=query)
+
+        json_regex = r'window\["ytInitialData"] = (.*?);'
+        extracted_json = re.search(json_regex, result.text).group(1)
+        result_json = json.loads(extracted_json)['contents']['twoColumnSearchResultsRenderer']['primaryContents']['sectionListRenderer']['contents'][0]['itemSectionRenderer']['contents']
+        
+        items = []
+        for content in result_json:
+            item = {}
+            if 'videoRenderer' in content:
+                item.update({
+                    'id': {
+                        'kind': 'youtube#video',
+                        'videoId': content['videoRenderer']['videoId']
+                    },
+                    # 'contentDetails': {
+                    #     'duration': 'PT'+duration
+                    # }
+                    'snippet': {
+                        'title': content['videoRenderer']['title']['simpleText'],
+                        # TODO: full support for thumbnails
+                        'thumbnails': {
+                            'default': {
+                                'url': 'https://i.ytimg.com/vi/'
+                                       + content['videoRenderer']['videoId']
+                                       + '/default.jpg',
+                                'width': 120,
+                                'height': 90,
+                            },
+                        },
+                        'channelTitle': content['videoRenderer']['longBylineText']['runs'][0]['text'],
+                    },
+                })
+            elif 'radioRenderer' in content:
+               pass
+            elif 'playlistRenderer' in content:
+                item.update({
+                    'id': {
+                        'kind': 'youtube#playlist',
+                        'playlistId': content['playlistRenderer']['playlistId']
+                    },
+                    'contentDetails': {
+                        'itemCount': content['playlistRenderer']['videoCount']
+                    },
+                    'snippet': {
+                        'title': content['playlistRenderer']['title']['simpleText'],
+                        # TODO: full support for thumbnails
+                       'thumbnails': {
+                            'default': {
+                                'url': 'https://i.ytimg.com/vi/'
+                                       + content['playlistRenderer']['navigationEndpoint']['watchEndpoint']['videoId']
+                                       + '/default.jpg',
+                                'width': 120,
+                                'height': 90,
+                            },
+                        'channelTitle': content['playlistRenderer']['longBylineText']['runs'][0]['text'],
+                        }
+                    },
+                }) 
+            items.append(item)
+        return json.loads(json.dumps(
+            {'items': [i for i in items if i]},
             sort_keys=False,
             indent=1
         ))
@@ -690,3 +900,4 @@ class ThreadPool:
             cls.threads_active += 1
 
         cls.lock.release()
+
