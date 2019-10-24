@@ -23,9 +23,11 @@ class Extension(ext.Extension):
 
     def get_config_schema(self):
         schema = super(Extension, self).get_config_schema()
-        schema['youtube_api_key'] = config.String()
-        schema['threads_max'] = config.Integer()
-        schema['search_results'] = config.Integer()
+        schema['youtube_api_key'] = config.String(optional=True)
+        schema['threads_max'] = config.Integer(minimum=1)
+        schema['search_results'] = config.Integer(minimum=1)
+        schema['playlist_max_videos'] = config.Integer(minimum=1)
+        schema['api_enabled'] = config.Boolean()
         return schema
 
     def setup(self, registry):
