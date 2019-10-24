@@ -1,7 +1,5 @@
 from __future__ import unicode_literals
 
-import os.path
-
 import mock
 
 import pafy
@@ -10,13 +8,12 @@ import pytest
 
 import vcr
 
-from mopidy_youtube import backend
-from mopidy_youtube.backend import YouTubeLibraryProvider
+from mopidy_youtube import youtube
 
 
 @pytest.yield_fixture
 def pafy_mock():
-    patcher = mock.patch.object(backend, 'pafy', spec=pafy)
+    patcher = mock.patch.object(youtube, 'pafy', spec=pafy)
     yield patcher.start()
     patcher.stop()
 
@@ -34,78 +31,64 @@ def pafy_mock_with_video(pafy_mock):
     return pafy_mock
 
 
-here = os.path.abspath(os.path.dirname(__file__))
+@vcr.use_cassette('tests/fixtures/youtube_playlist.yaml')
+def test_get_playlist():
+    youtube.API.youtube_api_key = 'fake_key'
 
-my_vcr = vcr.VCR(
-    serializer='yaml',
-    cassette_library_dir=os.path.join(here, 'fixtures'),
-    record_mode='once',
-    match_on=['method', 'scheme', 'host', 'port', 'path', 'query'],
-)
+    pl = youtube.Playlist.get('PLOxORm4jpOQfMU7bpfGCzDyLropIYEHuR')
+
+    assert len(pl.videos.get()) == 49
+    return
+    assert pl.videos.get()[0].title.get()
+
+    # Playlist.videos starts loading video info in the background
+    video = pl.videos.get()[0]
+    assert video._length                # should be ready
+    assert video.length.get() == 400
+
+    pl2 = youtube.Playlist.get('PLOxORm4jpOQfMU7bpfGCzDyLropIYEHuR')
+
+    assert pl2 is pl                    # fetch from cache
+    assert pl._videos                   # should be ready
 
 
-@my_vcr.use_cassette('youtube_playlist_resolve.yaml')
-def test_playlist_resolver(pafy_mock_with_video):
-    videos = backend.resolve_playlist(
-        'PLOxORm4jpOQfMU7bpfGCzDyLropIYEHuR',
-        'AIzaSyAl1Xq9DwdE_KD4AtPaE4EJl3WZe2zCqg4',
-        16)
-
-    assert len(videos) == 108
-
-
-@my_vcr.use_cassette('youtube_search.yaml')
-def test_search_yt(pafy_mock_with_video):
-    videos = backend.search_youtube(
-        'chvrches',
-        'AIzaSyAl1Xq9DwdE_KD4AtPaE4EJl3WZe2zCqg4',
-        16)
+@vcr.use_cassette('tests/fixtures/youtube_search.yaml')
+def test_search():
+    youtube.API.youtube_api_key = 'fake_key'
+    youtube.Video.search_results = 15
+    videos = youtube.Entry.search('chvrches')
 
     assert len(videos) == 15
+    assert videos[0]._title             # should be ready
+    assert videos[0]._channel           # should be ready
+
+    video = youtube.Video.get('e1YqueG2gtQ')
+
+    assert video in videos              # cached
 
 
-@my_vcr.use_cassette('resolve_track.yaml')
-def test_resolve_track(pafy_mock_with_video):
-    video = backend.resolve_track('C0DPdy98e4c')
+@vcr.use_cassette('tests/fixtures/youtube_get_video.yaml')
+def test_get_video():
+    video = youtube.Video.get('e1YqueG2gtQ')
 
-    assert video
+    assert video.length.get()
+
+    # get again, should fetch from cache, _length should be ready
+    video2 = youtube.Video.get('e1YqueG2gtQ')
+
+    assert video2 is video
+    assert video2._length
 
 
-@my_vcr.use_cassette('resolve_track_failed.yaml')
-def test_resolve_track_failed(pafy_mock):
+def test_audio_url(pafy_mock_with_video):
+    video = youtube.Video.get('e1YqueG2gtQ')
+
+    assert video.audio_url.get()
+
+
+def test_audio_url_fail(pafy_mock):
     pafy_mock.new.side_effect = Exception('Removed')
 
-    video = backend.resolve_track('unknown')
+    video = youtube.Video.get('unknown')
 
-    assert not video
-
-
-@my_vcr.use_cassette('resolve_track_stream.yaml')
-def test_resolve_track_stream(pafy_mock_with_video):
-    video = backend.resolve_track('C0DPdy98e4c', stream=True)
-
-    assert video
-
-
-@my_vcr.use_cassette('resolve_video_track_stream.yaml')
-def test_resolve_video_track_stream(pafy_mock_with_video):
-    video = backend.resolve_track('youtube:video/a title.a video id',
-                                  stream=True)
-
-    assert video
-    assert video.uri == "http://example.com/"
-
-
-@my_vcr.use_cassette('lookup_video_uri.yaml')
-def test_lookup_video_uri(caplog):
-    provider = YouTubeLibraryProvider(mock.PropertyMock())
-
-    track = provider.lookup(backend.video_uri_prefix + '/a title.C0DPdy98e4c')
-
-    assert 'Need 11 character video id or the URL of the video.' \
-        not in caplog.text
-
-    assert track
-
-    assert track[0].uri == backend.video_uri_prefix + \
-        '/TEST VIDEO.C0DPdy98e4c'
+    assert not video.audio_url.get()

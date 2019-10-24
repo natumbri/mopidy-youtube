@@ -2,60 +2,65 @@ interactions:
 - request:
     body: null
     headers:
-      Accept: ['*/*']
-      Accept-Encoding: ['gzip, deflate']
-      Connection: [keep-alive]
-      User-Agent: [python-requests/2.9.1]
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - python-requests/2.9.1
     method: GET
-    uri: https://www.googleapis.com/youtube/v3/search?part=id&q=chvrches&maxResults=15&type=video&key=AIzaSyAl1Xq9DwdE_KD4AtPaE4EJl3WZe2zCqg4
+    uri: https://www.googleapis.com/youtube/v3/search?fields=items%28id%2Csnippet%28title%2Cthumbnails%2CchannelTitle%29%29&maxResults=15&q=chvrches&part=id%2Csnippet&key=fake_key&type=video%2Cplaylist
   response:
-    body: {string: !!python/unicode "{\n \"kind\": \"youtube#searchListResponse\",\n
-        \"etag\": \"\\\"gMxXHe-zinKdE9lTnzKu8vjcmDI/VsP4qcJf6cr5ebPm-aH1WTFBsP8\\\"\",\n
-        \"nextPageToken\": \"CA8QAA\",\n \"regionCode\": \"DE\",\n \"pageInfo\": {\n
-        \ \"totalResults\": 367059,\n  \"resultsPerPage\": 15\n },\n \"items\": [\n
-        \ {\n   \"kind\": \"youtube#searchResult\",\n   \"etag\": \"\\\"gMxXHe-zinKdE9lTnzKu8vjcmDI/N62nNRIBR6JMMA3QHwCDamuj_Rc\\\"\",\n
-        \  \"id\": {\n    \"kind\": \"youtube#video\",\n    \"videoId\": \"4Eo84jDIMKI\"\n
-        \  }\n  },\n  {\n   \"kind\": \"youtube#searchResult\",\n   \"etag\": \"\\\"gMxXHe-zinKdE9lTnzKu8vjcmDI/W9dQENrUpeEpmfU_HUrA86qf6qs\\\"\",\n
-        \  \"id\": {\n    \"kind\": \"youtube#video\",\n    \"videoId\": \"B9BLMNn0PrQ\"\n
-        \  }\n  },\n  {\n   \"kind\": \"youtube#searchResult\",\n   \"etag\": \"\\\"gMxXHe-zinKdE9lTnzKu8vjcmDI/3IezfTBiiPjbdpd5swNI4Gjx-jk\\\"\",\n
-        \  \"id\": {\n    \"kind\": \"youtube#video\",\n    \"videoId\": \"_mTRvJ9fugM\"\n
-        \  }\n  },\n  {\n   \"kind\": \"youtube#searchResult\",\n   \"etag\": \"\\\"gMxXHe-zinKdE9lTnzKu8vjcmDI/_8h0hU7fZscgrbr6Ni8AcZ8SZek\\\"\",\n
-        \  \"id\": {\n    \"kind\": \"youtube#video\",\n    \"videoId\": \"BZyzX4c1vIs\"\n
-        \  }\n  },\n  {\n   \"kind\": \"youtube#searchResult\",\n   \"etag\": \"\\\"gMxXHe-zinKdE9lTnzKu8vjcmDI/YSHn1TNgPRAlT93S47BuyMUzlV4\\\"\",\n
-        \  \"id\": {\n    \"kind\": \"youtube#video\",\n    \"videoId\": \"ktoaj1IpTbw\"\n
-        \  }\n  },\n  {\n   \"kind\": \"youtube#searchResult\",\n   \"etag\": \"\\\"gMxXHe-zinKdE9lTnzKu8vjcmDI/7EQ7MT5JIRPIsfBOzoAGbmyrKZI\\\"\",\n
-        \  \"id\": {\n    \"kind\": \"youtube#video\",\n    \"videoId\": \"KNHxwSp-6Og\"\n
-        \  }\n  },\n  {\n   \"kind\": \"youtube#searchResult\",\n   \"etag\": \"\\\"gMxXHe-zinKdE9lTnzKu8vjcmDI/kPwTMwlUdVdaA-3OSQV4o7fjOIQ\\\"\",\n
-        \  \"id\": {\n    \"kind\": \"youtube#video\",\n    \"videoId\": \"81RqEnvczV8\"\n
-        \  }\n  },\n  {\n   \"kind\": \"youtube#searchResult\",\n   \"etag\": \"\\\"gMxXHe-zinKdE9lTnzKu8vjcmDI/6lLxsx4-nzLoy20iBcp6DevuCGQ\\\"\",\n
-        \  \"id\": {\n    \"kind\": \"youtube#video\",\n    \"videoId\": \"p_A1PDN2aXw\"\n
-        \  }\n  },\n  {\n   \"kind\": \"youtube#searchResult\",\n   \"etag\": \"\\\"gMxXHe-zinKdE9lTnzKu8vjcmDI/qXkLEENk7SdNRzJKrt0ffs44i8Y\\\"\",\n
-        \  \"id\": {\n    \"kind\": \"youtube#video\",\n    \"videoId\": \"JyqemIbjcfg\"\n
-        \  }\n  },\n  {\n   \"kind\": \"youtube#searchResult\",\n   \"etag\": \"\\\"gMxXHe-zinKdE9lTnzKu8vjcmDI/yw8l2TamUNuR1pdri9uul3Y324c\\\"\",\n
-        \  \"id\": {\n    \"kind\": \"youtube#video\",\n    \"videoId\": \"pWAkPRKx1HI\"\n
-        \  }\n  },\n  {\n   \"kind\": \"youtube#searchResult\",\n   \"etag\": \"\\\"gMxXHe-zinKdE9lTnzKu8vjcmDI/jYmtypJsIvubTpjqp_xEj01401M\\\"\",\n
-        \  \"id\": {\n    \"kind\": \"youtube#video\",\n    \"videoId\": \"CjwwmFrsX_E\"\n
-        \  }\n  },\n  {\n   \"kind\": \"youtube#searchResult\",\n   \"etag\": \"\\\"gMxXHe-zinKdE9lTnzKu8vjcmDI/nFRQICKOptZ_1Ql3WYQRy-xTMeQ\\\"\",\n
-        \  \"id\": {\n    \"kind\": \"youtube#video\",\n    \"videoId\": \"3UNP2aJKzyA\"\n
-        \  }\n  },\n  {\n   \"kind\": \"youtube#searchResult\",\n   \"etag\": \"\\\"gMxXHe-zinKdE9lTnzKu8vjcmDI/Wl1rkawwplyT-s8cZWZIutMx84M\\\"\",\n
-        \  \"id\": {\n    \"kind\": \"youtube#video\",\n    \"videoId\": \"AU9_0pxiDjY\"\n
-        \  }\n  },\n  {\n   \"kind\": \"youtube#searchResult\",\n   \"etag\": \"\\\"gMxXHe-zinKdE9lTnzKu8vjcmDI/GjyLc47sdTqSDcg0cHnYVburu3A\\\"\",\n
-        \  \"id\": {\n    \"kind\": \"youtube#video\",\n    \"videoId\": \"haunJARHPm4\"\n
-        \  }\n  },\n  {\n   \"kind\": \"youtube#searchResult\",\n   \"etag\": \"\\\"gMxXHe-zinKdE9lTnzKu8vjcmDI/1bC-AatWfiadKMhhPyURN4GztXM\\\"\",\n
-        \  \"id\": {\n    \"kind\": \"youtube#video\",\n    \"videoId\": \"fB4gjiMVKFI\"\n
-        \  }\n  }\n ]\n}\n"}
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAANWZ327aSBTG73mKWVdadaUFQkARZK+AkAIxCQXi0q2q1cQc7CEzNhmPoU6VB9rn
+        2Bfb4f9RVVV1ZDriAgvP2PN9ln/6fI79NUcspkBE1iX5lCPkq/7pkYneXf8l1iMLVntWEsYqfoA3
+        CzaB0PpzM7ne6aznofTxKYZ35556b60mX9aHWFHA5nNQh/UUUxxWJzTbzqDZbg1JnvSYpC4H8vZu
+        OmUuo5w4q4X/2MkoPxYPAWU82q9DrAlMacwPK+uhWPLVyr5S8+iyWGSFRDHhFdxQFBesiBwWtycX
+        ZnNvK6JPX7KJ8vUCpfOz/ZgPzPNXIrWzzdDLdsoSMGGxeJ28ePqhgfL3DJSq3zrw9czr9P0f61eq
+        39EvX+z0c8iF5fo0CICP9rfVX0jXh8hpOXcbEHLbg1/PFg/spDcbX9XLP8lWj8rIF8B5SKaqQBBq
+        bZBAPjDlk57mrcuESMiN3gInNlsAYQGxaUQc8PS2D3IaSkEDF45CJLouE0RieRNEYv0jEnmAISse
+        K62wWplddXo3ndRZZwPVmNXJSEceZIsTsmUCJyxvAiesf2IB1y3fj+e1WUfm71MH3DeZdg0UJ97h
+        kdqLI+YeJcaQexPcYXkT3GH9k4qxf8RosOjWprHXSx1jIx9IL1Q+SPIByNCnMuMwQ+ZMQIXlTUCF
+        9U8szOyroWO/D/tudZkaq3eS6rxSLFuWkCMTLGF5Eyxh/RNjqfF38jyuuKVFJ0rNUpODTqVIkQaP
+        Mw4nZMsEUFjeBFBY/8SAareDWXzveMNuJeNK69O+0rITuau0PmfLHXJvgjssb4I7rH9Sldbzx7GX
+        +PlRqKopY2z9UiJP6nGkWECaTCV6SDAVbev5ax1wbKGhOz8rVfWB1zHnuhwLl+TtUnOqfRE3VlHG
+        FT+6HhMcYnkTHGL9Y+bfDoJrGkTEppqAkIr//tXpQjPrPJMnEJ2HmTv1Uj9gB+CGC5AZN5MHQ0aa
+        SSRvpJlE+r8ArawwehDjL/azjOGinhKjhmSBF5Hf35Rrf22/A6z/ExWSFucQ/JYtX8ipCb6wvAm+
+        sP4R+Rr5sL55qydRVoyJyGPisSyci7RRtY4pcgPBREfno05SQeWGOPvOaRU2vE1DqR+tj6t3sw7I
+        iIVBtuAh+ybAw/ImwMP6RwRPSTbnQGaZNaC1ht27Dc76Mv1nzUYsE9JR609QbZpwSHTvwDmjIsq4
+        HT2YNNKOInkj7SjSP7F21Kdx0K0P2n3xk+3ozsQlue0Ptj3AiAUJuYLokTTDwAWpsqULeTRBF5Y3
+        QRfWPyJd+9uZFVo3t+0vy+E8f3GXvrJvibluNEe+BJoxTMiVCZiwvAmYsP4vj6oc+Zx7yf0PT4gk
+        //MjAAA=
     headers:
-      alt-svc: ['quic=":443"; ma=2592000; v="35,34"']
-      cache-control: ['private, max-age=120, must-revalidate, no-transform']
-      content-length: ['3126']
-      content-type: [application/json; charset=UTF-8]
-      date: ['Fri, 13 Jan 2017 22:12:22 GMT']
-      etag: ['"gMxXHe-zinKdE9lTnzKu8vjcmDI/VsP4qcJf6cr5ebPm-aH1WTFBsP8"']
-      expires: ['Fri, 13 Jan 2017 22:12:22 GMT']
-      server: [GSE]
-      vary: [Origin, X-Origin]
-      x-content-type-options: [nosniff]
-      x-frame-options: [SAMEORIGIN]
-      x-xss-protection: [1; mode=block]
-    status: {code: 200, message: OK}
+      cache-control:
+      - private, max-age=120, must-revalidate, no-transform
+      content-encoding:
+      - gzip
+      content-type:
+      - application/json; charset=UTF-8
+      date:
+      - Fri, 26 Apr 2019 05:02:29 GMT
+      etag:
+      - '"XpPGQXPnxQJhLgs6enD_n8JR4Qk/tNlvsNiWqrmvbqFksWtkvfVtb0o"'
+      expires:
+      - Fri, 26 Apr 2019 05:02:29 GMT
+      server:
+      - GSE
+      transfer-encoding:
+      - chunked
+      vary:
+      - Origin
+      - X-Origin
+      x-content-type-options:
+      - nosniff
+      x-frame-options:
+      - SAMEORIGIN
+      x-xss-protection:
+      - 1; mode=block
+    status:
+      code: 200
+      message: OK
 version: 1
