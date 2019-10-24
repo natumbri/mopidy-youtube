@@ -1,0 +1,51 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - python-requests/2.9.1
+    method: GET
+    uri: https://www.googleapis.com/youtube/v3/videos?fields=items%28id%2Csnippet%28title%2CchannelTitle%29%2CcontentDetails%28duration%29%29&part=id%2Csnippet%2CcontentDetails&id=e1YqueG2gtQ&key=fake_key
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAAEWNsQ6CQBBE+/uKzVWaaIE2xhaNNAQVcokxFpdjkU3OA2GxIfy7ByRaTLEzb3Z6
+        AZIYX63cw10A9F7eyf0pMbi9OzxtnnyRq8lvHdU1sg8nDiQTWxzZMFLXMDqmsIaYGm0swiIpCjKk
+        LSjKsVrOP0CaUjuHNvtVy09jSmzVUSVyRIZ5zFSO0fEBWZNt/5t512imyo3dc7aNg10618SkhxjE
+        F1FUOjnWAAAA
+    headers:
+      cache-control:
+      - private, max-age=300, must-revalidate, no-transform
+      content-encoding:
+      - gzip
+      content-type:
+      - application/json; charset=UTF-8
+      date:
+      - Fri, 26 Apr 2019 05:06:05 GMT
+      etag:
+      - '"XpPGQXPnxQJhLgs6enD_n8JR4Qk/IBiU99gosoXWOmeiS19W8NdqJwE"'
+      expires:
+      - Fri, 26 Apr 2019 05:06:05 GMT
+      server:
+      - GSE
+      transfer-encoding:
+      - chunked
+      vary:
+      - Origin
+      - X-Origin
+      x-content-type-options:
+      - nosniff
+      x-frame-options:
+      - SAMEORIGIN
+      x-xss-protection:
+      - 1; mode=block
+    status:
+      code: 200
+      message: OK
+version: 1
