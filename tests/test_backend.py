@@ -2,13 +2,15 @@ from __future__ import unicode_literals
 
 import mock
 
-import youtube_dl
+from mopidy import httpclient
 
 import pytest
 
 import vcr
-from mopidy import httpclient
-from mopidy_youtube import backend, Extension, youtube
+
+import youtube_dl
+
+from mopidy_youtube import Extension, backend, youtube
 
 proxy = None  # httpclient.format_proxy(config['proxy'])
 youtube.Video.proxy = proxy
@@ -24,15 +26,17 @@ headers = {
     'Accept-Language': 'en;q=0.8'
 }
 
+
 @pytest.yield_fixture
 def youtube_dl_mock():
     patcher = mock.patch.object(youtube, 'youtube_dl', spec=youtube_dl)
     yield patcher.start()
     patcher.stop()
 
+
 @pytest.fixture
 def youtube_dl_mock_with_video(youtube_dl_mock):
-    video_mock = youtube_dl_mock.new.return_value
+    video_mock = youtube_dl_mock.YoutubeDL.return_value
     video_mock.bigthumb = 'big thumb'
     video_mock.bigthumbhd = 'big thumb in hd'
     video_mock.getbestaudio.return_value.url = 'http://example.com/'
@@ -41,6 +45,7 @@ def youtube_dl_mock_with_video(youtube_dl_mock):
     video_mock.videoid = 'a video id'
 
     return youtube_dl_mock
+
 
 @pytest.fixture
 def config():
@@ -62,8 +67,10 @@ def config():
         }
     }
 
+
 def get_backend(config):
     return backend.YouTubeBackend(config=config, audio=mock.Mock())
+
 
 def test_uri_schemes(config):
     backend_inst = get_backend(config)
@@ -71,11 +78,13 @@ def test_uri_schemes(config):
     assert 'youtube' in backend_inst.uri_schemes
     assert 'yt' in backend_inst.uri_schemes
 
+
 def test_init_sets_up_the_providers(config):
     backend_inst = get_backend(config)
 
     assert isinstance(backend_inst.library, backend.YouTubeLibraryProvider)
     assert isinstance(backend_inst.playback, backend.YouTubePlaybackProvider)
+
 
 @vcr.use_cassette('tests/fixtures/youtube_playlist.yaml')
 def test_get_playlist(config):
@@ -97,10 +106,9 @@ def test_get_playlist(config):
     assert pl2 is pl                    # fetch from cache
     assert pl._videos                   # should be ready
 
+
 @vcr.use_cassette('tests/fixtures/youtube_search.yaml')
 def test_search(config):
-    # backend_inst = get_backend(config)
-    
     youtube.Entry.api = youtube.scrAPI(proxy, headers)
 
     videos = youtube.Entry.search('chvrches')
@@ -113,11 +121,12 @@ def test_search(config):
 
     assert video in videos              # cached
 
+
 @vcr.use_cassette('tests/fixtures/youtube_get_video.yaml')
 def test_get_video(config):
 
     youtube.Entry.api = youtube.scrAPI(proxy, headers)
-    
+
     video = youtube.Video.get('e1YqueG2gtQ')
 
     assert video.length.get()
@@ -128,17 +137,19 @@ def test_get_video(config):
     assert video2 is video
     assert video2._length
 
-# def test_audio_url():
-#     youtube.Entry.api = youtube.scrAPI(proxy, headers)
-# 
-#     video = youtube.Video.get('e1YqueG2gtQ')
-# 
-#     assert video.audio_url.get()
 
-def test_audio_url_fail():
+def test_audio_url(youtube_dl_mock_with_video):
     youtube.Entry.api = youtube.scrAPI(proxy, headers)
 
-    # youtube_dl_mock.new.side_effect = Exception('Removed')
+    video = youtube.Video.get('e1YqueG2gtQ')
+
+    assert video.audio_url.get()
+
+
+def test_audio_url_fail(youtube_dl_mock):
+    youtube.Entry.api = youtube.scrAPI(proxy, headers)
+
+    youtube_dl_mock.YoutubeDL.side_effect = Exception('Removed')
 
     video = youtube.Video.get('unknown')
 
