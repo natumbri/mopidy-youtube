@@ -391,12 +391,9 @@ class API(Client):
     @classmethod
     def search(cls, q):
         query = {
-            'part': 'id,snippet',
-            'fields': 
-                'items(id, snippet(
-                    title,
-                    thumbnails(default),
-                    channelTitle))',
+            'part': 'id, snippet',
+            'fields':
+                'items(id, snippet(title, thumbnails(default), channelTitle))',  # noqa: E501
             'maxResults': Video.search_results,
             'type': 'video,playlist',
             'q': q,
@@ -727,9 +724,9 @@ class jAPI(scrAPI):
         }
 
         cls.session.headers = {
-            'user-agent': 
-                "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:66.0)" \
-                " Gecko/20100101 Firefox/66.0",
+            'user-agent':
+                'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:66.0)'
+                ' Gecko/20100101 Firefox/66.0',
             'Cookie': 'PREF=hl=en;',
             'Accept-Language': 'en;q=0.5',
             'content_type': 'application/json'
@@ -739,7 +736,7 @@ class jAPI(scrAPI):
 
         json_regex = r'window\["ytInitialData"] = (.*?);'
         extracted_json = re.search(json_regex, result.text).group(1)
-        result_json = json.loads(extracted_json)['contents']['twoColumnSearchResultsRenderer']['primaryContents']['sectionListRenderer']['contents'][0]['itemSectionRenderer']['contents'] # noqa: E501
+        result_json = json.loads(extracted_json)['contents']['twoColumnSearchResultsRenderer']['primaryContents']['sectionListRenderer']['contents'][0]['itemSectionRenderer']['contents']  # noqa: E501
 
         items = []
         for content in result_json:
@@ -754,7 +751,7 @@ class jAPI(scrAPI):
                     #     'duration': 'PT'+duration
                     # }
                     'snippet': {
-                        'title': content['videoRenderer']['title']['simpleText'], # noqa: E501
+                        'title': content['videoRenderer']['title']['simpleText'],  # noqa: E501
                         # TODO: full support for thumbnails
                         'thumbnails': {
                             'default': {
@@ -765,7 +762,7 @@ class jAPI(scrAPI):
                                 'height': 90,
                             },
                         },
-                        'channelTitle': content['videoRenderer']['longBylineText']['runs'][0]['text'], # noqa: E501
+                        'channelTitle': content['videoRenderer']['longBylineText']['runs'][0]['text'],  # noqa: E501
                     },
                 })
             elif 'radioRenderer' in content:
@@ -774,7 +771,7 @@ class jAPI(scrAPI):
                 item.update({
                     'id': {
                         'kind': 'youtube#playlist',
-                        'playlistId': content['playlistRenderer']['playlistId'] #noqa: E501
+                        'playlistId': content['playlistRenderer']['playlistId']  # noqa: E501
                     },
                     'contentDetails': {
                         'itemCount': content['playlistRenderer']['videoCount']
@@ -785,15 +782,15 @@ class jAPI(scrAPI):
                        'thumbnails': {
                             'default': {
                                 'url': 'https://i.ytimg.com/vi/'
-                                       + content['playlistRenderer']['navigationEndpoint']['watchEndpoint']['videoId'] # noqa: E501
+                                       + content['playlistRenderer']['navigationEndpoint']['watchEndpoint']['videoId']  # noqa: E501
                                        + '/default.jpg',
                                 'width': 120,
                                 'height': 90,
                             },
-                        'channelTitle': content['playlistRenderer']['longBylineText']['runs'][0]['text'], # noqa: E501
+                        'channelTitle': content['playlistRenderer']['longBylineText']['runs'][0]['text'],  # noqa: E501
                         }
                     },
-                }) 
+                })
             items.append(item)
         return json.loads(json.dumps(
             {'items': [i for i in items if i]},
