@@ -17,27 +17,6 @@ Mopidy-YouTube
 Mopidy extension that plays sound from YouTube.
 
 
-Maintainer wanted
-=================
-
-Mopidy-YouTube is currently kept on life support by the Mopidy core
-developers. It is in need of a more dedicated maintainer.
-
-If you want to be the maintainer of Mopidy-YouTube, please:
-
-1. Make 2-3 good pull requests improving any part of the project.
-
-2. Read and get familiar with all of the project's open issues.
-
-3. Send a pull request removing this section and adding yourself as the
-   "Current maintainer" in the "Credits" section below. In the pull request
-   description, please refer to the previous pull requests and state that
-   you've familiarized yourself with the open issues.
-
-As a maintainer, you'll be given push access to the repo and the authority to
-make releases to PyPI when you see fit.
-
-
 Installation
 ============
 
@@ -97,7 +76,7 @@ Troubleshooting
 If the extension is slow, try setting lower values for threads_max, search_results 
 and playlist_max_videos.
 
-If resolving of URIs stops working, always try to update the pafy library
+If resolving of URIs stops working, always try to update the youtube-dl library
 first::
 
    pip install --upgrade youtube-dl
@@ -114,12 +93,21 @@ Credits
 =======
 
 - Original author: `Janez Troha <https://github.com/dz0ny>`_
-- Current maintainer: None. Maintainer wanted, see section above.
+- Current maintainer: `Nikolas Tumbri <https://github.com/natumbri>`_
 - `Contributors <https://github.com/mopidy/mopidy-youtube/graphs/contributors>`_
 
 
 Changelog
 =========
+
+v2.1.0 (2019-10-26)
+-------------------
+
+- Major overhaul.
+
+- Improved performance.
+
+- Works with or without YouTube API key.
 
 v2.0.2 (2016-01-19)
 -------------------

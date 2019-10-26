@@ -545,7 +545,7 @@ class scrAPI(Client):
                 })
             items.append(item)
         return json.loads(json.dumps(
-            {'items': items},
+            {'items': [x for _, x in zip(range(Video.search_results), items)]},
             sort_keys=False,
             indent=1
         ))
