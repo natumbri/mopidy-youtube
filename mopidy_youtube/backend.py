@@ -11,6 +11,7 @@ from mopidy import backend, httpclient
 from mopidy.models import Album, Artist, SearchResult, Track
 
 import pykka
+
 import requests_cache
 
 from mopidy_youtube import Extension, logger, youtube
@@ -78,8 +79,9 @@ class YouTubeBackend(pykka.ThreadingActor, backend.Backend):
                 youtube.api_enabled = False
             else:
                 youtube.Entry.api = youtube.API(proxy, headers)
-                if youtube.Entry.search(q='test') == None:
-                    logger.error('Failed to verify YouTube API key, disabling API')
+                if youtube.Entry.search(q='test') is None:
+                    logger.error(
+                        'Failed to verify YouTube API key, disabling API')
                     youtube.api_enabled = False
                 else:
                     logger.info('YouTube API key verified')
@@ -128,7 +130,7 @@ class YouTubeLibraryProvider(backend.LibraryProvider):
             return None
 
         # load playlist info (to get video_count) of all playlists together
-        playlists = [e for e in entries if not e.is_video]
+        playlists = [entry for entry in entries if not entry.is_video]
         youtube.Playlist.load_info(playlists)
 
         tracks = []
@@ -158,8 +160,7 @@ class YouTubeLibraryProvider(backend.LibraryProvider):
 
         # load video info and playlist videos in the background. they should be
         # ready by the time the user adds search results to the playing queue
-        videos = [e for e in entries if e.is_video]
-
+        
         for pl in playlists:
             pl.videos  # start loading
 

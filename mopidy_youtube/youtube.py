@@ -5,7 +5,6 @@ import re
 import threading
 import traceback
 from itertools import islice
-import io
 
 from cachetools import LRUCache, cached
 
@@ -270,11 +269,10 @@ class Playlist(Entry):
 
             for pl in sublist:
                 pl._set_api_data(fields, dict.get(pl.id))
-                
-            # If the API in use also returns information for Videos, 
+
+            # If the API in use also returns information for Videos,
             # create the video objects here
             # for video in data:
-            # 
 
         # 50 items at a time, make sure order is deterministic so that HTTP
         # requests are replayable in tests
@@ -380,6 +378,7 @@ class Client:
         cls.session.proxies = {'http': proxy, 'https': proxy}
         cls.session.headers = headers
 
+
 # Direct access to YouTube Data API
 # https://developers.google.com/youtube/v3/docs/
 #
@@ -393,7 +392,9 @@ class API(Client):
     def search(cls, q):
         query = {
             'part': 'id,snippet',
-            'fields': 'items(id,snippet(title,thumbnails(default),channelTitle))',
+            'fields': 'items(
+                id,
+                snippet(title,thumbnails(default),channelTitle))',
             'maxResults': Video.search_results,
             'type': 'video,playlist',
             'q': q,
@@ -475,25 +476,13 @@ class scrAPI(Client):
             r'(?:.|\n)*?class\=\1formatted-video-count-label\1\>[^\d]*'
             r'(?P<itemCount>\d*))?(?:.|\n)*?title\=\1(?P<title>.+?)\1.+?'
             r'(?:(?:Duration[^\d]+(?:(?P<durationHours>\d+)\:)?'
-            r'(?P<durationMinutes>\d{1,2})\:(?P<durationSeconds>\d{2})[^\d].*?)?)?'
-            r'\<a href\=\1(?:(?:(?P<uploaderUrl>/(?:user|channel)/[^"\']+)\1[^>]+>)?'
-            r'(?P<uploader>[^<]+).+class\=\1(?:yt-lockup-description|yt-uix-sessionlink)'
+            r'(?P<durationMinutes>\d{1,2})\:'
+            r'(?P<durationSeconds>\d{2})[^\d].*?)?)?'
+            r'\<a href\=\1(?:(?:(?P<uploaderUrl>/'
+            r'(?:user|channel)/[^"\']+)\1[^>]+>)?'
+            r'(?P<uploader>[^<]+).+class\=\1'
+            r'(?:yt-lockup-description|yt-uix-sessionlink)'
             r'[^>]*>(?P<description>.*?)\<\/div\>)?'
-            # r'(?:\<li\>\<div class\=\"yt-lockup yt-lockup-tile yt-lockup-'
-            # r'(?:playlist|video) vve-check clearfix)'
-            # r'(?:.|\n)*?(?:\<a href\=\"\/watch\?v\=)(?P<id>.{11})'
-            # r'(?:\&amp\;list\='
-            # r'(?:(?P<playlist>PL.*?)\")?'
-            # # r'(?:(?P<radiolist>RD.*?)\&)?'
-            # r'(?:.|\n)*?span class\=\"formatted-video-count-label\"\>\<b\>'
-            # r'(?P<itemCount>\d*))?(?:.|\n)*?\"\s*title\=\"(?P<title>.+?)" .+?'
-            # r'(?:(?:Duration\:\s*(?:(?P<durationHours>[0-9]+)\:)?'
-            # r'(?P<durationMinutes>[0-9]+)\:'
-            # r'(?P<durationSeconds>[0-9]{2}).\<\/span\>.*?)?)?\<a href\=\"'
-            # r'(?:(?:(?P<uploaderUrl>/(?:user|channel)/[^"]+)"[^>]+>)?'
-            # r'(?P<uploader>.*?)\<\/a\>.*?class\=\"'
-            # r'(?:yt-lockup-description|yt-uix-sessionlink)[^>]*>'
-            # r'(?P<description>.*?)\<\/div\>)?'
         )
         items = []
 
@@ -515,18 +504,6 @@ class scrAPI(Client):
                         'itemCount': match.group('itemCount')
                     }
                 }
-            # # Not too sure how to support radiolists, at this stage
-            # elif match.group('radiolist') is not None:
-            #     item = {
-            #         'id': {
-            #           'kind': 'youtube#radiolist',
-            #           'playlistId': match.group('radiolist'),
-            #           'videoId': match.group('id')
-            #         },
-            #         'contentDetails': {
-            #             'itemCount': match.group('itemCount')
-            #         }
-            #     }
             else:
                 item = {
                     'id': {
@@ -535,7 +512,7 @@ class scrAPI(Client):
                     },
                 }
                 if duration != '':
-                    item.update ({
+                    item.update({
                         'contentDetails': {
                             'duration': 'PT'+duration,
                         },
@@ -556,24 +533,18 @@ class scrAPI(Client):
                 },
             })
 
-            # # Instead of if/else, could this just be: 
+            # # Instead of if/else, could this just be:
             # item['snippet'].update({
             #     'channelTitle': match.group('uploader') or 'NA'
             # })
             if match.group('uploader') is not None:
-                item['snippet'].update({
-                    'channelTitle': match.group('uploader')
-                })
+                item['snippet'].update(
+                    {'channelTitle': match.group('uploader')})
             else:
                 item['snippet'].update({
                     'channelTitle': 'NA'
                 })
             items.append(item)
-        # logger.info('search results, %s', json.loads(json.dumps(
-        #     {'items': items},
-        #     sort_keys=False,
-        #     indent=1
-        # )))    
         return json.loads(json.dumps(
             {'items': items},
             sort_keys=False,
@@ -619,15 +590,6 @@ class scrAPI(Client):
                     }
                 }
                 items.append(item)
-                # logger.info('list_videos item, %s', item)
-
-            # for id in ids:
-            #     ThreadPool.run(job, (id,))
-        # logger.info('list_videos finished, %s', json.loads(json.dumps(
-        #     {'items': items},
-        #     sort_keys=False,
-        #     indent=1
-        # )))
         return json.loads(json.dumps(
             {'items': items},
             sort_keys=False,
@@ -699,12 +661,7 @@ class scrAPI(Client):
         }
         logger.info('session.get triggered: list_playlist_items')
         result = cls.session.get(scrAPI.endpoint+'playlist', params=query)
-        
-        # # to save things, for testing purposes
-        # f = io.open('/home/natumbri/test.'+id+'.txt','w+',encoding='utf-8')
-        # f.write(result.text)
-        # f.close
-        
+
         regex = (
             r'<tr class\=\"pl-video.*\" data-title\=\"(?P<title>.+?)".*?'
             r'<a href\=\"\/watch\?v\=(?P<id>.{11})\&amp;(?:.|\n)*?'
@@ -752,16 +709,6 @@ class scrAPI(Client):
             })
             
             items.append(item)
-            # logger.info('list_playlistitems, items.append(%s)', item)
-            # item = {
-            #     'snippet': {
-            #         'resourceId': {
-            #             'videoId': match.group('id'),
-            #             },
-            #         'title': match.group('title'),
-            #     },
-            # }
-            # items.append(item)
         return json.loads(json.dumps(
             {'nextPageToken': None, 'items': items},
             sort_keys=False,
@@ -897,4 +844,3 @@ class ThreadPool:
             cls.threads_active += 1
 
         cls.lock.release()
-
