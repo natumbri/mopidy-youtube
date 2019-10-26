@@ -16,7 +16,7 @@ before_install:
 
 install:
   - "pip install tox"
-  - "pip install \'Tornado>=4.0.0,<5.0.0\'"
+
 script:
   - "tox -e $TOX_ENV"
 
