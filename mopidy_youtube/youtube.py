@@ -392,9 +392,11 @@ class API(Client):
     def search(cls, q):
         query = {
             'part': 'id,snippet',
-            'fields': 'items(
-                id,
-                snippet(title,thumbnails(default),channelTitle))',
+            'fields': 
+                'items(id, snippet(
+                    title,
+                    thumbnails(default),
+                    channelTitle))',
             'maxResults': Video.search_results,
             'type': 'video,playlist',
             'q': q,
@@ -569,10 +571,7 @@ class scrAPI(Client):
         items = []
 
         for id in ids:
-        # def job(id):
-            query = {
-                'v': id,
-            }
+            query = {'v': id}
             logger.info('session.get triggered: list_videos')
             result = cls.session.get(
                 scrAPI.endpoint+'watch',
@@ -702,12 +701,10 @@ class scrAPI(Client):
                 },
             }
             if duration != '':
-                item.update ({
+                item.update({
                     'contentDetails': {
-                        'duration': 'PT'+duration,
-                }
-            })
-            
+                        'duration': 'PT'+duration}})
+
             items.append(item)
         return json.loads(json.dumps(
             {'nextPageToken': None, 'items': items},
@@ -716,7 +713,7 @@ class scrAPI(Client):
         ))
 
 
-## JSON based scrAPI
+# JSON based scrAPI
 class jAPI(scrAPI):
 
     # search for videos and playlists
@@ -726,11 +723,13 @@ class jAPI(scrAPI):
         query = {
             # get videos only
             # 'sp': 'EgIQAQ%253D%253D',
-            'search_query': q.replace(' ','+')
+            'search_query': q.replace(' ', '+')
         }
 
         cls.session.headers = {
-            'user-agent': "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:66.0) Gecko/20100101 Firefox/66.0",
+            'user-agent': 
+                "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:66.0)" \
+                " Gecko/20100101 Firefox/66.0",
             'Cookie': 'PREF=hl=en;',
             'Accept-Language': 'en;q=0.5',
             'content_type': 'application/json'
@@ -740,8 +739,8 @@ class jAPI(scrAPI):
 
         json_regex = r'window\["ytInitialData"] = (.*?);'
         extracted_json = re.search(json_regex, result.text).group(1)
-        result_json = json.loads(extracted_json)['contents']['twoColumnSearchResultsRenderer']['primaryContents']['sectionListRenderer']['contents'][0]['itemSectionRenderer']['contents']
-        
+        result_json = json.loads(extracted_json)['contents']['twoColumnSearchResultsRenderer']['primaryContents']['sectionListRenderer']['contents'][0]['itemSectionRenderer']['contents'] # noqa: E501
+
         items = []
         for content in result_json:
             item = {}
@@ -755,7 +754,7 @@ class jAPI(scrAPI):
                     #     'duration': 'PT'+duration
                     # }
                     'snippet': {
-                        'title': content['videoRenderer']['title']['simpleText'],
+                        'title': content['videoRenderer']['title']['simpleText'], # noqa: E501
                         # TODO: full support for thumbnails
                         'thumbnails': {
                             'default': {
@@ -766,16 +765,16 @@ class jAPI(scrAPI):
                                 'height': 90,
                             },
                         },
-                        'channelTitle': content['videoRenderer']['longBylineText']['runs'][0]['text'],
+                        'channelTitle': content['videoRenderer']['longBylineText']['runs'][0]['text'], # noqa: E501
                     },
                 })
             elif 'radioRenderer' in content:
-               pass
+                pass
             elif 'playlistRenderer' in content:
                 item.update({
                     'id': {
                         'kind': 'youtube#playlist',
-                        'playlistId': content['playlistRenderer']['playlistId']
+                        'playlistId': content['playlistRenderer']['playlistId'] #noqa: E501
                     },
                     'contentDetails': {
                         'itemCount': content['playlistRenderer']['videoCount']
@@ -786,12 +785,12 @@ class jAPI(scrAPI):
                        'thumbnails': {
                             'default': {
                                 'url': 'https://i.ytimg.com/vi/'
-                                       + content['playlistRenderer']['navigationEndpoint']['watchEndpoint']['videoId']
+                                       + content['playlistRenderer']['navigationEndpoint']['watchEndpoint']['videoId'] # noqa: E501
                                        + '/default.jpg',
                                 'width': 120,
                                 'height': 90,
                             },
-                        'channelTitle': content['playlistRenderer']['longBylineText']['runs'][0]['text'],
+                        'channelTitle': content['playlistRenderer']['longBylineText']['runs'][0]['text'], # noqa: E501
                         }
                     },
                 }) 

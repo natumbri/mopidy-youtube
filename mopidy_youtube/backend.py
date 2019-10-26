@@ -160,7 +160,7 @@ class YouTubeLibraryProvider(backend.LibraryProvider):
 
         # load video info and playlist videos in the background. they should be
         # ready by the time the user adds search results to the playing queue
-        
+
         for pl in playlists:
             pl.videos  # start loading
 
