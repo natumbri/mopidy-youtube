@@ -777,7 +777,7 @@ class jAPI(scrAPI):
                         'itemCount': content['playlistRenderer']['videoCount']
                     },
                     'snippet': {
-                        'title': content['playlistRenderer']['title']['simpleText'],
+                        'title': content['playlistRenderer']['title']['simpleText'],  # noqa: E501
                         # TODO: full support for thumbnails
                        'thumbnails': {
                             'default': {
