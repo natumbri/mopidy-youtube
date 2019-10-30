@@ -62,7 +62,7 @@ def config():
             'youtube_api_key': None,
             'threads_max': 16,
             'search_results': 30,
-            'playlist_max_videos': 200,
+            'playlist_max_videos': 20,
             'api_enabled': False
         }
     }
