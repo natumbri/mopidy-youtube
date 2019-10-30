@@ -61,8 +61,8 @@ def config():
             'enabled': 'true',
             'youtube_api_key': None,
             'threads_max': 16,
-            'search_results': 15,
-            'playlist_max_videos': 20,
+            'search_results': 30,
+            'playlist_max_videos': 200,
             'api_enabled': False
         }
     }
@@ -91,17 +91,17 @@ def test_get_playlist(config):
 
     youtube.Entry.api = youtube.scrAPI(proxy, headers)
 
-    pl = youtube.Playlist.get('PL_5DzaS57TVgpCOSrlfek2ERIZCIzy7wz')
+    pl = youtube.Playlist.get('PLvdVG7oER2eFutjd4xl3TGNDui9ELvY4D')
 
-    assert len(pl.videos.get()) == 9
+    assert len(pl.videos.get()) == 20
     assert pl.videos.get()[0].title.get()
 
     # Playlist.videos starts loading video info in the background
     video = pl.videos.get()[0]
     assert video._length                # should be ready
-    assert video.length.get() == 155
+    assert video.length.get() == 392
 
-    pl2 = youtube.Playlist.get('PL_5DzaS57TVgpCOSrlfek2ERIZCIzy7wz')
+    pl2 = youtube.Playlist.get('PLvdVG7oER2eFutjd4xl3TGNDui9ELvY4D')
 
     assert pl2 is pl                    # fetch from cache
     assert pl._videos                   # should be ready
@@ -113,7 +113,7 @@ def test_search(config):
 
     videos = youtube.Entry.search('chvrches')
 
-    assert len(videos) == 15
+    assert len(videos) == 30
     assert videos[0]._title             # should be ready
     assert videos[0]._channel           # should be ready
 

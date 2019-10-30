@@ -6,9 +6,11 @@
 .tox/
 MANIFEST
 build/
+contacts/
 dist/
 xunit-*.xml
 mopidy-youtube.Rproj
 .Rproj.user
 .Rhistory
 youtube.sqlite
+.RData
