@@ -99,7 +99,7 @@ def test_get_playlist(config):
     # Playlist.videos starts loading video info in the background
     video = pl.videos.get()[0]
     assert video._length                # should be ready
-    assert video.length.get() == 392
+    assert video.length.get() == 194
 
     pl2 = youtube.Playlist.get('PLvdVG7oER2eFutjd4xl3TGNDui9ELvY4D')
 
@@ -116,8 +116,9 @@ def test_search(config):
     assert len(videos) == 30
     assert videos[0]._title             # should be ready
     assert videos[0]._channel           # should be ready
+    assert videos[0]._length            # should be ready (scrAPI)
 
-    video = youtube.Video.get('e1YqueG2gtQ')
+    video = youtube.Video.get('BZyzX4c1vIs')
 
     assert video in videos              # cached
 
