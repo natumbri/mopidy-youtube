@@ -4,7 +4,6 @@ import json
 import re
 import threading
 import traceback
-from itertools import islice
 
 from cachetools import LRUCache, cached
 
@@ -326,9 +325,9 @@ class Playlist(Entry):
                 all_videos += myvideos
 
                 # start loading video info for this batch in the background
-                Video.load_info(myvideos)
+                Video.load_info([x for _, x in zip(range(self.playlist_max_videos), myvideos)])  # noqa: E501
 
-            self._videos.set(all_videos)
+            self._videos.set([x for _, x in zip(range(self.playlist_max_videos), all_videos)])  # noqa: E501
 
         ThreadPool.run(job)
 
@@ -665,12 +664,7 @@ class scrAPI(Client):
     # list playlist items
     #
     @classmethod
-    def list_playlistitems(cls, id, page, max_results):
-
-        query = {
-            'list': id
-        }
-        logger.info('session.get triggered: list_playlist_items')
+    def run_list_playlistitems(cls, query):
         result = cls.session.get(scrAPI.endpoint+'playlist', params=query)
 
         regex = (
@@ -687,7 +681,8 @@ class scrAPI(Client):
         )
         items = []
 
-        for match in islice(re.finditer(regex, result.text), max_results):
+        # for match in islice(re.finditer(regex, result.text), max_results):
+        for match in re.finditer(regex, result.text):
             duration = ''
             if match.group('durationHours') is not None:
                 duration += match.group('durationHours')+'H'
@@ -718,6 +713,14 @@ class scrAPI(Client):
                         'duration': 'PT'+duration}})
 
             items.append(item)
+        return items
+
+    def list_playlistitems(cls, id, page, max_results):
+        query = {
+            'list': id
+        }
+        logger.info('session.get triggered: list_playlist_items')
+        items = cls.run_list_playlistitems(query)
         return json.loads(json.dumps(
             {'nextPageToken': None, 'items': items},  # [x for _, x in zip(range(Video.search_results), items)]},  # noqa: E501
             sort_keys=False,
