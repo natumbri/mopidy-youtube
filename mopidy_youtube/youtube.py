@@ -626,79 +626,79 @@ class scrAPI(Client):
             indent=1
         ))
 
-    # # list playlists
-    # #
-    # @classmethod
-    # def list_playlists(cls, ids):
-    #
-    #     regex = (
-    #         r'<div id="pl-header"(?:.|\n)*?"'
-    #         r'(?P<thumbnail>https://i\.ytimg\.com\/vi\/.{11}/).*?\.jpg'
-    #         r'(?:(.|\n))*?(?:.|\n)*?class="pl-header-title"'
-    #         r'(?:.|\n)*?\>\s*(?P<title>.*)(?:.|\n)*?<a href="/'
-    #         r'(user|channel)/(?:.|\n)*? >'
-    #         r'(?P<channelTitle>.*?)</a>(?:.|\n)*?'
-    #         r'(?P<itemCount>\d*) videos</li>'
-    #     )
-    #     items = []
-    #
-    #     # for id in ids:
-    #     def job(id):
-    #         query = {
-    #             'list': id,
-    #         }
-    #         logger.info('session.get triggered: list_playlists')
-    #         result = cls.session.get(
-    #             scrAPI.endpoint+'playlist',
-    #             params=query
-    #         )
-    #         for match in re.finditer(regex, result.text):
-    #             item = {
-    #                 'id': id,
-    #                 'snippet': {
-    #                     'title': match.group('title'),
-    #                     'channelTitle': match.group('channelTitle'),
-    #                     'thumbnails': {
-    #                         'default': {
-    #                             'url': match.group('thumbnail')
-    #                               +'default.jpg',
-    #                             'width': 120,
-    #                             'height': 90,
-    #                         },
-    #                     },
-    #                 },
-    #                 'contentDetails': {
-    #                     'itemCount': match.group('itemCount'),
-    #                 }
-    #             }
-    #             items.append(item)
-    #
-    #     for id in ids:
-    #         ThreadPool.run(job, (id,))
-    #
-    #     return json.loads(json.dumps(
-    #         {'items': items},
-    #         sort_keys=False,
-    #         indent=1
-    #     ))
-
-    # list playlists - EXPERIMENTAL using search
+    # list playlists
     #
     @classmethod
     def list_playlists(cls, ids):
-        logger.info('session.get triggered: list_playlists (experimental)')
+
+        regex = (
+            r'<div id="pl-header"(?:.|\n)*?"'
+            r'(?P<thumbnail>https://i\.ytimg\.com\/vi\/.{11}/).*?\.jpg'
+            r'(?:(.|\n))*?(?:.|\n)*?class="pl-header-title"'
+            r'(?:.|\n)*?\>\s*(?P<title>.*)(?:.|\n)*?<a href="/'
+            r'(user|channel)/(?:.|\n)*? >'
+            r'(?P<channelTitle>.*?)</a>(?:.|\n)*?'
+            r'(?P<itemCount>\d*) videos</li>'
+        )
         items = []
 
+        # for id in ids:
+        def job(id):
+            query = {
+                'list': id,
+            }
+            logger.info('session.get triggered: list_playlists')
+            result = cls.session.get(
+                scrAPI.endpoint+'playlist',
+                params=query
+            )
+            for match in re.finditer(regex, result.text):
+                item = {
+                    'id': id,
+                    'snippet': {
+                        'title': match.group('title'),
+                        'channelTitle': match.group('channelTitle'),
+                        'thumbnails': {
+                            'default': {
+                                'url': match.group('thumbnail')
+                                  +'default.jpg',
+                                'width': 120,
+                                'height': 90,
+                            },
+                        },
+                    },
+                    'contentDetails': {
+                        'itemCount': match.group('itemCount'),
+                    }
+                }
+                items.append(item)
+
         for id in ids:
-            query = {'search_query': "\""+id+"\""}
-            test = cls.run_search(query)[0]
-            items.append(test)
+            ThreadPool.run(job, (id,))
         logger.info(items)
         return json.loads(json.dumps(
             {'items': items},
             sort_keys=False,
             indent=1
         ))
+
+    # # list playlists - EXPERIMENTAL using search
+    # #
+    # @classmethod
+    # def list_playlists(cls, ids):
+    #     logger.info('session.get triggered: list_playlists (experimental)')
+    #     items = []
+    # 
+    #     for id in ids:
+    #         query = {'search_query': "\""+id+"\""}
+    #         test = cls.run_search(query)[0]
+    #         items.append(test)
+    #     logger.info(items)
+    #     return json.loads(json.dumps(
+    #         {'items': items},
+    #         sort_keys=False,
+    #         indent=1
+    #     ))
 
     # list playlist items
     #
