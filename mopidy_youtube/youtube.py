@@ -691,7 +691,9 @@ class scrAPI(Client):
 
         for id in ids:
             query = {'search_query': "\""+id+"\""}
-            items.append(cls.run_search(query)[0])
+            test = cls.run_search(query)[0]
+            items.append(test)
+        logger.info(items)
         return json.loads(json.dumps(
             {'items': items},
             sort_keys=False,
