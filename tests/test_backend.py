@@ -99,7 +99,7 @@ def test_get_playlist(config):
     # Playlist.videos starts loading video info in the background
     video = pl.videos.get()[0]
     assert video._length                # should be ready
-    assert video.length.get() == 194
+    assert video.length.get() == 213
 
     pl2 = youtube.Playlist.get('PLvdVG7oER2eFutjd4xl3TGNDui9ELvY4D')
 
