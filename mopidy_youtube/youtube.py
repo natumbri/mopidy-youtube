@@ -585,54 +585,16 @@ class scrAPI(Client):
             indent=1
         ))
 
-    # list playlists
+    # list videos - EXPERIMENTAL, using search
     #
     @classmethod
     def list_playlists(cls, ids):
-
-        regex = (
-            r'<div id="pl-header"(?:.|\n)*?"'
-            r'(?P<thumbnail>https://i\.ytimg\.com\/vi\/.{11}/).*?\.jpg'
-            r'(?:(.|\n))*?(?:.|\n)*?class="pl-header-title"'
-            r'(?:.|\n)*?\>\s*(?P<title>.*)(?:.|\n)*?<a href="/'
-            r'(user|channel)/(?:.|\n)*? >'
-            r'(?P<channelTitle>.*?)</a>(?:.|\n)*?'
-            r'(?P<itemCount>\d*) videos</li>'
-        )
+        logger.info('session.get triggered: list_playlists  (experimental)')
         items = []
 
         for id in ids:
-        # def job(id):
-            query = {
-                'list': id,
-            }
-            logger.info('session.get triggered: list_playlists')
-            result = cls.session.get(
-                scrAPI.endpoint+'playlist',
-                params=query
-            )
-            for match in re.finditer(regex, result.text):
-                item = {
-                    'id': id,
-                    'snippet': {
-                        'title': match.group('title'),
-                        'channelTitle': match.group('channelTitle'),
-                        'thumbnails': {
-                            'default': {
-                                'url': match.group('thumbnail')+'default.jpg',
-                                'width': 120,
-                                'height': 90,
-                            },
-                        },
-                    },
-                    'contentDetails': {
-                        'itemCount': match.group('itemCount'),
-                    }
-                }
-                items.append(item)
-
-        # for id in ids:
-        #     ThreadPool.run(job, (id,))
+            query = {'search_query': "\""+id+"\""}
+            items.extend(cls.run_search(query))
         logger.info(items)
         return json.loads(json.dumps(
             {'items': items},
