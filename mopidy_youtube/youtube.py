@@ -568,42 +568,17 @@ class scrAPI(Client):
             indent=1
         ))
 
-    # list videos
+    # list videos - EXPERIMENTAL, using search
     #
     @classmethod
     def list_videos(cls, ids):
-
-        regex = (
-            r'<div id="watch7-content"(?:.|\n)*?'
-            r'<meta itemprop="name" content="'
-            r'(?P<title>.*?)(?:">)(?:.|\n)*?'
-            r'<meta itemprop="duration" content="'
-            r'(?P<duration>.*?)(?:">)(?:.|\n)*?'
-            r'<link itemprop="url" href="http://www.youtube.com/'
-            r'(?:user|channel)/(?P<channelTitle>.*?)(?:">)(?:.|\n)*?'
-            r'</div>'
-        )
+        logger.info('session.get triggered: list_videos  (experimental)')
         items = []
 
         for id in ids:
-            query = {'v': id}
-            logger.info('session.get triggered: list_videos')
-            result = cls.session.get(
-                scrAPI.endpoint+'watch',
-                params=query
-            )
-            for match in re.finditer(regex, result.text):
-                item = {
-                    'id': id,
-                    'snippet': {
-                        'title': match.group('title'),
-                        'channelTitle': match.group('channelTitle'),
-                    },
-                    'contentDetails': {
-                        'duration': match.group('duration'),
-                    }
-                }
-                items.append(item)
+            query = {'search_query': "\""+id+"\""}
+            items.extend(cls.run_search(query))
+        logger.info(items)
         return json.loads(json.dumps(
             {'items': items},
             sort_keys=False,
