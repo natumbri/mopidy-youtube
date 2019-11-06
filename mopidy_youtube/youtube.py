@@ -257,11 +257,11 @@ class Playlist(Entry):
     def load_info(cls, list):
         fields = ['title', 'video_count', 'thumbnails', 'channel']
         list = cls._add_futures(list, fields)
+        logger.info(len(list))
 
         def job(sublist):
             try:
                 data = cls.api.list_playlists([x.id for x in sublist])
-                logger.info('data retrieved')
                 dict = {item['id']: item for item in data['items']}
             except Exception as e:
                 logger.error('list_playlists error "%s"', e)
