@@ -269,10 +269,6 @@ class Playlist(Entry):
             for pl in sublist:
                 pl._set_api_data(fields, dict.get(pl.id))
 
-            # If the API in use also returns information for Videos,
-            # create the video objects here
-            # for video in data:
-
         # 50 items at a time, make sure order is deterministic so that HTTP
         # requests are replayable in tests
         for i in range(0, len(list), 50):
@@ -572,30 +568,39 @@ class scrAPI(Client):
     #
     @classmethod
     def list_videos(cls, ids):
-        logger.info('session.get triggered: list_videos  (experimental)')
         items = []
 
-        for id in ids:
-            query = {'search_query': "\""+id+"\""}
-            items.extend(cls.run_search(query))
-        logger.info(items)
+        rs = [{'search_query': '\"'+id+'\"',
+              'sp': 'EgIQAQ%3D%3D'} for id in ids]
+
+        for result in [cls.run_search(r)[0] for r in rs]:
+            logger.info('session.get triggered: list_videos (experimental)')
+            result.update(
+              {'id': result['id']['videoId']}
+            )
+            items.extend([result])
         return json.loads(json.dumps(
             {'items': items},
             sort_keys=False,
             indent=1
         ))
 
-    # list videos - EXPERIMENTAL, using search
+
+    # list playlists - EXPERIMENTAL, using search
     #
     @classmethod
     def list_playlists(cls, ids):
-        logger.info('session.get triggered: list_playlists  (experimental)')
         items = []
+        
+        rs = [{'search_query': '\"'+id+'\"',
+              'sp': 'EgIQAw%3D%3D'} for id in ids]
 
-        for id in ids:
-            query = {'search_query': "\""+id+"\""}
-            items.extend(cls.run_search(query))
-        logger.info(items)
+        for result in [cls.run_search(r)[0] for r in rs]:
+            logger.info('session.get triggered: list_playlists (experimental)')
+            result.update(
+              {'id': result['id']['playlistId']}
+            )
+            items.extend([result])
         return json.loads(json.dumps(
             {'items': items},
             sort_keys=False,
@@ -663,7 +668,7 @@ class scrAPI(Client):
         logger.info('session.get triggered: list_playlist_items')
         items = cls.run_list_playlistitems(query)
         return json.loads(json.dumps(
-            {'nextPageToken': None, 'items': items},  # [x for _, x in zip(range(Video.search_results), items)]},  # noqa: E501
+            {'nextPageToken': None, 'items': items},  # noqa: E501
             sort_keys=False,
             indent=1
         ))
