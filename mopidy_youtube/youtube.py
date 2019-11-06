@@ -261,6 +261,7 @@ class Playlist(Entry):
         def job(sublist):
             try:
                 data = cls.api.list_playlists([x.id for x in sublist])
+                logger.info('data retrieved')
                 dict = {item['id']: item for item in data['items']}
             except Exception as e:
                 logger.error('list_playlists error "%s"', e)
@@ -427,6 +428,8 @@ class API(Client):
         }
         logger.info('session.get triggered: list_playlists')
         result = cls.session.get(API.endpoint + 'playlists', params=query)
+        with open('/home/natumbri/'+ids[0]+'.txt', 'w') as outfile:
+                json.dump(result.json(), outfile)
         return result.json()
 
     # list playlist items
