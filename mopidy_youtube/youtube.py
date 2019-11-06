@@ -598,9 +598,7 @@ class scrAPI(Client):
         rs = [{'search_query': '\"'+id+'\"',
               'sp': 'EgIQAw%3D%3D'} for id in ids]
 
-        # for result in [cls.run_search(r)[0] for r in rs]:
-        for result in [ThreadPool.run(cls.run_search(r)[0]) for r in rs]:
-
+        for result in [cls.run_search(r)[0] for r in rs]:
             logger.info('session.get triggered: list_playlists (experimental)')
             result.update(
               {'id': result['id']['playlistId']}
