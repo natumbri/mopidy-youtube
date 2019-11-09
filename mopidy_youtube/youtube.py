@@ -609,7 +609,6 @@ class scrAPI(Client):
         items = []
 
         for id in ids:
-        # def job(id):
             query = {
                 'list': id,
             }
@@ -637,9 +636,6 @@ class scrAPI(Client):
                     }
                 }
                 items.append(item)
-
-#        for id in ids:
-#            ThreadPool.run(job, (id,))
 
         return json.loads(json.dumps(
             {'items': items},
