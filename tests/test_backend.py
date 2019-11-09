@@ -117,7 +117,7 @@ def test_list_playlists(config):
         'PLRHAVCbqFwJBkRupIhuGW3_XEIWc-ZYER'])
 
     assert len(playlists['items']) == 2
-   
+
 
 @vcr.use_cassette('tests/fixtures/youtube_search.yaml')
 def test_search(config):
