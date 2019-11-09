@@ -4,7 +4,6 @@ import json
 import re
 import threading
 import traceback
-from itertools import islice
 
 from cachetools import LRUCache, cached
 
@@ -326,9 +325,9 @@ class Playlist(Entry):
                 all_videos += myvideos
 
                 # start loading video info for this batch in the background
-                Video.load_info(myvideos)
+                Video.load_info([x for _, x in zip(range(self.playlist_max_videos), myvideos)])  # noqa: E501
 
-            self._videos.set(all_videos)
+            self._videos.set([x for _, x in zip(range(self.playlist_max_videos), all_videos)])  # noqa: E501
 
         ThreadPool.run(job)
 
@@ -457,16 +456,8 @@ class API(Client):
 class scrAPI(Client):
     endpoint = 'https://www.youtube.com/'
 
-    # search for videos and playlists
-    #
     @classmethod
-    def search(cls, q):
-        query = {
-            # # get videos only
-            # 'sp': 'EgIQAQ%253D%253D',
-            'search_query': q.replace(' ', '+')
-        }
-        logger.info('session.get triggered: search')
+    def run_search(cls, query):
         result = cls.session.get(scrAPI.endpoint+'results', params=query)
         regex = (
             r'(?:\<li\>)(?:.|\n)*?\<a href\=(["\'])\/watch\?v\=(?P<id>.{11})'
@@ -544,8 +535,35 @@ class scrAPI(Client):
                     'channelTitle': 'NA'
                 })
             items.append(item)
+        return items
+
+    # search for videos and playlists
+    #
+    @classmethod
+    def search(cls, q):
+        search_results = []
+
+        # assume 20 results per page
+        pages = int(Video.search_results / 20) + (Video.search_results % 20 > 0)  # noqa: E501
+
+        logger.info('session.get triggered: search')
+
+        rs = [{"search_query": q.replace(' ', '+'),
+               # to get  videos only the following would need to
+               # be added to the run_search dict
+               # "sp": "EgIQAQ%253D%253D",
+
+               # to get playlists only the following would need to
+               # be added to the run_search dict
+               # "sp": "EgIQAw%253D%253D",
+
+               "page": page + 1} for page in range(pages)]
+
+        for result in [cls.run_search(r) for r in rs]:
+            search_results.extend(result)
+
         return json.loads(json.dumps(
-            {'items': [x for _, x in zip(range(Video.search_results), items)]},
+            {'items': [x for _, x in zip(range(Video.search_results), search_results)]},  # noqa: E501
             sort_keys=False,
             indent=1
         ))
@@ -646,12 +664,7 @@ class scrAPI(Client):
     # list playlist items
     #
     @classmethod
-    def list_playlistitems(cls, id, page, max_results):
-
-        query = {
-            'list': id
-        }
-        logger.info('session.get triggered: list_playlist_items')
+    def run_list_playlistitems(cls, query):
         result = cls.session.get(scrAPI.endpoint+'playlist', params=query)
 
         regex = (
@@ -668,7 +681,8 @@ class scrAPI(Client):
         )
         items = []
 
-        for match in islice(re.finditer(regex, result.text), max_results):
+        # for match in islice(re.finditer(regex, result.text), max_results):
+        for match in re.finditer(regex, result.text):
             duration = ''
             if match.group('durationHours') is not None:
                 duration += match.group('durationHours')+'H'
@@ -699,97 +713,16 @@ class scrAPI(Client):
                         'duration': 'PT'+duration}})
 
             items.append(item)
-        return json.loads(json.dumps(
-            {'nextPageToken': None, 'items': items},
-            sort_keys=False,
-            indent=1
-        ))
+        return items
 
-
-# JSON based scrAPI
-class jAPI(scrAPI):
-
-    # search for videos and playlists
-    #
-    @classmethod
-    def search(cls, q):
+    def list_playlistitems(cls, id, page, max_results):
         query = {
-            # get videos only
-            # 'sp': 'EgIQAQ%253D%253D',
-            'search_query': q.replace(' ', '+')
+            'list': id
         }
-
-        cls.session.headers = {
-            'user-agent':
-                'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:66.0)'
-                ' Gecko/20100101 Firefox/66.0',
-            'Cookie': 'PREF=hl=en;',
-            'Accept-Language': 'en;q=0.5',
-            'content_type': 'application/json'
-        }
-        logger.info('session.get triggered: search')
-        result = cls.session.get(jAPI.endpoint+'results', params=query)
-
-        json_regex = r'window\["ytInitialData"] = (.*?);'
-        extracted_json = re.search(json_regex, result.text).group(1)
-        result_json = json.loads(extracted_json)['contents']['twoColumnSearchResultsRenderer']['primaryContents']['sectionListRenderer']['contents'][0]['itemSectionRenderer']['contents']  # noqa: E501
-
-        items = []
-        for content in result_json:
-            item = {}
-            if 'videoRenderer' in content:
-                item.update({
-                    'id': {
-                        'kind': 'youtube#video',
-                        'videoId': content['videoRenderer']['videoId']
-                    },
-                    # 'contentDetails': {
-                    #     'duration': 'PT'+duration
-                    # }
-                    'snippet': {
-                        'title': content['videoRenderer']['title']['simpleText'],  # noqa: E501
-                        # TODO: full support for thumbnails
-                        'thumbnails': {
-                            'default': {
-                                'url': 'https://i.ytimg.com/vi/'
-                                       + content['videoRenderer']['videoId']
-                                       + '/default.jpg',
-                                'width': 120,
-                                'height': 90,
-                            },
-                        },
-                        'channelTitle': content['videoRenderer']['longBylineText']['runs'][0]['text'],  # noqa: E501
-                    },
-                })
-            elif 'radioRenderer' in content:
-                pass
-            elif 'playlistRenderer' in content:
-                item.update({
-                    'id': {
-                        'kind': 'youtube#playlist',
-                        'playlistId': content['playlistRenderer']['playlistId']  # noqa: E501
-                    },
-                    'contentDetails': {
-                        'itemCount': content['playlistRenderer']['videoCount']
-                    },
-                    'snippet': {
-                        'title': content['playlistRenderer']['title']['simpleText'],  # noqa: E501
-                        # TODO: full support for thumbnails
-                       'thumbnails': {
-                            'default': {
-                                'url': 'https://i.ytimg.com/vi/'
-                                       + content['playlistRenderer']['navigationEndpoint']['watchEndpoint']['videoId']  # noqa: E501
-                                       + '/default.jpg',
-                                'width': 120,
-                                'height': 90,
-                            },
-                        'channelTitle': content['playlistRenderer']['longBylineText']['runs'][0]['text'],  # noqa: E501
-                        }
-                    },
-                })
-            items.append(item)
+        logger.info('session.get triggered: list_playlist_items')
+        items = cls.run_list_playlistitems(query)
         return json.loads(json.dumps(
-            {'items': [i for i in items if i]},
+            {'nextPageToken': None, 'items': items},  # [x for _, x in zip(range(Video.search_results), items)]},  # noqa: E501
             sort_keys=False,
             indent=1
         ))
