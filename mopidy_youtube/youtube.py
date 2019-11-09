@@ -257,7 +257,6 @@ class Playlist(Entry):
     def load_info(cls, list):
         fields = ['title', 'video_count', 'thumbnails', 'channel']
         list = cls._add_futures(list, fields)
-        logger.info(len(list))
 
         def job(sublist):
             try:
@@ -428,8 +427,6 @@ class API(Client):
         }
         logger.info('session.get triggered: list_playlists')
         result = cls.session.get(API.endpoint + 'playlists', params=query)
-        with open('/home/natumbri/'+ids[0]+'.txt', 'w') as outfile:
-                json.dump(result.json(), outfile)
         return result.json()
 
     # list playlist items
@@ -582,6 +579,7 @@ class scrAPI(Client):
               {'id': result['id']['videoId']}
             )
             items.extend([result])
+
         return json.loads(json.dumps(
             {'items': items},
             sort_keys=False,
@@ -594,7 +592,7 @@ class scrAPI(Client):
     @classmethod
     def list_playlists(cls, ids):
         items = []
-        
+
         rs = [{'search_query': '\"'+id+'\"',
               'sp': 'EgIQAw%3D%3D'} for id in ids]
 
@@ -604,6 +602,7 @@ class scrAPI(Client):
               {'id': result['id']['playlistId']}
             )
             items.extend([result])
+
         return json.loads(json.dumps(
             {'items': items},
             sort_keys=False,
