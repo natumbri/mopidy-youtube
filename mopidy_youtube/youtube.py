@@ -5,6 +5,8 @@ import re
 import threading
 import traceback
 
+from bs4 import BeautifulSoup
+
 from cachetools import LRUCache, cached
 
 import pykka
@@ -726,6 +728,57 @@ class scrAPI(Client):
             sort_keys=False,
             indent=1
         ))
+
+# Use BS4 instead of regex
+class bs4API(scrAPI):
+
+    @classmethod
+    def run_search(cls, query):
+        items = []
+        result = cls.session.get(scrAPI.endpoint+'results', params=query)
+        if result.status_code == 200:
+            soup = BeautifulSoup(result.text, "html.parser")
+            videos = soup.find_all("div", {'class': 'yt-lockup-video'})
+            for video in videos:
+              item = {
+                  'id': {
+                      'kind': 'youtube#video',
+                      'videoId': video['data-context-item-id']
+                    },
+                    'contentDetails': {
+                        # fix format for duration - needs to be PTnnHnnMnnS not nn:nn:nn
+                        'duration': video.find(class_ = "video-time").text
+                    },
+                    'snippet': {
+                        'title': video.find(class_ = "yt-lockup-title").next.text
+                        # TODO: full support for thumbnails
+                        'thumbnails': {
+                            'default': {
+                                'url': "https://i.ytimg.com/vi/"+video['data-context-item-id']+"/default.jpg",
+                              'width': 120,
+                              'height': 90,
+                             },
+                        },
+                        'channelTitle': video.find(class_ = "yt-lockup-byline").text,
+                        # 'uploadDate': video.find(class_ = "yt-lockup-meta-info").find_all("li")[0].text,
+                        # 'views': video.find(class_ = "yt-lockup-meta-info").find_all("li")[1].text,
+                        # 'url': 'https://www.youtube.com'+video.find(class_ = "yt-lockup-title").next['href'] 
+                    },
+                }
+
+              
+              # if video.find(class_ = "yt-lockup-description") is not None:
+              #   item['snippet']['description'] = video.find(class_ = "yt-lockup-description").text or "NA"
+              # else:
+              #   item['snippet']['description'] = "NA"
+
+              items.append(item)
+
+            # playlists = soup.find_all("div", {'class': 'yt-lockup-playlist'})
+            # for playlist in playlists:
+            #     TODO
+                
+        return items
 
 
 # simple 'dynamic' thread pool. Threads are created when new jobs arrive, stay
