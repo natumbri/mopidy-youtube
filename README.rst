@@ -30,7 +30,11 @@ For older versions of Mopidy (pre v2.0), install the plugins by running::
 
     sudo apt-get install gstreamer0.10-plugins-bad
 
-Install by running::
+Install the the development branch of the natumbri fork (works without a YouTube API key) by running::
+
+    sudo pip install https://github.com/natumbri/mopidy-youtube/archive/develop.zip
+
+Install the default version (currently requires a YouTube API key) by running::
 
     pip install Mopidy-YouTube
 
