@@ -740,14 +740,26 @@ class bs4API(scrAPI):
             soup = BeautifulSoup(result.text, "html.parser")
             videos = soup.find_all("div", {'class': 'yt-lockup-video'})
             for video in videos:
-              item = {
-                  'id': {
-                      'kind': 'youtube#video',
-                      'videoId': video['data-context-item-id']
+                regex = (
+                    r'(?:(?:(?P<durationHours>[0-9]+)\:)?(?P<durationMinutes>[0-9]+)\:(?P<durationSeconds>[0-9]{2}))'
+                )
+                match = re.find(regex, video.find(class_ = "video-time").text):
+                duration = ''
+                if match.group('durationHours') is not None:
+                    duration += match.group('durationHours')+'H'
+                if match.group('durationMinutes') is not None:
+                    duration += match.group('durationMinutes')+'M'
+                if match.group('durationSeconds') is not None:
+                    duration += match.group('durationSeconds')+'S'
+                
+                item = {
+                    'id': {
+                        'kind': 'youtube#video',
+                        'videoId': video['data-context-item-id']
                     },
                     'contentDetails': {
                         # fix format for duration - needs to be PTnnHnnMnnS not nn:nn:nn
-                        'duration': video.find(class_ = "video-time").text
+                        'duration': 'PT'+duration,
                     },
                     'snippet': {
                         'title': video.find(class_ = "yt-lockup-title").next.text
