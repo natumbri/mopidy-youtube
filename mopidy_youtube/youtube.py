@@ -743,7 +743,8 @@ class bs4API(scrAPI):
                 regex = (
                     r'(?:(?:(?P<durationHours>[0-9]+)\:)?(?P<durationMinutes>[0-9]+)\:(?P<durationSeconds>[0-9]{2}))'
                 )
-                match = re.find(regex, video.find(class_ = "video-time").text):
+                duration_html = video.find(class_ = "video-time").text
+                match = re.match(regex, duration_html)
                 duration = ''
                 if match.group('durationHours') is not None:
                     duration += match.group('durationHours')+'H'
@@ -762,7 +763,7 @@ class bs4API(scrAPI):
                         'duration': 'PT'+duration,
                     },
                     'snippet': {
-                        'title': video.find(class_ = "yt-lockup-title").next.text
+                        'title': video.find(class_ = "yt-lockup-title").next.text,
                         # TODO: full support for thumbnails
                         'thumbnails': {
                             'default': {
@@ -779,16 +780,39 @@ class bs4API(scrAPI):
                 }
 
               
-              # if video.find(class_ = "yt-lockup-description") is not None:
-              #   item['snippet']['description'] = video.find(class_ = "yt-lockup-description").text or "NA"
-              # else:
-              #   item['snippet']['description'] = "NA"
+                # if video.find(class_ = "yt-lockup-description") is not None:
+                #   item['snippet']['description'] = video.find(class_ = "yt-lockup-description").text or "NA"
+                # else:
+                #   item['snippet']['description'] = "NA"
 
-              items.append(item)
+                items.append(item)
 
-            # playlists = soup.find_all("div", {'class': 'yt-lockup-playlist'})
-            # for playlist in playlists:
-            #     TODO
+            playlists = soup.find_all("div", {'class': 'yt-lockup-playlist'})
+            for playlist in playlists:
+                item = {
+                    'id': {
+                        'kind': 'youtube#playlist',
+                        'playlistId': 'TBA'  # playlist['data-context-item-id']
+                    },
+                    'contentDetails': {
+                        'itemCount': 'TBA'  # playlist.find(class_ = 'yt-lockup-video-count').text  # match.group('itemCount')
+                    },
+                    'snippet': {
+                        'title': playlist.find(class_ = "yt-lockup-title").next.text,
+                        # TODO: full support for thumbnails
+                        'thumbnails': {
+                            'default': {
+                                'url': 'TBA',  # "https://i.ytimg.com/vi/"+playlist['data-context-item-id']+"/default.jpg",
+                                'width': 120,
+                                'height': 90
+                            },
+                        },
+                        'channelTitle': playlist.find(class_ = "yt-lockup-byline").text,
+                    },
+                }
+
+                items.append(item)
+
                 
         return items
 
