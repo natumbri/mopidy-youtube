@@ -5,6 +5,8 @@ import re
 import threading
 import traceback
 
+from bs4 import BeautifulSoup
+
 from cachetools import LRUCache, cached
 
 import pykka
@@ -453,6 +455,17 @@ class scrAPI(Client):
     endpoint = 'https://www.youtube.com/'
 
     @classmethod
+    def format_duration(cls, match):
+        duration = ''
+        if match.group('durationHours') is not None:
+            duration += match.group('durationHours')+'H'
+        if match.group('durationMinutes') is not None:
+            duration += match.group('durationMinutes')+'M'
+        if match.group('durationSeconds') is not None:
+            duration += match.group('durationSeconds')+'S'
+        return duration
+        
+    @classmethod
     def run_search(cls, query):
         result = cls.session.get(scrAPI.endpoint+'results', params=query)
         regex = (
@@ -473,13 +486,7 @@ class scrAPI(Client):
         items = []
 
         for match in re.finditer(regex, result.text):
-            duration = ''
-            if match.group('durationHours') is not None:
-                duration += match.group('durationHours')+'H'
-            if match.group('durationMinutes') is not None:
-                duration += match.group('durationMinutes')+'M'
-            if match.group('durationSeconds') is not None:
-                duration += match.group('durationSeconds')+'S'
+            duration = cls.format_duration(match)
             if match.group('playlist') is not None:
                 item = {
                     'id': {
@@ -602,7 +609,6 @@ class scrAPI(Client):
               {'id': result['id']['playlistId']}
             )
             items.extend([result])
-
         return json.loads(json.dumps(
             {'items': items},
             sort_keys=False,
@@ -630,15 +636,8 @@ class scrAPI(Client):
         )
         items = []
 
-        # for match in islice(re.finditer(regex, result.text), max_results):
         for match in re.finditer(regex, result.text):
-            duration = ''
-            if match.group('durationHours') is not None:
-                duration += match.group('durationHours')+'H'
-            if match.group('durationMinutes') is not None:
-                duration += match.group('durationMinutes')+'M'
-            if match.group('durationSeconds') is not None:
-                duration += match.group('durationSeconds')+'S'
+            duration = cls.format_duration(match)
             item = {
                 'id': match.group('id'),
                 'snippet': {
@@ -671,10 +670,93 @@ class scrAPI(Client):
         logger.info('session.get triggered: list_playlist_items')
         items = cls.run_list_playlistitems(query)
         return json.loads(json.dumps(
-            {'nextPageToken': None, 'items': items},  # noqa: E501
+            {'nextPageToken': None, 'items': [x for _, x in zip(range(max_results), items)]},  # noqa: E501
             sort_keys=False,
             indent=1
         ))
+
+# Use BS4 instead of regex
+class bs4API(scrAPI):
+
+    @classmethod
+    def run_search(cls, query):
+        items = []
+        result = cls.session.get(scrAPI.endpoint+'results', params=query)
+        if result.status_code == 200:
+            soup = BeautifulSoup(result.text, "html.parser")
+            videos = soup.find_all("div", {'class': 'yt-lockup-video'})
+            for video in videos:
+                regex = (
+                    r'(?:(?:(?P<durationHours>[0-9]+)\:)?'
+                    r'(?P<durationMinutes>[0-9]+)\:'
+                    r'(?P<durationSeconds>[0-9]{2}))'
+                )
+                duration = cls.format_duration(re.match(regex, video.find(class_ = "video-time").text))
+                
+                item = {
+                    'id': {
+                        'kind': 'youtube#video',
+                        'videoId': video['data-context-item-id']
+                    },
+                    'contentDetails': {
+                        'duration': 'PT'+duration,
+                    },
+                    'snippet': {
+                        'title': video.find(class_ = "yt-lockup-title").next.text,
+                        # TODO: full support for thumbnails
+                        'thumbnails': {
+                            'default': {
+                                'url': "https://i.ytimg.com/vi/"+video['data-context-item-id']+"/default.jpg",
+                                'width': 120,
+                                'height': 90,
+                            },
+                        },
+                        'channelTitle': video.find(class_ = "yt-lockup-byline").text,
+                        # 'uploadDate': video.find(class_ = "yt-lockup-meta-info").find_all("li")[0].text,
+                        # 'views': video.find(class_ = "yt-lockup-meta-info").find_all("li")[1].text,
+                        # 'url': 'https://www.youtube.com'+video.find(class_ = "yt-lockup-title").next['href'] 
+                    },
+                }
+
+                # if video.find(class_ = "yt-lockup-description") is not None:
+                #   item['snippet']['description'] = video.find(class_ = "yt-lockup-description").text or "NA"
+                # else:
+                #   item['snippet']['description'] = "NA"
+
+                items.append(item)
+
+            playlists = soup.find_all("div", {'class': 'yt-lockup-playlist'})
+            for playlist in playlists:
+                item = {
+                    'id': {
+                        'kind': 'youtube#playlist',
+                        'playlistId': playlist.find(class_ = "yt-lockup-title").next['href'].partition("list=")[2]
+                    },
+                    'contentDetails': {
+                        'itemCount': playlist.find(class_ = 'formatted-video-count-label').text.split(" ")[0]
+                    },
+                    'snippet': {
+                        'title': playlist.find(class_ = "yt-lockup-title").next.text,
+                        # TODO: full support for thumbnails
+                        'thumbnails': {
+                            'default': {
+                                'url': (
+                                    "https://i.ytimg.com/vi/" +
+                                    playlist.find(class_ = 'yt-lockup-thumbnail').find("a")['href'].partition('v=')[2].partition('&')[0] +
+                                    '/default.jpg'), 
+                                'width': 120,
+                                'height': 90
+                            },
+                        },
+                        'channelTitle': playlist.find(class_ = "yt-lockup-byline").text,
+                        # 'url': 'https://www.youtube.com/playlist?list='+info['id'] 
+
+                    },
+                }
+                if str(item['id']['playlistId']).startswith('PL'):
+                    items.append(item)
+
+        return items
 
 
 # simple 'dynamic' thread pool. Threads are created when new jobs arrive, stay

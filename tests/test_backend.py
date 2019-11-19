@@ -107,6 +107,18 @@ def test_get_playlist(config):
     assert pl._videos                   # should be ready
 
 
+@vcr.use_cassette('tests/fixtures/youtube_list_playlists.yaml')
+def test_list_playlists(config):
+
+    youtube.Entry.api = youtube.scrAPI(proxy, headers)
+
+    playlists = youtube.scrAPI.list_playlists([
+        'PLfGibfZATlGq6zF72No5BZaScBiWWb6U1',
+        'PLRHAVCbqFwJBkRupIhuGW3_XEIWc-ZYER'])
+
+    assert len(playlists['items']) == 2
+
+
 @vcr.use_cassette('tests/fixtures/youtube_search.yaml')
 def test_search(config):
     youtube.Entry.api = youtube.scrAPI(proxy, headers)
@@ -137,6 +149,16 @@ def test_get_video(config):
 
     assert video2 is video
     assert video2._length
+
+
+@vcr.use_cassette('tests/fixtures/youtube_list_videos.yaml')
+def test_list_videos(config):
+
+    youtube.Entry.api = youtube.scrAPI(proxy, headers)
+
+    videos = youtube.scrAPI.list_videos(['_mTRvJ9fugM', 'h_uyq8oGDvU'])
+
+    assert len(videos['items']) == 2
 
 
 def test_audio_url(youtube_dl_mock_with_video):
