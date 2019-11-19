@@ -458,7 +458,8 @@ class API(Client):
 class scrAPI(Client):
     endpoint = 'https://www.youtube.com/'
 
-    def _format_duration(match):
+    @classmethod
+    def format_duration(cls, match):
         duration = ''
         if match.group('durationHours') is not None:
             duration += match.group('durationHours')+'H'
@@ -489,7 +490,7 @@ class scrAPI(Client):
         items = []
 
         for match in re.finditer(regex, result.text):
-            duration = _format_duration(match)
+            duration = cls.format_duration(match)
             if match.group('playlist') is not None:
                 item = {
                     'id': {
@@ -688,7 +689,7 @@ class scrAPI(Client):
         items = []
 
         for match in re.finditer(regex, result.text):
-            duration = _format_duration(match)
+            duration = cls.format_duration(match)
             item = {
                 'id': match.group('id'),
                 'snippet': {
@@ -720,6 +721,7 @@ class scrAPI(Client):
         }
         logger.info('session.get triggered: list_playlist_items')
         items = cls.run_list_playlistitems(query)
+        logger.info(len(items))
         return json.loads(json.dumps(
             {'nextPageToken': None, 'items': [x for _, x in zip(range(max_results), items)]},  # noqa: E501
             sort_keys=False,
@@ -742,7 +744,7 @@ class bs4API(scrAPI):
                     r'(?P<durationMinutes>[0-9]+)\:'
                     r'(?P<durationSeconds>[0-9]{2}))'
                 )
-                duration = _format_duration(re.match(regex, video.find(class_ = "video-time").text))
+                duration = cls.format_duration(re.match(regex, video.find(class_ = "video-time").text))
                 
                 item = {
                     'id': {
@@ -793,7 +795,7 @@ class bs4API(scrAPI):
                             'default': {
                                 'url': (
                                     "https://i.ytimg.com/vi/" +
-                                    item.find(class_ = 'yt-lockup-thumbnail').find("a")['href'].partition('v=')[2].partition('&')[0] +
+                                    playlist.find(class_ = 'yt-lockup-thumbnail').find("a")['href'].partition('v=')[2].partition('&')[0] +
                                     '/default.jpg'), 
                                 'width': 120,
                                 'height': 90
@@ -804,7 +806,7 @@ class bs4API(scrAPI):
 
                     },
                 }
-                if item['id'].startswith('PL'):
+                if str(item['id']['playlistId']).startswith('PL'):
                     items.append(item)
 
         return items
