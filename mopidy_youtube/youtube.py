@@ -552,14 +552,6 @@ class scrAPI(Client):
         logger.info('session.get triggered: search')
 
         rs = [{"search_query": q.replace(' ', '+'),
-               # to get  videos only the following would need to
-               # be added to the run_search dict
-               # "sp": "EgIQAQ%253D%253D",
-
-               # to get playlists only the following would need to
-               # be added to the run_search dict
-               # "sp": "EgIQAw%253D%253D",
-
                "page": page + 1} for page in range(pages)]
 
         for result in [cls.run_search(r) for r in rs]:
@@ -663,6 +655,7 @@ class scrAPI(Client):
             items.append(item)
         return items
 
+    @classmethod
     def list_playlistitems(cls, id, page, max_results):
         query = {
             'list': id
@@ -681,18 +674,17 @@ class bs4API(scrAPI):
     @classmethod
     def run_search(cls, query):
         items = []
+        regex = (
+            r'(?:(?:(?P<durationHours>[0-9]+)\:)?'
+            r'(?P<durationMinutes>[0-9]+)\:'
+            r'(?P<durationSeconds>[0-9]{2}))'
+        )
         result = cls.session.get(scrAPI.endpoint+'results', params=query)
         if result.status_code == 200:
             soup = BeautifulSoup(result.text, "html.parser")
             videos = soup.find_all("div", {'class': 'yt-lockup-video'})
             for video in videos:
-                regex = (
-                    r'(?:(?:(?P<durationHours>[0-9]+)\:)?'
-                    r'(?P<durationMinutes>[0-9]+)\:'
-                    r'(?P<durationSeconds>[0-9]{2}))'
-                )
                 duration = cls.format_duration(re.match(regex, video.find(class_ = "video-time").text))
-                
                 item = {
                     'id': {
                         'kind': 'youtube#video',
@@ -749,13 +741,64 @@ class bs4API(scrAPI):
                             },
                         },
                         'channelTitle': playlist.find(class_ = "yt-lockup-byline").text,
-                        # 'url': 'https://www.youtube.com/playlist?list='+info['id'] 
+                        # 'url': 'https://www.youtube.com/playlist?list='+info['id']['playlistId'] 
 
                     },
                 }
+                # don't append radiolist playlists 
                 if str(item['id']['playlistId']).startswith('PL'):
                     items.append(item)
 
+        return items
+
+    # list playlist items
+    #
+    @classmethod
+    def WIP_run_list_playlistitems(cls, query):
+        items = []
+
+        regex = (
+            r'(?:(?:(?P<durationHours>[0-9]+)\:)?'
+            r'(?P<durationMinutes>[0-9]+)\:'
+            r'(?P<durationSeconds>[0-9]{2}))'
+        )
+
+        result = cls.session.get(scrAPI.endpoint+'playlist', params=query)
+        if result.status_code == 200:
+            soup = BeautifulSoup(result.text, "html.parser")
+            videos = soup.find_all("div", {'class': 'yt-lockup-video'})
+            for video in videos:
+                duration = cls.format_duration(re.match(regex, video.find(class_ = "video-time").text))
+                item = {
+                        'id': {
+                            'kind': 'youtube#video',
+                            'videoId': video['data-context-item-id']
+                        },
+                        'contentDetails': {
+                            'duration': 'PT'+duration,
+                        },
+                        'snippet': {
+                            'title': video.find(class_ = "yt-lockup-title").next.text,
+                            # TODO: full support for thumbnails
+                            'thumbnails': {
+                                'default': {
+                                    'url': "https://i.ytimg.com/vi/"+video['data-context-item-id']+"/default.jpg",
+                                    'width': 120,
+                                    'height': 90,
+                                },
+                            },
+                            'channelTitle': video.find(class_ = "yt-lockup-byline").text,
+                            # 'uploadDate': video.find(class_ = "yt-lockup-meta-info").find_all("li")[0].text,
+                            # 'views': video.find(class_ = "yt-lockup-meta-info").find_all("li")[1].text,
+                            # 'url': 'https://www.youtube.com'+video.find(class_ = "yt-lockup-title").next['href'] 
+                        },
+                    }
+
+                # if video.find(class_ = "yt-lockup-description") is not None:
+                #   item['snippet']['description'] = video.find(class_ = "yt-lockup-description").text or "NA"
+                # else:
+                #   item['snippet']['description'] = "NA"
+                items.append(item)
         return items
 
 
