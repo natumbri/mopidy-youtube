@@ -120,6 +120,9 @@ class bs4API(scrAPI):
                             'duration': 'PT'+duration,
                         },
                         'snippet': {
+                            'resourceId': {
+                                'videoId': video['data-video-id']
+                            }
                             'title': video['data-title'],
                             # TODO: full support for thumbnails
                             'thumbnails': {
