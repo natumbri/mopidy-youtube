@@ -17,6 +17,7 @@ import requests_cache
 from mopidy_youtube import Extension, logger, youtube
 
 import youtube_api
+import youtube_scrapi
 
 # A typical interaction:
 # 1. User searches for a keyword (YouTubeLibraryProvider.search)
@@ -90,7 +91,7 @@ class YouTubeBackend(pykka.ThreadingActor, backend.Backend):
 
         if youtube.api_enabled is False:
             logger.info('Using scrAPI')
-            youtube.Entry.api = youtube.scrAPI(proxy, headers)
+            youtube.Entry.api = youtube_scrapi.scrAPI(proxy, headers)
 
         # logger.info('using bs4API')
         # youtube.Entry.api = youtube.bs4API(proxy, headers)
