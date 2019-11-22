@@ -94,7 +94,7 @@ class YouTubeBackend(pykka.ThreadingActor, backend.Backend):
             youtube.Entry.api = youtube_scrapi.scrAPI(proxy, headers)
 
         # logger.info('using bs4API')
-        # youtube.Entry.api = youtube.bs4API(proxy, headers)
+        # youtube.Entry.api = youtube_bs4api.bs4API(proxy, headers)
 
 
 class YouTubeLibraryProvider(backend.LibraryProvider):
