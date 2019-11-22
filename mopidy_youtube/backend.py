@@ -16,6 +16,8 @@ import requests_cache
 
 from mopidy_youtube import Extension, logger, youtube
 
+import .youtube_api
+
 # A typical interaction:
 # 1. User searches for a keyword (YouTubeLibraryProvider.search)
 # 2. User adds a track to the queue (YouTubeLibraryProvider.lookup)
@@ -78,7 +80,7 @@ class YouTubeBackend(pykka.ThreadingActor, backend.Backend):
                 logger.error('No YouTube API key provided, disabling API')
                 youtube.api_enabled = False
             else:
-                youtube.Entry.api = youtube.API(proxy, headers)
+                youtube.Entry.api = youtube_api.API(proxy, headers)
                 if youtube.Entry.search(q='test') is None:
                     logger.error(
                         'Failed to verify YouTube API key, disabling API')
