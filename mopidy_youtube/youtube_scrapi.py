@@ -122,50 +122,98 @@ class scrAPI(Client):
             indent=1
         ))
 
-    # list videos - EXPERIMENTAL, using search
+    # list videos
     #
     @classmethod
     def list_videos(cls, ids):
+
+        regex = (
+            r'<div id="watch7-content"(?:.|\n)*?'
+            r'<meta itemprop="name" content="'
+            r'(?P<title>.*?)(?:">)(?:.|\n)*?'
+            r'<meta itemprop="duration" content="'
+            r'(?P<duration>.*?)(?:">)(?:.|\n)*?'
+            r'<link itemprop="url" href="http://www.youtube.com/'
+            r'(?:user|channel)/(?P<channelTitle>.*?)(?:">)(?:.|\n)*?'
+            r'</div>'
+        )
         items = []
 
-        rs = [{'search_query': '\"'+id+'\"',
-              'sp': 'EgIQAQ%3D%3D'} for id in ids]
-
-        for result in [cls.run_search(r)[0] for r in rs]:
-            logger.info('session.get triggered: list_videos (experimental)')
-            result.update(
-              {'id': result['id']['videoId']}
+        for id in ids:
+            query = {'v': id}
+            logger.info('session.get triggered: list_videos')
+            result = cls.session.get(
+                scrAPI.endpoint+'watch',
+                params=query
             )
-            items.extend([result])
-
+            for match in re.finditer(regex, result.text):
+                item = {
+                    'id': id,
+                    'snippet': {
+                        'title': match.group('title'),
+                        'channelTitle': match.group('channelTitle'),
+                    },
+                    'contentDetails': {
+                        'duration': match.group('duration'),
+                    }
+                }
+                items.append(item)
         return json.loads(json.dumps(
             {'items': items},
             sort_keys=False,
             indent=1
         ))
 
-
-    # list playlists - EXPERIMENTAL, using search
+    # list playlists
     #
     @classmethod
     def list_playlists(cls, ids):
+
+        regex = (
+            r'<div id="pl-header"(?:.|\n)*?"'
+            r'(?P<thumbnail>https://i\.ytimg\.com\/vi\/.{11}/).*?\.jpg'
+            r'(?:(.|\n))*?(?:.|\n)*?class="pl-header-title"'
+            r'(?:.|\n)*?\>\s*(?P<title>.*)(?:.|\n)*?<a href="/'
+            r'(user|channel)/(?:.|\n)*? >'
+            r'(?P<channelTitle>.*?)</a>(?:.|\n)*?'
+            r'(?P<itemCount>\d*) videos</li>'
+        )
         items = []
 
-        rs = [{'search_query': '\"'+id+'\"',
-              'sp': 'EgIQAw%3D%3D'} for id in ids]
-
-        for result in [cls.run_search(r)[0] for r in rs]:
-            logger.info('session.get triggered: list_playlists (experimental)')
-            result.update(
-              {'id': result['id']['playlistId']}
+        for id in ids:
+            query = {
+                'list': id,
+            }
+            logger.info('session.get triggered: list_playlists')
+            result = cls.session.get(
+                scrAPI.endpoint+'playlist',
+                params=query
             )
-            items.extend([result])
+            for match in re.finditer(regex, result.text):
+                item = {
+                    'id': id,
+                    'snippet': {
+                        'title': match.group('title'),
+                        'channelTitle': match.group('channelTitle'),
+                        'thumbnails': {
+                            'default': {
+                                'url': match.group('thumbnail')+'default.jpg',
+                                'width': 120,
+                                'height': 90,
+                            },
+                        },
+                    },
+                    'contentDetails': {
+                        'itemCount': match.group('itemCount'),
+                    }
+                }
+                items.append(item)
+
         return json.loads(json.dumps(
             {'items': items},
             sort_keys=False,
             indent=1
         ))
-
 
     # list playlist items
     #

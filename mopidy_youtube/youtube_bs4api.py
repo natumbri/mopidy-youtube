@@ -10,7 +10,9 @@ from mopidy_youtube import logger
 from youtube import Client, Video
 from youtube_scrapi import scrAPI
 
-# Use BS4 instead of regex
+# Indirect access to YouTube data, without API
+# but use BS4 instead of regex
+#
 class bs4API(scrAPI):
 
     @classmethod
@@ -138,3 +140,48 @@ class bs4API(scrAPI):
 
                 items.append(item)
         return items
+
+    # list videos - EXPERIMENTAL, using search
+    #
+    @classmethod
+    def list_videos(cls, ids):
+        items = []
+
+        rs = [{'search_query': '\"'+id+'\"',
+              'sp': 'EgIQAQ%3D%3D'} for id in ids]
+
+        for result in [cls.run_search(r)[0] for r in rs]:
+            logger.info('session.get triggered: list_videos (experimental) - why is this ever called')
+            result.update(
+              {'id': result['id']['videoId']}
+            )
+            items.extend([result])
+
+        return json.loads(json.dumps(
+            {'items': items},
+            sort_keys=False,
+            indent=1
+        ))
+
+    # list playlists - EXPERIMENTAL, using search
+    #
+    @classmethod
+    def list_playlists(cls, ids):
+        items = []
+
+        rs = [{'search_query': '\"'+id+'\"',
+              'sp': 'EgIQAw%3D%3D'} for id in ids]
+
+        for result in [cls.run_search(r)[0] for r in rs]:
+            logger.info('session.get triggered: list_playlists (experimental) - why is this ever called')
+            result.update(
+              {'id': result['id']['playlistId']}
+            )
+            items.extend([result])
+        return json.loads(json.dumps(
+            {'items': items},
+            sort_keys=False,
+            indent=1
+        ))
+
+
