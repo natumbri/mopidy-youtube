@@ -16,7 +16,7 @@ import requests_cache
 
 from mopidy_youtube import Extension, logger, youtube
 
-import .youtube_api
+import youtube_api
 
 # A typical interaction:
 # 1. User searches for a keyword (YouTubeLibraryProvider.search)
@@ -52,7 +52,7 @@ class YouTubeBackend(pykka.ThreadingActor, backend.Backend):
         self.library = YouTubeLibraryProvider(backend=self)
         self.playback = YouTubePlaybackProvider(audio=audio, backend=self)
         requests_cache.install_cache(Extension().get_cache_dir(config))
-        youtube.API.youtube_api_key = \
+        youtube_api.youtube_api_key = \
             config['youtube']['youtube_api_key'] or None
         youtube.ThreadPool.threads_max = config['youtube']['threads_max']
         youtube.Video.search_results = config['youtube']['search_results']
@@ -76,7 +76,7 @@ class YouTubeBackend(pykka.ThreadingActor, backend.Backend):
         }
 
         if youtube.api_enabled is True:
-            if youtube.API.youtube_api_key is None:
+            if youtube_api.youtube_api_key is None:
                 logger.error('No YouTube API key provided, disabling API')
                 youtube.api_enabled = False
             else:
@@ -92,8 +92,8 @@ class YouTubeBackend(pykka.ThreadingActor, backend.Backend):
             logger.info('Using scrAPI')
             youtube.Entry.api = youtube.scrAPI(proxy, headers)
 
-        logger.info('using bs4API')
-        youtube.Entry.api = youtube.bs4API(proxy, headers)
+        # logger.info('using bs4API')
+        # youtube.Entry.api = youtube.bs4API(proxy, headers)
 
 
 class YouTubeLibraryProvider(backend.LibraryProvider):

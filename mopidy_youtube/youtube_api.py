@@ -1,7 +1,10 @@
 # -*- coding: utf-8 -*-
 
 from mopidy_youtube import logger
-from .youtube import Client
+from youtube import Client
+from youtube import Video
+
+youtube_api_key = None
 
 # Direct access to YouTube Data API
 # https://developers.google.com/youtube/v3/docs/
@@ -21,10 +24,11 @@ class API(Client):
             'maxResults': Video.search_results,
             'type': 'video,playlist',
             'q': q,
-            'key': API.youtube_api_key
+            'key': youtube_api_key
         }
         logger.info('session.get triggered: search')
         result = cls.session.get(API.endpoint + 'search', params=query)
+        logger.info(result.json())
         return result.json()
 
     # list videos
@@ -36,11 +40,11 @@ class API(Client):
             'fields': 'items(id,snippet(title,channelTitle),'
                       + 'contentDetails(duration))',
             'id': ','.join(ids),
-            'key': API.youtube_api_key
+            'key': youtube_api_key
         }
         logger.info('session.get triggered: list_videos')
         result = cls.session.get(API.endpoint + 'videos', params=query)
-        # logger.info(result.json())
+        logger.info(result.json())
         return result.json()
 
     # list playlists
@@ -52,10 +56,11 @@ class API(Client):
             'fields': 'items(id,snippet(title,thumbnails,channelTitle),'
                       + 'contentDetails(itemCount))',
             'id': ','.join(ids),
-            'key': API.youtube_api_key
+            'key': youtube_api_key
         }
         logger.info('session.get triggered: list_playlists')
         result = cls.session.get(API.endpoint + 'playlists', params=query)
+        logger.info(result.json())
         return result.json()
 
     # list playlist items
@@ -65,13 +70,14 @@ class API(Client):
         query = {
             'part': 'id,snippet',
             'fields': 'nextPageToken,'
-                      + 'items(snippet(title, resourceId(videoId)))',
+                      + 'items(snippet(title, resourceId(videoId), channelTitle))',
             'maxResults': max_results,
             'playlistId': id,
-            'key': API.youtube_api_key,
+            'key': youtube_api_key,
             'pageToken': page,
         }
         logger.info('session.get triggered: list_playlistitems')
         result = cls.session.get(API.endpoint + 'playlistItems', params=query)
+        logger.info(result.json())
         return result.json()
 
