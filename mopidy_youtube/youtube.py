@@ -1,11 +1,9 @@
 # -*- coding: utf-8 -*-
 
-import json
 import re
+
 import threading
 import traceback
-
-from bs4 import BeautifulSoup
 
 from cachetools import LRUCache, cached
 
