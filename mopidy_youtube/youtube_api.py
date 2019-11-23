@@ -28,7 +28,6 @@ class API(Client):
         }
         logger.info('session.get triggered: search')
         result = cls.session.get(API.endpoint + 'search', params=query)
-        logger.info(result.json())
         return result.json()
 
     # list videos
@@ -44,7 +43,6 @@ class API(Client):
         }
         logger.info('session.get triggered: list_videos')
         result = cls.session.get(API.endpoint + 'videos', params=query)
-        logger.info(result.json())
         return result.json()
 
     # list playlists
@@ -60,7 +58,6 @@ class API(Client):
         }
         logger.info('session.get triggered: list_playlists')
         result = cls.session.get(API.endpoint + 'playlists', params=query)
-        logger.info(result.json())
         return result.json()
 
     # list playlist items
@@ -78,6 +75,5 @@ class API(Client):
         }
         logger.info('session.get triggered: list_playlistitems')
         result = cls.session.get(API.endpoint + 'playlistItems', params=query)
-        logger.info(result.json())
         return result.json()
 

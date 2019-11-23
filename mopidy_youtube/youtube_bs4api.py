@@ -15,20 +15,24 @@ from youtube_scrapi import scrAPI
 #
 class bs4API(scrAPI):
 
+    time_regex = (
+        r'(?:(?:(?P<durationHours>[0-9]+)\:)?'
+        r'(?P<durationMinutes>[0-9]+)\:'
+        r'(?P<durationSeconds>[0-9]{2}))'
+    )
+
     @classmethod
     def run_search(cls, query):
         items = []
-        regex = (
-            r'(?:(?:(?P<durationHours>[0-9]+)\:)?'
-            r'(?P<durationMinutes>[0-9]+)\:'
-            r'(?P<durationSeconds>[0-9]{2}))'
-        )
+
         result = cls.session.get(scrAPI.endpoint+'results', params=query)
+
         if result.status_code == 200:
             soup = BeautifulSoup(result.text, "html.parser")
             videos = soup.find_all("div", {'class': 'yt-lockup-video'})
             for video in videos:
-                duration = cls.format_duration(re.match(regex, video.find(class_ = "video-time").text))
+                duration_text = video.find(class_ = "video-time").text
+                duration = cls.format_duration(re.match(cls.time_regex, duration_text))
                 item = {
                     'id': {
                         'kind': 'youtube#video',
@@ -101,25 +105,16 @@ class bs4API(scrAPI):
     def run_list_playlistitems(cls, query):
         items = []
 
-        regex = (
-            r'(?:(?:(?P<durationHours>[0-9]+)\:)?'
-            r'(?P<durationMinutes>[0-9]+)\:'
-            r'(?P<durationSeconds>[0-9]{2}))'
-        )
-
         result = cls.session.get(scrAPI.endpoint+'playlist', params=query)
+
         if result.status_code == 200:
             soup = BeautifulSoup(result.text, "html.parser")
-            videos = soup.find_all("tr", {'class': 'pl-video'})
+            videos = [video for video in soup.find_all("tr", {'class': 'pl-video'}) if all([video.find(class_ = "timestamp"), video.find(class_ = "pl-video-owner")])]
             for video in videos:
-                duration = cls.format_duration(re.match(regex, video.find(class_ = "timestamp").text))
                 item = {
-                        'id': {
-                            'kind': 'youtube#video',
-                            'videoId': video['data-video-id']
-                        },
+                        'id': video['data-video-id'],
                         'contentDetails': {
-                            'duration': 'PT'+duration,
+                            'duration': 'PT'+cls.format_duration(re.match(cls.time_regex, video.find(class_ = "timestamp").text)),
                         },
                         'snippet': {
                             'resourceId': {
@@ -152,9 +147,7 @@ class bs4API(scrAPI):
 
         for result in [cls.run_search(r)[0] for r in rs]:
             logger.info('session.get triggered: list_videos (experimental) - why is this ever called')
-            result.update(
-              {'id': result['id']['videoId']}
-            )
+            result.update({'id': result['id']['videoId']})
             items.extend([result])
 
         return json.loads(json.dumps(
@@ -174,14 +167,12 @@ class bs4API(scrAPI):
 
         for result in [cls.run_search(r)[0] for r in rs]:
             logger.info('session.get triggered: list_playlists (experimental) - why is this ever called')
-            result.update(
-              {'id': result['id']['playlistId']}
-            )
+            result.update({'id': result['id']['playlistId']})
             items.extend([result])
+
         return json.loads(json.dumps(
             {'items': items},
             sort_keys=False,
             indent=1
         ))
-
 

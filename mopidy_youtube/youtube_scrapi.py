@@ -269,8 +269,10 @@ class scrAPI(Client):
         }
         logger.info('session.get triggered: list_playlist_items')
         items = cls.run_list_playlistitems(query)
-        return json.loads(json.dumps(
+        result = json.loads(json.dumps(
             {'nextPageToken': None, 'items': [x for _, x in zip(range(max_results), items)]},  # noqa: E501
             sort_keys=False,
             indent=1
         ))
+        return result
+
