@@ -85,7 +85,7 @@ class Entry(object):
             else:
                 obj = []
                 return obj
-            if 'thumbnails' in item:
+            if 'thumbnails' in item['snippet']:
                 set_api_data.append('thumbnails')
             obj._set_api_data(
                 set_api_data,

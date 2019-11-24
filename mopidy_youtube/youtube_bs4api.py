@@ -146,7 +146,7 @@ class bs4API(scrAPI):
               'sp': 'EgIQAQ%3D%3D'} for id in ids]
 
         for result in [cls.run_search(r)[0] for r in rs]:
-            logger.info('session.get triggered: list_videos (experimental) - why is this ever called')
+            logger.info('session.get triggered: list_videos (experimental)')
             result.update({'id': result['id']['videoId']})
             items.extend([result])
 
@@ -166,7 +166,7 @@ class bs4API(scrAPI):
               'sp': 'EgIQAw%3D%3D'} for id in ids]
 
         for result in [cls.run_search(r)[0] for r in rs]:
-            logger.info('session.get triggered: list_playlists (experimental) - why is this ever called')
+            logger.info('session.get triggered: list_playlists (experimental)')
             result.update({'id': result['id']['playlistId']})
             items.extend([result])
 
