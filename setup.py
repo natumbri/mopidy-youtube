@@ -29,6 +29,7 @@ setup(
         'Mopidy >= 2.0',
         'Pykka >= 2.0.1',
         'youtube_dl',
+        'bs4',
         'cachetools',
         'requests_cache'
     ],
