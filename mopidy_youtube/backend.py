@@ -12,8 +12,6 @@ from mopidy.models import Album, Artist, SearchResult, Track
 
 import pykka
 
-import requests_cache
-
 from mopidy_youtube import Extension, logger, youtube
 
 # A typical interaction:
@@ -49,7 +47,6 @@ class YouTubeBackend(pykka.ThreadingActor, backend.Backend):
         self.config = config
         self.library = YouTubeLibraryProvider(backend=self)
         self.playback = YouTubePlaybackProvider(audio=audio, backend=self)
-        requests_cache.install_cache(Extension().get_cache_dir(config))
         youtube.API.youtube_api_key = \
             config['youtube']['youtube_api_key'] or None
         youtube.ThreadPool.threads_max = config['youtube']['threads_max']

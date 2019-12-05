@@ -29,8 +29,7 @@ setup(
         'Mopidy >= 2.0',
         'Pykka >= 2.0.1',
         'youtube_dl',
-        'cachetools',
-        'requests_cache'
+        'cachetools'
     ],
     entry_points={
         'mopidy.ext': [
