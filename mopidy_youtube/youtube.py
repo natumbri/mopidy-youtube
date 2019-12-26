@@ -90,7 +90,7 @@ class Entry:
             logger.error('search error "%s"', e)
             return None
         try:
-            return map(create_object, data["items"])
+            return list(map(create_object, data["items"]))
         except Exception as e:
             logger.error('map error "%s"', e)
             return None
@@ -108,7 +108,7 @@ class Entry:
                     added = True
             return added
 
-        return filter(add, list)
+        return list(filter(add, list))
 
     # common Video/Playlist properties go to the base class
     #
