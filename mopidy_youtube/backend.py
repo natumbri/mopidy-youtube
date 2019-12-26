@@ -9,7 +9,7 @@ from mopidy.models import Album, Artist, SearchResult, Track
 
 import youtube_api
 import youtube_bs4api
-import youtube_scrapi
+# import youtube_scrapi
 from mopidy_youtube import Extension, logger, youtube
 
 # A typical interaction:

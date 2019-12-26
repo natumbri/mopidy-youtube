@@ -1,5 +1,5 @@
 from mopidy_youtube import Extension
-from mopidy_youtube import frontend as frontend_lib
+# from mopidy_youtube import frontend as frontend_lib
 
 
 def test_get_default_config():
@@ -16,6 +16,8 @@ def test_get_default_config():
 def test_get_config_schema():
     ext = Extension()
     schema = ext.get_config_schema()
+
+    assert "enabled = true" in schema
 
     # TODO Test the content of your config schema
     # assert "username" in schema

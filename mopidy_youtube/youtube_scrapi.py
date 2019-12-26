@@ -60,7 +60,7 @@ class scrAPI(Client):
                 }
                 if duration != "":
                     item.update(
-                        {"contentDetails": {"duration": "PT" + duration,},}
+                        {"contentDetails": {"duration": "PT" + duration}}
                     )
             item.update(
                 {
@@ -157,7 +157,7 @@ class scrAPI(Client):
                         "title": match.group("title"),
                         "channelTitle": match.group("channelTitle"),
                     },
-                    "contentDetails": {"duration": match.group("duration"),},
+                    "contentDetails": {"duration": match.group("duration")},
                 }
                 items.append(item)
         return json.loads(
@@ -200,7 +200,7 @@ class scrAPI(Client):
                             },
                         },
                     },
-                    "contentDetails": {"itemCount": match.group("itemCount"),},
+                    "contentDetails": {"itemCount": match.group("itemCount")},
                 }
                 items.append(item)
 
@@ -233,7 +233,7 @@ class scrAPI(Client):
             item = {
                 "id": match.group("id"),
                 "snippet": {
-                    "resourceId": {"videoId": match.group("id"),},
+                    "resourceId": {"videoId": match.group("id")},
                     "title": match.group("title"),
                     "channelTitle": match.group("channelTitle"),
                     "thumbnails": {

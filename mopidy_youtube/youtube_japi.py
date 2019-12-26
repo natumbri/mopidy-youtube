@@ -1,3 +1,11 @@
+import json
+import re
+
+from mopidy_youtube import logger
+# from youtube import Client, Video
+from youtube_scrapi import scrAPI
+
+
 # JSON based scrAPI
 class jAPI(scrAPI):
 

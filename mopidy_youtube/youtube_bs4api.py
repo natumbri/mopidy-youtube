@@ -3,7 +3,7 @@ import re
 
 from bs4 import BeautifulSoup
 from mopidy_youtube import logger
-from youtube import Client, Video
+# from youtube import Client, Video
 from youtube_scrapi import scrAPI
 
 
@@ -37,7 +37,7 @@ class bs4API(scrAPI):
                         "kind": "youtube#video",
                         "videoId": video["data-context-item-id"],
                     },
-                    "contentDetails": {"duration": "PT" + duration,},
+                    "contentDetails": {"duration": "PT" + duration},
                     "snippet": {
                         "title": video.find(class_="yt-lockup-title").next.text,
                         # TODO: full support for thumbnails
