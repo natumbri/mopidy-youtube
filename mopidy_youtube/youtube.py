@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 import re
 
 import threading
@@ -50,7 +48,7 @@ def async_property(func):
 #
 # Entry is a base class of Video and Playlist
 #
-class Entry(object):
+class Entry:
     cache_max_len = 400
 
     # Use Video.get(id), Playlist.get(id), instead of Video(id), Playlist(id),
@@ -211,7 +209,7 @@ class Video(Entry):
         # make it "async" for uniformity with Playlist.thumbnails
         self._thumbnails = pykka.ThreadingFuture()
         self._thumbnails.set([
-            'https://i.ytimg.com/vi/%s/%s.jpg' % (self.id, type)
+            f'https://i.ytimg.com/vi/{self.id}/{type}.jpg'
             for type in ['default', 'mqdefault', 'hqdefault']
         ])
 

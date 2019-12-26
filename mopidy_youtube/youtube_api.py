@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 from mopidy_youtube import logger
 from youtube import Client
 from youtube import Video

@@ -1,5 +1,3 @@
-from __future__ import unicode_literals
-
 import mock
 
 from mopidy import httpclient
@@ -15,7 +13,7 @@ from mopidy_youtube import Extension, backend, youtube
 proxy = None  # httpclient.format_proxy(config['proxy'])
 youtube.Video.proxy = proxy
 
-user_agent = '%s/%s' % (
+user_agent = '{}/{}'.format(
     Extension.dist_name,
     Extension.version
 )

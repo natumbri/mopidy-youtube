@@ -1,7 +1,3 @@
-# -*- coding: utf-8 -*-
-
-from __future__ import unicode_literals
-
 import re
 import string
 import unicodedata
@@ -33,7 +29,7 @@ def extract_id(uri):
 
 
 def safe_url(uri):
-    valid_chars = "-_.() %s%s" % (string.ascii_letters, string.digits)
+    valid_chars = f"-_.() {string.ascii_letters}{string.digits}"
     safe_uri = unicodedata.normalize(
         'NFKD',
         uri
@@ -47,7 +43,7 @@ def safe_url(uri):
 
 class YouTubeBackend(pykka.ThreadingActor, backend.Backend):
     def __init__(self, config, audio):
-        super(YouTubeBackend, self).__init__()
+        super().__init__()
         self.config = config
         self.library = YouTubeLibraryProvider(backend=self)
         self.playback = YouTubePlaybackProvider(audio=audio, backend=self)
@@ -59,7 +55,7 @@ class YouTubeBackend(pykka.ThreadingActor, backend.Backend):
             config['youtube']['playlist_max_videos']
         youtube.api_enabled = config['youtube']['api_enabled']
         self.uri_schemes = ['youtube', 'yt']
-        self.user_agent = '%s/%s' % (
+        self.user_agent = '{}/{}'.format(
             Extension.dist_name,
             Extension.version
         )
