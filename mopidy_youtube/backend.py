@@ -7,7 +7,7 @@ import pykka
 from mopidy import backend, httpclient
 from mopidy.models import Album, Artist, SearchResult, Track
 
-from mopidy_youtube.apis import youtube_api youtube_bs4api
+from mopidy_youtube.apis import youtube_api, youtube_bs4api
 # from mopidy_youtube.apis import youtube_scrapi
 from mopidy_youtube import Extension, logger, youtube
 
