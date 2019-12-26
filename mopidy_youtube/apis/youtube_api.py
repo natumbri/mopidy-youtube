@@ -1,5 +1,5 @@
 from mopidy_youtube import logger
-from youtube import Client, Video
+from mopidy_youtube.youtube import Client, Video
 
 youtube_api_key = None
 

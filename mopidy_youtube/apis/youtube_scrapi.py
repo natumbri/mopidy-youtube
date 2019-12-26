@@ -2,7 +2,7 @@ import json
 import re
 
 from mopidy_youtube import logger
-from youtube import Client, Video
+from mopidy_youtube.youtube import Client, Video
 
 
 # Indirect access to YouTube data, without API
