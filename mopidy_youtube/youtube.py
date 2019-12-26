@@ -211,7 +211,7 @@ class Video(Entry):
         # make it "async" for uniformity with Playlist.thumbnails
         self._thumbnails = pykka.ThreadingFuture()
         self._thumbnails.set([
-            'https://i.ytimg.com/vi/%s/%s.jpg' % (self.id, type)
+            'https://i.ytimg.com/vi/{}/{}.jpg'.format(self.id, type)
             for type in ['default', 'mqdefault', 'hqdefault']
         ])
 

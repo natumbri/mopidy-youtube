@@ -33,7 +33,7 @@ def extract_id(uri):
 
 
 def safe_url(uri):
-    valid_chars = "-_.() %s%s" % (string.ascii_letters, string.digits)
+    valid_chars = "-_.() {}{}".format(string.ascii_letters, string.digits)
     safe_uri = unicodedata.normalize(
         'NFKD',
         uri
@@ -59,7 +59,7 @@ class YouTubeBackend(pykka.ThreadingActor, backend.Backend):
             config['youtube']['playlist_max_videos']
         youtube.api_enabled = config['youtube']['api_enabled']
         self.uri_schemes = ['youtube', 'yt']
-        self.user_agent = '%s/%s' % (
+        self.user_agent = '{}/{}'.format(
             Extension.dist_name,
             Extension.version
         )
