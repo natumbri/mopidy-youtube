@@ -1,7 +1,7 @@
 import re
 import string
 import unicodedata
-from urlparse import parse_qs, urlparse
+from urllib.parse import parse_qs, urlparse
 
 import pykka
 from mopidy import backend, httpclient
