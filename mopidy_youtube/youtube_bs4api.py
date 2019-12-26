@@ -2,11 +2,10 @@ import json
 import re
 
 from bs4 import BeautifulSoup
-
 from mopidy_youtube import logger
-
 from youtube import Client, Video
 from youtube_scrapi import scrAPI
+
 
 # Indirect access to YouTube data, without API
 # but use BS4 instead of regex

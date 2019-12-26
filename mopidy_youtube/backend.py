@@ -3,16 +3,14 @@ import string
 import unicodedata
 from urlparse import parse_qs, urlparse
 
+import pykka
 from mopidy import backend, httpclient
 from mopidy.models import Album, Artist, SearchResult, Track
 
-import pykka
-
-from mopidy_youtube import Extension, logger, youtube
-
 import youtube_api
-import youtube_scrapi
 import youtube_bs4api
+import youtube_scrapi
+from mopidy_youtube import Extension, logger, youtube
 
 # A typical interaction:
 # 1. User searches for a keyword (YouTubeLibraryProvider.search)

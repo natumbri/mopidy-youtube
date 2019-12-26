@@ -1,18 +1,14 @@
 import re
-
 import threading
 import traceback
 
-from cachetools import LRUCache, cached
-
 import pykka
-
 import requests
 from requests.adapters import HTTPAdapter
 from requests.packages.urllib3.util.retry import Retry
 
 import youtube_dl
-
+from cachetools import LRUCache, cached
 from mopidy_youtube import logger
 
 api_enabled = False

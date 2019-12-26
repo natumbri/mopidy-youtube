@@ -2,7 +2,6 @@ import logging
 import pathlib
 
 import pkg_resources
-
 from mopidy import config, ext
 
 __version__ = pkg_resources.get_distribution("Mopidy-YouTube").version

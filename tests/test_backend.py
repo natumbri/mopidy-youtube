@@ -1,13 +1,9 @@
-import mock
-
 from mopidy import httpclient
 
+import mock
 import pytest
-
 import vcr
-
 import youtube_dl
-
 from mopidy_youtube import Extension, backend, youtube
 
 proxy = None  # httpclient.format_proxy(config['proxy'])
