@@ -1,17 +1,17 @@
-**************
+****************************
 Mopidy-YouTube
-**************
+****************************
 
-.. image:: https://img.shields.io/pypi/v/Mopidy-YouTube.svg?style=flat
-    :target: https://pypi.python.org/pypi/Mopidy-YouTube/
+.. image:: https://img.shields.io/pypi/v/Mopidy-YouTube
+    :target: https://pypi.org/project/Mopidy-YouTube/
     :alt: Latest PyPI version
 
-.. image:: https://img.shields.io/travis/mopidy/mopidy-youtube/develop.svg?style=flat
-    :target: https://travis-ci.org/mopidy/mopidy-youtube
-    :alt: Travis CI build status
+.. image:: https://img.shields.io/circleci/build/gh/natumbri/mopidy-youtube
+    :target: https://circleci.com/gh/natumbri/mopidy-youtube
+    :alt: CircleCI build status
 
-.. image:: https://img.shields.io/coveralls/mopidy/mopidy-youtube/develop.svg?style=flat
-    :target: https://coveralls.io/r/mopidy/mopidy-youtube?branch=develop
+.. image:: https://img.shields.io/codecov/c/gh/natumbri/mopidy-youtube
+    :target: https://codecov.io/gh/natumbri/mopidy-youtube
     :alt: Test coverage
 
 Mopidy extension that plays sound from YouTube.
@@ -20,40 +20,43 @@ Mopidy extension that plays sound from YouTube.
 Installation
 ============
 
+Install by running::
+
+    python3 -m pip install Mopidy-YouTube
+
+See https://mopidy.com/ext/youtube/ for alternative installation methods.
+
 Make sure you already have the GStreamer plugins, especially the "bad"
 collection of plugins. For example, on Debian/Ubuntu you can install it
 by running::
 
     sudo apt-get install gstreamer1.0-plugins-bad
-    
-For older versions of Mopidy (pre v2.0), install the plugins by running::
-
-    sudo apt-get install gstreamer0.10-plugins-bad
-
-Install by running::
-
-    pip install Mopidy-YouTube
 
 
 Configuration
 =============
 
-If you want modipy-youtube to use the YouTube API, before starting Mopidy, 
-you must set ``api_enabled = True``, and add your Google API key to your Mopidy configuration file::
+Before starting Mopidy, you must add configuration for
+Mopidy-YouTube to your Mopidy configuration file::
 
     [youtube]
     enabled = true
+
+If you want modipy-youtube to use the YouTube API, before starting Mopidy, 
+you must add your Google API key to your Mopidy configuration file
+and set api_enabled = true::
+
+    [youtube]
     youtube_api_key = <api key you got from Google>
+    api_enabled = false
 
 Other configuration options are::
 
+    [youtube]
     threads_max = 16
     search_results = 15
     playlist_max_videos = 20
-    api_enabled = false
 
-If api_enabled is ``True`` but the youtube_api_key supplied is not valid, the 
-plugin will report an error and the API will not be used.
 
 Usage
 =====
@@ -77,9 +80,7 @@ If the extension is slow, try setting lower values for threads_max, search_resul
 and playlist_max_videos.
 
 If resolving of URIs stops working, always try to update the youtube-dl library
-first::
-
-   pip install --upgrade youtube-dl
+first.
 
 
 Project resources
@@ -87,6 +88,7 @@ Project resources
 
 - `Source code <https://github.com/mopidy/mopidy-youtube>`_
 - `Issue tracker <https://github.com/mopidy/mopidy-youtube/issues>`_
+- `Changelog <https://github.com/mopidy/mopidy-youtube/blob/master/CHANGELOG.rst>`_
 
 
 Credits
@@ -96,56 +98,3 @@ Credits
 - Current maintainer: `Nikolas Tumbri <https://github.com/natumbri>`_
 - `Contributors <https://github.com/mopidy/mopidy-youtube/graphs/contributors>`_
 
-
-Changelog
-=========
-
-v2.1.0 (2019-10-26)
--------------------
-
-- Major overhaul.
-
-- Improved performance.
-
-- Works with or without YouTube API key.
-
-v2.0.2 (2016-01-19)
--------------------
-
-- Fix resolving of ``youtube:video`` URIs when looking up tracks. (Fixes: #21,
-  PR: #50)
-
-- Ensure ``None`` doesn't get includes in track image lists. (PR: #48)
-
-v2.0.1 (2015-08-19)
--------------------
-
-- Update links to GitHub repository.
-
-- Don't return ``None`` values to Mopidy when lookup or search returns invalid
-  data. In Mopidy 1.0, this caused a crash. In Mopidy 1.1, this caused warnings
-  about the YouTube backend returning invalid data. (Fixes: #28, PR: #35)
-
-v2.0.0 (2015-04-01)
--------------------
-
-- Require Mopidy >= 1.0.
-
-- Update to work with the new playback API in Mopidy 1.0.
-
-- Update to work with the new search API in Mopidy 1.0.
-
-v1.0.2 (2015-01-02)
--------------------
-
-- Changelog missing.
-
-v1.0.1 (2014-05-28)
--------------------
-
-- Changelog missing.
-
-v0.1.0 (2014-03-06)
--------------------
-
-- Initial release.
