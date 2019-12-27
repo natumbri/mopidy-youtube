@@ -8,5 +8,5 @@ def test_get_default_config():
 
     config = ext.get_default_config()
 
-    assert '[youtube]' in config
-    assert 'enabled = true' in config
+    assert "[youtube]" in config
+    assert "enabled = true" in config
