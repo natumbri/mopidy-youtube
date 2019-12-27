@@ -6,10 +6,10 @@ import re
 import string
 import unicodedata
 from multiprocessing.pool import ThreadPool
-from urlparse import parse_qs, urlparse
+from urllib.parse import parse_qs, urlparse
 
 from mopidy import backend
-from mopidy.models import Album, SearchResult, Track
+from mopidy.models import Album, Image, SearchResult, Track
 
 import pafy
 
@@ -26,6 +26,9 @@ session = requests.Session()
 video_uri_prefix = 'youtube:video'
 search_uri = 'youtube:search'
 
+image_cache_size = 50
+_image_cache = {}
+
 
 def resolve_track(track, stream=False):
     logger.debug("Resolving YouTube for track '%s'", track)
@@ -39,10 +42,10 @@ def safe_url(uri):
     valid_chars = "-_.() %s%s" % (string.ascii_letters, string.digits)
     safe_uri = unicodedata.normalize(
         'NFKD',
-        unicode(uri)
-    ).encode('ASCII', 'ignore')
+        str(uri)
+    )
     return re.sub(
-        '\s+',
+        r'\s+',
         ' ',
         ''.join(c for c in safe_uri if c in valid_chars)
     ).strip()
@@ -65,14 +68,19 @@ def resolve_url(url, stream=False):
             return
     except Exception as e:
         # Video is private or doesn't exist
-        logger.info(e.message)
+        logger.info(str(e))
         return
 
     images = []
+
     if video.bigthumb is not None:
-        images.append(video.bigthumb)
+        images.append(Image(uri=video.bigthumb))
     if video.bigthumbhd is not None:
-        images.append(video.bigthumbhd)
+        images.append(Image(uri=video.bigthumbhd))
+
+    if len(_image_cache) > image_cache_size:
+        _image_cache.popitem()
+    _image_cache[uri] = images
 
     track = Track(
         name=video.title,
@@ -80,7 +88,6 @@ def resolve_url(url, stream=False):
         length=video.length * 1000,
         album=Album(
             name='YouTube',
-            images=images
         ),
         uri=uri
     )
@@ -147,6 +154,14 @@ class YouTubeBackend(pykka.ThreadingActor, backend.Backend):
 
 
 class YouTubeLibraryProvider(backend.LibraryProvider):
+
+    def get_images(self, uris):
+        result = {}
+        for uri in uris:
+            if uri in _image_cache:
+                result[uri] = _image_cache[uri]
+        return result
+
     def lookup(self, track):
         if 'yt:' in track:
             track = track.replace('yt:', '')

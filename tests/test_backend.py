@@ -96,9 +96,8 @@ def test_lookup_video_uri(caplog):
 
     track = provider.lookup(backend.video_uri_prefix +
                             '/a title.C0DPdy98e4c')
-
     assert 'Need 11 character video id or the URL of the video.' \
-           not in caplog.text()
+           not in str(caplog)
 
     assert track
 
