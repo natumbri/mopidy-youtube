@@ -99,7 +99,7 @@ class Entry:
     # already exist. Returns objects for which at least one future was added
     #
     @classmethod
-    def _add_futures(cls, list, fields):
+    def _add_futures(cls, futures_list, fields):
         def add(obj):
             added = False
             for k in fields:
@@ -108,7 +108,7 @@ class Entry:
                     added = True
             return added
 
-        return list(filter(add, list))
+        return list(filter(add, futures_list))
 
     # common Video/Playlist properties go to the base class
     #
@@ -158,8 +158,8 @@ class Entry:
                 )
             elif k == "video_count":
                 val = min(
-                    item["contentDetails"]["itemCount"],
-                    self.playlist_max_videos,
+                    int(item["contentDetails"]["itemCount"]),
+                    int(self.playlist_max_videos),
                 )
             elif k == "thumbnails":
                 val = [
@@ -292,7 +292,7 @@ class Playlist(Entry):
             ):
                 try:
                     max_results = min(
-                        self.playlist_max_videos - len(all_videos), 50
+                        int(self.playlist_max_videos) - len(all_videos), 50
                     )
                     data = self.api.list_playlistitems(
                         self.id, page, max_results
@@ -414,7 +414,6 @@ class ThreadPool:
         cls.lock.acquire()
 
         cls.jobs.append((f, args))
-
         if cls.threads_active < cls.threads_max:
             thread = threading.Thread(target=cls.worker)
             thread.daemon = True
