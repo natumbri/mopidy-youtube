@@ -1,17 +1,15 @@
-# -*- coding: utf-8 -*-
-
-from __future__ import unicode_literals
-
+import collections
 import re
 import string
 import unicodedata
-from urlparse import parse_qs, urlparse
+from urllib.parse import parse_qs, urlparse
 
+import pykka
 from mopidy import backend, httpclient
 from mopidy.models import Album, Artist, SearchResult, Track
 
-import pykka
-
+from mopidy_youtube.apis import youtube_api, youtube_bs4api
+# from mopidy_youtube.apis import youtube_scrapi
 from mopidy_youtube import Extension, logger, youtube
 
 # A typical interaction:
@@ -25,70 +23,66 @@ from mopidy_youtube import Extension, logger, youtube
 
 # youtube:video/<title>.<id> ==> <id>
 def extract_id(uri):
-    return uri.split('.')[-1]
-
+    return uri.split(".")[-1]
 
 def safe_url(uri):
-    valid_chars = "-_.() %s%s" % (string.ascii_letters, string.digits)
-    safe_uri = unicodedata.normalize(
-        'NFKD',
-        uri
-    ).encode('ASCII', 'ignore')
+    valid_chars = f"-_.() {string.ascii_letters}{string.digits}"
+    safe_uri = unicodedata.normalize("NFKD", uri).encode("ASCII", "ignore")
     return re.sub(
-        r'\s+',
-        ' ',
-        ''.join(c for c in safe_uri if c in valid_chars)
+        r"\s+", " ", "".join(str(c) for c in safe_uri if str(c) in valid_chars)
     ).strip()
 
 
 class YouTubeBackend(pykka.ThreadingActor, backend.Backend):
     def __init__(self, config, audio):
-        super(YouTubeBackend, self).__init__()
+        super().__init__()
         self.config = config
         self.library = YouTubeLibraryProvider(backend=self)
         self.playback = YouTubePlaybackProvider(audio=audio, backend=self)
-        youtube.API.youtube_api_key = \
-            config['youtube']['youtube_api_key'] or None
-        youtube.ThreadPool.threads_max = config['youtube']['threads_max']
-        youtube.Video.search_results = config['youtube']['search_results']
-        youtube.Playlist.playlist_max_videos = \
-            config['youtube']['playlist_max_videos']
-        youtube.api_enabled = config['youtube']['api_enabled']
-        self.uri_schemes = ['youtube', 'yt']
-        self.user_agent = '%s/%s' % (
-            Extension.dist_name,
-            Extension.version
+        youtube_api.youtube_api_key = (
+            config["youtube"]["youtube_api_key"] or None
         )
+        youtube.ThreadPool.threads_max = config["youtube"]["threads_max"]
+        youtube.Video.search_results = config["youtube"]["search_results"]
+        youtube.Playlist.playlist_max_videos = config["youtube"][
+            "playlist_max_videos"
+        ]
+        youtube.api_enabled = config["youtube"]["api_enabled"]
+        self.uri_schemes = ["youtube", "yt"]
+        self.user_agent = "{}/{}".format(Extension.dist_name, Extension.version)
 
     def on_start(self):
 
-        proxy = httpclient.format_proxy(self.config['proxy'])
+        proxy = httpclient.format_proxy(self.config["proxy"])
         youtube.Video.proxy = proxy
         headers = {
-            'user-agent': httpclient.format_user_agent(self.user_agent),
-            'Cookie': 'PREF=hl=en;',
-            'Accept-Language': 'en;q=0.8'
+            "user-agent": httpclient.format_user_agent(self.user_agent),
+            "Cookie": "PREF=hl=en;",
+            "Accept-Language": "en;q=0.8",
         }
 
         if youtube.api_enabled is True:
-            if youtube.API.youtube_api_key is None:
-                logger.error('No YouTube API key provided, disabling API')
+            if youtube_api.youtube_api_key is None:
+                logger.error("No YouTube API key provided, disabling API")
                 youtube.api_enabled = False
             else:
-                youtube.Entry.api = youtube.API(proxy, headers)
-                if youtube.Entry.search(q='test') is None:
+                youtube.Entry.api = youtube_api.API(proxy, headers)
+                if youtube.Entry.search(q="test") is None:
                     logger.error(
-                        'Failed to verify YouTube API key, disabling API')
+                        "Failed to verify YouTube API key, disabling API"
+                    )
                     youtube.api_enabled = False
                 else:
-                    logger.info('YouTube API key verified')
+                    logger.info("YouTube API key verified")
 
         if youtube.api_enabled is False:
-            logger.info('Using scrAPI')
-            youtube.Entry.api = youtube.scrAPI(proxy, headers)
+            # # regex based api
+            # logger.info('Using scrAPI')
+            # youtube.Entry.api = youtube_scrapi.scrAPI(proxy, headers)
 
-        # logger.info('using jAPI')
-        # youtube.Entry.api = youtube.jAPI()
+            # beautiful soup 4 based api
+            logger.info("using bs4API")
+            youtube.Entry.api = youtube_bs4api.bs4API(proxy, headers)
 
 
 class YouTubeLibraryProvider(backend.LibraryProvider):
@@ -114,10 +108,10 @@ class YouTubeLibraryProvider(backend.LibraryProvider):
         logger.info('youtube LibraryProvider.search "%s"', query)
 
         # handle only searching (queries with 'any') not browsing!
-        if not (query and 'any' in query):
+        if not (query and "any" in query):
             return None
 
-        search_query = ' '.join(query['any'])
+        search_query = " ".join(query["any"])
         logger.info('Searching YouTube for query "%s"', search_query)
 
         try:
@@ -133,27 +127,27 @@ class YouTubeLibraryProvider(backend.LibraryProvider):
         tracks = []
         for entry in entries:
             if entry.is_video:
-                uri_base = 'youtube:video'
-                album = 'YouTube Video'
-                length = int(entry.length.get())*1000
+                uri_base = "youtube:video"
+                album = "YouTube Video"
+                length = int(entry.length.get()) * 1000
             else:
-                uri_base = 'youtube:playlist'
-                album = 'YouTube Playlist (%s videos)' % \
-                        entry.video_count.get()
+                uri_base = "youtube:playlist"
+                album = "YouTube Playlist (%s videos)" % entry.video_count.get()
                 length = 0
 
-            tracks.append(Track(
-                name=entry.title.get().replace(';', ''),
-                comment=entry.id,
-                length=length,
-                artists=[Artist(name=entry.channel.get())],
-                album=Album(
-                    name=album,
-                    images=entry.thumbnails.get(),
-                ),
-                uri='%s/%s.%s' %
-                    (uri_base, safe_url(entry.title.get()), entry.id)
-            ))
+            name = entry.title.get()
+
+            tracks.append(
+                Track(
+                    name=name.replace(";", ""),
+                    comment=entry.id,
+                    length=length,
+                    artists=[Artist(name=entry.channel.get())],
+                    album=Album(name=album),  # , images=entry.thumbnails.get(),),
+                    uri="%s/%s.%s"
+                    % (uri_base, safe_url(name), entry.id),
+                )
+            )
 
         # load video info and playlist videos in the background. they should be
         # ready by the time the user adds search results to the playing queue
@@ -161,10 +155,7 @@ class YouTubeLibraryProvider(backend.LibraryProvider):
         for pl in playlists:
             pl.videos  # start loading
 
-        return SearchResult(
-            uri='youtube:search',
-            tracks=tracks
-        )
+        return SearchResult(uri="youtube:search", tracks=tracks)
 
     # Called when the user adds a track to the playing queue, either from the
     # search results, or directly by adding a yt:http://youtube.com/.... uri.
@@ -185,15 +176,15 @@ class YouTubeLibraryProvider(backend.LibraryProvider):
 
         video_id = playlist_id = None
 
-        if 'youtube.com' in uri:
-            url = urlparse(uri.replace('yt:', '').replace('youtube:', ''))
+        if "youtube.com" in uri:
+            url = urlparse(uri.replace("yt:", "").replace("youtube:", ""))
             req = parse_qs(url.query)
 
-            if 'list' in req:
-                playlist_id = req.get('list')[0]
+            if "list" in req:
+                playlist_id = req.get("list")[0]
             else:
-                video_id = req.get('v')[0]
-        elif 'video/' in uri:
+                video_id = req.get("v")[0]
+        elif "video/" in uri:
             video_id = extract_id(uri)
         else:
             playlist_id = extract_id(uri)
@@ -202,18 +193,19 @@ class YouTubeLibraryProvider(backend.LibraryProvider):
             video = youtube.Video.get(video_id)
             video.audio_url  # start loading
 
-            return [Track(
-                name=video.title.get().replace(';', ''),
-                comment=video.id,
-                length=video.length.get() * 1000,
-                artists=[Artist(name=video.channel.get())],
-                album=Album(
-                    name='YouTube Video',
-                    images=video.thumbnails.get(),
-                ),
-                uri='youtube:video/%s.%s' %
-                    (safe_url(video.title.get()), video.id)
-            )]
+            return [
+                Track(
+                    name=video.title.get().replace(";", ""),
+                    comment=video.id,
+                    length=video.length.get() * 1000,
+                    artists=[Artist(name=video.channel.get())],
+                    album=Album(
+                        name="YouTube Video"  # , images=video.thumbnails.get(),
+                    ),
+                    uri="youtube:video/%s.%s"
+                    % (safe_url(video.title.get()), video.id),
+                )
+            ]
         else:
             playlist = youtube.Playlist.get(playlist_id)
             if not playlist.videos.get():
@@ -221,27 +213,50 @@ class YouTubeLibraryProvider(backend.LibraryProvider):
                 return []
 
             # ignore videos for which no info was found (removed, etc)
-            videos = [v for v in playlist.videos.get()
-                      if v.length.get() is not None]
+            videos = [
+                v for v in playlist.videos.get() if v.length.get() is not None
+            ]
 
             # load audio_url in the background to be ready for playback
             for video in videos:
                 video.audio_url  # start loading
 
-            return [Track(
-                name=video.title.get().replace(';', ''),
-                comment=video.id,
-                length=video.length.get() * 1000,
-                track_no=count,
-                artists=[Artist(name=video.channel.get())],
-                album=Album(
-                    name=playlist.title.get(),
-                    images=playlist.thumbnails.get(),
-                ),
-                uri='youtube:video/%s.%s' %
-                    (safe_url(video.title.get()), video.id)
-            ) for count, video in enumerate(videos, 1)]
+            return [
+                Track(
+                    name=video.title.get().replace(";", ""),
+                    comment=video.id,
+                    length=video.length.get() * 1000,
+                    track_no=count,
+                    artists=[Artist(name=video.channel.get())],
+                    album=Album(
+                        name=playlist.title.get(),
+                        # images=playlist.thumbnails.get(),
+                    ),
+                    uri="youtube:video/%s.%s"
+                    % (safe_url(video.title.get()), video.id),
+                )
+                for count, video in enumerate(videos, 1)
+            ]
 
+    def get_images(self, uris):
+    # map uris to item identifiers
+        urimap = collections.defaultdict(list)
+        for uri in uris:
+            identifier = extract_id(uri)
+            if identifier:
+                urimap[identifier].append(uri)
+            else:
+                logger.debug("Not retrieving images for %s", uri)
+        # retrieve item images and map back to uris
+        results = {}
+        for identifier, uris in urimap.items():
+            try:
+                item = youtube.Video.get(identifier)
+            except Exception as e:
+                logger.error("Error retrieving images for %s: %s", uris, e)
+            else:
+                results.update(dict.fromkeys(uris, item.thumbnails.get()))
+        return results
 
 class YouTubePlaybackProvider(backend.PlaybackProvider):
 
@@ -253,7 +268,7 @@ class YouTubePlaybackProvider(backend.PlaybackProvider):
     def translate_uri(self, uri):
         logger.info('youtube PlaybackProvider.translate_uri "%s"', uri)
 
-        if 'youtube:video/' not in uri:
+        if "youtube:video/" not in uri:
             return None
 
         try:

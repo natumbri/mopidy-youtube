@@ -1,0 +1,59 @@
+*********
+Changelog
+*********
+
+
+v3.0.0 (UNRELEASED)
+========================================
+
+- Initial python3 release.
+
+v2.1.0 (2019-10-26)
+-------------------
+
+- Major overhaul.
+
+- Improved performance.
+
+- Works with or without YouTube API key.
+
+v2.0.2 (2016-01-19)
+-------------------
+
+- Fix resolving of ``youtube:video`` URIs when looking up tracks. (Fixes: #21,
+  PR: #50)
+
+- Ensure ``None`` doesn't get includes in track image lists. (PR: #48)
+
+v2.0.1 (2015-08-19)
+-------------------
+
+- Update links to GitHub repository.
+
+- Don't return ``None`` values to Mopidy when lookup or search returns invalid
+  data. In Mopidy 1.0, this caused a crash. In Mopidy 1.1, this caused warnings
+  about the YouTube backend returning invalid data. (Fixes: #28, PR: #35)
+
+v2.0.0 (2015-04-01)
+-------------------
+
+- Require Mopidy >= 1.0.
+
+- Update to work with the new playback API in Mopidy 1.0.
+
+- Update to work with the new search API in Mopidy 1.0.
+
+v1.0.2 (2015-01-02)
+-------------------
+
+- Changelog missing.
+
+v1.0.1 (2014-05-28)
+-------------------
+
+- Changelog missing.
+
+v0.1.0 (2014-03-06)
+-------------------
+
+- Initial release.
