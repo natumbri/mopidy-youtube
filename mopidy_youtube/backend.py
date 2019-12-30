@@ -1,3 +1,4 @@
+import collections
 import re
 import string
 import unicodedata
@@ -135,15 +136,17 @@ class YouTubeLibraryProvider(backend.LibraryProvider):
                 album = "YouTube Playlist (%s videos)" % entry.video_count.get()
                 length = 0
 
+            name = entry.title.get()
+
             tracks.append(
                 Track(
-                    name=entry.title.get().replace(";", ""),
+                    name=name.replace(";", ""),
                     comment=entry.id,
                     length=length,
                     artists=[Artist(name=entry.channel.get())],
-                    album=Album(name=album, images=entry.thumbnails.get(),),
+                    album=Album(name=album),  # , images=entry.thumbnails.get(),),
                     uri="%s/%s.%s"
-                    % (uri_base, safe_url(entry.title.get()), entry.id),
+                    % (uri_base, safe_url(name), entry.id),
                 )
             )
 
@@ -198,7 +201,7 @@ class YouTubeLibraryProvider(backend.LibraryProvider):
                     length=video.length.get() * 1000,
                     artists=[Artist(name=video.channel.get())],
                     album=Album(
-                        name="YouTube Video", images=video.thumbnails.get(),
+                        name="YouTube Video"  # , images=video.thumbnails.get(),
                     ),
                     uri="youtube:video/%s.%s"
                     % (safe_url(video.title.get()), video.id),
@@ -228,7 +231,7 @@ class YouTubeLibraryProvider(backend.LibraryProvider):
                     artists=[Artist(name=video.channel.get())],
                     album=Album(
                         name=playlist.title.get(),
-                        images=playlist.thumbnails.get(),
+                        # images=playlist.thumbnails.get(),
                     ),
                     uri="youtube:video/%s.%s"
                     % (safe_url(video.title.get()), video.id),
@@ -236,6 +239,25 @@ class YouTubeLibraryProvider(backend.LibraryProvider):
                 for count, video in enumerate(videos, 1)
             ]
 
+    def get_images(self, uris):
+    # map uris to item identifiers
+        urimap = collections.defaultdict(list)
+        for uri in uris:
+            identifier = extract_id(uri)
+            if identifier:
+                urimap[identifier].append(uri)
+            else:
+                logger.debug("Not retrieving images for %s", uri)
+        # retrieve item images and map back to uris
+        results = {}
+        for identifier, uris in urimap.items():
+            try:
+                item = youtube.Video.get(identifier)
+            except Exception as e:
+                logger.error("Error retrieving images for %s: %s", uris, e)
+            else:
+                results.update(dict.fromkeys(uris, item.thumbnails.get()))
+        return results
 
 class YouTubePlaybackProvider(backend.PlaybackProvider):
 
