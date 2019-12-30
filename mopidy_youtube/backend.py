@@ -29,7 +29,7 @@ def safe_url(uri):
     valid_chars = f"-_.() {string.ascii_letters}{string.digits}"
     safe_uri = unicodedata.normalize("NFKD", uri).encode("ASCII", "ignore")
     return re.sub(
-        r"\s+", " ", "".join(c for c in safe_uri if c in valid_chars)
+        r"\s+", " ", "".join(str(c) for c in safe_uri if str(c) in valid_chars)
     ).strip()
 
 
