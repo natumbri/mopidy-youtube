@@ -223,7 +223,11 @@ class Video(Entry):
         def job():
             try:
                 info = youtube_dl.YoutubeDL(
-                    {"format": "m4a/vorbis/bestaudio/best", "proxy": self.proxy}
+                    {
+                        "format": "mp4/bestaudio/vorbis/m4a/best",
+                        "proxy": self.proxy,
+                        "nocheckcertificate": True,
+                    }
                 ).extract_info(
                     url="https://www.youtube.com/watch?v=%s" % self.id,
                     download=False,
