@@ -4,10 +4,10 @@ dist: trusty
 language: python
 
 python:
-  - "2.7_with_system_site_packages"
+  - "3.7_with_system_site_packages"
 
 env:
-  - TOX_ENV=py27
+  - TOX_ENV=py37
   - TOX_ENV=flake8
 
 before_install:
@@ -21,7 +21,7 @@ script:
   - "tox -e $TOX_ENV"
 
 after_success:
-  - "if [ $TOX_ENV == 'py27' ]; then pip install coveralls; coveralls; fi"
+  - "if [ $TOX_ENV == 'py37' ]; then pip install coveralls; coveralls; fi"
 
 notifications:
   irc:
