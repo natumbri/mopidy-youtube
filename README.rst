@@ -22,9 +22,8 @@ Installation
 
 Install by running::
 
-    python3 -m pip install Mopidy-YouTube
+    python3 -m pip install https://github.com/natumbri/mopidy-youtube/archive/develop.zip
 
-See https://mopidy.com/ext/youtube/ for alternative installation methods.
 
 Make sure you already have the GStreamer plugins, especially the "bad"
 collection of plugins. For example, on Debian/Ubuntu you can install it
