@@ -224,7 +224,7 @@ class Video(Entry):
             try:
                 info = youtube_dl.YoutubeDL(
                     {
-                        "format": "mp4/bestaudio/vorbis/m4a/best",
+                        "format": "bestaudio/best",
                         "proxy": self.proxy,
                         "nocheckcertificate": True,
                     }
