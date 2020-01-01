@@ -6,19 +6,19 @@ import os
 from mopidy import config, ext
 
 
-__version__ = '2.0.2'
+__version__ = "3.0.0"
 
 logger = logging.getLogger(__name__)
 
 
 class Extension(ext.Extension):
 
-    dist_name = 'Mopidy-YouTube'
-    ext_name = 'youtube'
+    dist_name = "Mopidy-YouTube"
+    ext_name = "youtube"
     version = __version__
 
     def get_default_config(self):
-        conf_file = os.path.join(os.path.dirname(__file__), 'ext.conf')
+        conf_file = os.path.join(os.path.dirname(__file__), "ext.conf")
         return config.read(conf_file)
 
     def get_config_schema(self):
@@ -27,4 +27,5 @@ class Extension(ext.Extension):
 
     def setup(self, registry):
         from .backend import YouTubeBackend
-        registry.add('backend', YouTubeBackend)
+
+        registry.add("backend", YouTubeBackend)

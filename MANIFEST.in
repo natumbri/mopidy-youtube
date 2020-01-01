@@ -1,11 +1,17 @@
-include .coveragerc
+include *.py
+include *.rst
 include .mailmap
-include .travis.yml
 include LICENSE
 include MANIFEST.in
-include README.rst
-include mopidy_youtube/ext.conf
+include pyproject.toml
 include tox.ini
+include .coveragerc
+
+recursive-include .circleci *
+recursive-include .github *
+
+include mopidy_*/ext.conf
 
 recursive-include tests *.py
 recursive-include tests *.yaml
+recursive-include tests/data *
