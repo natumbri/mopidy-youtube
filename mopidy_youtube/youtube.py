@@ -10,7 +10,7 @@ from requests.packages.urllib3.util.retry import Retry
 import youtube_dl
 from cachetools import LRUCache, cached
 from mopidy_youtube import logger
-
+from mopidy.models import Image
 api_enabled = False
 
 
@@ -205,10 +205,11 @@ class Video(Entry):
     @async_property
     def thumbnails(self):
         # make it "async" for uniformity with Playlist.thumbnails
+        identifier = self.id.split(".")[-1]
         self._thumbnails = pykka.ThreadingFuture()
         self._thumbnails.set(
-            [
-                f"https://i.ytimg.com/vi/{self.id}/{type}.jpg"
+        [
+                Image(uri=f"https://i.ytimg.com/vi/{identifier}/{type}.jpg")
                 for type in ["default", "mqdefault", "hqdefault"]
             ]
         )

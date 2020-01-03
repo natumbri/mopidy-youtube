@@ -1,4 +1,3 @@
-import collections
 import re
 import string
 import unicodedata
@@ -239,24 +238,11 @@ class YouTubeLibraryProvider(backend.LibraryProvider):
             ]
 
     def get_images(self, uris):
-    # map uris to item identifiers
-        urimap = collections.defaultdict(list)
+        result = {}
         for uri in uris:
-            identifier = extract_id(uri)
-            if identifier:
-                urimap[identifier].append(uri)
-            else:
-                logger.debug("Not retrieving images for %s", uri)
-        # retrieve item images and map back to uris
-        results = {}
-        for identifier, uris in urimap.items():
-            try:
-                item = youtube.Video.get(identifier)
-            except Exception as e:
-                logger.error("Error retrieving images for %s: %s", uris, e)
-            else:
-                results.update(dict.fromkeys(uris, item.thumbnails.get()))
-        return results
+            result[uri] = youtube.Video.get(uri).thumbnails.get()
+        return result
+                                                                
 
 class YouTubePlaybackProvider(backend.PlaybackProvider):
 
