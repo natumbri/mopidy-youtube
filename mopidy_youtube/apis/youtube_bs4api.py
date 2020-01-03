@@ -30,7 +30,7 @@ class bs4API(scrAPI):
                 "div", class_=["yt-lockup-video", "yt-lockup-playlist"]
             )
             for result in results:
-                if result.select({"class": "yt-lockup-video"}):
+                if "yt-lockup-video" in result.get("class"):
                     duration_text = result.find(class_="video-time").text
                     duration = cls.format_duration(
                         re.match(cls.time_regex, duration_text)
@@ -71,7 +71,7 @@ class bs4API(scrAPI):
 
                     items.append(item)
 
-                if result.select({"class": "yt-lockup-playlist"}):
+                if "yt-lockup-playlist" in result.get("class"):
                     item = {
                         "id": {
                             "kind": "youtube#playlist",

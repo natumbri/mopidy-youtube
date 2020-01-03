@@ -391,6 +391,7 @@ class Client:
             duration += match.group("durationSeconds") + "S"
         return duration
 
+
 # simple 'dynamic' thread pool. Threads are created when new jobs arrive, stay
 # active for as long as there are active jobs, and get destroyed afterwards
 # (so that there are no long-term threads staying active)
