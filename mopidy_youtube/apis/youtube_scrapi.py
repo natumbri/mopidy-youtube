@@ -11,19 +11,8 @@ class scrAPI(Client):
     endpoint = "https://www.youtube.com/"
 
     @classmethod
-    def format_duration(cls, match):
-        duration = ""
-        if match.group("durationHours") is not None:
-            duration += match.group("durationHours") + "H"
-        if match.group("durationMinutes") is not None:
-            duration += match.group("durationMinutes") + "M"
-        if match.group("durationSeconds") is not None:
-            duration += match.group("durationSeconds") + "S"
-        return duration
-
-    @classmethod
     def run_search(cls, query):
-        result = cls.session.get(scrAPI.endpoint + "results", params=query)
+        result = cls.session.get(cls.endpoint + "results", params=query)
         regex = (
             r'(?:\<li\>)(?:.|\n)*?\<a href\=(["\'])\/watch\?v\=(?P<id>.{11})'
             r"(?:\&amp\;list\=(?:(?P<playlist>PL.*?)\1)?"
@@ -149,7 +138,7 @@ class scrAPI(Client):
         for id in ids:
             query = {"v": id}
             logger.info("session.get triggered: list_videos")
-            result = cls.session.get(scrAPI.endpoint + "watch", params=query)
+            result = cls.session.get(cls.endpoint + "watch", params=query)
             for match in re.finditer(regex, result.text):
                 item = {
                     "id": id,
@@ -185,7 +174,7 @@ class scrAPI(Client):
                 "list": id,
             }
             logger.info("session.get triggered: list_playlists")
-            result = cls.session.get(scrAPI.endpoint + "playlist", params=query)
+            result = cls.session.get(cls.endpoint + "playlist", params=query)
             for match in re.finditer(regex, result.text):
                 item = {
                     "id": id,
@@ -212,7 +201,7 @@ class scrAPI(Client):
     #
     @classmethod
     def run_list_playlistitems(cls, query):
-        result = cls.session.get(scrAPI.endpoint + "playlist", params=query)
+        result = cls.session.get(cls.endpoint + "playlist", params=query)
 
         regex = (
             r'<tr class\=\"pl-video.*\" data-title\=\"(?P<title>.+?)".*?'

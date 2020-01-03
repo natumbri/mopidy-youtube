@@ -4,6 +4,7 @@ import re
 from bs4 import BeautifulSoup
 from mopidy_youtube import logger
 
+# from mopidy_youtube.youtube import Client, Video
 # from youtube import Client, Video
 from mopidy_youtube.apis.youtube_scrapi import scrAPI
 
@@ -23,7 +24,7 @@ class bs4API(scrAPI):
     def run_search(cls, query):
         items = []
 
-        result = cls.session.get(scrAPI.endpoint + "results", params=query)
+        result = cls.session.get(cls.endpoint + "results", params=query)
 
         if result.status_code == 200:
             soup = BeautifulSoup(result.text, "html.parser")
@@ -120,7 +121,7 @@ class bs4API(scrAPI):
     def run_list_playlistitems(cls, query):
         items = []
 
-        result = cls.session.get(scrAPI.endpoint + "playlist", params=query)
+        result = cls.session.get(cls.endpoint + "playlist", params=query)
 
         if result.status_code == 200:
             soup = BeautifulSoup(result.text, "html.parser")

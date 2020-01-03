@@ -7,9 +7,8 @@ import pykka
 from mopidy import backend, httpclient
 from mopidy.models import Album, Artist, SearchResult, Track
 
-# from mopidy_youtube.apis import youtube_scrapi
 from mopidy_youtube import Extension, logger, youtube
-from mopidy_youtube.apis import youtube_api, youtube_bs4api
+from mopidy_youtube.apis import youtube_api, youtube_bs4api, youtube_scrapi
 
 # A typical interaction:
 # 1. User searches for a keyword (YouTubeLibraryProvider.search)
@@ -76,13 +75,13 @@ class YouTubeBackend(pykka.ThreadingActor, backend.Backend):
                     logger.info("YouTube API key verified")
 
         if youtube.api_enabled is False:
-            # # regex based api
-            # logger.info('Using scrAPI')
-            # youtube.Entry.api = youtube_scrapi.scrAPI(proxy, headers)
+            # regex based api
+            logger.info('Using scrAPI')
+            youtube.Entry.api = youtube_scrapi.scrAPI(proxy, headers)
 
-            # beautiful soup 4 based api
-            logger.info("using bs4API")
-            youtube.Entry.api = youtube_bs4api.bs4API(proxy, headers)
+            # # beautiful soup 4 based api
+            # logger.info("using bs4API")
+            # youtube.Entry.api = youtube_bs4api.bs4API(proxy, headers)
 
 
 class YouTubeLibraryProvider(backend.LibraryProvider):

@@ -380,6 +380,16 @@ class Client:
         cls.session.proxies = {"http": proxy, "https": proxy}
         cls.session.headers = headers
 
+    @classmethod
+    def format_duration(cls, match):
+        duration = ""
+        if match.group("durationHours") is not None:
+            duration += match.group("durationHours") + "H"
+        if match.group("durationMinutes") is not None:
+            duration += match.group("durationMinutes") + "M"
+        if match.group("durationSeconds") is not None:
+            duration += match.group("durationSeconds") + "S"
+        return duration
 
 # simple 'dynamic' thread pool. Threads are created when new jobs arrive, stay
 # active for as long as there are active jobs, and get destroyed afterwards
