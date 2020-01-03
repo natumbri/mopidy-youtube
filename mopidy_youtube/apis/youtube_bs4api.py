@@ -28,31 +28,32 @@ class bs4API(scrAPI):
 
         if result.status_code == 200:
             soup = BeautifulSoup(result.text, "html.parser")
-            videos = soup.find_all("div", {"class": "yt-lockup-video"})
-            for video in videos:
-                duration_text = video.find(class_="video-time").text
+            results = soup.find_all("div", class_=["yt-lockup-video", "yt-lockup-playlist"])
+            for result in results:
+              if result.select({"class":"yt-lockup-video"}):
+                duration_text = result.find(class_="video-time").text
                 duration = cls.format_duration(
                     re.match(cls.time_regex, duration_text)
                 )
                 item = {
                     "id": {
                         "kind": "youtube#video",
-                        "videoId": video["data-context-item-id"],
+                        "videoId": result["data-context-item-id"],
                     },
                     "contentDetails": {"duration": "PT" + duration},
                     "snippet": {
-                        "title": video.find(class_="yt-lockup-title").next.text,
+                        "title": result.find(class_="yt-lockup-title").next.text,
                         # TODO: full support for thumbnails
                         "thumbnails": {
                             "default": {
                                 "url": "https://i.ytimg.com/vi/"
-                                + video["data-context-item-id"]
+                                + result["data-context-item-id"]
                                 + "/default.jpg",
                                 "width": 120,
                                 "height": 90,
                             },
                         },
-                        "channelTitle": video.find(
+                        "channelTitle": result.find(
                             class_="yt-lockup-byline"
                         ).text,
                         # 'uploadDate': video.find(class_ = "yt-lockup-meta-info").find_all("li")[0].text,
@@ -68,22 +69,21 @@ class bs4API(scrAPI):
 
                 items.append(item)
 
-            playlists = soup.find_all("div", {"class": "yt-lockup-playlist"})
-            for playlist in playlists:
+              if result.select({"class":"yt-lockup-playlist"}):
                 item = {
                     "id": {
                         "kind": "youtube#playlist",
-                        "playlistId": playlist.find(class_="yt-lockup-title")
+                        "playlistId": result.find(class_="yt-lockup-title")
                         .next["href"]
                         .partition("list=")[2],
                     },
                     "contentDetails": {
-                        "itemCount": playlist.find(
+                        "itemCount": result.find(
                             class_="formatted-video-count-label"
                         ).text.split(" ")[0]
                     },
                     "snippet": {
-                        "title": playlist.find(
+                        "title": result.find(
                             class_="yt-lockup-title"
                         ).next.text,
                         # TODO: full support for thumbnails
@@ -91,7 +91,7 @@ class bs4API(scrAPI):
                             "default": {
                                 "url": (
                                     "https://i.ytimg.com/vi/"
-                                    + playlist.find(
+                                    + result.find(
                                         class_="yt-lockup-thumbnail"
                                     )
                                     .find("a")["href"]
@@ -103,7 +103,7 @@ class bs4API(scrAPI):
                                 "height": 90,
                             },
                         },
-                        "channelTitle": playlist.find(
+                        "channelTitle": result.find(
                             class_="yt-lockup-byline"
                         ).text,
                         # 'url': 'https://www.youtube.com/playlist?list='+info['id']['playlistId']
