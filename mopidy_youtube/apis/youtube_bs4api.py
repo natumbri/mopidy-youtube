@@ -4,8 +4,6 @@ import re
 from bs4 import BeautifulSoup
 from mopidy_youtube import logger
 
-# from mopidy_youtube.youtube import Client, Video
-# from youtube import Client, Video
 from mopidy_youtube.apis.youtube_scrapi import scrAPI
 
 
@@ -28,91 +26,94 @@ class bs4API(scrAPI):
 
         if result.status_code == 200:
             soup = BeautifulSoup(result.text, "html.parser")
-            results = soup.find_all("div", class_=["yt-lockup-video", "yt-lockup-playlist"])
+            results = soup.find_all(
+                "div", class_=["yt-lockup-video", "yt-lockup-playlist"]
+            )
             for result in results:
-              if result.select({"class":"yt-lockup-video"}):
-                duration_text = result.find(class_="video-time").text
-                duration = cls.format_duration(
-                    re.match(cls.time_regex, duration_text)
-                )
-                item = {
-                    "id": {
-                        "kind": "youtube#video",
-                        "videoId": result["data-context-item-id"],
-                    },
-                    "contentDetails": {"duration": "PT" + duration},
-                    "snippet": {
-                        "title": result.find(class_="yt-lockup-title").next.text,
-                        # TODO: full support for thumbnails
-                        "thumbnails": {
-                            "default": {
-                                "url": "https://i.ytimg.com/vi/"
-                                + result["data-context-item-id"]
-                                + "/default.jpg",
-                                "width": 120,
-                                "height": 90,
-                            },
+                if result.select({"class": "yt-lockup-video"}):
+                    duration_text = result.find(class_="video-time").text
+                    duration = cls.format_duration(
+                        re.match(cls.time_regex, duration_text)
+                    )
+                    item = {
+                        "id": {
+                            "kind": "youtube#video",
+                            "videoId": result["data-context-item-id"],
                         },
-                        "channelTitle": result.find(
-                            class_="yt-lockup-byline"
-                        ).text,
-                        # 'uploadDate': video.find(class_ = "yt-lockup-meta-info").find_all("li")[0].text,
-                        # 'views': video.find(class_ = "yt-lockup-meta-info").find_all("li")[1].text,
-                        # 'url': 'https://www.youtube.com'+video.find(class_ = "yt-lockup-title").next['href']
-                    },
-                }
-
-                # if video.find(class_ = "yt-lockup-description") is not None:
-                #   item['snippet']['description'] = video.find(class_ = "yt-lockup-description").text or "NA"
-                # else:
-                #   item['snippet']['description'] = "NA"
-
-                items.append(item)
-
-              if result.select({"class":"yt-lockup-playlist"}):
-                item = {
-                    "id": {
-                        "kind": "youtube#playlist",
-                        "playlistId": result.find(class_="yt-lockup-title")
-                        .next["href"]
-                        .partition("list=")[2],
-                    },
-                    "contentDetails": {
-                        "itemCount": result.find(
-                            class_="formatted-video-count-label"
-                        ).text.split(" ")[0]
-                    },
-                    "snippet": {
-                        "title": result.find(
-                            class_="yt-lockup-title"
-                        ).next.text,
-                        # TODO: full support for thumbnails
-                        "thumbnails": {
-                            "default": {
-                                "url": (
-                                    "https://i.ytimg.com/vi/"
-                                    + result.find(
-                                        class_="yt-lockup-thumbnail"
-                                    )
-                                    .find("a")["href"]
-                                    .partition("v=")[2]
-                                    .partition("&")[0]
-                                    + "/default.jpg"
-                                ),
-                                "width": 120,
-                                "height": 90,
+                        "contentDetails": {"duration": "PT" + duration},
+                        "snippet": {
+                            "title": result.find(
+                                class_="yt-lockup-title"
+                            ).next.text,
+                            # TODO: full support for thumbnails
+                            "thumbnails": {
+                                "default": {
+                                    "url": "https://i.ytimg.com/vi/"
+                                    + result["data-context-item-id"]
+                                    + "/default.jpg",
+                                    "width": 120,
+                                    "height": 90,
+                                },
                             },
+                            "channelTitle": result.find(
+                                class_="yt-lockup-byline"
+                            ).text,
+                            # 'uploadDate': result.find(class_ = "yt-lockup-meta-info").find_all("li")[0].text,
+                            # 'views': result.find(class_ = "yt-lockup-meta-info").find_all("li")[1].text,
+                            # 'url': 'https://www.youtube.com'+result.find(class_ = "yt-lockup-title").next['href']
                         },
-                        "channelTitle": result.find(
-                            class_="yt-lockup-byline"
-                        ).text,
-                        # 'url': 'https://www.youtube.com/playlist?list='+info['id']['playlistId']
-                    },
-                }
-                # don't append radiolist playlists
-                if str(item["id"]["playlistId"]).startswith("PL"):
+                    }
+
+                    # if result.find(class_ = "yt-lockup-description") is not None:
+                    #   item['snippet']['description'] = result.find(class_ = "yt-lockup-description").text or "NA"
+                    # else:
+                    #   item['snippet']['description'] = "NA"
+
                     items.append(item)
 
+                if result.select({"class": "yt-lockup-playlist"}):
+                    item = {
+                        "id": {
+                            "kind": "youtube#playlist",
+                            "playlistId": result.find(class_="yt-lockup-title")
+                            .next["href"]
+                            .partition("list=")[2],
+                        },
+                        "contentDetails": {
+                            "itemCount": result.find(
+                                class_="formatted-video-count-label"
+                            ).text.split(" ")[0]
+                        },
+                        "snippet": {
+                            "title": result.find(
+                                class_="yt-lockup-title"
+                            ).next.text,
+                            # TODO: full support for thumbnails
+                            "thumbnails": {
+                                "default": {
+                                    "url": (
+                                        "https://i.ytimg.com/vi/"
+                                        + result.find(
+                                            class_="yt-lockup-thumbnail"
+                                        )
+                                        .find("a")["href"]
+                                        .partition("v=")[2]
+                                        .partition("&")[0]
+                                        + "/default.jpg"
+                                    ),
+                                    "width": 120,
+                                    "height": 90,
+                                },
+                            },
+                            "channelTitle": result.find(
+                                class_="yt-lockup-byline"
+                            ).text,
+                            # 'url': 'https://www.youtube.com/playlist?list='+info['id']['playlistId']
+                        },
+                    }
+                    # don't append radiolist playlists
+                    if str(item["id"]["playlistId"]).startswith("PL"):
+                        items.append(item)
         return items
 
     # list playlist items
