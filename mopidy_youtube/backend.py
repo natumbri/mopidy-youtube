@@ -1,12 +1,10 @@
 # -*- coding: utf-8 -*-
 
-from __future__ import unicode_literals
-
 import re
 import string
 import unicodedata
 from multiprocessing.pool import ThreadPool
-from urlparse import parse_qs, urlparse
+from urllib.parse import parse_qs, urlparse
 
 from mopidy import backend
 from mopidy.models import Album, SearchResult, Track
@@ -37,15 +35,8 @@ def resolve_track(track, stream=False):
 
 def safe_url(uri):
     valid_chars = "-_.() %s%s" % (string.ascii_letters, string.digits)
-    safe_uri = unicodedata.normalize(
-        'NFKD',
-        unicode(uri)
-    ).encode('ASCII', 'ignore')
-    return re.sub(
-        '\s+',
-        ' ',
-        ''.join(c for c in safe_uri if c in valid_chars)
-    ).strip()
+    safe_uri = unicodedata.normalize('NFKD', uri)
+    return re.sub(r'\s+', ' ', ''.join(c for c in safe_uri if c in valid_chars))
 
 
 def resolve_url(url, stream=False):
@@ -62,29 +53,26 @@ def resolve_url(url, stream=False):
                 video.title, uri.bitrate, uri.mediatype, uri.extension))
             uri = uri.url
         if not uri:
+            logger.info('No uri found returning')
             return
     except Exception as e:
         # Video is private or doesn't exist
-        logger.info(e.message)
+        logger.info(str(e))
         return
 
-    images = []
-    if video.bigthumb is not None:
-        images.append(video.bigthumb)
-    if video.bigthumbhd is not None:
-        images.append(video.bigthumbhd)
-
-    track = Track(
-        name=video.title,
-        comment=video.videoid,
-        length=video.length * 1000,
-        album=Album(
-            name='YouTube',
-            images=images
-        ),
-        uri=uri
-    )
-    return track
+    try:
+        track = Track(
+            name=video.title,
+            comment=video.videoid,
+            length=video.length * 1000,
+            album=Album(
+                name='YouTube',
+            ),
+            uri=uri
+        )
+        return track
+    except Exception as e:
+        logger.info(e)
 
 
 def search_youtube(q):
@@ -103,6 +91,7 @@ def search_youtube(q):
 
     playlist = resolve_pool.map(resolve_url, playlist)
     resolve_pool.close()
+    logger.info(str(playlist))
     return [item for item in playlist if item]
 
 
@@ -185,7 +174,7 @@ class YouTubeLibraryProvider(backend.LibraryProvider):
                         tracks=[t for t in [resolve_url(search_query)] if t]
                     )
         else:
-            search_query = ' '.join(query.values()[0])
+            search_query = ' '.join(list(query.values())[0])
             logger.info("Searching YouTube for query '%s'", search_query)
             return SearchResult(
                 uri=search_uri,

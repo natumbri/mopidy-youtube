@@ -2,511 +2,379 @@ interactions:
 - request:
     body: null
     headers:
-      Accept: ['*/*']
-      Accept-Encoding: ['gzip, deflate']
-      Connection: [keep-alive]
-      User-Agent: [python-requests/2.9.1]
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - python-requests/2.22.0
     method: GET
-    uri: https://www.googleapis.com/youtube/v3/playlistItems?playlistId=PLOxORm4jpOQfMU7bpfGCzDyLropIYEHuR&maxResults=50&part=contentDetails&key=AIzaSyAl1Xq9DwdE_KD4AtPaE4EJl3WZe2zCqg4
+    uri: https://www.googleapis.com/youtube/v3/playlistItems?playlistId=PLOxORm4jpOQfMU7bpfGCzDyLropIYEHuR&maxResults=50&key=AIzaSyAl1Xq9DwdE_KD4AtPaE4EJl3WZe2zCqg4&part=contentDetails
   response:
-    body: {string: !!python/unicode "{\n \"kind\": \"youtube#playlistItemListResponse\",\n
-        \"etag\": \"\\\"gMxXHe-zinKdE9lTnzKu8vjcmDI/X9r4CBnH3yNRsD5_e37k76wQ7iI\\\"\",\n
-        \"nextPageToken\": \"CDIQAA\",\n \"pageInfo\": {\n  \"totalResults\": 110,\n
-        \ \"resultsPerPage\": 50\n },\n \"items\": [\n  {\n   \"kind\": \"youtube#playlistItem\",\n
-        \  \"etag\": \"\\\"gMxXHe-zinKdE9lTnzKu8vjcmDI/ALBdWNVyEkercrAqnhtDpNMixWM\\\"\",\n
-        \  \"id\": \"UExPeE9SbTRqcE9RZk1VN2JwZkdDekR5THJvcElZRUh1Ui42NEZDNTU0RTRENDUzRjMz\",\n
-        \  \"contentDetails\": {\n    \"videoId\": \"4qYqLqdTiSU\",\n    \"videoPublishedAt\":
-        \"2016-06-09T21:50:45.000Z\"\n   }\n  },\n  {\n   \"kind\": \"youtube#playlistItem\",\n
-        \  \"etag\": \"\\\"gMxXHe-zinKdE9lTnzKu8vjcmDI/uKs-17pWxUmxIVzog4fXOlFWJFM\\\"\",\n
-        \  \"id\": \"UExPeE9SbTRqcE9RZk1VN2JwZkdDekR5THJvcElZRUh1Ui5ENEEyOTIwNkY4NzFGMkQ2\",\n
-        \  \"contentDetails\": {\n    \"videoId\": \"gEgOFesYpw0\",\n    \"videoPublishedAt\":
-        \"2013-09-19T07:45:38.000Z\"\n   }\n  },\n  {\n   \"kind\": \"youtube#playlistItem\",\n
-        \  \"etag\": \"\\\"gMxXHe-zinKdE9lTnzKu8vjcmDI/C0coV3rvOKxy8U0LqqW-ZUsZii4\\\"\",\n
-        \  \"id\": \"UExPeE9SbTRqcE9RZk1VN2JwZkdDekR5THJvcElZRUh1Ui43NjE5NDdDRTdENjQ3RTkw\",\n
-        \  \"contentDetails\": {\n    \"videoId\": \"22GintPJWkA\",\n    \"videoPublishedAt\":
-        \"2011-02-10T19:59:14.000Z\"\n   }\n  },\n  {\n   \"kind\": \"youtube#playlistItem\",\n
-        \  \"etag\": \"\\\"gMxXHe-zinKdE9lTnzKu8vjcmDI/2sQxI-V2LWXGApKyZMAqVNRbEsw\\\"\",\n
-        \  \"id\": \"UExPeE9SbTRqcE9RZk1VN2JwZkdDekR5THJvcElZRUh1Ui4wRkVBNUY4OTkzN0JCNTA2\",\n
-        \  \"contentDetails\": {\n    \"videoId\": \"wK6Q2gDGYzc\",\n    \"videoPublishedAt\":
-        \"2010-03-16T21:29:12.000Z\"\n   }\n  },\n  {\n   \"kind\": \"youtube#playlistItem\",\n
-        \  \"etag\": \"\\\"gMxXHe-zinKdE9lTnzKu8vjcmDI/cHUYgyqw3VMsCWZ-vcsi17g8L7w\\\"\",\n
-        \  \"id\": \"UExPeE9SbTRqcE9RZk1VN2JwZkdDekR5THJvcElZRUh1Ui44NjIxNjc5OUQwQkJBODQ5\",\n
-        \  \"contentDetails\": {\n    \"videoId\": \"-M62zG51_UA\",\n    \"videoPublishedAt\":
-        \"2009-03-07T17:31:06.000Z\"\n   }\n  },\n  {\n   \"kind\": \"youtube#playlistItem\",\n
-        \  \"etag\": \"\\\"gMxXHe-zinKdE9lTnzKu8vjcmDI/olFJ1F16-0hcXoo5L0idBXWBY7c\\\"\",\n
-        \  \"id\": \"UExPeE9SbTRqcE9RZk1VN2JwZkdDekR5THJvcElZRUh1Ui43RDg3MzJDMTRFMTZFOTAw\",\n
-        \  \"contentDetails\": {\n    \"videoId\": \"bz_H7TMENx4\",\n    \"videoPublishedAt\":
-        \"2013-03-19T23:32:48.000Z\"\n   }\n  },\n  {\n   \"kind\": \"youtube#playlistItem\",\n
-        \  \"etag\": \"\\\"gMxXHe-zinKdE9lTnzKu8vjcmDI/8w18eZHMsdwDj4h00r5CvQGda9Q\\\"\",\n
-        \  \"id\": \"UExPeE9SbTRqcE9RZk1VN2JwZkdDekR5THJvcElZRUh1Ui5BNzdEQzY0REQzQTEyN0U3\",\n
-        \  \"contentDetails\": {\n    \"videoId\": \"eDMH0fhC3bM\",\n    \"videoPublishedAt\":
-        \"2007-07-09T23:05:59.000Z\"\n   }\n  },\n  {\n   \"kind\": \"youtube#playlistItem\",\n
-        \  \"etag\": \"\\\"gMxXHe-zinKdE9lTnzKu8vjcmDI/DS0iUB51lBVEUmNvroqQkP2ac7g\\\"\",\n
-        \  \"id\": \"UExPeE9SbTRqcE9RZk1VN2JwZkdDekR5THJvcElZRUh1Ui5EODgyNjY4MzA3QzY5RTkx\",\n
-        \  \"contentDetails\": {\n    \"videoId\": \"snCqx6IOzNU\",\n    \"videoPublishedAt\":
-        \"2010-02-16T23:44:31.000Z\"\n   }\n  },\n  {\n   \"kind\": \"youtube#playlistItem\",\n
-        \  \"etag\": \"\\\"gMxXHe-zinKdE9lTnzKu8vjcmDI/NqbDycUI_aa-iVlzH6XZO4eDdLk\\\"\",\n
-        \  \"id\": \"UExPeE9SbTRqcE9RZk1VN2JwZkdDekR5THJvcElZRUh1Ui4wN0FBRUVFNEVBMTZBQ0Mx\",\n
-        \  \"contentDetails\": {\n    \"videoId\": \"TGT9LuMzj0g\",\n    \"videoPublishedAt\":
-        \"2014-03-20T04:02:19.000Z\"\n   }\n  },\n  {\n   \"kind\": \"youtube#playlistItem\",\n
-        \  \"etag\": \"\\\"gMxXHe-zinKdE9lTnzKu8vjcmDI/FY7_GT5P1Ps-pS8XOaCD0b6pe6w\\\"\",\n
-        \  \"id\": \"UExPeE9SbTRqcE9RZk1VN2JwZkdDekR5THJvcElZRUh1Ui4zNDIxRUJGQThFRTg1QzAy\",\n
-        \  \"contentDetails\": {\n    \"videoId\": \"iFp2c_6To7o\",\n    \"videoPublishedAt\":
-        \"2012-01-19T03:26:42.000Z\"\n   }\n  },\n  {\n   \"kind\": \"youtube#playlistItem\",\n
-        \  \"etag\": \"\\\"gMxXHe-zinKdE9lTnzKu8vjcmDI/CPqVxLQQCFaEXdL1q3dP6552bVA\\\"\",\n
-        \  \"id\": \"UExPeE9SbTRqcE9RZk1VN2JwZkdDekR5THJvcElZRUh1Ui4yOTZGRTNEQ0ZGNUM5RDgw\",\n
-        \  \"contentDetails\": {\n    \"videoId\": \"vCHdH3LiUS4\",\n    \"videoPublishedAt\":
-        \"2009-03-10T23:49:25.000Z\"\n   }\n  },\n  {\n   \"kind\": \"youtube#playlistItem\",\n
-        \  \"etag\": \"\\\"gMxXHe-zinKdE9lTnzKu8vjcmDI/7XAsOttwpEKlJ699fqeSWQViuoU\\\"\",\n
-        \  \"id\": \"UExPeE9SbTRqcE9RZk1VN2JwZkdDekR5THJvcElZRUh1Ui5CQzUwREI3MzkxQjdBM0E0\",\n
-        \  \"contentDetails\": {\n    \"videoId\": \"CIJfdVPACyw\",\n    \"videoPublishedAt\":
-        \"2009-08-26T18:10:59.000Z\"\n   }\n  },\n  {\n   \"kind\": \"youtube#playlistItem\",\n
-        \  \"etag\": \"\\\"gMxXHe-zinKdE9lTnzKu8vjcmDI/GBkV4x1ClstqQANRfnKMMgs_s2k\\\"\",\n
-        \  \"id\": \"UExPeE9SbTRqcE9RZk1VN2JwZkdDekR5THJvcElZRUh1Ui43ODA2MDVCQzY5QzZDMjUw\",\n
-        \  \"contentDetails\": {\n    \"videoId\": \"9QAB7OCuFfY\",\n    \"videoPublishedAt\":
-        \"2010-08-04T12:46:15.000Z\"\n   }\n  },\n  {\n   \"kind\": \"youtube#playlistItem\",\n
-        \  \"etag\": \"\\\"gMxXHe-zinKdE9lTnzKu8vjcmDI/A-gCNA1mqcFJ3bcGcgwh2uhHBLY\\\"\",\n
-        \  \"id\": \"UExPeE9SbTRqcE9RZk1VN2JwZkdDekR5THJvcElZRUh1Ui5GNzk2RTlDQTNCQzJCQzJG\",\n
-        \  \"contentDetails\": {\n    \"videoId\": \"0z5r17WNvbY\",\n    \"videoPublishedAt\":
-        \"2013-10-01T23:20:01.000Z\"\n   }\n  },\n  {\n   \"kind\": \"youtube#playlistItem\",\n
-        \  \"etag\": \"\\\"gMxXHe-zinKdE9lTnzKu8vjcmDI/g-KhU9_YHgCNA__KIC2eqKOdICo\\\"\",\n
-        \  \"id\": \"UExPeE9SbTRqcE9RZk1VN2JwZkdDekR5THJvcElZRUh1Ui44QjNCNkRENjNFQTBEMUND\",\n
-        \  \"contentDetails\": {\n    \"videoId\": \"RqpDKTm5hZo\",\n    \"videoPublishedAt\":
-        \"2009-10-13T20:36:01.000Z\"\n   }\n  },\n  {\n   \"kind\": \"youtube#playlistItem\",\n
-        \  \"etag\": \"\\\"gMxXHe-zinKdE9lTnzKu8vjcmDI/nXoZJFKVR9tLIYp42nC_w-PQvHs\\\"\",\n
-        \  \"id\": \"UExPeE9SbTRqcE9RZk1VN2JwZkdDekR5THJvcElZRUh1Ui5EMUJFNzRCNDRFQjE5RjM4\",\n
-        \  \"contentDetails\": {\n    \"videoId\": \"gOx47fiLg9k\"\n   }\n  },\n  {\n
-        \  \"kind\": \"youtube#playlistItem\",\n   \"etag\": \"\\\"gMxXHe-zinKdE9lTnzKu8vjcmDI/9QPEQ_au0aQrY_fWgEP0BLLMsdE\\\"\",\n
-        \  \"id\": \"UExPeE9SbTRqcE9RZk1VN2JwZkdDekR5THJvcElZRUh1Ui5CNEYyNTVBNDdGMDI1MDNC\",\n
-        \  \"contentDetails\": {\n    \"videoId\": \"gIRW9iqD0-M\",\n    \"videoPublishedAt\":
-        \"2012-05-07T00:41:19.000Z\"\n   }\n  },\n  {\n   \"kind\": \"youtube#playlistItem\",\n
-        \  \"etag\": \"\\\"gMxXHe-zinKdE9lTnzKu8vjcmDI/HYuvAKvtJlJPWeFp6JhciGcvhIY\\\"\",\n
-        \  \"id\": \"UExPeE9SbTRqcE9RZk1VN2JwZkdDekR5THJvcElZRUh1Ui41ODIyMTgwQzA4NjJCQkZC\",\n
-        \  \"contentDetails\": {\n    \"videoId\": \"qr5i5chOTPo\",\n    \"videoPublishedAt\":
-        \"2009-10-19T17:29:59.000Z\"\n   }\n  },\n  {\n   \"kind\": \"youtube#playlistItem\",\n
-        \  \"etag\": \"\\\"gMxXHe-zinKdE9lTnzKu8vjcmDI/bgon0slmcaOLT_eeH0rBmdn26rU\\\"\",\n
-        \  \"id\": \"UExPeE9SbTRqcE9RZk1VN2JwZkdDekR5THJvcElZRUh1Ui5FRjdGNDMzN0I2RTI3MDlG\",\n
-        \  \"contentDetails\": {\n    \"videoId\": \"gNSTDaITU_c\",\n    \"videoPublishedAt\":
-        \"2010-05-18T17:40:53.000Z\"\n   }\n  },\n  {\n   \"kind\": \"youtube#playlistItem\",\n
-        \  \"etag\": \"\\\"gMxXHe-zinKdE9lTnzKu8vjcmDI/WKZNrxao4QcDEAWFh62jVoql1ZQ\\\"\",\n
-        \  \"id\": \"UExPeE9SbTRqcE9RZk1VN2JwZkdDekR5THJvcElZRUh1Ui41RDUzRjJFQ0Y0MUI3NzU1\",\n
-        \  \"contentDetails\": {\n    \"videoId\": \"NiH5YtKBYCM\",\n    \"videoPublishedAt\":
-        \"2012-06-07T00:53:36.000Z\"\n   }\n  },\n  {\n   \"kind\": \"youtube#playlistItem\",\n
-        \  \"etag\": \"\\\"gMxXHe-zinKdE9lTnzKu8vjcmDI/VnyCqokpnTDYe3yr0bwI5JD_5Xs\\\"\",\n
-        \  \"id\": \"UExPeE9SbTRqcE9RZk1VN2JwZkdDekR5THJvcElZRUh1Ui5ERENFNTk4Q0Q2MTZDMTA5\",\n
-        \  \"contentDetails\": {\n    \"videoId\": \"ohhSbgl_jhg\",\n    \"videoPublishedAt\":
-        \"2011-11-02T03:33:58.000Z\"\n   }\n  },\n  {\n   \"kind\": \"youtube#playlistItem\",\n
-        \  \"etag\": \"\\\"gMxXHe-zinKdE9lTnzKu8vjcmDI/RY5TMJM57AN2n6hfOPcbpjB0u1Q\\\"\",\n
-        \  \"id\": \"UExPeE9SbTRqcE9RZk1VN2JwZkdDekR5THJvcElZRUh1Ui4yM0EyQ0U1M0I2RkIwNTQ0\",\n
-        \  \"contentDetails\": {\n    \"videoId\": \"mmaQjvVfV2w\",\n    \"videoPublishedAt\":
-        \"2012-08-27T15:52:10.000Z\"\n   }\n  },\n  {\n   \"kind\": \"youtube#playlistItem\",\n
-        \  \"etag\": \"\\\"gMxXHe-zinKdE9lTnzKu8vjcmDI/fQa0nYY0e6_fZs0b97-4c4i4p9g\\\"\",\n
-        \  \"id\": \"UExPeE9SbTRqcE9RZk1VN2JwZkdDekR5THJvcElZRUh1Ui5DQjg2RDQyMEVGQkZFOEVF\",\n
-        \  \"contentDetails\": {\n    \"videoId\": \"iR1MmlRCooY\",\n    \"videoPublishedAt\":
-        \"2009-10-19T19:27:04.000Z\"\n   }\n  },\n  {\n   \"kind\": \"youtube#playlistItem\",\n
-        \  \"etag\": \"\\\"gMxXHe-zinKdE9lTnzKu8vjcmDI/b60sUUIJCX54KH83ixvgJzEkaJ8\\\"\",\n
-        \  \"id\": \"UExPeE9SbTRqcE9RZk1VN2JwZkdDekR5THJvcElZRUh1Ui4wQUE0QzM4MkJGQ0YwQjUx\",\n
-        \  \"contentDetails\": {\n    \"videoId\": \"nvW5RDJA8i4\",\n    \"videoPublishedAt\":
-        \"2012-04-19T10:56:42.000Z\"\n   }\n  },\n  {\n   \"kind\": \"youtube#playlistItem\",\n
-        \  \"etag\": \"\\\"gMxXHe-zinKdE9lTnzKu8vjcmDI/OnhvBLgd6z-EzBH1hyREIeE4R1U\\\"\",\n
-        \  \"id\": \"UExPeE9SbTRqcE9RZk1VN2JwZkdDekR5THJvcElZRUh1Ui5GMDBDNkJGMzYzREUyMTYw\",\n
-        \  \"contentDetails\": {\n    \"videoId\": \"LLsg_Lk819s\",\n    \"videoPublishedAt\":
-        \"2009-09-08T18:47:54.000Z\"\n   }\n  },\n  {\n   \"kind\": \"youtube#playlistItem\",\n
-        \  \"etag\": \"\\\"gMxXHe-zinKdE9lTnzKu8vjcmDI/mLCLQCNyGd2_xG-vBR6icEaQv2Y\\\"\",\n
-        \  \"id\": \"UExPeE9SbTRqcE9RZk1VN2JwZkdDekR5THJvcElZRUh1Ui5CMUM0NzY5NzdEQzlGRjAx\",\n
-        \  \"contentDetails\": {\n    \"videoId\": \"jry45RskN4A\",\n    \"videoPublishedAt\":
-        \"2007-11-15T16:24:32.000Z\"\n   }\n  },\n  {\n   \"kind\": \"youtube#playlistItem\",\n
-        \  \"etag\": \"\\\"gMxXHe-zinKdE9lTnzKu8vjcmDI/n64xyrLGi-3nplge3Vtt4uWt6LQ\\\"\",\n
-        \  \"id\": \"UExPeE9SbTRqcE9RZk1VN2JwZkdDekR5THJvcElZRUh1Ui40NzE2MTY1QTM3RUI3QkU3\",\n
-        \  \"contentDetails\": {\n    \"videoId\": \"RQ_1XExoXws\"\n   }\n  },\n  {\n
-        \  \"kind\": \"youtube#playlistItem\",\n   \"etag\": \"\\\"gMxXHe-zinKdE9lTnzKu8vjcmDI/dfaSkWrq8557Zup8EVKNzwDlT9A\\\"\",\n
-        \  \"id\": \"UExPeE9SbTRqcE9RZk1VN2JwZkdDekR5THJvcElZRUh1Ui44MkM2RjVEQkQ5N0I2MjVE\",\n
-        \  \"contentDetails\": {\n    \"videoId\": \"yvOMqR2yCKI\",\n    \"videoPublishedAt\":
-        \"2012-11-06T08:32:55.000Z\"\n   }\n  },\n  {\n   \"kind\": \"youtube#playlistItem\",\n
-        \  \"etag\": \"\\\"gMxXHe-zinKdE9lTnzKu8vjcmDI/uL7CChBUviJ1Hy8PJ48UnpRRfTk\\\"\",\n
-        \  \"id\": \"UExPeE9SbTRqcE9RZk1VN2JwZkdDekR5THJvcElZRUh1Ui44QTA1QTQyRTc3M0VGQzYx\",\n
-        \  \"contentDetails\": {\n    \"videoId\": \"ctVatg4N6jg\",\n    \"videoPublishedAt\":
-        \"2012-08-29T00:16:38.000Z\"\n   }\n  },\n  {\n   \"kind\": \"youtube#playlistItem\",\n
-        \  \"etag\": \"\\\"gMxXHe-zinKdE9lTnzKu8vjcmDI/Bev4Oom2QnG0nMlDKhV3cYiMoFI\\\"\",\n
-        \  \"id\": \"UExPeE9SbTRqcE9RZk1VN2JwZkdDekR5THJvcElZRUh1Ui4wMDFGNzBEOTU4Q0Y1Q0RG\",\n
-        \  \"contentDetails\": {\n    \"videoId\": \"hEMI7w4xeXo\",\n    \"videoPublishedAt\":
-        \"2006-09-27T18:00:29.000Z\"\n   }\n  },\n  {\n   \"kind\": \"youtube#playlistItem\",\n
-        \  \"etag\": \"\\\"gMxXHe-zinKdE9lTnzKu8vjcmDI/IkxMuCRFVKJVJC3iivgFL6hy0-I\\\"\",\n
-        \  \"id\": \"UExPeE9SbTRqcE9RZk1VN2JwZkdDekR5THJvcElZRUh1Ui4xNTZBNUQxMDZBQzFGMjkw\",\n
-        \  \"contentDetails\": {\n    \"videoId\": \"WArlszvt4u4\",\n    \"videoPublishedAt\":
-        \"2009-08-27T13:00:33.000Z\"\n   }\n  },\n  {\n   \"kind\": \"youtube#playlistItem\",\n
-        \  \"etag\": \"\\\"gMxXHe-zinKdE9lTnzKu8vjcmDI/T7zAvV-pq04WR4MdlHPEx_uTcrY\\\"\",\n
-        \  \"id\": \"UExPeE9SbTRqcE9RZk1VN2JwZkdDekR5THJvcElZRUh1Ui4zQTkzRjgxRTY0OEU0MkM3\",\n
-        \  \"contentDetails\": {\n    \"videoId\": \"r8MhNe6umOk\",\n    \"videoPublishedAt\":
-        \"2011-01-21T19:59:51.000Z\"\n   }\n  },\n  {\n   \"kind\": \"youtube#playlistItem\",\n
-        \  \"etag\": \"\\\"gMxXHe-zinKdE9lTnzKu8vjcmDI/89Acq4huSR5AsBuN3vd03rN9EgU\\\"\",\n
-        \  \"id\": \"UExPeE9SbTRqcE9RZk1VN2JwZkdDekR5THJvcElZRUh1Ui44QTY2MEEzNzBFQUJCMUQ2\",\n
-        \  \"contentDetails\": {\n    \"videoId\": \"77RYfTXGuUs\"\n   }\n  },\n  {\n
-        \  \"kind\": \"youtube#playlistItem\",\n   \"etag\": \"\\\"gMxXHe-zinKdE9lTnzKu8vjcmDI/PppGqMA6hd2MORAC0G9VKoFpaEY\\\"\",\n
-        \  \"id\": \"UExPeE9SbTRqcE9RZk1VN2JwZkdDekR5THJvcElZRUh1Ui4xNjIyNEE0MDEyRDlCMjBE\",\n
-        \  \"contentDetails\": {\n    \"videoId\": \"t09DIJdjmOA\"\n   }\n  },\n  {\n
-        \  \"kind\": \"youtube#playlistItem\",\n   \"etag\": \"\\\"gMxXHe-zinKdE9lTnzKu8vjcmDI/5IQ9qtYltMCBKC28blqaMZZOk0M\\\"\",\n
-        \  \"id\": \"UExPeE9SbTRqcE9RZk1VN2JwZkdDekR5THJvcElZRUh1Ui5CMEVBRUJERkUyNTBENTkz\",\n
-        \  \"contentDetails\": {\n    \"videoId\": \"nxXx7QfnxIQ\",\n    \"videoPublishedAt\":
-        \"2009-06-25T17:42:49.000Z\"\n   }\n  },\n  {\n   \"kind\": \"youtube#playlistItem\",\n
-        \  \"etag\": \"\\\"gMxXHe-zinKdE9lTnzKu8vjcmDI/dTx61-dVCL9jHH7cbioxaPRs4ZU\\\"\",\n
-        \  \"id\": \"UExPeE9SbTRqcE9RZk1VN2JwZkdDekR5THJvcElZRUh1Ui5FQUY2Qzk4RUFDN0ZFRkZF\",\n
-        \  \"contentDetails\": {\n    \"videoId\": \"XtBXNRqzTbI\",\n    \"videoPublishedAt\":
-        \"2008-07-03T03:53:46.000Z\"\n   }\n  },\n  {\n   \"kind\": \"youtube#playlistItem\",\n
-        \  \"etag\": \"\\\"gMxXHe-zinKdE9lTnzKu8vjcmDI/NSG3zenYldB2zRnnGubq3KuIJmc\\\"\",\n
-        \  \"id\": \"UExPeE9SbTRqcE9RZk1VN2JwZkdDekR5THJvcElZRUh1Ui4xN0Y2QjVBOEI2MzQ5OUM5\",\n
-        \  \"contentDetails\": {\n    \"videoId\": \"krC1w3ww7AE\",\n    \"videoPublishedAt\":
-        \"2009-07-21T06:12:23.000Z\"\n   }\n  },\n  {\n   \"kind\": \"youtube#playlistItem\",\n
-        \  \"etag\": \"\\\"gMxXHe-zinKdE9lTnzKu8vjcmDI/f8vkyhtKJx0mnsv24JwW_WcfSZQ\\\"\",\n
-        \  \"id\": \"UExPeE9SbTRqcE9RZk1VN2JwZkdDekR5THJvcElZRUh1Ui45NDlDQUFFOThDMTAxQjUw\",\n
-        \  \"contentDetails\": {\n    \"videoId\": \"XixGgMfaJck\",\n    \"videoPublishedAt\":
-        \"2010-06-17T18:15:45.000Z\"\n   }\n  },\n  {\n   \"kind\": \"youtube#playlistItem\",\n
-        \  \"etag\": \"\\\"gMxXHe-zinKdE9lTnzKu8vjcmDI/c2Lfg639sR9Zk1oc-Wcu0bCG0UY\\\"\",\n
-        \  \"id\": \"UExPeE9SbTRqcE9RZk1VN2JwZkdDekR5THJvcElZRUh1Ui4yQzk4QTA5QjkzMTFFOEI1\",\n
-        \  \"contentDetails\": {\n    \"videoId\": \"txGu-XVyVoI\",\n    \"videoPublishedAt\":
-        \"2012-10-02T17:23:26.000Z\"\n   }\n  },\n  {\n   \"kind\": \"youtube#playlistItem\",\n
-        \  \"etag\": \"\\\"gMxXHe-zinKdE9lTnzKu8vjcmDI/a0Cg1zU989lJ5tE4kzZXgl2EndM\\\"\",\n
-        \  \"id\": \"UExPeE9SbTRqcE9RZk1VN2JwZkdDekR5THJvcElZRUh1Ui5EQkE3RTJCQTJEQkFBQTcz\",\n
-        \  \"contentDetails\": {\n    \"videoId\": \"bzUZlBlpY5c\",\n    \"videoPublishedAt\":
-        \"2012-10-09T15:34:48.000Z\"\n   }\n  },\n  {\n   \"kind\": \"youtube#playlistItem\",\n
-        \  \"etag\": \"\\\"gMxXHe-zinKdE9lTnzKu8vjcmDI/DKoKwbqCTsZzNUXOO40ZjobDO1k\\\"\",\n
-        \  \"id\": \"UExPeE9SbTRqcE9RZk1VN2JwZkdDekR5THJvcElZRUh1Ui43QzNCNkZENzIyMDY2MjZB\",\n
-        \  \"contentDetails\": {\n    \"videoId\": \"CLU56IiKczg\",\n    \"videoPublishedAt\":
-        \"2012-10-09T16:37:09.000Z\"\n   }\n  },\n  {\n   \"kind\": \"youtube#playlistItem\",\n
-        \  \"etag\": \"\\\"gMxXHe-zinKdE9lTnzKu8vjcmDI/vJGSSKqx-pzQTR572dz61fGhTHI\\\"\",\n
-        \  \"id\": \"UExPeE9SbTRqcE9RZk1VN2JwZkdDekR5THJvcElZRUh1Ui42RTNCOEMxREI3Q0VDMjU2\",\n
-        \  \"contentDetails\": {\n    \"videoId\": \"bPNVnX-f_BM\",\n    \"videoPublishedAt\":
-        \"2012-10-09T17:38:17.000Z\"\n   }\n  },\n  {\n   \"kind\": \"youtube#playlistItem\",\n
-        \  \"etag\": \"\\\"gMxXHe-zinKdE9lTnzKu8vjcmDI/EooexwvurCR0Rig40M4xaBbQzWk\\\"\",\n
-        \  \"id\": \"UExPeE9SbTRqcE9RZk1VN2JwZkdDekR5THJvcElZRUh1Ui40MDNEMzA0QTBFRThFMzBE\",\n
-        \  \"contentDetails\": {\n    \"videoId\": \"vQfDOlOXLvc\",\n    \"videoPublishedAt\":
-        \"2014-01-17T14:28:10.000Z\"\n   }\n  },\n  {\n   \"kind\": \"youtube#playlistItem\",\n
-        \  \"etag\": \"\\\"gMxXHe-zinKdE9lTnzKu8vjcmDI/J--63wux_uwFuaAnTj_U39i_yyE\\\"\",\n
-        \  \"id\": \"UExPeE9SbTRqcE9RZk1VN2JwZkdDekR5THJvcElZRUh1Ui42MjYzMTMyQjA0QURCN0JF\",\n
-        \  \"contentDetails\": {\n    \"videoId\": \"uSsSwPHeIhw\",\n    \"videoPublishedAt\":
-        \"2010-06-15T07:42:55.000Z\"\n   }\n  },\n  {\n   \"kind\": \"youtube#playlistItem\",\n
-        \  \"etag\": \"\\\"gMxXHe-zinKdE9lTnzKu8vjcmDI/luwUGvTlN_Q3myt69ICw6neypmQ\\\"\",\n
-        \  \"id\": \"UExPeE9SbTRqcE9RZk1VN2JwZkdDekR5THJvcElZRUh1Ui4xM0YyM0RDNDE4REQ1NDA0\",\n
-        \  \"contentDetails\": {\n    \"videoId\": \"2TfBh8D8Idg\",\n    \"videoPublishedAt\":
-        \"2012-02-07T19:11:06.000Z\"\n   }\n  },\n  {\n   \"kind\": \"youtube#playlistItem\",\n
-        \  \"etag\": \"\\\"gMxXHe-zinKdE9lTnzKu8vjcmDI/F1PFqYRCBm3sPiDHR274BztCPyE\\\"\",\n
-        \  \"id\": \"UExPeE9SbTRqcE9RZk1VN2JwZkdDekR5THJvcElZRUh1Ui5ERkUyQTM0MzEwQjZCMTY5\",\n
-        \  \"contentDetails\": {\n    \"videoId\": \"-EJ4aJwf_Fw\",\n    \"videoPublishedAt\":
-        \"2013-04-18T01:11:04.000Z\"\n   }\n  },\n  {\n   \"kind\": \"youtube#playlistItem\",\n
-        \  \"etag\": \"\\\"gMxXHe-zinKdE9lTnzKu8vjcmDI/vycTT09NB30y4pwlXQdgBxuqTOs\\\"\",\n
-        \  \"id\": \"UExPeE9SbTRqcE9RZk1VN2JwZkdDekR5THJvcElZRUh1Ui5CNTcxMDQ0NThBNzMxODYz\",\n
-        \  \"contentDetails\": {\n    \"videoId\": \"Z_MeTaViUas\",\n    \"videoPublishedAt\":
-        \"2013-03-01T23:01:18.000Z\"\n   }\n  },\n  {\n   \"kind\": \"youtube#playlistItem\",\n
-        \  \"etag\": \"\\\"gMxXHe-zinKdE9lTnzKu8vjcmDI/nyQaL8nlhFjJGTUzT8In_j2Mjos\\\"\",\n
-        \  \"id\": \"UExPeE9SbTRqcE9RZk1VN2JwZkdDekR5THJvcElZRUh1Ui4wRjhFM0MxMTU1MEUzQ0VB\",\n
-        \  \"contentDetails\": {\n    \"videoId\": \"l2NohJnGxvg\",\n    \"videoPublishedAt\":
-        \"2010-01-22T08:21:23.000Z\"\n   }\n  },\n  {\n   \"kind\": \"youtube#playlistItem\",\n
-        \  \"etag\": \"\\\"gMxXHe-zinKdE9lTnzKu8vjcmDI/6kIWNSO0qV4ZvqYNQeAj7dcE5zU\\\"\",\n
-        \  \"id\": \"UExPeE9SbTRqcE9RZk1VN2JwZkdDekR5THJvcElZRUh1Ui41OURENDc2NEM1MDI5Mjky\",\n
-        \  \"contentDetails\": {\n    \"videoId\": \"JbScP6NT0OY\",\n    \"videoPublishedAt\":
-        \"2009-04-10T02:21:01.000Z\"\n   }\n  },\n  {\n   \"kind\": \"youtube#playlistItem\",\n
-        \  \"etag\": \"\\\"gMxXHe-zinKdE9lTnzKu8vjcmDI/yMkWRqSGComyzpcDXenK5G7CNV0\\\"\",\n
-        \  \"id\": \"UExPeE9SbTRqcE9RZk1VN2JwZkdDekR5THJvcElZRUh1Ui42QzdBMzlBQzQzRjQ0QkQy\",\n
-        \  \"contentDetails\": {\n    \"videoId\": \"xDkYbRtQLQ4\",\n    \"videoPublishedAt\":
-        \"2010-01-08T17:16:16.000Z\"\n   }\n  }\n ]\n}\n"}
+    body:
+      string: !!binary |
+        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
     headers:
-      alt-svc: ['quic=":443"; ma=2592000; v="35,34"']
-      cache-control: ['private, max-age=0, must-revalidate, no-transform']
-      content-length: ['15420']
-      content-type: [application/json; charset=UTF-8]
-      date: ['Fri, 13 Jan 2017 22:12:21 GMT']
-      etag: ['"gMxXHe-zinKdE9lTnzKu8vjcmDI/X9r4CBnH3yNRsD5_e37k76wQ7iI"']
-      expires: ['Fri, 13 Jan 2017 22:12:21 GMT']
-      server: [GSE]
-      vary: [Origin, X-Origin]
-      x-content-type-options: [nosniff]
-      x-frame-options: [SAMEORIGIN]
-      x-xss-protection: [1; mode=block]
-    status: {code: 200, message: OK}
+      Alt-Svc:
+      - quic=":443"; ma=2592000; v="46,43",h3-Q050=":443"; ma=2592000,h3-Q049=":443";
+        ma=2592000,h3-Q048=":443"; ma=2592000,h3-Q046=":443"; ma=2592000,h3-Q043=":443";
+        ma=2592000
+      Cache-Control:
+      - private, max-age=0, must-revalidate, no-transform
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json; charset=UTF-8
+      Date:
+      - Fri, 03 Jan 2020 20:56:45 GMT
+      ETag:
+      - '"p4VTdlkQv3HQeTEaXgvLePAydmU/2YN6fvPE8UEsjVMF8H2pUbLM3m8"'
+      Expires:
+      - Fri, 03 Jan 2020 20:56:45 GMT
+      Server:
+      - GSE
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Origin
+      - X-Origin
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-XSS-Protection:
+      - 1; mode=block
+    status:
+      code: 200
+      message: OK
 - request:
     body: null
     headers:
-      Accept: ['*/*']
-      Accept-Encoding: ['gzip, deflate']
-      Connection: [keep-alive]
-      User-Agent: [python-requests/2.9.1]
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - python-requests/2.22.0
     method: GET
-    uri: https://www.googleapis.com/youtube/v3/playlistItems?playlistId=PLOxORm4jpOQfMU7bpfGCzDyLropIYEHuR&pageToken=CDIQAA&maxResults=50&part=contentDetails&key=AIzaSyAl1Xq9DwdE_KD4AtPaE4EJl3WZe2zCqg4
+    uri: https://www.googleapis.com/youtube/v3/playlistItems?playlistId=PLOxORm4jpOQfMU7bpfGCzDyLropIYEHuR&maxResults=50&key=AIzaSyAl1Xq9DwdE_KD4AtPaE4EJl3WZe2zCqg4&part=contentDetails&pageToken=CDIQAA
   response:
-    body: {string: !!python/unicode "{\n \"kind\": \"youtube#playlistItemListResponse\",\n
-        \"etag\": \"\\\"gMxXHe-zinKdE9lTnzKu8vjcmDI/XorDRONMImvAciT8E1NJlGf6vWU\\\"\",\n
-        \"nextPageToken\": \"CGQQAA\",\n \"prevPageToken\": \"CDIQAQ\",\n \"pageInfo\":
-        {\n  \"totalResults\": 110,\n  \"resultsPerPage\": 50\n },\n \"items\": [\n
-        \ {\n   \"kind\": \"youtube#playlistItem\",\n   \"etag\": \"\\\"gMxXHe-zinKdE9lTnzKu8vjcmDI/E1SKSd5iBQflu5Pr7jnsYKHk8vY\\\"\",\n
-        \  \"id\": \"UExPeE9SbTRqcE9RZk1VN2JwZkdDekR5THJvcElZRUh1Ui4zMUEyMkQwOTk0NTg4MDgw\",\n
-        \  \"contentDetails\": {\n    \"videoId\": \"3Re5ERoAfig\",\n    \"videoPublishedAt\":
-        \"2010-02-15T17:01:20.000Z\"\n   }\n  },\n  {\n   \"kind\": \"youtube#playlistItem\",\n
-        \  \"etag\": \"\\\"gMxXHe-zinKdE9lTnzKu8vjcmDI/tbvXW5mVy2fdqI_uPoLtjgG4KOU\\\"\",\n
-        \  \"id\": \"UExPeE9SbTRqcE9RZk1VN2JwZkdDekR5THJvcElZRUh1Ui4wMTYxQzVBRDI1NEVDQUZE\",\n
-        \  \"contentDetails\": {\n    \"videoId\": \"HBPu7LiTQHM\",\n    \"videoPublishedAt\":
-        \"2010-08-03T18:24:01.000Z\"\n   }\n  },\n  {\n   \"kind\": \"youtube#playlistItem\",\n
-        \  \"etag\": \"\\\"gMxXHe-zinKdE9lTnzKu8vjcmDI/67fSgKfrVveqEpQibmcIplQ9XNY\\\"\",\n
-        \  \"id\": \"UExPeE9SbTRqcE9RZk1VN2JwZkdDekR5THJvcElZRUh1Ui4wNEU1MTI4NkZEMzVBN0JF\",\n
-        \  \"contentDetails\": {\n    \"videoId\": \"Zc13NAc7dvM\",\n    \"videoPublishedAt\":
-        \"2009-10-03T04:32:38.000Z\"\n   }\n  },\n  {\n   \"kind\": \"youtube#playlistItem\",\n
-        \  \"etag\": \"\\\"gMxXHe-zinKdE9lTnzKu8vjcmDI/XYelQVvpJA3BMhzisdrjUVJ0Ul0\\\"\",\n
-        \  \"id\": \"UExPeE9SbTRqcE9RZk1VN2JwZkdDekR5THJvcElZRUh1Ui5CQkEwRDA0MDkwNUM2MDY1\",\n
-        \  \"contentDetails\": {\n    \"videoId\": \"-dBcYHr075Y\",\n    \"videoPublishedAt\":
-        \"2008-12-18T19:58:27.000Z\"\n   }\n  },\n  {\n   \"kind\": \"youtube#playlistItem\",\n
-        \  \"etag\": \"\\\"gMxXHe-zinKdE9lTnzKu8vjcmDI/5FC57gpV87zkcM8zJXklWzR4WA4\\\"\",\n
-        \  \"id\": \"UExPeE9SbTRqcE9RZk1VN2JwZkdDekR5THJvcElZRUh1Ui5GNjAwN0Y0QTFGOTVDMEMy\",\n
-        \  \"contentDetails\": {\n    \"videoId\": \"p47fEXGabaY\",\n    \"videoPublishedAt\":
-        \"2009-10-03T04:25:54.000Z\"\n   }\n  },\n  {\n   \"kind\": \"youtube#playlistItem\",\n
-        \  \"etag\": \"\\\"gMxXHe-zinKdE9lTnzKu8vjcmDI/i_x8s-CEZPoykRAJGa2K1hX5zGc\\\"\",\n
-        \  \"id\": \"UExPeE9SbTRqcE9RZk1VN2JwZkdDekR5THJvcElZRUh1Ui43NERCMDIzQzFBMERCMEE3\",\n
-        \  \"contentDetails\": {\n    \"videoId\": \"joucE2oAYDY\",\n    \"videoPublishedAt\":
-        \"2013-02-05T20:08:11.000Z\"\n   }\n  },\n  {\n   \"kind\": \"youtube#playlistItem\",\n
-        \  \"etag\": \"\\\"gMxXHe-zinKdE9lTnzKu8vjcmDI/c0jYGB9zQOLr9ZNLBiMDStJ53HA\\\"\",\n
-        \  \"id\": \"UExPeE9SbTRqcE9RZk1VN2JwZkdDekR5THJvcElZRUh1Ui41NTZEOThBNThFOUVGQkVB\",\n
-        \  \"contentDetails\": {\n    \"videoId\": \"YXnjy5YlDwk\",\n    \"videoPublishedAt\":
-        \"2013-09-10T07:00:08.000Z\"\n   }\n  },\n  {\n   \"kind\": \"youtube#playlistItem\",\n
-        \  \"etag\": \"\\\"gMxXHe-zinKdE9lTnzKu8vjcmDI/SMg9YFh3eH8tazDPQ13bp0qWYBA\\\"\",\n
-        \  \"id\": \"UExPeE9SbTRqcE9RZk1VN2JwZkdDekR5THJvcElZRUh1Ui42Qzk5MkEzQjVFQjYwRDA4\",\n
-        \  \"contentDetails\": {\n    \"videoId\": \"U7R3BtSlcOA\",\n    \"videoPublishedAt\":
-        \"2007-09-23T09:51:55.000Z\"\n   }\n  },\n  {\n   \"kind\": \"youtube#playlistItem\",\n
-        \  \"etag\": \"\\\"gMxXHe-zinKdE9lTnzKu8vjcmDI/6qd_ZFwzbZNc3G6-Q7RmAzOOVB4\\\"\",\n
-        \  \"id\": \"UExPeE9SbTRqcE9RZk1VN2JwZkdDekR5THJvcElZRUh1Ui4zMEQ1MEIyRTFGNzhDQzFB\",\n
-        \  \"contentDetails\": {\n    \"videoId\": \"4Nx8URjepjo\",\n    \"videoPublishedAt\":
-        \"2007-10-29T20:56:48.000Z\"\n   }\n  },\n  {\n   \"kind\": \"youtube#playlistItem\",\n
-        \  \"etag\": \"\\\"gMxXHe-zinKdE9lTnzKu8vjcmDI/2tNrXTOK4n0Qduht5vLnfsxE-LI\\\"\",\n
-        \  \"id\": \"UExPeE9SbTRqcE9RZk1VN2JwZkdDekR5THJvcElZRUh1Ui4xMzgwMzBERjQ4NjEzNUE5\",\n
-        \  \"contentDetails\": {\n    \"videoId\": \"bOKutdlQEvY\",\n    \"videoPublishedAt\":
-        \"2008-01-10T21:35:17.000Z\"\n   }\n  },\n  {\n   \"kind\": \"youtube#playlistItem\",\n
-        \  \"etag\": \"\\\"gMxXHe-zinKdE9lTnzKu8vjcmDI/cyX1eIZT3OIxh89ETrx77cp6t0o\\\"\",\n
-        \  \"id\": \"UExPeE9SbTRqcE9RZk1VN2JwZkdDekR5THJvcElZRUh1Ui5ENjI1QUI0MDI5NEQzODFE\",\n
-        \  \"contentDetails\": {\n    \"videoId\": \"VjK40bQ8Aas\",\n    \"videoPublishedAt\":
-        \"2009-10-03T20:45:19.000Z\"\n   }\n  },\n  {\n   \"kind\": \"youtube#playlistItem\",\n
-        \  \"etag\": \"\\\"gMxXHe-zinKdE9lTnzKu8vjcmDI/H19DQ05znCtPK1UQDo-D4szWKCs\\\"\",\n
-        \  \"id\": \"UExPeE9SbTRqcE9RZk1VN2JwZkdDekR5THJvcElZRUh1Ui41RTNBREYwMkI5QzU3RkY2\",\n
-        \  \"contentDetails\": {\n    \"videoId\": \"fLVzw9wVd9o\",\n    \"videoPublishedAt\":
-        \"2009-10-03T04:32:42.000Z\"\n   }\n  },\n  {\n   \"kind\": \"youtube#playlistItem\",\n
-        \  \"etag\": \"\\\"gMxXHe-zinKdE9lTnzKu8vjcmDI/Kat8A8c_mYbJwggIHmMn3YPMJEc\\\"\",\n
-        \  \"id\": \"UExPeE9SbTRqcE9RZk1VN2JwZkdDekR5THJvcElZRUh1Ui40QzRDOEU0QUYwNUIxN0M1\",\n
-        \  \"contentDetails\": {\n    \"videoId\": \"Ns9YYSqLxyI\",\n    \"videoPublishedAt\":
-        \"2009-10-03T04:25:53.000Z\"\n   }\n  },\n  {\n   \"kind\": \"youtube#playlistItem\",\n
-        \  \"etag\": \"\\\"gMxXHe-zinKdE9lTnzKu8vjcmDI/ni0YFqKhkDAq9DDH8bDMuWnbXXM\\\"\",\n
-        \  \"id\": \"UExPeE9SbTRqcE9RZk1VN2JwZkdDekR5THJvcElZRUh1Ui4yQUJFNUVCMzVDNjcxRTlF\",\n
-        \  \"contentDetails\": {\n    \"videoId\": \"toLrTToaN0M\",\n    \"videoPublishedAt\":
-        \"2009-10-03T04:25:53.000Z\"\n   }\n  },\n  {\n   \"kind\": \"youtube#playlistItem\",\n
-        \  \"etag\": \"\\\"gMxXHe-zinKdE9lTnzKu8vjcmDI/yZLWAg-sevPkngAejd2P5hnLkHU\\\"\",\n
-        \  \"id\": \"UExPeE9SbTRqcE9RZk1VN2JwZkdDekR5THJvcElZRUh1Ui4yQjZFRkExQjFGODk3RUFD\",\n
-        \  \"contentDetails\": {\n    \"videoId\": \"o3lV7bCiQJA\",\n    \"videoPublishedAt\":
-        \"2009-04-05T02:49:50.000Z\"\n   }\n  },\n  {\n   \"kind\": \"youtube#playlistItem\",\n
-        \  \"etag\": \"\\\"gMxXHe-zinKdE9lTnzKu8vjcmDI/6tefNj3bVQuPRVMtZJxNnsubNgY\\\"\",\n
-        \  \"id\": \"UExPeE9SbTRqcE9RZk1VN2JwZkdDekR5THJvcElZRUh1Ui41MzY4MzcwOUFFRUU3QzEx\",\n
-        \  \"contentDetails\": {\n    \"videoId\": \"elGZbcpGzdU\",\n    \"videoPublishedAt\":
-        \"2009-07-24T18:53:34.000Z\"\n   }\n  },\n  {\n   \"kind\": \"youtube#playlistItem\",\n
-        \  \"etag\": \"\\\"gMxXHe-zinKdE9lTnzKu8vjcmDI/FKxFoH4mt3xE06IP1VOhX6Oor9g\\\"\",\n
-        \  \"id\": \"UExPeE9SbTRqcE9RZk1VN2JwZkdDekR5THJvcElZRUh1Ui5DRUQwODMxQzUyRTlGRkY3\",\n
-        \  \"contentDetails\": {\n    \"videoId\": \"IBZaQsi7iS0\",\n    \"videoPublishedAt\":
-        \"2008-06-09T09:06:47.000Z\"\n   }\n  },\n  {\n   \"kind\": \"youtube#playlistItem\",\n
-        \  \"etag\": \"\\\"gMxXHe-zinKdE9lTnzKu8vjcmDI/Y-VuBTZygvaOfQFu0W04YW18iVY\\\"\",\n
-        \  \"id\": \"UExPeE9SbTRqcE9RZk1VN2JwZkdDekR5THJvcElZRUh1Ui5DNkMwRUI2MkI4QkI4NDFG\",\n
-        \  \"contentDetails\": {\n    \"videoId\": \"7SDPojPxqN0\",\n    \"videoPublishedAt\":
-        \"2008-09-02T14:48:01.000Z\"\n   }\n  },\n  {\n   \"kind\": \"youtube#playlistItem\",\n
-        \  \"etag\": \"\\\"gMxXHe-zinKdE9lTnzKu8vjcmDI/sA7zmAGt2OvL-bPDzyqjgBM64b0\\\"\",\n
-        \  \"id\": \"UExPeE9SbTRqcE9RZk1VN2JwZkdDekR5THJvcElZRUh1Ui45NkVENTkxRDdCQUFBMDY4\",\n
-        \  \"contentDetails\": {\n    \"videoId\": \"-iS5vRjZXCU\",\n    \"videoPublishedAt\":
-        \"2008-11-04T14:38:40.000Z\"\n   }\n  },\n  {\n   \"kind\": \"youtube#playlistItem\",\n
-        \  \"etag\": \"\\\"gMxXHe-zinKdE9lTnzKu8vjcmDI/j0C0TjL40SbjqNhx3lh9S1WiJdU\\\"\",\n
-        \  \"id\": \"UExPeE9SbTRqcE9RZk1VN2JwZkdDekR5THJvcElZRUh1Ui4zQzFBN0RGNzNFREFCMjBE\",\n
-        \  \"contentDetails\": {\n    \"videoId\": \"LBhbyxeQR-Q\",\n    \"videoPublishedAt\":
-        \"2008-09-02T13:32:23.000Z\"\n   }\n  },\n  {\n   \"kind\": \"youtube#playlistItem\",\n
-        \  \"etag\": \"\\\"gMxXHe-zinKdE9lTnzKu8vjcmDI/wQbkqx7ahgkcve4zJ81pvZ8uz8Q\\\"\",\n
-        \  \"id\": \"UExPeE9SbTRqcE9RZk1VN2JwZkdDekR5THJvcElZRUh1Ui5GNDg1Njc1QzZERjlFRjE5\",\n
-        \  \"contentDetails\": {\n    \"videoId\": \"xtkFpJ6KR7Y\",\n    \"videoPublishedAt\":
-        \"2007-08-11T22:10:10.000Z\"\n   }\n  },\n  {\n   \"kind\": \"youtube#playlistItem\",\n
-        \  \"etag\": \"\\\"gMxXHe-zinKdE9lTnzKu8vjcmDI/f3fsr3PaMeZQPWvmUKrHaT6UBQM\\\"\",\n
-        \  \"id\": \"UExPeE9SbTRqcE9RZk1VN2JwZkdDekR5THJvcElZRUh1Ui4xOTEzQzhBQzU3MDNDNjcz\",\n
-        \  \"contentDetails\": {\n    \"videoId\": \"ThoyFK3_V58\",\n    \"videoPublishedAt\":
-        \"2007-09-23T22:34:49.000Z\"\n   }\n  },\n  {\n   \"kind\": \"youtube#playlistItem\",\n
-        \  \"etag\": \"\\\"gMxXHe-zinKdE9lTnzKu8vjcmDI/jBDHHFKk2DIjOxTnHd0lNwxxT5M\\\"\",\n
-        \  \"id\": \"UExPeE9SbTRqcE9RZk1VN2JwZkdDekR5THJvcElZRUh1Ui5BRjJDODk5REM0NjkzMUIy\",\n
-        \  \"contentDetails\": {\n    \"videoId\": \"fI_8Aod3Vow\",\n    \"videoPublishedAt\":
-        \"2009-04-26T17:40:29.000Z\"\n   }\n  },\n  {\n   \"kind\": \"youtube#playlistItem\",\n
-        \  \"etag\": \"\\\"gMxXHe-zinKdE9lTnzKu8vjcmDI/l84Y0vPHH5XnLb7bQkNU_hxuado\\\"\",\n
-        \  \"id\": \"UExPeE9SbTRqcE9RZk1VN2JwZkdDekR5THJvcElZRUh1Ui45RjNFMDhGQ0Q2RkFCQTc1\",\n
-        \  \"contentDetails\": {\n    \"videoId\": \"L2eV20UhkQk\",\n    \"videoPublishedAt\":
-        \"2006-09-30T14:19:42.000Z\"\n   }\n  },\n  {\n   \"kind\": \"youtube#playlistItem\",\n
-        \  \"etag\": \"\\\"gMxXHe-zinKdE9lTnzKu8vjcmDI/BGc_S9kbe9SiePPf54NU9u6oTXU\\\"\",\n
-        \  \"id\": \"UExPeE9SbTRqcE9RZk1VN2JwZkdDekR5THJvcElZRUh1Ui42MTI4Njc2QjM1RjU1MjlG\",\n
-        \  \"contentDetails\": {\n    \"videoId\": \"51kSVJ9BbTo\",\n    \"videoPublishedAt\":
-        \"2010-09-13T01:22:13.000Z\"\n   }\n  },\n  {\n   \"kind\": \"youtube#playlistItem\",\n
-        \  \"etag\": \"\\\"gMxXHe-zinKdE9lTnzKu8vjcmDI/WMCo_3CyOT8K_Y0OSkupxe5EKOc\\\"\",\n
-        \  \"id\": \"UExPeE9SbTRqcE9RZk1VN2JwZkdDekR5THJvcElZRUh1Ui5CMEQ2Mjk5NTc3NDZFRUNB\",\n
-        \  \"contentDetails\": {\n    \"videoId\": \"HuxiBdUXrr0\",\n    \"videoPublishedAt\":
-        \"2007-10-06T12:01:17.000Z\"\n   }\n  },\n  {\n   \"kind\": \"youtube#playlistItem\",\n
-        \  \"etag\": \"\\\"gMxXHe-zinKdE9lTnzKu8vjcmDI/ZY2RIj9hgMA7SViLqpBi6lB3oD8\\\"\",\n
-        \  \"id\": \"UExPeE9SbTRqcE9RZk1VN2JwZkdDekR5THJvcElZRUh1Ui4zRDBDOEZDOUM0MDY5NEEz\",\n
-        \  \"contentDetails\": {\n    \"videoId\": \"uBwk106e3es\",\n    \"videoPublishedAt\":
-        \"2009-07-23T21:18:18.000Z\"\n   }\n  },\n  {\n   \"kind\": \"youtube#playlistItem\",\n
-        \  \"etag\": \"\\\"gMxXHe-zinKdE9lTnzKu8vjcmDI/dRH5odFdG8KEQ-hDf75k3L-9H3U\\\"\",\n
-        \  \"id\": \"UExPeE9SbTRqcE9RZk1VN2JwZkdDekR5THJvcElZRUh1Ui41QUZGQTY5OTE4QTREQUU4\",\n
-        \  \"contentDetails\": {\n    \"videoId\": \"KfDbrPcIQ2Y\",\n    \"videoPublishedAt\":
-        \"2013-04-18T02:07:35.000Z\"\n   }\n  },\n  {\n   \"kind\": \"youtube#playlistItem\",\n
-        \  \"etag\": \"\\\"gMxXHe-zinKdE9lTnzKu8vjcmDI/axoXlnr42E6Hm8_Ol228AkCC81Y\\\"\",\n
-        \  \"id\": \"UExPeE9SbTRqcE9RZk1VN2JwZkdDekR5THJvcElZRUh1Ui43NDhFRTgwOTRERTU4Rjg3\",\n
-        \  \"contentDetails\": {\n    \"videoId\": \"jdLGEX96DIM\",\n    \"videoPublishedAt\":
-        \"2009-05-31T14:11:39.000Z\"\n   }\n  },\n  {\n   \"kind\": \"youtube#playlistItem\",\n
-        \  \"etag\": \"\\\"gMxXHe-zinKdE9lTnzKu8vjcmDI/g4b5me3oJCSvUFGUzArvZXPI6Nw\\\"\",\n
-        \  \"id\": \"UExPeE9SbTRqcE9RZk1VN2JwZkdDekR5THJvcElZRUh1Ui44Mjc5REFBRUE2MTdFRDU0\",\n
-        \  \"contentDetails\": {\n    \"videoId\": \"rvwy3SonE5Y\",\n    \"videoPublishedAt\":
-        \"2012-03-07T15:19:09.000Z\"\n   }\n  },\n  {\n   \"kind\": \"youtube#playlistItem\",\n
-        \  \"etag\": \"\\\"gMxXHe-zinKdE9lTnzKu8vjcmDI/N9rPlH1pYhBIDHCnHmrTInX_WhM\\\"\",\n
-        \  \"id\": \"UExPeE9SbTRqcE9RZk1VN2JwZkdDekR5THJvcElZRUh1Ui5DMkU4NTY1QUFGQTYwMDE3\",\n
-        \  \"contentDetails\": {\n    \"videoId\": \"odPh45iWkAM\"\n   }\n  },\n  {\n
-        \  \"kind\": \"youtube#playlistItem\",\n   \"etag\": \"\\\"gMxXHe-zinKdE9lTnzKu8vjcmDI/ivDsEjDDCKolR9M6pt4grZke0MU\\\"\",\n
-        \  \"id\": \"UExPeE9SbTRqcE9RZk1VN2JwZkdDekR5THJvcElZRUh1Ui4yQUE2Q0JEMTk4NTM3RTZC\",\n
-        \  \"contentDetails\": {\n    \"videoId\": \"Zl3znGJQsrk\",\n    \"videoPublishedAt\":
-        \"2008-11-14T13:58:53.000Z\"\n   }\n  },\n  {\n   \"kind\": \"youtube#playlistItem\",\n
-        \  \"etag\": \"\\\"gMxXHe-zinKdE9lTnzKu8vjcmDI/_lubr7QIJkl1FdAB22N3cxlvrqc\\\"\",\n
-        \  \"id\": \"UExPeE9SbTRqcE9RZk1VN2JwZkdDekR5THJvcElZRUh1Ui5DQ0MyQ0Y4Mzg0M0VGOEYw\",\n
-        \  \"contentDetails\": {\n    \"videoId\": \"ivEYDyHNt40\",\n    \"videoPublishedAt\":
-        \"2012-05-26T19:05:54.000Z\"\n   }\n  },\n  {\n   \"kind\": \"youtube#playlistItem\",\n
-        \  \"etag\": \"\\\"gMxXHe-zinKdE9lTnzKu8vjcmDI/Hn7XYnqrVNtg2y_EDT7__f6UNp8\\\"\",\n
-        \  \"id\": \"UExPeE9SbTRqcE9RZk1VN2JwZkdDekR5THJvcElZRUh1Ui5DNzE1RjZEMUZCMjA0RDBB\",\n
-        \  \"contentDetails\": {\n    \"videoId\": \"8NsJ84YV1oA\",\n    \"videoPublishedAt\":
-        \"2008-09-13T22:09:34.000Z\"\n   }\n  },\n  {\n   \"kind\": \"youtube#playlistItem\",\n
-        \  \"etag\": \"\\\"gMxXHe-zinKdE9lTnzKu8vjcmDI/a04AbSrGq46rFiD2ajiMMdHlA-8\\\"\",\n
-        \  \"id\": \"UExPeE9SbTRqcE9RZk1VN2JwZkdDekR5THJvcElZRUh1Ui45NzUwQkI1M0UxNThBMkU0\",\n
-        \  \"contentDetails\": {\n    \"videoId\": \"9PCjVwJo3EI\",\n    \"videoPublishedAt\":
-        \"2012-09-14T08:53:37.000Z\"\n   }\n  },\n  {\n   \"kind\": \"youtube#playlistItem\",\n
-        \  \"etag\": \"\\\"gMxXHe-zinKdE9lTnzKu8vjcmDI/pXThyHHhYOESZoF2rmAZnKGlYvY\\\"\",\n
-        \  \"id\": \"UExPeE9SbTRqcE9RZk1VN2JwZkdDekR5THJvcElZRUh1Ui4zRjM0MkVCRTg0MkYyQTM0\",\n
-        \  \"contentDetails\": {\n    \"videoId\": \"2q3-q8sZm_4\"\n   }\n  },\n  {\n
-        \  \"kind\": \"youtube#playlistItem\",\n   \"etag\": \"\\\"gMxXHe-zinKdE9lTnzKu8vjcmDI/b2W8_m7HA172KPatDCYXtJgKuTU\\\"\",\n
-        \  \"id\": \"UExPeE9SbTRqcE9RZk1VN2JwZkdDekR5THJvcElZRUh1Ui5GM0Q3M0MzMzY5NTJFNTdE\",\n
-        \  \"contentDetails\": {\n    \"videoId\": \"DVo7q4Qx7y8\",\n    \"videoPublishedAt\":
-        \"2010-03-24T04:11:50.000Z\"\n   }\n  },\n  {\n   \"kind\": \"youtube#playlistItem\",\n
-        \  \"etag\": \"\\\"gMxXHe-zinKdE9lTnzKu8vjcmDI/v7QEG5NLbfL6Up737ofhDbhIyqI\\\"\",\n
-        \  \"id\": \"UExPeE9SbTRqcE9RZk1VN2JwZkdDekR5THJvcElZRUh1Ui4yMDhBMkNBNjRDMjQxQTg1\",\n
-        \  \"contentDetails\": {\n    \"videoId\": \"z1qoyy52gEw\",\n    \"videoPublishedAt\":
-        \"2009-09-23T00:08:43.000Z\"\n   }\n  },\n  {\n   \"kind\": \"youtube#playlistItem\",\n
-        \  \"etag\": \"\\\"gMxXHe-zinKdE9lTnzKu8vjcmDI/4TR4nDeqwakwAzEYczz8yBLibNw\\\"\",\n
-        \  \"id\": \"UExPeE9SbTRqcE9RZk1VN2JwZkdDekR5THJvcElZRUh1Ui5ENDU4Q0M4RDExNzM1Mjcy\",\n
-        \  \"contentDetails\": {\n    \"videoId\": \"38oh8-VXS84\",\n    \"videoPublishedAt\":
-        \"2007-08-15T16:39:52.000Z\"\n   }\n  },\n  {\n   \"kind\": \"youtube#playlistItem\",\n
-        \  \"etag\": \"\\\"gMxXHe-zinKdE9lTnzKu8vjcmDI/VvSyHko9e-Entv4OVoMOnT1djN8\\\"\",\n
-        \  \"id\": \"UExPeE9SbTRqcE9RZk1VN2JwZkdDekR5THJvcElZRUh1Ui45RTgxNDRBMzUwRjQ0MDhC\",\n
-        \  \"contentDetails\": {\n    \"videoId\": \"rueQCztuTMs\",\n    \"videoPublishedAt\":
-        \"2009-02-27T09:57:19.000Z\"\n   }\n  },\n  {\n   \"kind\": \"youtube#playlistItem\",\n
-        \  \"etag\": \"\\\"gMxXHe-zinKdE9lTnzKu8vjcmDI/0vxtx3JX4Czz5zOJ4sa1L6vQFr8\\\"\",\n
-        \  \"id\": \"UExPeE9SbTRqcE9RZk1VN2JwZkdDekR5THJvcElZRUh1Ui4yMUQyQTQzMjRDNzMyQTMy\",\n
-        \  \"contentDetails\": {\n    \"videoId\": \"D0W6sMatqps\",\n    \"videoPublishedAt\":
-        \"2012-01-15T22:36:10.000Z\"\n   }\n  },\n  {\n   \"kind\": \"youtube#playlistItem\",\n
-        \  \"etag\": \"\\\"gMxXHe-zinKdE9lTnzKu8vjcmDI/8Kfjd2kYkvzwC-yViKTz26IgVG0\\\"\",\n
-        \  \"id\": \"UExPeE9SbTRqcE9RZk1VN2JwZkdDekR5THJvcElZRUh1Ui41QTY1Q0UxMTVCODczNThE\",\n
-        \  \"contentDetails\": {\n    \"videoId\": \"6oLgbkCIPPA\",\n    \"videoPublishedAt\":
-        \"2011-10-13T21:15:13.000Z\"\n   }\n  },\n  {\n   \"kind\": \"youtube#playlistItem\",\n
-        \  \"etag\": \"\\\"gMxXHe-zinKdE9lTnzKu8vjcmDI/4ZghQd8EVE-3PdVMghk39OJgEQQ\\\"\",\n
-        \  \"id\": \"UExPeE9SbTRqcE9RZk1VN2JwZkdDekR5THJvcElZRUh1Ui5EQUE1NTFDRjcwMDg0NEMz\",\n
-        \  \"contentDetails\": {\n    \"videoId\": \"PKFBlIEvTkY\",\n    \"videoPublishedAt\":
-        \"2012-01-01T22:05:35.000Z\"\n   }\n  },\n  {\n   \"kind\": \"youtube#playlistItem\",\n
-        \  \"etag\": \"\\\"gMxXHe-zinKdE9lTnzKu8vjcmDI/eNnIy3A049vMDjlL5FdurNLngDw\\\"\",\n
-        \  \"id\": \"UExPeE9SbTRqcE9RZk1VN2JwZkdDekR5THJvcElZRUh1Ui41Mzk2QTAxMTkzNDk4MDhF\",\n
-        \  \"contentDetails\": {\n    \"videoId\": \"GtkX5AEy7dQ\",\n    \"videoPublishedAt\":
-        \"2008-11-01T12:43:14.000Z\"\n   }\n  },\n  {\n   \"kind\": \"youtube#playlistItem\",\n
-        \  \"etag\": \"\\\"gMxXHe-zinKdE9lTnzKu8vjcmDI/WTm0iQMMREjzX1X4MmgGe2PNtX4\\\"\",\n
-        \  \"id\": \"UExPeE9SbTRqcE9RZk1VN2JwZkdDekR5THJvcElZRUh1Ui4zMDg5MkQ5MEVDMEM1NTg2\",\n
-        \  \"contentDetails\": {\n    \"videoId\": \"IQspTWQZEgM\",\n    \"videoPublishedAt\":
-        \"2006-04-18T22:17:28.000Z\"\n   }\n  },\n  {\n   \"kind\": \"youtube#playlistItem\",\n
-        \  \"etag\": \"\\\"gMxXHe-zinKdE9lTnzKu8vjcmDI/S6SZQz3KREScwP9FXilrA-TE5fQ\\\"\",\n
-        \  \"id\": \"UExPeE9SbTRqcE9RZk1VN2JwZkdDekR5THJvcElZRUh1Ui45ODRDNTg0QjA4NkFBNkQy\",\n
-        \  \"contentDetails\": {\n    \"videoId\": \"AO7JVeZ6HQw\",\n    \"videoPublishedAt\":
-        \"2008-09-02T18:04:20.000Z\"\n   }\n  },\n  {\n   \"kind\": \"youtube#playlistItem\",\n
-        \  \"etag\": \"\\\"gMxXHe-zinKdE9lTnzKu8vjcmDI/9iPmKfBasRoYRe3S5f1VFpeGLUc\\\"\",\n
-        \  \"id\": \"UExPeE9SbTRqcE9RZk1VN2JwZkdDekR5THJvcElZRUh1Ui5EMEEwRUY5M0RDRTU3NDJC\",\n
-        \  \"contentDetails\": {\n    \"videoId\": \"jGLZDTImHHs\",\n    \"videoPublishedAt\":
-        \"2010-05-11T22:42:23.000Z\"\n   }\n  },\n  {\n   \"kind\": \"youtube#playlistItem\",\n
-        \  \"etag\": \"\\\"gMxXHe-zinKdE9lTnzKu8vjcmDI/yPByXHGAPm7uiCKauAvZV-SkFrQ\\\"\",\n
-        \  \"id\": \"UExPeE9SbTRqcE9RZk1VN2JwZkdDekR5THJvcElZRUh1Ui40NzZCMERDMjVEN0RFRThB\",\n
-        \  \"contentDetails\": {\n    \"videoId\": \"Af7nNV4vUzY\",\n    \"videoPublishedAt\":
-        \"2009-12-04T19:09:16.000Z\"\n   }\n  }\n ]\n}\n"}
+    body:
+      string: !!binary |
+        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
     headers:
-      alt-svc: ['quic=":443"; ma=2592000; v="35,34"']
-      cache-control: ['private, max-age=0, must-revalidate, no-transform']
-      content-length: ['14936']
-      content-type: [application/json; charset=UTF-8]
-      date: ['Fri, 13 Jan 2017 22:12:22 GMT']
-      etag: ['"gMxXHe-zinKdE9lTnzKu8vjcmDI/XorDRONMImvAciT8E1NJlGf6vWU"']
-      expires: ['Fri, 13 Jan 2017 22:12:22 GMT']
-      server: [GSE]
-      vary: [Origin, X-Origin]
-      x-content-type-options: [nosniff]
-      x-frame-options: [SAMEORIGIN]
-      x-xss-protection: [1; mode=block]
-    status: {code: 200, message: OK}
+      Alt-Svc:
+      - quic=":443"; ma=2592000; v="46,43",h3-Q050=":443"; ma=2592000,h3-Q049=":443";
+        ma=2592000,h3-Q048=":443"; ma=2592000,h3-Q046=":443"; ma=2592000,h3-Q043=":443";
+        ma=2592000
+      Cache-Control:
+      - private, max-age=0, must-revalidate, no-transform
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json; charset=UTF-8
+      Date:
+      - Fri, 03 Jan 2020 20:56:46 GMT
+      ETag:
+      - '"p4VTdlkQv3HQeTEaXgvLePAydmU/Yh-p_R4iZH6AdwRYf68AVBn-y2U"'
+      Expires:
+      - Fri, 03 Jan 2020 20:56:46 GMT
+      Server:
+      - GSE
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Origin
+      - X-Origin
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-XSS-Protection:
+      - 1; mode=block
+    status:
+      code: 200
+      message: OK
 - request:
     body: null
     headers:
-      Accept: ['*/*']
-      Accept-Encoding: ['gzip, deflate']
-      Connection: [keep-alive]
-      User-Agent: [python-requests/2.9.1]
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - python-requests/2.22.0
     method: GET
-    uri: https://www.googleapis.com/youtube/v3/playlistItems?playlistId=PLOxORm4jpOQfMU7bpfGCzDyLropIYEHuR&pageToken=CGQQAA&maxResults=50&part=contentDetails&key=AIzaSyAl1Xq9DwdE_KD4AtPaE4EJl3WZe2zCqg4
+    uri: https://www.googleapis.com/youtube/v3/playlistItems?playlistId=PLOxORm4jpOQfMU7bpfGCzDyLropIYEHuR&maxResults=50&key=AIzaSyAl1Xq9DwdE_KD4AtPaE4EJl3WZe2zCqg4&part=contentDetails&pageToken=CGQQAA
   response:
-    body: {string: !!python/unicode "{\n \"kind\": \"youtube#playlistItemListResponse\",\n
-        \"etag\": \"\\\"gMxXHe-zinKdE9lTnzKu8vjcmDI/N6dIC_KOnuw69Y7IH9GKMFDmEOs\\\"\",\n
-        \"prevPageToken\": \"CGQQAQ\",\n \"pageInfo\": {\n  \"totalResults\": 110,\n
-        \ \"resultsPerPage\": 50\n },\n \"items\": [\n  {\n   \"kind\": \"youtube#playlistItem\",\n
-        \  \"etag\": \"\\\"gMxXHe-zinKdE9lTnzKu8vjcmDI/PJvocyqyQwQ0t3ZCk8LZQpYwzFE\\\"\",\n
-        \  \"id\": \"UExPeE9SbTRqcE9RZk1VN2JwZkdDekR5THJvcElZRUh1Ui5GNjNDRDREMDQxOThCMDQ2\",\n
-        \  \"contentDetails\": {\n    \"videoId\": \"n5hnkOwUq8k\",\n    \"videoPublishedAt\":
-        \"2011-11-29T19:25:59.000Z\"\n   }\n  },\n  {\n   \"kind\": \"youtube#playlistItem\",\n
-        \  \"etag\": \"\\\"gMxXHe-zinKdE9lTnzKu8vjcmDI/icrfQLoHwRRV10MolU7zaHDv58I\\\"\",\n
-        \  \"id\": \"UExPeE9SbTRqcE9RZk1VN2JwZkdDekR5THJvcElZRUh1Ui45NDk1REZENzhEMzU5MDQz\",\n
-        \  \"contentDetails\": {\n    \"videoId\": \"StBKK6twyn0\",\n    \"videoPublishedAt\":
-        \"2007-07-14T04:04:41.000Z\"\n   }\n  },\n  {\n   \"kind\": \"youtube#playlistItem\",\n
-        \  \"etag\": \"\\\"gMxXHe-zinKdE9lTnzKu8vjcmDI/EOOTPrdsfXcUXJ1lnVHJWLqqiio\\\"\",\n
-        \  \"id\": \"UExPeE9SbTRqcE9RZk1VN2JwZkdDekR5THJvcElZRUh1Ui5DQUNERDQ2NkIzRUQxNTY1\",\n
-        \  \"contentDetails\": {\n    \"videoId\": \"ZubsXryIArw\",\n    \"videoPublishedAt\":
-        \"2011-11-26T18:18:09.000Z\"\n   }\n  },\n  {\n   \"kind\": \"youtube#playlistItem\",\n
-        \  \"etag\": \"\\\"gMxXHe-zinKdE9lTnzKu8vjcmDI/8NIfxYyFWzFBJztcCRq0LP1Mi8k\\\"\",\n
-        \  \"id\": \"UExPeE9SbTRqcE9RZk1VN2JwZkdDekR5THJvcElZRUh1Ui41MzJCQjBCNDIyRkJDN0VD\",\n
-        \  \"contentDetails\": {\n    \"videoId\": \"oNciEpZYC_E\",\n    \"videoPublishedAt\":
-        \"2009-03-07T21:47:53.000Z\"\n   }\n  },\n  {\n   \"kind\": \"youtube#playlistItem\",\n
-        \  \"etag\": \"\\\"gMxXHe-zinKdE9lTnzKu8vjcmDI/O81xKm2xMm_h0tEEe_RwA8852Vg\\\"\",\n
-        \  \"id\": \"UExPeE9SbTRqcE9RZk1VN2JwZkdDekR5THJvcElZRUh1Ui4xMkVGQjNCMUM1N0RFNEUx\",\n
-        \  \"contentDetails\": {\n    \"videoId\": \"ya7aM4pbtHo\",\n    \"videoPublishedAt\":
-        \"2013-02-20T19:00:03.000Z\"\n   }\n  },\n  {\n   \"kind\": \"youtube#playlistItem\",\n
-        \  \"etag\": \"\\\"gMxXHe-zinKdE9lTnzKu8vjcmDI/rlx4tlXL1XGAyfGELwr4FN_cdt0\\\"\",\n
-        \  \"id\": \"UExPeE9SbTRqcE9RZk1VN2JwZkdDekR5THJvcElZRUh1Ui4wOTA3OTZBNzVEMTUzOTMy\",\n
-        \  \"contentDetails\": {\n    \"videoId\": \"kGrAYt2gtks\",\n    \"videoPublishedAt\":
-        \"2010-02-15T18:39:38.000Z\"\n   }\n  },\n  {\n   \"kind\": \"youtube#playlistItem\",\n
-        \  \"etag\": \"\\\"gMxXHe-zinKdE9lTnzKu8vjcmDI/XKyQ8M4yWMErRAZg7wQEzulpNKo\\\"\",\n
-        \  \"id\": \"UExPeE9SbTRqcE9RZk1VN2JwZkdDekR5THJvcElZRUh1Ui41MjE1MkI0OTQ2QzJGNzNG\",\n
-        \  \"contentDetails\": {\n    \"videoId\": \"GcC_F3f3JPw\",\n    \"videoPublishedAt\":
-        \"2010-02-15T17:27:32.000Z\"\n   }\n  },\n  {\n   \"kind\": \"youtube#playlistItem\",\n
-        \  \"etag\": \"\\\"gMxXHe-zinKdE9lTnzKu8vjcmDI/NU7q54fAN2pU1hkDnC8WyjyOOo4\\\"\",\n
-        \  \"id\": \"UExPeE9SbTRqcE9RZk1VN2JwZkdDekR5THJvcElZRUh1Ui4wMTcyMDhGQUE4NTIzM0Y5\",\n
-        \  \"contentDetails\": {\n    \"videoId\": \"C71W5PkBGls\",\n    \"videoPublishedAt\":
-        \"2009-03-24T15:03:51.000Z\"\n   }\n  },\n  {\n   \"kind\": \"youtube#playlistItem\",\n
-        \  \"etag\": \"\\\"gMxXHe-zinKdE9lTnzKu8vjcmDI/Qam_E5LxnQmQkUqZZ3mMm4PC7OM\\\"\",\n
-        \  \"id\": \"UExPeE9SbTRqcE9RZk1VN2JwZkdDekR5THJvcElZRUh1Ui4yODlGNEE0NkRGMEEzMEQy\",\n
-        \  \"contentDetails\": {\n    \"videoId\": \"Mo_5hCVA7DU\",\n    \"videoPublishedAt\":
-        \"2008-05-01T00:26:45.000Z\"\n   }\n  },\n  {\n   \"kind\": \"youtube#playlistItem\",\n
-        \  \"etag\": \"\\\"gMxXHe-zinKdE9lTnzKu8vjcmDI/0G1DdCD4_Yo-wb7sy3OS1kx8DI0\\\"\",\n
-        \  \"id\": \"UExPeE9SbTRqcE9RZk1VN2JwZkdDekR5THJvcElZRUh1Ui41NkI0NEY2RDEwNTU3Q0M2\",\n
-        \  \"contentDetails\": {\n    \"videoId\": \"K2Voanva1QA\",\n    \"videoPublishedAt\":
-        \"2007-11-16T23:42:26.000Z\"\n   }\n  }\n ]\n}\n"}
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAAL2bW5OizpbF3/tTdPS8HmcyuYpvIAmCkJgIlDBnwlDEC6h4Qbmc+H/3SeyeiTnz
+        MGowZUR1VwdSWP5i515r7cz+x4+fv7LdcfVr8PNXnd+K2zL5l9N+Ue9318IokoNFv7vJ9ZQfr8mv
+        v9Gbk2KxaW/++68TF3irfUbu7IgkHlrMNncrmcj16uD/Wzyq7OLgz7ig5hjXujWabl3HxT4E5O+/
+        Hs85JlUxWWwSL8+SY/vAoRkqSJYfL54uyf2fX9QJkcnv1+h147jO6eV//Pj581eRF4s9/RVv++JK
+        r0Fe+Ft7+fL7yiS5tA+iL/Dgx8+/2gfs6Mdq7/x3elv7hP8bQPueP1/92PrpMIzk/ZewTfT4urfx
+        eWRw6f20CPu/PzZ90u7xVj6qJgmSpkvPPcdIcqMMBpgxyyhbqUnm8t7IvMdoH7n+Fvo7rrS9sCJN
+        oLiqATEKVOJH6M8D4/xYJMdCpb/ibn/9g4Vev+9WSW483m2kTG6itfPIyP79Q39endyW9HNuk5Vc
+        tLcxAIIe6PcA68H+gBUGPPevAIDoV/sjf9G/Wn7/38zO+QT4w6E+3rjzxTQdq6AI7uArab5IR2YY
+        +dD2DA5nEbIpOwxM7XVmUQxZLMfi6v6EGZB6LTbWA9yAhwMWfD8zfFzMD5NGm8LyuCpG3mybl1dt
+        3DdXm07M+CHJUOmqMrDVrMS+zdhqCF9n1lspcTi6AJEPnzDr9yDTg32PAQOKDXygzoZVfogu+gif
+        pIV0FII+Xpv+pL7nY64bMx2ncokBbW2epjteoNrIrl9nduLENZrpi+XiGbP/UWccMwAfqLPdvOpf
+        e0MUTfI6c2VTXzBjuJ3xjR53W5ssRu7QVo2GNJpit/9GiH2dWZrfYsTkcqg+YQbZHmB6gH/UWX8A
+        4fczi0Ea6orUEMe6SBG2lJ2tTguTZ0dyN2YQexFyvK2Cva3m+IFOskB5nVk4O6Y1H+7VMnvOrC01
+        D4i0yCi272dWnRwrZzfzRa0twF1aS75Vmks5wYeOdcaQJuPtDDUkDTSShm1v415n5osuqxTTfezI
+        T9am2DJj6NqUBjxPZeD7mXnQtCRLZJ1T6m/i+vyVm6UC1pdG6NbPuMZGBNrIqF3az3CzVds1+joz
+        Dld9302TU5o/ZUb7GSN5DBxAKp389zObX8Q5Mx3fbgthY5kLdRp5krKdLE+7brrJVXazKe1GQW5K
+        OJyiBvuIf53Z0hnfitWeoPtz3QSwXZuUGSsOWOn7mfH6lzvL4O68l8UEHpiTEHpw76LbMOvGjKN+
+        Vie+z5AUMVjdVDaw31ibN0MG9wWtT+dJP6MLkzKjukk1gKNe4wN15nM6EpNxymm+zt+s1PtqhpWv
+        3qxzNw3gEU4NSHyD+jODx4g0jqq9kQOCdMyBJenLi+uLXoMy4/sDhvl+ZrfcyU5KOfVv1a1/NkaH
+        K/Zmk31+Qx01ALoeVlwUlnZm8KTxWTcLmdeZra2gKaUyWEnP+tk/+zNO+H5m5uioLk19p+mniRlU
+        bHHkTWO6rosN6MYMkMZVHeQD4oc0BxgVBvYbOQBfpTCcnq2qNt5gJnykzvRbs+tPuePi3Ezlw25O
+        Vo0o7L5wBcpuzGrimxr2gyHNmipO48r19m/kzSK3Lp6XLyjpt+qM/YA/66X6KrvEvuvI85soBcTH
+        G0EO+SvXUTdrkkaam6GKpDQ7qRnr+pr6OrOc3Qficrgj5jN/RjWAa3MAYFp/9omMHjeVu48whMxE
+        spYeuA/vIyO9ZOENdexndhNydhOXjq9pru+zpEHV68ySvR4t45PerPznzMQew3lQGrTxSfx+ZsL5
+        PN3pO8dQfcWKStJEN1Do0hJ2rDNedX1SOqpd0f5Pfe1epxrwRt40lGhBrjtxNwXP/ZlAo0CbA+gX
+        w34/M8s0xcPqGC2iL3dk5/ldLa9JzFpH0+jIDGd26foGQ3WTI/QPVjX9dWbiVJ3k6aQ64xeY0VJj
+        PMgPILUbH6gzxlpvwGI/k062bYP82ofsaX67y9aio9fgcRYg7GWVq66GxNcUWw3f8LS93ZS/u2k0
+        Gz5bm/0epJ6Wrk2qAfyA+YDX+BKMSF+Gow0zNxsVSeODuDeKOWk21455s82XGLg0a2LNRdrQTpU3
+        PK2lbJd1lRC3R16tM5YGJyqd389s3edR+HXdnWdf1Wm9tddHKegV13jSdbZdOR6i3LZK62dtFbd+
+        o3mdmbfNa23MzgO+/+Jcg2Ha2Tb4QJ2tbpI9Fu+k5vpHbzTafFmbL+3UTLO8mz/jFTc1VeoxeBfZ
+        AKdZY/vGG3PatTHvy/mKDfLyFa/BCB4UH3nzA/6MQ19RqG/CYZytQWEmR+4Su/NLUcGOnpZ3U6zZ
+        6lYngDBupg2JF7+RAywmCRjgbzPyLKO3otljQdvPGPYjc1rPVb9QsJ2HBQ5jvd/vy6y3EuOzMQw7
+        zhwfe05pzJDUhm7qQzvdv6GbPMymgSkpS+9J3mxDAI0CNAfAAUftxgeYNYUHvByHm+UwVqC8Uarq
+        xm1GqaV03N+kaVOheTNSHd8GVDN5jNAb/eymlBkEQsImz+carad99DMgDvgPrE0SnPhljxcNsLd5
+        wJ1OvV52Pgjp6dwxB7BY3Wqutykdz0Wu53NuunlnD2Vl6WgmCarxPG8CvsfCdm1S6YQfmDluuCV/
+        SNjcHE7vvqb7jXy5R7OJIeCO/Yyz05j2f01xfUTX6UpzVR+8zuxyL2t2mh/Rs/1NyNCATkvt4Wnb
+        KPD9zOrNeSfdR2AHi350Wd3EjZAlrJNs8479rCaUFQEmsr2Mw57Nul40fGMffc82R90k18szDXh4
+        WvjwtIBi+8DanO9vy4tIDDPbQ20lKwyD2bja3y/nbjmAVwmwawLanL4BNgh0B4Xl68x2dxSq9QgX
+        3JPs1NYZ//AaUsvsE+c19GMgol0gMbur4CvsFzQy2V2vR0bczdPSvNkgqpcRsv2IZgAZUE14Y9+p
+        j69mnwsDmD+bBfX/6CbVALo8mQ/o5gJw8nJ60c+ccNF2KrNId7a9Gu3lXkfd5HHjlzSbQxv4Ffa2
+        ip2908+kyTANSjNn0ZM5bVtnUrs2QX/A0/j0gYwemcV0NmMLZ75Gy1oWrfWdx8KFuzDdmPG6DQhL
+        XUZjN9RneKaGvdUbeVMNcvHMkUqsn2Snx5C2nZ8B6mmZj2hAaPruzFqN8oRPBPGQhc7hMOTNVcF3
+        nGvUNAPQ2sIKTl3VTklFvM0bOaCB57yueWaDXshOv/fRQTsL4j7AzFs6JNpvVpPg4KuielydBTOs
+        xnkcdNQAhFWfozrAuSqqcGPTHBC/kTfZfr7t94LZtM89z+hUOnkPCgMODvgPMPPr0mKK9dq+K9op
+        NYVgusoOjjGvk45zDZ762QqrrmLTvuamlJ66fcNrXG4JGTbFzbNfyAFMj6H+DNDg9JE9lHK0PmhT
+        ZGCuOTieOEaVvq1kfx65Hc9rQOKFkND+b3vB0FHjhurAG/1MyK3NMhsak8kT3WzNGXhoAGXGDvgP
+        zM9GrkuuxXksRjAKkikjjDlJvbHjLOmWnXhEPS3Enqa6aVza6gZgZL+RNydjTdkb6O5lL+QASL/+
+        K29+wJ+R+xQeTn0r+cqXguWv0XFYlT1bx3FHrwHtJmOIJ9M6yxqsZhxdm2/sb+pFNuNlVIur53Na
+        +GAGmU/NNYxRg2IorG1ouPqwLxszocnRYnq8d5xt847qqtjbAJLKHM40BWfkDQ2QHdEMkkgYkWe6
+        +d+z7X57luoTc9o4TKcknPRM3alXwYmLr850Lm5LArqdC+KRjVDp+iFv0wTgej6LVfMNDUh1K1I9
+        4zAaPdGA1p/xtNTatclxH1mbtrWRt7W/VeWek1pf/kQ5SM4iZ8tLx7NUADc0M6HWmwUIA1dzaRZ4
+        o87W4hEH3N1vXjiDzDz2naQBFD+iAbQIfAfNAkUQbHnnaOeFBN3e+RoE3dZme26bOg3VRbZKKsfb
+        Dun3N84FHfntMXNK/9x/dp4Wtv2MkVpmHDvgPuA1RJw20zpyl9OjeZ/WOmQU6kKNLYB+17ypZtBF
+        EcLNliqmz1Nmb+jmtFDGY6Eo6+OzPWGxndPCR3ZqLdoH6sw19OguHNlsyC3WgVIHt9tdDNNZcOx4
+        Zk8lPqYrkzA4MxrXJzSnv/N/KqLb8jq71IZ8eaIBf+pMaDWA+YwGzE/+bG5XglWeY3jfTK9ivUW9
+        Bedb3c4etF7DHJJUGWLVqN3MVDEI3jkXhOMdOkXhcI6e54DHnJZ57KHA/83sx8//+PHXj/8EsJjO
+        fiU3AAA=
     headers:
-      alt-svc: ['quic=":443"; ma=2592000; v="35,34"']
-      cache-control: ['private, max-age=0, must-revalidate, no-transform']
-      content-length: ['3308']
-      content-type: [application/json; charset=UTF-8]
-      date: ['Fri, 13 Jan 2017 22:12:22 GMT']
-      etag: ['"gMxXHe-zinKdE9lTnzKu8vjcmDI/N6dIC_KOnuw69Y7IH9GKMFDmEOs"']
-      expires: ['Fri, 13 Jan 2017 22:12:22 GMT']
-      server: [GSE]
-      vary: [Origin, X-Origin]
-      x-content-type-options: [nosniff]
-      x-frame-options: [SAMEORIGIN]
-      x-xss-protection: [1; mode=block]
-    status: {code: 200, message: OK}
+      Alt-Svc:
+      - quic=":443"; ma=2592000; v="46,43",h3-Q050=":443"; ma=2592000,h3-Q049=":443";
+        ma=2592000,h3-Q048=":443"; ma=2592000,h3-Q046=":443"; ma=2592000,h3-Q043=":443";
+        ma=2592000
+      Cache-Control:
+      - private, max-age=0, must-revalidate, no-transform
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json; charset=UTF-8
+      Date:
+      - Fri, 03 Jan 2020 20:56:46 GMT
+      ETag:
+      - '"p4VTdlkQv3HQeTEaXgvLePAydmU/cHxMtmUX4Vy42RLuzFGLsKtlY0Q"'
+      Expires:
+      - Fri, 03 Jan 2020 20:56:46 GMT
+      Server:
+      - GSE
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Origin
+      - X-Origin
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-XSS-Protection:
+      - 1; mode=block
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - python-requests/2.22.0
+    method: GET
+    uri: https://www.googleapis.com/youtube/v3/playlistItems?playlistId=PLOxORm4jpOQfMU7bpfGCzDyLropIYEHuR&maxResults=50&key=AIzaSyAl1Xq9DwdE_KD4AtPaE4EJl3WZe2zCqg4&part=contentDetails&pageToken=CJYBEAA
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAAL2US5OiMBSF9/4Ky9k2M0kgKuxQI6IGBQO2Tk9ZKPEFgg98QFf/94G2V7MYnXK6
+        N1B178nJPV9xeS0US/4q9EpKsZREx/g45d+2gZsEq0Osx3zTzd4WP2yj8MBLT5mYx+4iF7+UtpLD
+        vMA3T2LL5Iy4z4tTl/fVxNvYPzpTR+9qjcNWpsf183iw1ax1OpxPYqa/lN59tnt+6rsLziKfh7lh
+        vT2qEZVcm1lDD+dRVn8tFIulOIrdIBvjGMSHrAZx+Skv76+VPt/nTlkDg0LxLTdYZaPnyp+ZLHf4
+        e8j8zuK90XpVeOls0IVuJksQE8In1lmtVjFyFtdomdPq/SqbXPqcyIMps3YzIltjHzoGap/Hvtfg
+        voVZq32akWBs2Utor6QL9R3NXBt1alNoAKtpEPvyYTiLwpiHcSMbcRUcPrBk9dPK45F+DeZWXCpt
+        p3Eruh766PaP0yznkntqnMsQgKIAkIAAg7ICgALE7wCAcSk/8pY9cn7/m5kqdcJAaDhMZipAeEfw
+        rh7ILbsTzh5jdu4xVeyxcc1IHUKZnfYYTe5n5mt7dRSjRewfbjADOTOIGawqWFYw/nxmXi0xzAkZ
+        8mcwT+ZyfzqG3QtdlVEEHmMG6ZpA6uugx0xkpm3NSA3tfmbarD5pinOx3T/fy6yiSEgBX8BMpAZw
+        o3a671okaY2aO11fOEYFe/xBZmfKZgltLDXTJpLB9JSCEb6fWb0Ch7jv17TgxncGZAGIApIYxAoo
+        K9IXMBtsWXO2kyM+cYl2FAbDynwfUc9RGX2MWdJrBJpBCDB8S6OEpJSY/7CbNJrgZd1RKw37BrOq
+        ALAAIMt+ZhJURPj5zIg8imVa80YjdxlZnaU7YXRR3fVSx39wN41sLw0yQlaDnA1miyag6H5mHeRE
+        bnhyoaneYFYRIBRgmSFRwUhB1T+YFYq/Cm+F38voNjIdCAAA
+    headers:
+      Alt-Svc:
+      - quic=":443"; ma=2592000; v="46,43",h3-Q050=":443"; ma=2592000,h3-Q049=":443";
+        ma=2592000,h3-Q048=":443"; ma=2592000,h3-Q046=":443"; ma=2592000,h3-Q043=":443";
+        ma=2592000
+      Cache-Control:
+      - private, max-age=0, must-revalidate, no-transform
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json; charset=UTF-8
+      Date:
+      - Fri, 03 Jan 2020 20:56:46 GMT
+      ETag:
+      - '"p4VTdlkQv3HQeTEaXgvLePAydmU/KbVILGDsp9MujXZSpGRjzWf_tTI"'
+      Expires:
+      - Fri, 03 Jan 2020 20:56:46 GMT
+      Server:
+      - GSE
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Origin
+      - X-Origin
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-XSS-Protection:
+      - 1; mode=block
+    status:
+      code: 200
+      message: OK
 version: 1

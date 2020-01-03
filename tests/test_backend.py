@@ -1,8 +1,6 @@
-from __future__ import unicode_literals
-
 import os.path
 
-import mock
+from unittest import mock
 
 import pafy
 
@@ -48,7 +46,7 @@ my_vcr = vcr.VCR(
 def test_playlist_resolver(pafy_mock_with_video):
     videos = backend.resolve_playlist('PLOxORm4jpOQfMU7bpfGCzDyLropIYEHuR')
 
-    assert len(videos) == 108
+    assert len(videos) == 141
 
 
 @my_vcr.use_cassette('youtube_search.yaml')
@@ -98,7 +96,7 @@ def test_lookup_video_uri(caplog):
                             '/a title.C0DPdy98e4c')
 
     assert 'Need 11 character video id or the URL of the video.' \
-           not in caplog.text()
+           not in caplog.text
 
     assert track
 
