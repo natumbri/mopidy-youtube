@@ -7,9 +7,9 @@ import pykka
 from mopidy import backend, httpclient
 from mopidy.models import Album, Artist, SearchResult, Track
 
-from mopidy_youtube.apis import youtube_api, youtube_bs4api
 # from mopidy_youtube.apis import youtube_scrapi
 from mopidy_youtube import Extension, logger, youtube
+from mopidy_youtube.apis import youtube_api, youtube_bs4api
 
 # A typical interaction:
 # 1. User searches for a keyword (YouTubeLibraryProvider.search)
@@ -24,11 +24,12 @@ from mopidy_youtube import Extension, logger, youtube
 def extract_id(uri):
     return uri.split(".")[-1]
 
+
 def safe_url(uri):
     valid_chars = f"-_.() {string.ascii_letters}{string.digits}"
     safe_uri = unicodedata.normalize("NFKD", uri).encode("ASCII", "ignore")
     return re.sub(
-        r"\s+", " ", "".join(str(c) for c in safe_uri if str(c) in valid_chars)
+        r"\s+", " ", "".join(c for c in map(chr, safe_uri) if c in valid_chars)
     ).strip()
 
 
@@ -142,9 +143,8 @@ class YouTubeLibraryProvider(backend.LibraryProvider):
                     comment=entry.id,
                     length=length,
                     artists=[Artist(name=entry.channel.get())],
-                    album=Album(name=album),  # , images=entry.thumbnails.get(),),
-                    uri="%s/%s.%s"
-                    % (uri_base, safe_url(name), entry.id),
+                    album=Album(name=album),
+                    uri="%s/%s.%s" % (uri_base, safe_url(name), entry.id),
                 )
             )
 
@@ -198,9 +198,7 @@ class YouTubeLibraryProvider(backend.LibraryProvider):
                     comment=video.id,
                     length=video.length.get() * 1000,
                     artists=[Artist(name=video.channel.get())],
-                    album=Album(
-                        name="YouTube Video"  # , images=video.thumbnails.get(),
-                    ),
+                    album=Album(name="YouTube Video",),
                     uri="youtube:video/%s.%s"
                     % (safe_url(video.title.get()), video.id),
                 )
@@ -227,10 +225,7 @@ class YouTubeLibraryProvider(backend.LibraryProvider):
                     length=video.length.get() * 1000,
                     track_no=count,
                     artists=[Artist(name=video.channel.get())],
-                    album=Album(
-                        name=playlist.title.get(),
-                        # images=playlist.thumbnails.get(),
-                    ),
+                    album=Album(name=playlist.title.get(),),
                     uri="youtube:video/%s.%s"
                     % (safe_url(video.title.get()), video.id),
                 )
@@ -238,11 +233,8 @@ class YouTubeLibraryProvider(backend.LibraryProvider):
             ]
 
     def get_images(self, uris):
-        result = {}
-        for uri in uris:
-            result[uri] = youtube.Video.get(uri).thumbnails.get()
-        return result
-                                                                
+        return {uri: youtube.Video.get(uri).thumbnails.get() for uri in uris}
+
 
 class YouTubePlaybackProvider(backend.PlaybackProvider):
 

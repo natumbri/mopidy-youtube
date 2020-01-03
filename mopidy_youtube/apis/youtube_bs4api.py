@@ -3,6 +3,7 @@ import re
 
 from bs4 import BeautifulSoup
 from mopidy_youtube import logger
+
 # from youtube import Client, Video
 from mopidy_youtube.apis.youtube_scrapi import scrAPI
 

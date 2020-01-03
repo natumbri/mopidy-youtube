@@ -4,13 +4,13 @@ import traceback
 
 import pykka
 import requests
+import youtube_dl
+from cachetools import LRUCache, cached
+from mopidy.models import Image
+from mopidy_youtube import logger
 from requests.adapters import HTTPAdapter
 from requests.packages.urllib3.util.retry import Retry
 
-import youtube_dl
-from cachetools import LRUCache, cached
-from mopidy_youtube import logger
-from mopidy.models import Image
 api_enabled = False
 
 
@@ -208,7 +208,7 @@ class Video(Entry):
         identifier = self.id.split(".")[-1]
         self._thumbnails = pykka.ThreadingFuture()
         self._thumbnails.set(
-        [
+            [
                 Image(uri=f"https://i.ytimg.com/vi/{identifier}/{type}.jpg")
                 for type in ["default", "mqdefault", "hqdefault"]
             ]
