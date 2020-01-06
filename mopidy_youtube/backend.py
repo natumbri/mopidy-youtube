@@ -8,7 +8,7 @@ from mopidy import backend, httpclient
 from mopidy.models import Album, Artist, SearchResult, Track
 
 from mopidy_youtube import Extension, logger, youtube
-from mopidy_youtube.apis import youtube_api, youtube_bs4api, youtube_scrapi
+from mopidy_youtube.apis import youtube_api, youtube_bs4api
 
 # A typical interaction:
 # 1. User searches for a keyword (YouTubeLibraryProvider.search)
