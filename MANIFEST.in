@@ -5,6 +5,7 @@ include LICENSE
 include MANIFEST.in
 include pyproject.toml
 include tox.ini
+include .coveragerc
 
 recursive-include .circleci *
 recursive-include .github *
@@ -12,4 +13,5 @@ recursive-include .github *
 include mopidy_*/ext.conf
 
 recursive-include tests *.py
+recursive-include tests *.yaml
 recursive-include tests/data *
