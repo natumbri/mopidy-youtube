@@ -178,6 +178,8 @@ class bs4API(scrAPI):
 
         rs = [
             {"search_query": '"' + id + '"', "sp": "EgIQAQ%3D%3D"} for id in ids
+            # This may be more exact:
+            # {"search_query": '"' + id + '"', "sp": "EgIQAUICCAE%253D"} for id in ids
         ]
 
         for result in [cls.run_search(r)[0] for r in rs]:
