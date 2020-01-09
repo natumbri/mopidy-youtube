@@ -43,6 +43,7 @@ setup(
         'License :: OSI Approved :: Apache Software License',
         'Operating System :: OS Independent',
         'Programming Language :: Python :: 2',
+        'Development Status :: 3 - Alpha',
         'Topic :: Multimedia :: Sound/Audio :: Players',
     ],
 )

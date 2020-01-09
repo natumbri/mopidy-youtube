@@ -96,10 +96,10 @@ Credits
 Changelog
 =========
 
-v2.1.0a (2019-10-26)
+v2.1.0 (TBA)
 -------------------
 
-- Last version that supports Mopidy 2
+- Last version that supports Mopidy 2.
 
 - Last version in Python 2.7
 
