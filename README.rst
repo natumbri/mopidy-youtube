@@ -26,10 +26,6 @@ by running::
 
     sudo apt-get install gstreamer1.0-plugins-bad
     
-For older versions of Mopidy (pre v2.0), install the plugins by running::
-
-    sudo apt-get install gstreamer0.10-plugins-bad
-
 Install by running::
 
     pip install Mopidy-YouTube
@@ -85,8 +81,8 @@ first::
 Project resources
 =================
 
-- `Source code <https://github.com/mopidy/mopidy-youtube>`_
-- `Issue tracker <https://github.com/mopidy/mopidy-youtube/issues>`_
+- `Source code <https://github.com/natumbri/mopidy-youtube>`_
+- `Issue tracker <https://github.com/natumbri/mopidy-youtube/issues>`_
 
 
 Credits
@@ -94,14 +90,18 @@ Credits
 
 - Original author: `Janez Troha <https://github.com/dz0ny>`_
 - Current maintainer: `Nikolas Tumbri <https://github.com/natumbri>`_
-- `Contributors <https://github.com/mopidy/mopidy-youtube/graphs/contributors>`_
+- `Contributors <https://github.com/natumbri/mopidy-youtube/graphs/contributors>`_
 
 
 Changelog
 =========
 
-v2.1.0 (2019-10-26)
+v2.1.0a (2019-10-26)
 -------------------
+
+- Last version that supports Mopidy 2
+
+- Last version in Python 2.7
 
 - Major overhaul.
 
