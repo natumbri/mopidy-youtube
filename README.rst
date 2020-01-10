@@ -20,7 +20,11 @@ Mopidy extension that plays sound from YouTube.
 Installation
 ============
 
-Install by running::
+Install from PyPI by running::
+
+    python3 -m pip install Mopidy-Youtube==3.0a1
+
+Install from github by running::
 
     python3 -m pip install https://github.com/natumbri/mopidy-youtube/archive/develop.zip
 
@@ -85,9 +89,9 @@ first.
 Project resources
 =================
 
-- `Source code <https://github.com/mopidy/mopidy-youtube>`_
-- `Issue tracker <https://github.com/mopidy/mopidy-youtube/issues>`_
-- `Changelog <https://github.com/mopidy/mopidy-youtube/blob/master/CHANGELOG.rst>`_
+- `Source code <https://github.com/natumbri/mopidy-youtube>`_
+- `Issue tracker <https://github.com/natumbri/mopidy-youtube/issues>`_
+- `Changelog <https://github.com/natumbri/mopidy-youtube/blob/master/CHANGELOG.rst>`_
 
 
 Credits
@@ -95,5 +99,5 @@ Credits
 
 - Original author: `Janez Troha <https://github.com/dz0ny>`_
 - Current maintainer: `Nikolas Tumbri <https://github.com/natumbri>`_
-- `Contributors <https://github.com/mopidy/mopidy-youtube/graphs/contributors>`_
+- `Contributors <https://github.com/natumbri/mopidy-youtube/graphs/contributors>`_
 
