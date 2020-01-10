@@ -3,19 +3,25 @@ Changelog
 *********
 
 
-v3.0.0 (UNRELEASED)
+v3.0 (UNRELEASED)
 ========================================
 
 - Initial python3 release.
 
-v2.1.0 (2019-10-26)
+v2.1.0 (TBA)
 -------------------
+
+- Last version that supports Mopidy 2.
+
+- Last version in Python 2.7
 
 - Major overhaul.
 
 - Improved performance.
 
 - Works with or without YouTube API key.
+
+- Fixes many issues.
 
 v2.0.2 (2016-01-19)
 -------------------
@@ -33,7 +39,6 @@ v2.0.1 (2015-08-19)
 - Don't return ``None`` values to Mopidy when lookup or search returns invalid
   data. In Mopidy 1.0, this caused a crash. In Mopidy 1.1, this caused warnings
   about the YouTube backend returning invalid data. (Fixes: #28, PR: #35)
-
 v2.0.0 (2015-04-01)
 -------------------
 
