@@ -5,7 +5,7 @@ import pytest
 import vcr
 import youtube_dl
 from mopidy_youtube import Extension, backend, youtube
-from mopidy_youtube.apis import youtube_scrapi
+from mopidy_youtube.apis import youtube_bs4api
 
 proxy = None  # httpclient.format_proxy(config['proxy'])
 youtube.Video.proxy = proxy
@@ -76,7 +76,7 @@ def test_init_sets_up_the_providers(config):
 @vcr.use_cassette("tests/fixtures/youtube_playlist.yaml")
 def test_get_playlist(config):
 
-    youtube.Entry.api = youtube_scrapi.scrAPI(proxy, headers)
+    youtube.Entry.api = youtube_bs4api.bs4API(proxy, headers)
 
     pl = youtube.Playlist.get("PLvdVG7oER2eFutjd4xl3TGNDui9ELvY4D")
 
@@ -97,9 +97,9 @@ def test_get_playlist(config):
 @vcr.use_cassette("tests/fixtures/youtube_list_playlists.yaml")
 def test_list_playlists(config):
 
-    youtube.Entry.api = youtube_scrapi.scrAPI(proxy, headers)
+    youtube.Entry.api = youtube_bs4api.bs4API(proxy, headers)
 
-    playlists = youtube_scrapi.scrAPI.list_playlists(
+    playlists = youtube_bs4api.bs4API.list_playlists(
         [
             "PLfGibfZATlGq6zF72No5BZaScBiWWb6U1",
             "PLRHAVCbqFwJBkRupIhuGW3_XEIWc-ZYER",
@@ -111,7 +111,7 @@ def test_list_playlists(config):
 
 @vcr.use_cassette("tests/fixtures/youtube_search.yaml")
 def test_search(config):
-    youtube.Entry.api = youtube_scrapi.scrAPI(proxy, headers)
+    youtube.Entry.api = youtube_bs4api.bs4API(proxy, headers)
 
     videos = youtube.Entry.search("chvrches")
 
@@ -128,7 +128,7 @@ def test_search(config):
 @vcr.use_cassette("tests/fixtures/youtube_get_video.yaml")
 def test_get_video(config):
 
-    youtube.Entry.api = youtube_scrapi.scrAPI(proxy, headers)
+    youtube.Entry.api = youtube_bs4api.bs4API(proxy, headers)
 
     video = youtube.Video.get("e1YqueG2gtQ")
 
@@ -144,15 +144,15 @@ def test_get_video(config):
 @vcr.use_cassette("tests/fixtures/youtube_list_videos.yaml")
 def test_list_videos(config):
 
-    youtube.Entry.api = youtube_scrapi.scrAPI(proxy, headers)
+    youtube.Entry.api = youtube_bs4api.bs4API(proxy, headers)
 
-    videos = youtube_scrapi.scrAPI.list_videos(["_mTRvJ9fugM", "h_uyq8oGDvU"])
+    videos = youtube_bs4api.bs4API.list_videos(["_mTRvJ9fugM", "h_uyq8oGDvU"])
 
     assert len(videos["items"]) == 2
 
 
 def test_audio_url(youtube_dl_mock_with_video):
-    youtube.Entry.api = youtube_scrapi.scrAPI(proxy, headers)
+    youtube.Entry.api = youtube_bs4api.bs4API(proxy, headers)
 
     video = youtube.Video.get("e1YqueG2gtQ")
 
@@ -160,7 +160,7 @@ def test_audio_url(youtube_dl_mock_with_video):
 
 
 def test_audio_url_fail(youtube_dl_mock):
-    youtube.Entry.api = youtube_scrapi.scrAPI(proxy, headers)
+    youtube.Entry.api = youtube_bs4api.bs4API(proxy, headers)
 
     youtube_dl_mock.YoutubeDL.side_effect = Exception("Removed")
 
