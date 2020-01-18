@@ -16,7 +16,6 @@ class scrAPI(Client):
         regex = (
             r'(?:\<li\>)(?:.|\n)*?\<a href\=(["\'])\/watch\?v\=(?P<id>.{11})'
             r"(?:\&amp\;list\=(?:(?P<playlist>PL.*?)\1)?"
-            # r'(?:(?P<radiolist>RD.*?)\&)?'
             r"(?:.|\n)*?class\=\1formatted-video-count-label\1\>[^\d]*"
             r"(?P<itemCount>\d*))?(?:.|\n)*?title\=\1(?P<title>.+?)\1.+?"
             r"(?:(?:Duration[^\d]+(?:(?P<durationHours>\d+)\:)?"
@@ -69,10 +68,6 @@ class scrAPI(Client):
                 }
             )
 
-            # # Instead of if/else, could this just be:
-            # item['snippet'].update({
-            #     'channelTitle': match.group('uploader') or 'NA'
-            # })
             if match.group("uploader") is not None:
                 item["snippet"].update(
                     {"channelTitle": match.group("uploader")}
@@ -89,9 +84,7 @@ class scrAPI(Client):
         search_results = []
 
         # assume 20 results per page
-        pages = int(Video.search_results / 20) + (
-            Video.search_results % 20 > 0
-        )  # noqa: E501
+        pages = int(Video.search_results / 20) + (Video.search_results % 20 > 0)
 
         logger.info("session.get triggered: search")
 
@@ -112,7 +105,7 @@ class scrAPI(Client):
                             range(Video.search_results), search_results
                         )
                     ]
-                },  # noqa: E501
+                },
                 sort_keys=False,
                 indent=1,
             )
@@ -250,7 +243,7 @@ class scrAPI(Client):
                 {
                     "nextPageToken": None,
                     "items": [x for _, x in zip(range(max_results), items)],
-                },  # noqa: E501
+                },
                 sort_keys=False,
                 indent=1,
             )

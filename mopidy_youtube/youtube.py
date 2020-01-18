@@ -73,9 +73,6 @@ class Entry:
                 obj = Playlist.get(item["id"]["playlistId"])
                 if "contentDetails" in item:
                     set_api_data.append("video_count")
-            # elif item['id']['kind'] == 'youtube#radiolist':
-            #     obj = Video.get(item['id']['videoId'])
-            #     set_api_data = ['title', 'video_count']
             else:
                 obj = []
                 return obj
@@ -328,11 +325,11 @@ class Playlist(Entry):
                             range(self.playlist_max_videos), myvideos
                         )
                     ]
-                )  # noqa: E501
+                )
 
             self._videos.set(
                 [x for _, x in zip(range(self.playlist_max_videos), all_videos)]
-            )  # noqa: E501
+            )
 
         ThreadPool.run(job)
 

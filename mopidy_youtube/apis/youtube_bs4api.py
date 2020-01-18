@@ -58,23 +58,8 @@ class bs4API(scrAPI):
                             "channelTitle": result.find(
                                 class_="yt-lockup-byline"
                             ).text,
-                            # 'uploadDate': result.find(
-                            #     class_ = "yt-lockup-meta-info"
-                            #     ).find_all("li")[0].text,
-                            # 'views': result.find(
-                            #     class_ = "yt-lockup-meta-info"
-                            #     ).find_all("li")[1].text,
-                            # 'url': 'https://www.youtube.com'+result.find(
-                            #     class_ = "yt-lockup-title").next['href']
                         },
                     }
-
-                    # if result.find(class_ = "yt-lockup-description") is not None:
-                    #   item['snippet']['description'] = result.find(
-                    #       class_ = "yt-lockup-description").text or "NA"
-                    # else:
-                    #   item['snippet']['description'] = "NA"
-
                     items.append(item)
 
                 if "yt-lockup-playlist" in result.get("class"):
@@ -114,8 +99,6 @@ class bs4API(scrAPI):
                             "channelTitle": result.find(
                                 class_="yt-lockup-byline"
                             ).text,
-                            # 'url': ('https://www.youtube.com/playlist?list='
-                            #     +info['id']['playlistId'])
                         },
                     }
                     # don't append radiolist playlists
@@ -184,10 +167,7 @@ class bs4API(scrAPI):
         items = []
 
         rs = [
-            {"search_query": '"' + id + '"', "sp": "EgIQAQ%3D%3D"}
-            for id in ids
-            # This may be more exact:
-            # {"search_query": '"' + id + '"', "sp": "EgIQAUICCAE%253D"} for id in ids
+            {"search_query": '"' + id + '"', "sp": "EgIQAQ%3D%3D"} for id in ids
         ]
 
         for result in [cls.run_search(r)[0] for r in rs]:

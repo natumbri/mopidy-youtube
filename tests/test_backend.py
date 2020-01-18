@@ -5,7 +5,7 @@ import pytest
 import vcr
 import youtube_dl
 from mopidy_youtube import Extension, backend, youtube
-from mopidy_youtube.apis import youtube_bs4api
+from mopidy_youtube.apis import youtube_bs4api, youtube_scrapi
 
 proxy = None  # httpclient.format_proxy(config['proxy'])
 youtube.Video.proxy = proxy
@@ -73,97 +73,128 @@ def test_init_sets_up_the_providers(config):
     assert isinstance(backend_inst.playback, backend.YouTubePlaybackProvider)
 
 
+apis = (
+    # youtube_api.API,
+    youtube_scrapi.scrAPI,
+    youtube_bs4api.bs4API,
+    # youtube_japi.jAPI
+)
+
+
 @vcr.use_cassette("tests/fixtures/youtube_playlist.yaml")
 def test_get_playlist(config):
 
-    youtube.Entry.api = youtube_bs4api.bs4API(proxy, headers)
+    for api in apis:
+        youtube.Entry.api = api(proxy, headers)
 
-    pl = youtube.Playlist.get("PLvdVG7oER2eFutjd4xl3TGNDui9ELvY4D")
+        pl = youtube.Playlist.get("PLvdVG7oER2eFutjd4xl3TGNDui9ELvY4D")
 
-    assert len(pl.videos.get()) == 20
-    assert pl.videos.get()[0].title.get()
+        assert len(pl.videos.get()) == 20
+        assert pl.videos.get()[0].title.get()
 
-    # Playlist.videos starts loading video info in the background
-    video = pl.videos.get()[0]
-    assert video._length  # should be ready
-    assert video.length.get() == 392
+        # Playlist.videos starts loading video info in the background
+        video = pl.videos.get()[0]
+        assert video._length  # should be ready
+        assert video.length.get() == 392
 
-    pl2 = youtube.Playlist.get("PLvdVG7oER2eFutjd4xl3TGNDui9ELvY4D")
+        pl2 = youtube.Playlist.get("PLvdVG7oER2eFutjd4xl3TGNDui9ELvY4D")
 
-    assert pl2 is pl  # fetch from cache
-    assert pl._videos  # should be ready
+        assert pl2 is pl  # fetch from cache
+        assert pl._videos  # should be ready
 
 
 @vcr.use_cassette("tests/fixtures/youtube_list_playlists.yaml")
 def test_list_playlists(config):
 
-    youtube.Entry.api = youtube_bs4api.bs4API(proxy, headers)
+    for api in apis:
+        youtube.Entry.api = api(proxy, headers)
 
-    playlists = youtube_bs4api.bs4API.list_playlists(
-        [
-            "PLfGibfZATlGq6zF72No5BZaScBiWWb6U1",
-            "PLRHAVCbqFwJBkRupIhuGW3_XEIWc-ZYER",
-        ]
-    )
+        playlists = api.list_playlists(
+            [
+                "PLfGibfZATlGq6zF72No5BZaScBiWWb6U1",
+                "PLRHAVCbqFwJBkRupIhuGW3_XEIWc-ZYER",
+            ]
+        )
 
-    assert len(playlists["items"]) == 2
+        assert len(playlists["items"]) == 2
 
 
 @vcr.use_cassette("tests/fixtures/youtube_search.yaml")
 def test_search(config):
-    youtube.Entry.api = youtube_bs4api.bs4API(proxy, headers)
 
-    videos = youtube.Entry.search("chvrches")
+    for api in apis:
+        youtube.Entry.api = api(proxy, headers)
 
-    assert len(videos) == 30
-    assert videos[0]._title  # should be ready
-    assert videos[0]._channel  # should be ready
-    assert videos[0]._length  # should be ready (scrAPI)
+        videos = youtube.Entry.search("chvrches")
 
-    video = youtube.Video.get("BZyzX4c1vIs")
+        assert len(videos) == 30
+        assert videos[0]._title  # should be ready
+        assert videos[0]._channel  # should be ready
+        assert videos[0]._length  # should be ready (scrAPI)
 
-    assert video in videos  # cached
+        video = youtube.Video.get("BZyzX4c1vIs")
+
+        assert video in videos  # cached
 
 
 @vcr.use_cassette("tests/fixtures/youtube_get_video.yaml")
 def test_get_video(config):
 
-    youtube.Entry.api = youtube_bs4api.bs4API(proxy, headers)
+    for api in apis:
+        youtube.Entry.api = api(proxy, headers)
 
-    video = youtube.Video.get("e1YqueG2gtQ")
+        video = youtube.Video.get("e1YqueG2gtQ")
 
-    assert video.length.get()
+        assert video.length.get()
 
-    # get again, should fetch from cache, _length should be ready
-    video2 = youtube.Video.get("e1YqueG2gtQ")
+        # get again, should fetch from cache, _length should be ready
+        video2 = youtube.Video.get("e1YqueG2gtQ")
 
-    assert video2 is video
-    assert video2._length
+        assert video2 is video
+        assert video2._length
 
 
 @vcr.use_cassette("tests/fixtures/youtube_list_videos.yaml")
 def test_list_videos(config):
 
-    youtube.Entry.api = youtube_bs4api.bs4API(proxy, headers)
+    for api in apis:
+        youtube.Entry.api = api(proxy, headers)
 
-    videos = youtube_bs4api.bs4API.list_videos(["_mTRvJ9fugM", "h_uyq8oGDvU"])
+        videos = api.list_videos(["_mTRvJ9fugM", "h_uyq8oGDvU"])
 
-    assert len(videos["items"]) == 2
+        assert len(videos["items"]) == 2
+
+
+@vcr.use_cassette("tests/fixtures/youtube_list_playlistitems.yaml")
+def test_list_playlistitems(config):
+
+    for api in apis:
+        youtube.Entry.api = api(proxy, headers)
+
+        playlistitems = api.list_playlistitems(
+            "PLvdVG7oER2eFutjd4xl3TGNDui9ELvY4D", 1, 20
+        )
+
+        assert len(playlistitems["items"]) == 20
 
 
 def test_audio_url(youtube_dl_mock_with_video):
-    youtube.Entry.api = youtube_bs4api.bs4API(proxy, headers)
 
-    video = youtube.Video.get("e1YqueG2gtQ")
+    for api in apis:
+        youtube.Entry.api = api(proxy, headers)
 
-    assert video.audio_url.get()
+        video = youtube.Video.get("e1YqueG2gtQ")
+
+        assert video.audio_url.get()
 
 
 def test_audio_url_fail(youtube_dl_mock):
-    youtube.Entry.api = youtube_bs4api.bs4API(proxy, headers)
 
-    youtube_dl_mock.YoutubeDL.side_effect = Exception("Removed")
+    for api in apis:
+        youtube.Entry.api = api(proxy, headers)
 
-    video = youtube.Video.get("unknown")
+        youtube_dl_mock.YoutubeDL.side_effect = Exception("Removed")
 
-    assert not video.audio_url.get()
+        video = youtube.Video.get("unknown")
+
+        assert not video.audio_url.get()
