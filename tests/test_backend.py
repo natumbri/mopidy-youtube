@@ -74,10 +74,8 @@ def test_init_sets_up_the_providers(config):
 
 
 apis = (
-    # youtube_api.API,
-    youtube_scrapi.scrAPI,
-    youtube_bs4api.bs4API,
-    # youtube_japi.jAPI
+        youtube_scrapi.scrAPI,
+        youtube_bs4api.bs4API
 )
 
 
