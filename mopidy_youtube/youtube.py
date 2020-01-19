@@ -14,12 +14,15 @@ from requests.packages.urllib3.util.retry import Retry
 api_enabled = False
 
 
-# decorator for creating async properties using pykka.ThreadingFuture
-# A property 'foo' should have a future '_foo'
-# On first call we invoke func() which should create the future
-# On subsequent calls we just return the future
-#
 def async_property(func):
+    """
+    decorator for creating async properties using pykka.ThreadingFuture
+
+    A property 'foo' should have a future '_foo'
+    On first call we invoke func() which should create the future
+    On subsequent calls we just return the future
+    """
+
     _future_name = "_" + func.__name__
 
     def wrapper(self):
@@ -30,39 +33,47 @@ def async_property(func):
     return property(wrapper)
 
 
-# The Video / Playlist classes can be used to load YouTube data. If
-# 'api_enabled' is true (and a valid youtube_api_key supplied), most data are
-# loaded using the (very much faster) YouTube Data API. If 'api_enabled' is
-# false, most data are loaded using requests and regex. Requests and regex
-# is many times slower than using the API.
-#
-# eg
-#   video = youtube.Video.get('7uj0hOIm2kY')
-#   video.length   # non-blocking, returns future
-#   ... later ...
-#   print video.length.get()  # blocks until info arrives, if it hasn't already
-#
-# Entry is a base class of Video and Playlist
-#
 class Entry:
+    """
+    Entry is a base class of Video and Playlist.
+
+    The Video / Playlist classes can be used to load YouTube data. If
+    'api_enabled' is true (and a valid youtube_api_key supplied), most data are
+    loaded using the (very much faster) YouTube Data API. If 'api_enabled' is
+    false, most data are loaded using requests and regex. Requests and regex
+    is many times slower than using the API.
+
+    eg
+      video = youtube.Video.get('7uj0hOIm2kY')
+      video.length   # non-blocking, returns future
+      ... later ...
+      print video.length.get()  # blocks until info arrives, if it hasn't already
+
+    Entry is a base class of Video and Playlist
+    """
+
     cache_max_len = 400
 
-    # Use Video.get(id), Playlist.get(id), instead of Video(id), Playlist(id),
-    # to fetch a cached object, if available
-    #
     @classmethod
     @cached(cache=LRUCache(maxsize=cache_max_len))
     def get(cls, id):
+        """
+        Use Video.get(id), Playlist.get(id), instead of Video(id), Playlist(id),
+        to fetch a cached object, if available
+        """
+
         obj = cls()
         obj.id = id
         return obj
 
-    # Search for both videos and playlists using a single API call. Fetches
-    # only title, thumbnails, channel (extra queries are needed for length and
-    # video_count)
-    #
     @classmethod
     def search(cls, q):
+        """
+        Search for both videos and playlists using a single API call. Fetches
+        only title, thumbnails, channel (extra queries are needed for length and
+        video_count)
+        """
+
         def create_object(item):
             set_api_data = ["title", "channel"]
             if item["id"]["kind"] == "youtube#video":
@@ -92,11 +103,13 @@ class Entry:
             logger.error('map error "%s"', e)
             return None
 
-    # Adds futures for the given fields to all objects in list, unless they
-    # already exist. Returns objects for which at least one future was added
-    #
     @classmethod
     def _add_futures(cls, futures_list, fields):
+        """
+        Adds futures for the given fields to all objects in list, unless they
+        already exist. Returns objects for which at least one future was added
+        """
+
         def add(obj):
             added = False
             for k in fields:
@@ -107,8 +120,6 @@ class Entry:
 
         return list(filter(add, futures_list))
 
-    # common Video/Playlist properties go to the base class
-    #
     @async_property
     def title(self):
         self.load_info([self])
@@ -117,10 +128,12 @@ class Entry:
     def channel(self):
         self.load_info([self])
 
-    # sets the given 'fields' of 'self', based on the 'item'
-    # data retrieved through the API
-    #
     def _set_api_data(self, fields, item):
+        """
+        sets the given 'fields' of 'self', based on the 'item'
+        data retrieved through the API
+        """
+
         for k in fields:
             _k = "_" + k
             future = self.__dict__.get(_k)
@@ -169,12 +182,13 @@ class Entry:
 
 
 class Video(Entry):
-
-    # loads title, length, channel of multiple videos using one API call for
-    # every 50 videos. API calls are split in separate threads.
-    #
     @classmethod
     def load_info(cls, list):
+        """
+        loads title, length, channel of multiple videos using one API call for
+        every 50 videos. API calls are split in separate threads.
+        """
+
         fields = ["title", "length", "channel"]
         list = cls._add_futures(list, fields)
 
@@ -211,11 +225,13 @@ class Video(Entry):
             ]
         )
 
-    # audio_url is the only property retrived using youtube_dl, it's much more
-    # expensive than the rest
-    #
     @async_property
     def audio_url(self):
+        """
+        audio_url is the only property retrived using youtube_dl, it's much more
+        expensive than the rest
+        """
+
         self._audio_url = pykka.ThreadingFuture()
 
         def job():
@@ -248,12 +264,13 @@ class Video(Entry):
 
 
 class Playlist(Entry):
-
-    # loads title, thumbnails, video_count, channel of multiple playlists using
-    # one API call for every 50 lists. API calls are split in separate threads.
-    #
     @classmethod
     def load_info(cls, list):
+        """
+        loads title, thumbnails, video_count, channel of multiple playlists using
+        one API call for every 50 lists. API calls are split in separate threads.
+        """
+
         fields = ["title", "video_count", "thumbnails", "channel"]
         list = cls._add_futures(list, fields)
 
@@ -274,12 +291,14 @@ class Playlist(Entry):
             sublist = list[i : i + 50]
             ThreadPool.run(job, (sublist,))
 
-    # loads the list of videos of a playlist using one API call for every 50
-    # fetched videos. For every page fetched, Video.load_info is called to
-    # start loading video info in a separate thread.
-    #
     @async_property
     def videos(self):
+        """
+        loads the list of videos of a playlist using one API call for every 50
+        fetched videos. For every page fetched, Video.load_info is called to
+        start loading video info in a separate thread.
+        """
+
         self._videos = pykka.ThreadingFuture()
 
         def job():
@@ -389,11 +408,13 @@ class Client:
         return duration
 
 
-# simple 'dynamic' thread pool. Threads are created when new jobs arrive, stay
-# active for as long as there are active jobs, and get destroyed afterwards
-# (so that there are no long-term threads staying active)
-#
 class ThreadPool:
+    """
+    simple 'dynamic' thread pool. Threads are created when new jobs arrive, stay
+    active for as long as there are active jobs, and get destroyed afterwards
+    (so that there are no long-term threads staying active)
+    """
+
     threads_active = 0
     jobs = []
     lock = threading.Lock()  # controls access to threads_active and jobs

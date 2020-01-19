@@ -73,10 +73,7 @@ def test_init_sets_up_the_providers(config):
     assert isinstance(backend_inst.playback, backend.YouTubePlaybackProvider)
 
 
-apis = (
-        youtube_scrapi.scrAPI,
-        youtube_bs4api.bs4API
-)
+apis = [youtube_scrapi.scrAPI, youtube_bs4api.bs4API]
 
 
 @vcr.use_cassette("tests/fixtures/youtube_playlist.yaml")
@@ -122,9 +119,15 @@ def test_search(config):
 
     for api in apis:
         youtube.Entry.api = api(proxy, headers)
+        backend_inst = get_backend(config)
+
+        videos = backend_inst.library.search(query={"omit-any": ["chvrches"]})
+        assert videos is None
+
+        videos = backend_inst.library.search(query={"any": ["chvrches"]})
+        assert len(videos.tracks) == 30
 
         videos = youtube.Entry.search("chvrches")
-
         assert len(videos) == 30
         assert videos[0]._title  # should be ready
         assert videos[0]._channel  # should be ready
@@ -133,6 +136,36 @@ def test_search(config):
         video = youtube.Video.get("BZyzX4c1vIs")
 
         assert video in videos  # cached
+
+
+@vcr.use_cassette("tests/fixtures/youtube_lookup.yaml")
+def test_lookup(config):
+
+    for api in apis:
+        youtube.Entry.api = api(proxy, headers)
+        backend_inst = get_backend(config)
+
+        video_uris = [
+            "yt:https://www.youtube.com/watch?v=s5BJXwNeKsQ",
+            "youtube:https://www.youtube.com/watch?v=1lWJXDG2i0A",
+            "youtube:video/Tom Petty And The Heartbreakers - "
+            "I Won't Back Down (Official Music Video).nvlTJrNJ5lA",
+        ]
+        for video_uri in video_uris:
+            video = backend_inst.library.lookup(video_uri)
+            assert len(video) == 1
+
+        playlist_uris = [
+            "yt:https://www.youtube.com/watch?v=SIhb-kNvL6M"
+            "&list=PLo4c-riVwz2miWOT3Y2VWzg2bmV4FmC8J",
+            "youtube:https://www.youtube.com/watch?v=lis8WGZQ9tw"
+            "&list=PLW3M-yio9tLtQLihn1wrJYzuV7AUPMq63",
+            "youtube:playlist/Tom Petty and The Heartbreakers GREATEST HITS "
+            "(Complete Album).PLrpyDacBCh7Bs3cNzKtMbuafcK_nw9znk",
+        ]
+        for playlist_uri in playlist_uris:
+            playlist = backend_inst.library.lookup(playlist_uri)
+            assert len(playlist) == 18
 
 
 @vcr.use_cassette("tests/fixtures/youtube_get_video.yaml")

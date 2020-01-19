@@ -5,9 +5,11 @@ from mopidy_youtube import logger
 from mopidy_youtube.youtube import Client, Video
 
 
-# Indirect access to YouTube data, without API
-#
 class scrAPI(Client):
+    """
+    Indirect access to YouTube data, without API, using regex
+    """
+
     endpoint = "https://www.youtube.com/"
 
     @classmethod
@@ -77,10 +79,12 @@ class scrAPI(Client):
             items.append(item)
         return items
 
-    # search for videos and playlists
-    #
     @classmethod
     def search(cls, q):
+        """
+        search for videos and playlists
+        """
+
         search_results = []
 
         # assume 20 results per page
@@ -111,10 +115,11 @@ class scrAPI(Client):
             )
         )
 
-    # list videos
-    #
     @classmethod
     def list_videos(cls, ids):
+        """
+        list videos
+        """
 
         regex = (
             r'<div id="watch7-content"(?:.|\n)*?'
@@ -146,10 +151,11 @@ class scrAPI(Client):
             json.dumps({"items": items}, sort_keys=False, indent=1)
         )
 
-    # list playlists
-    #
     @classmethod
     def list_playlists(cls, ids):
+        """
+        list playlists
+        """
 
         regex = (
             r'<div id="pl-header"(?:.|\n)*?"'
@@ -190,10 +196,12 @@ class scrAPI(Client):
             json.dumps({"items": items}, sort_keys=False, indent=1)
         )
 
-    # list playlist items
-    #
     @classmethod
     def run_list_playlistitems(cls, query):
+        """
+        list playlist items
+        """
+
         result = cls.session.get(cls.endpoint + "playlist", params=query)
 
         regex = (
