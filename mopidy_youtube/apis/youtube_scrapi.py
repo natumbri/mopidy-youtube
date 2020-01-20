@@ -94,9 +94,9 @@ class scrAPI(Client):
 
         rs = [
             {
-                 "search_query": q.replace(" ", "+"),
-                 "page": page + 1,
-                 "app": "desktop",
+                "search_query": q.replace(" ", "+"),
+                "page": page + 1,
+                "app": "desktop",
             }
             for page in range(pages)
         ]
