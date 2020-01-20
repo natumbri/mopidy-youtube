@@ -77,7 +77,7 @@ class bs4API(scrAPI):
 
                     items.append(item)
 
-                if "yt-lockup-playlist" in result.get("class"):
+                elif "yt-lockup-playlist" in result.get("class"):
                     item = {
                         "id": {
                             "kind": "youtube#playlist",
@@ -184,7 +184,11 @@ class bs4API(scrAPI):
         items = []
 
         rs = [
-            {"search_query": '"' + id + '"', "sp": "EgIQAQ%3D%3D"}
+            {
+                "search_query": '"' + id + '"',
+                "sp": "EgIQAQ%3D%3D",
+                "app": "desktop",
+            }
             for id in ids
             # This may be more exact:
             # {"search_query": '"' + id + '"', "sp": "EgIQAUICCAE%253D"} for id in ids
@@ -206,7 +210,12 @@ class bs4API(scrAPI):
         items = []
 
         rs = [
-            {"search_query": '"' + id + '"', "sp": "EgIQAw%3D%3D"} for id in ids
+            {
+                "search_query": '"' + id + '"',
+                "sp": "EgIQAw%3D%3D",
+                "app": "desktop",
+            }
+            for id in ids
         ]
 
         for result in [cls.run_search(r)[0] for r in rs]:
