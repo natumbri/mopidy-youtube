@@ -21,7 +21,6 @@ headers = {
 
 # youtube_api.youtube_api_key = os.environ.get("YOUTUBE_API_KEY", "FAKE_API_KEY")
 
-# yak = "AIzaSyDyumeZ9153L-s4vOr-qVdSGvy2HR3HZeM"
 yak = "fakeyoutubekey"
 youtube_api.youtube_api_key = yak
 
