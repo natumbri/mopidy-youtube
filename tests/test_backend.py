@@ -1,10 +1,10 @@
+import youtube_dl
 from mopidy import httpclient
 
 # import os
 import mock
 import pytest
 import vcr
-import youtube_dl
 from mopidy_youtube import Extension, backend, youtube
 from mopidy_youtube.apis import youtube_api, youtube_bs4api, youtube_scrapi
 
@@ -77,6 +77,7 @@ def test_init_sets_up_the_providers(config):
 
     assert isinstance(backend_inst.library, backend.YouTubeLibraryProvider)
     assert isinstance(backend_inst.playback, backend.YouTubePlaybackProvider)
+
 
 # need to work out how to add youtube_api.API to this list
 apis = [youtube_scrapi.scrAPI, youtube_bs4api.bs4API]

@@ -2,8 +2,8 @@ import json
 import re
 
 from bs4 import BeautifulSoup
-from mopidy_youtube import logger
 
+from mopidy_youtube import logger
 from mopidy_youtube.apis.youtube_scrapi import scrAPI
 
 
