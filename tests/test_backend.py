@@ -78,186 +78,176 @@ def test_init_sets_up_the_providers(config):
     assert isinstance(backend_inst.library, backend.YouTubeLibraryProvider)
     assert isinstance(backend_inst.playback, backend.YouTubePlaybackProvider)
 
-
-apis = [youtube_api.API, youtube_scrapi.scrAPI, youtube_bs4api.bs4API]
+# need to work out how to add youtube_api.API to this list
+apis = [youtube_scrapi.scrAPI, youtube_bs4api.bs4API]
 
 
 @vcr.use_cassette(
     "tests/fixtures/youtube_playlist.yaml", filter_query_parameters=["key"]
 )
-def get_playlist(config, api):
+def test_get_playlist(config):
 
-    youtube.Entry.api = api
+    for api in apis:
+        youtube.Entry.api = api(proxy, headers)
 
-    pl = youtube.Playlist.get("PLvdVG7oER2eFutjd4xl3TGNDui9ELvY4D")
+        pl = youtube.Playlist.get("PLvdVG7oER2eFutjd4xl3TGNDui9ELvY4D")
 
-    assert len(pl.videos.get()) == 20
-    assert pl.videos.get()[0].title.get()
+        assert len(pl.videos.get()) == 20
+        assert pl.videos.get()[0].title.get()
 
-    # Playlist.videos starts loading video info in the background
-    video = pl.videos.get()[0]
-    assert video._length  # should be ready
-    assert video.length.get() == 392
+        # Playlist.videos starts loading video info in the background
+        video = pl.videos.get()[0]
+        assert video._length  # should be ready
+        assert video.length.get() == 392
 
-    pl2 = youtube.Playlist.get("PLvdVG7oER2eFutjd4xl3TGNDui9ELvY4D")
+        pl2 = youtube.Playlist.get("PLvdVG7oER2eFutjd4xl3TGNDui9ELvY4D")
 
-    assert pl2 is pl  # fetch from cache
-    assert pl._videos  # should be ready
+        assert pl2 is pl  # fetch from cache
+        assert pl._videos  # should be ready
 
-@vcr.use_cassette("tests/fixtures/youtube_api_playlist.yaml", filter_query_parameters=["key"])
-def test_get_playlist_youtube_api(config)
-    get_playlist(config, youtube_api.API)
-    
-@vcr.use_cassette("tests/fixtures/youtube_scrapi_playlist.yaml", filter_query_parameters=["key"])
-def test_get_playlist_youtube_api(config)
-    get_playlist(config, youtube_scrapi.scrAPI)
-    
-@vcr.use_cassette("tests/fixtures/youtube_bs4api_playlist.yaml", filter_query_parameters=["key"])
-def test_get_playlist_youtube_api(config)
-    get_playlist(config, youtube_bs4api.bs4API)
 
-# @vcr.use_cassette(
-#     "tests/fixtures/youtube_list_playlists.yaml",
-#     filter_query_parameters=["key"],
-# )
-# def test_list_playlists(config):
-# 
-#     for api in apis:
-#         youtube.Entry.api = api(proxy, headers)
-# 
-#         playlists = api.list_playlists(
-#             [
-#                 "PLfGibfZATlGq6zF72No5BZaScBiWWb6U1",
-#                 "PLRHAVCbqFwJBkRupIhuGW3_XEIWc-ZYER",
-#             ]
-#         )
-# 
-#         assert len(playlists["items"]) == 2
-# 
-# 
-# @vcr.use_cassette(
-#     "tests/fixtures/youtube_search.yaml", filter_query_parameters=["key"]
-# )
-# def test_search(config):
-# 
-#     for api in apis:
-#         youtube.Entry.api = api(proxy, headers)
-#         backend_inst = get_backend(config)
-# 
-#         videos = backend_inst.library.search(query={"omit-any": ["chvrches"]})
-#         assert videos is None
-# 
-#         videos = backend_inst.library.search(query={"any": ["chvrches"]})
-#         assert len(videos.tracks) == 30
-# 
-#         videos = youtube.Entry.search("chvrches")
-#         assert len(videos) == 30
-#         assert videos[0]._title  # should be ready
-#         assert videos[0]._channel  # should be ready
-#         # assert videos[0]._length  # should be ready (scrAPI)
-# 
-#         video = youtube.Video.get("BZyzX4c1vIs")
-# 
-#         assert video in videos  # cached
-# 
-# 
-# @vcr.use_cassette(
-#     "tests/fixtures/youtube_lookup.yaml", filter_query_parameters=["key"]
-# )
-# def test_lookup(config):
-# 
-#     for api in apis:
-#         youtube.Entry.api = api(proxy, headers)
-#         backend_inst = get_backend(config)
-# 
-#         video_uris = [
-#             "yt:https://www.youtube.com/watch?v=s5BJXwNeKsQ",
-#             "youtube:https://www.youtube.com/watch?v=1lWJXDG2i0A",
-#             "youtube:video/Tom Petty And The Heartbreakers - "
-#             "I Won't Back Down (Official Music Video).nvlTJrNJ5lA",
-#         ]
-#         for video_uri in video_uris:
-#             video = backend_inst.library.lookup(video_uri)
-#             assert len(video) == 1
-# 
-#         playlist_uris = [
-#             "yt:https://www.youtube.com/watch?v=SIhb-kNvL6M"
-#             "&list=PLo4c-riVwz2miWOT3Y2VWzg2bmV4FmC8J",
-#             "youtube:https://www.youtube.com/watch?v=lis8WGZQ9tw"
-#             "&list=PLW3M-yio9tLtQLihn1wrJYzuV7AUPMq63",
-#             "youtube:playlist/Tom Petty and The Heartbreakers GREATEST HITS "
-#             "(Complete Album).PLrpyDacBCh7Bs3cNzKtMbuafcK_nw9znk",
-#         ]
-#         for playlist_uri in playlist_uris:
-#             playlist = backend_inst.library.lookup(playlist_uri)
-#             assert len(playlist) == 18
-# 
-# 
-# @vcr.use_cassette(
-#     "tests/fixtures/youtube_get_video.yaml", filter_query_parameters=["key"]
-# )
-# def test_get_video(config):
-# 
-#     for api in apis:
-#         youtube.Entry.api = api(proxy, headers)
-# 
-#         video = youtube.Video.get("e1YqueG2gtQ")
-# 
-#         assert video.length.get()
-# 
-#         # get again, should fetch from cache, _length should be ready
-#         video2 = youtube.Video.get("e1YqueG2gtQ")
-# 
-#         assert video2 is video
-#         assert video2._length
-# 
-# 
-# @vcr.use_cassette(
-#     "tests/fixtures/youtube_list_videos.yaml", filter_query_parameters=["key"]
-# )
-# def test_list_videos(config):
-# 
-#     for api in apis:
-#         youtube.Entry.api = api(proxy, headers)
-# 
-#         videos = api.list_videos(["_mTRvJ9fugM", "h_uyq8oGDvU"])
-# 
-#         assert len(videos["items"]) == 2
-# 
-# 
-# @vcr.use_cassette(
-#     "tests/fixtures/youtube_list_playlistitems.yaml",
-#     filter_query_parameters=["key"],
-# )
-# def test_list_playlistitems(config):
-# 
-#     for api in apis:
-#         youtube.Entry.api = api(proxy, headers)
-# 
-#         playlistitems = api.list_playlistitems(
-#             "PLvdVG7oER2eFutjd4xl3TGNDui9ELvY4D", None, 20
-#         )
-# 
-#         assert len(playlistitems["items"]) == 20
-# 
-# 
-# def test_audio_url(youtube_dl_mock_with_video):
-# 
-#     for api in apis:
-#         youtube.Entry.api = api(proxy, headers)
-# 
-#         video = youtube.Video.get("e1YqueG2gtQ")
-# 
-#         assert video.audio_url.get()
-# 
-# 
-# def test_audio_url_fail(youtube_dl_mock):
-# 
-#     for api in apis:
-#         youtube.Entry.api = api(proxy, headers)
-# 
-#         youtube_dl_mock.YoutubeDL.side_effect = Exception("Removed")
-# 
-#         video = youtube.Video.get("unknown")
-# 
-#         assert not video.audio_url.get()
+@vcr.use_cassette(
+    "tests/fixtures/youtube_list_playlists.yaml",
+    filter_query_parameters=["key"],
+)
+def test_list_playlists(config):
+
+    for api in apis:
+        youtube.Entry.api = api(proxy, headers)
+
+        playlists = api.list_playlists(
+            [
+                "PLfGibfZATlGq6zF72No5BZaScBiWWb6U1",
+                "PLRHAVCbqFwJBkRupIhuGW3_XEIWc-ZYER",
+            ]
+        )
+
+        assert len(playlists["items"]) == 2
+
+
+@vcr.use_cassette(
+    "tests/fixtures/youtube_search.yaml", filter_query_parameters=["key"]
+)
+def test_search(config):
+
+    for api in apis:
+        youtube.Entry.api = api(proxy, headers)
+        backend_inst = get_backend(config)
+
+        videos = backend_inst.library.search(query={"omit-any": ["chvrches"]})
+        assert videos is None
+
+        videos = backend_inst.library.search(query={"any": ["chvrches"]})
+        assert len(videos.tracks) == 30
+
+        videos = youtube.Entry.search("chvrches")
+        assert len(videos) == 30
+        assert videos[0]._title  # should be ready
+        assert videos[0]._channel  # should be ready
+        # assert videos[0]._length  # should be ready (scrAPI)
+
+        video = youtube.Video.get("BZyzX4c1vIs")
+
+        assert video in videos  # cached
+
+
+@vcr.use_cassette(
+    "tests/fixtures/youtube_lookup.yaml", filter_query_parameters=["key"]
+)
+def test_lookup(config):
+
+    for api in apis:
+        youtube.Entry.api = api(proxy, headers)
+        backend_inst = get_backend(config)
+
+        video_uris = [
+            "yt:https://www.youtube.com/watch?v=s5BJXwNeKsQ",
+            "youtube:https://www.youtube.com/watch?v=1lWJXDG2i0A",
+            "youtube:video/Tom Petty And The Heartbreakers - "
+            "I Won't Back Down (Official Music Video).nvlTJrNJ5lA",
+        ]
+        for video_uri in video_uris:
+            video = backend_inst.library.lookup(video_uri)
+            assert len(video) == 1
+
+        playlist_uris = [
+            "yt:https://www.youtube.com/watch?v=SIhb-kNvL6M"
+            "&list=PLo4c-riVwz2miWOT3Y2VWzg2bmV4FmC8J",
+            "youtube:https://www.youtube.com/watch?v=lis8WGZQ9tw"
+            "&list=PLW3M-yio9tLtQLihn1wrJYzuV7AUPMq63",
+            "youtube:playlist/Tom Petty and The Heartbreakers GREATEST HITS "
+            "(Complete Album).PLrpyDacBCh7Bs3cNzKtMbuafcK_nw9znk",
+        ]
+        for playlist_uri in playlist_uris:
+            playlist = backend_inst.library.lookup(playlist_uri)
+            assert len(playlist) == 18
+
+
+@vcr.use_cassette(
+    "tests/fixtures/youtube_get_video.yaml", filter_query_parameters=["key"]
+)
+def test_get_video(config):
+
+    for api in apis:
+        youtube.Entry.api = api(proxy, headers)
+
+        video = youtube.Video.get("e1YqueG2gtQ")
+
+        assert video.length.get()
+
+        # get again, should fetch from cache, _length should be ready
+        video2 = youtube.Video.get("e1YqueG2gtQ")
+
+        assert video2 is video
+        assert video2._length
+
+
+@vcr.use_cassette(
+    "tests/fixtures/youtube_list_videos.yaml", filter_query_parameters=["key"]
+)
+def test_list_videos(config):
+
+    for api in apis:
+        youtube.Entry.api = api(proxy, headers)
+
+        videos = api.list_videos(["_mTRvJ9fugM", "h_uyq8oGDvU"])
+
+        assert len(videos["items"]) == 2
+
+
+@vcr.use_cassette(
+    "tests/fixtures/youtube_list_playlistitems.yaml",
+    filter_query_parameters=["key"],
+)
+def test_list_playlistitems(config):
+
+    for api in apis:
+        youtube.Entry.api = api(proxy, headers)
+
+        playlistitems = api.list_playlistitems(
+            "PLvdVG7oER2eFutjd4xl3TGNDui9ELvY4D", None, 20
+        )
+
+        assert len(playlistitems["items"]) == 20
+
+
+def test_audio_url(youtube_dl_mock_with_video):
+
+    for api in apis:
+        youtube.Entry.api = api(proxy, headers)
+
+        video = youtube.Video.get("e1YqueG2gtQ")
+
+        assert video.audio_url.get()
+
+
+def test_audio_url_fail(youtube_dl_mock):
+
+    for api in apis:
+        youtube.Entry.api = api(proxy, headers)
+
+        youtube_dl_mock.YoutubeDL.side_effect = Exception("Removed")
+
+        video = youtube.Video.get("unknown")
+
+        assert not video.audio_url.get()
