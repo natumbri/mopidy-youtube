@@ -36,13 +36,18 @@ class bs4API(scrAPI):
                     # and that, if they do, there is a missing "</script>" tag
                     if script.find(text=re.compile("<div")):
                         new_soup = BeautifulSoup(
-                            re.sub("<div", "</script><div", script.string, count=1),
+                            re.sub(
+                                "<div", "</script><div", script.string, count=1
+                            ),
                             "html.parser",
                         )
                         script.replace_with(new_soup)
-            
+
             # strip out ads that are returned
-            [ad.decompose() for ad in soup.find_all("div", class_="pyv-afc-ads-container")]
+            [
+                ad.decompose()
+                for ad in soup.find_all("div", class_="pyv-afc-ads-container")
+            ]
 
             results = soup.find_all(
                 "div", class_=["yt-lockup-video", "yt-lockup-playlist"]
