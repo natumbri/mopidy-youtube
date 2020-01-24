@@ -26,6 +26,24 @@ class bs4API(scrAPI):
 
         if result.status_code == 200:
             soup = BeautifulSoup(result.text, "html.parser")
+
+            # hack because youtube result sometimes seem to be missing a </script> tag
+            if not soup.find_all(
+                "div", class_=["yt-lockup-video", "yt-lockup-playlist"]
+            ):
+                for script in soup.find_all("script"):
+                    # assume scripts should not contain "<div>" tags
+                    # and that, if they do, there is a missing "</script>" tag
+                    if script.find(text=re.compile("<div")):
+                        new_soup = BeautifulSoup(
+                            re.sub("<div", "</script><div", script.string, count=1),
+                            "html.parser",
+                        )
+                        script.replace_with(new_soup)
+            
+            # strip out ads that are returned
+            [ad.decompose() for ad in soup.find_all("div", class_="pyv-afc-ads-container")]
+
             results = soup.find_all(
                 "div", class_=["yt-lockup-video", "yt-lockup-playlist"]
             )

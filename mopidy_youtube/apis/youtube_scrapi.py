@@ -100,6 +100,7 @@ class scrAPI(Client):
                 "search_query": q.replace(" ", "+"),
                 "page": page + 1,
                 "app": "desktop",
+                "persist_app": 1,
             }
             for page in range(pages)
         ]
@@ -140,7 +141,7 @@ class scrAPI(Client):
         items = []
 
         for id in ids:
-            query = {"v": id, "app": "desktop"}
+            query = {"v": id, "app": "desktop", "persist_app": 1}
             logger.info("session.get triggered: list_videos")
             result = cls.session.get(cls.endpoint + "watch", params=query)
             for match in re.finditer(regex, result.text):
@@ -177,6 +178,7 @@ class scrAPI(Client):
             query = {
                 "list": id,
                 "app": "desktop",
+                "persist_app": 1,
             }
             logger.info("session.get triggered: list_playlists")
             result = cls.session.get(cls.endpoint + "playlist", params=query)
@@ -247,7 +249,7 @@ class scrAPI(Client):
 
     @classmethod
     def list_playlistitems(cls, id, page, max_results):
-        query = {"list": id, "app": "desktop"}
+        query = {"list": id, "app": "desktop", "persist_app": 1}
         logger.info("session.get triggered: list_playlist_items")
         items = cls.run_list_playlistitems(query)
         result = json.loads(
