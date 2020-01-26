@@ -195,6 +195,7 @@ class bs4API(scrAPI):
                 "search_query": '"' + id + '"',
                 "sp": "EgIQAQ%3D%3D",
                 "app": "desktop",
+                "persist_app": 1,
             }
             for id in ids
         ]
@@ -221,6 +222,7 @@ class bs4API(scrAPI):
                 "search_query": '"' + id + '"',
                 "sp": "EgIQAw%3D%3D",
                 "app": "desktop",
+                "persist_app": 1,
             }
             for id in ids
         ]
