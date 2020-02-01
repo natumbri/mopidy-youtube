@@ -286,16 +286,17 @@ class Playlist(Entry):
         self._videos = pykka.ThreadingFuture()
 
         def job():
-            all_videos = []
+            data = {"items": []}
             page = ""
             while (
-                page is not None and len(all_videos) < self.playlist_max_videos
+                page is not None
+                and len(data["items"]) < self.playlist_max_videos
             ):
                 try:
                     max_results = min(
-                        int(self.playlist_max_videos) - len(all_videos), 50
+                        int(self.playlist_max_videos) - len(data["items"]), 50
                     )
-                    data = self.api.list_playlistitems(
+                    result = self.api.list_playlistitems(
                         self.id, page, max_results
                     )
                 except Exception as e:
@@ -304,34 +305,30 @@ class Playlist(Entry):
                 if "error" in data:
                     logger.error("error in list playlist items data")
                     break
-                page = data.get("nextPageToken") or None
+                page = result.get("nextPageToken") or None
+                data["items"].extend(result["items"])
 
-                myvideos = []
+            del data["items"][int(self.playlist_max_videos) :]
 
-                for item in data["items"]:
-                    set_api_data = ["title", "channel"]
-                    if "contentDetails" in item:
-                        set_api_data.append("length")
-                    if "thumbnails" in item["snippet"]:
-                        set_api_data.append("thumbnails")
-                    video = Video.get(item["snippet"]["resourceId"]["videoId"])
-                    video._set_api_data(set_api_data, item)
-                    myvideos.append(video)
+            myvideos = []
 
-                all_videos += myvideos
+            for item in data["items"]:
+                set_api_data = ["title", "channel"]
+                if "contentDetails" in item:
+                    set_api_data.append("length")
+                if "thumbnails" in item["snippet"]:
+                    set_api_data.append("thumbnails")
+                video = Video.get(item["snippet"]["resourceId"]["videoId"])
+                video._set_api_data(set_api_data, item)
+                myvideos.append(video)
 
-                # start loading video info for this batch in the background
-                Video.load_info(
-                    [
-                        x
-                        for _, x in zip(
-                            range(self.playlist_max_videos), myvideos
-                        )
-                    ]
-                )  # noqa: E501
+            # start loading video info in the background
+            Video.load_info(
+                [x for _, x in zip(range(self.playlist_max_videos), myvideos)]
+            )  # noqa: E501
 
             self._videos.set(
-                [x for _, x in zip(range(self.playlist_max_videos), all_videos)]
+                [x for _, x in zip(range(self.playlist_max_videos), myvideos)]
             )  # noqa: E501
 
         ThreadPool.run(job)

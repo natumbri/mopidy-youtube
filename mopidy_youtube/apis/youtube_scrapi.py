@@ -254,10 +254,7 @@ class scrAPI(Client):
         items = cls.run_list_playlistitems(query)
         result = json.loads(
             json.dumps(
-                {
-                    "nextPageToken": None,
-                    "items": [x for _, x in zip(range(max_results), items)],
-                },  # noqa: E501
+                {"nextPageToken": None, "items": items,},  # noqa: E501
                 sort_keys=False,
                 indent=1,
             )
