@@ -215,6 +215,8 @@ class bs4API(scrAPI):
                     break
                 ajax = ajax[0]["data-uix-load-more-href"]
 
+            del videos[max_results:]
+
             for video in videos:
                 item = {
                     "id": video["data-video-id"],
