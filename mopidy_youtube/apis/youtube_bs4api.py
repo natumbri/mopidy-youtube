@@ -1,9 +1,10 @@
 import json
 import re
+from urllib.parse import urljoin
 
 from bs4 import BeautifulSoup
-from mopidy_youtube import logger
 
+from mopidy_youtube import logger
 from mopidy_youtube.apis.youtube_scrapi import scrAPI
 
 
@@ -22,7 +23,7 @@ class bs4API(scrAPI):
     def run_search(cls, query):
         items = []
 
-        result = cls.session.get(cls.endpoint + "results", params=query)
+        result = cls.session.get(urljoin(cls.endpoint, "results"), params=query)
 
         if result.status_code == 200:
             soup = BeautifulSoup(result.text, "html.parser")
@@ -149,13 +150,35 @@ class bs4API(scrAPI):
     # list playlist items
     #
     @classmethod
-    def run_list_playlistitems(cls, query):
+    def list_playlistitems(cls, id, page, max_results):
+        query = {"list": id, "app": "desktop", "persist_app": 1}
+        logger.info("session.get triggered: list_playlist_items")
+        items = cls.run_list_playlistitems(query, max_results)
+        result = json.loads(
+            json.dumps(
+                {"nextPageToken": None, "items": items},  # noqa: E501
+                sort_keys=False,
+                indent=1,
+            )
+        )
+        return result
+
+    @classmethod
+    def run_list_playlistitems(cls, query, max_results):
         items = []
 
-        result = cls.session.get(cls.endpoint + "playlist", params=query)
+        result = cls.session.get(
+            urljoin(cls.endpoint, "playlist"), params=query
+        )
 
         if result.status_code == 200:
             soup = BeautifulSoup(result.text, "html.parser")
+
+            # get load more button
+            ajax_css = "button[data-uix-load-more-href]"
+            ajax = soup.select(ajax_css)[0]["data-uix-load-more-href"]
+
+            # get first visible videos
             videos = [
                 video
                 for video in soup.find_all("tr", {"class": "pl-video"})
@@ -166,6 +189,32 @@ class bs4API(scrAPI):
                     ]
                 )
             ]
+
+            # get the videos that are behind the ajax curtain
+            while len(videos) < max_results:
+                r = cls.session.get(urljoin(cls.endpoint, ajax))
+
+                # next html is stored in the json.values()
+                soup = BeautifulSoup("".join(r.json().values()), "html.parser")
+                videos.extend(
+                    [
+                        video
+                        for video in soup.find_all("tr", {"class": "pl-video"})
+                        if all(
+                            [
+                                video.find(class_="timestamp"),
+                                video.find(class_="pl-video-owner"),
+                            ]
+                        )
+                    ]
+                )
+
+                ajax = soup.select(ajax_css)
+                # if empty "Load more" button would be gone
+                if not ajax:
+                    break
+                ajax = ajax[0]["data-uix-load-more-href"]
+
             for video in videos:
                 item = {
                     "id": video["data-video-id"],
