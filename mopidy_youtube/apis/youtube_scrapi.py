@@ -5,9 +5,11 @@ from mopidy_youtube import logger
 from mopidy_youtube.youtube import Client, Video
 
 
-# Indirect access to YouTube data, without API
-#
 class scrAPI(Client):
+    """
+    Indirect access to YouTube data, without API, using regex
+    """
+
     endpoint = "https://www.youtube.com/"
 
     @classmethod
@@ -16,7 +18,6 @@ class scrAPI(Client):
         regex = (
             r'(?:\<li\>)(?:.|\n)*?\<a href\=(["\'])\/watch\?v\=(?P<id>.{11})'
             r"(?:\&amp\;list\=(?:(?P<playlist>PL.*?)\1)?"
-            # r'(?:(?P<radiolist>RD.*?)\&)?'
             r"(?:.|\n)*?class\=\1formatted-video-count-label\1\>[^\d]*"
             r"(?P<itemCount>\d*))?(?:.|\n)*?title\=\1(?P<title>.+?)\1.+?"
             r"(?:(?:Duration[^\d]+(?:(?P<durationHours>\d+)\:)?"
@@ -69,10 +70,6 @@ class scrAPI(Client):
                 }
             )
 
-            # # Instead of if/else, could this just be:
-            # item['snippet'].update({
-            #     'channelTitle': match.group('uploader') or 'NA'
-            # })
             if match.group("uploader") is not None:
                 item["snippet"].update(
                     {"channelTitle": match.group("uploader")}
@@ -82,16 +79,16 @@ class scrAPI(Client):
             items.append(item)
         return items
 
-    # search for videos and playlists
-    #
     @classmethod
     def search(cls, q):
+        """
+        search for videos and playlists
+        """
+
         search_results = []
 
         # assume 20 results per page
-        pages = int(Video.search_results / 20) + (
-            Video.search_results % 20 > 0
-        )  # noqa: E501
+        pages = int(Video.search_results / 20) + (Video.search_results % 20 > 0)
 
         logger.info("session.get triggered: search")
 
@@ -117,16 +114,17 @@ class scrAPI(Client):
                             range(Video.search_results), search_results
                         )
                     ]
-                },  # noqa: E501
+                },
                 sort_keys=False,
                 indent=1,
             )
         )
 
-    # list videos
-    #
     @classmethod
     def list_videos(cls, ids):
+        """
+        list videos
+        """
 
         regex = (
             r'<div id="watch7-content"(?:.|\n)*?'
@@ -158,10 +156,11 @@ class scrAPI(Client):
             json.dumps({"items": items}, sort_keys=False, indent=1)
         )
 
-    # list playlists
-    #
     @classmethod
     def list_playlists(cls, ids):
+        """
+        list playlists
+        """
 
         regex = (
             r'<div id="pl-header"(?:.|\n)*?"'
@@ -204,10 +203,12 @@ class scrAPI(Client):
             json.dumps({"items": items}, sort_keys=False, indent=1)
         )
 
-    # list playlist items
-    #
     @classmethod
     def run_list_playlistitems(cls, query):
+        """
+        list playlist items
+        """
+
         result = cls.session.get(cls.endpoint + "playlist", params=query)
 
         regex = (

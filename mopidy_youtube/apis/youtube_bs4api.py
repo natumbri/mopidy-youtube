@@ -2,15 +2,16 @@ import json
 import re
 
 from bs4 import BeautifulSoup
-from mopidy_youtube import logger
 
+from mopidy_youtube import logger
 from mopidy_youtube.apis.youtube_scrapi import scrAPI
 
 
-# Indirect access to YouTube data, without API
-# but use BS4 instead of regex
-#
 class bs4API(scrAPI):
+    """
+    Indirect access to YouTube data, without API
+    using BS4 (instead of regex, as used by scrAPI)
+    """
 
     time_regex = (
         r"(?:(?:(?P<durationHours>[0-9]+)\:)?"
@@ -81,23 +82,8 @@ class bs4API(scrAPI):
                             "channelTitle": result.find(
                                 class_="yt-lockup-byline"
                             ).text,
-                            # 'uploadDate': result.find(
-                            #     class_ = "yt-lockup-meta-info"
-                            #     ).find_all("li")[0].text,
-                            # 'views': result.find(
-                            #     class_ = "yt-lockup-meta-info"
-                            #     ).find_all("li")[1].text,
-                            # 'url': 'https://www.youtube.com'+result.find(
-                            #     class_ = "yt-lockup-title").next['href']
                         },
                     }
-
-                    # if result.find(class_ = "yt-lockup-description") is not None:
-                    #   item['snippet']['description'] = result.find(
-                    #       class_ = "yt-lockup-description").text or "NA"
-                    # else:
-                    #   item['snippet']['description'] = "NA"
-
                     items.append(item)
 
                 elif "yt-lockup-playlist" in result.get("class"):
@@ -137,8 +123,6 @@ class bs4API(scrAPI):
                             "channelTitle": result.find(
                                 class_="yt-lockup-byline"
                             ).text,
-                            # 'url': ('https://www.youtube.com/playlist?list='
-                            #     +info['id']['playlistId'])
                         },
                     }
                     # don't append radiolist playlists
@@ -146,8 +130,6 @@ class bs4API(scrAPI):
                         items.append(item)
         return items
 
-    # list playlist items
-    #
     @classmethod
     def run_list_playlistitems(cls, query):
         items = []
@@ -200,10 +182,12 @@ class bs4API(scrAPI):
                 items.append(item)
         return items
 
-    # list videos - EXPERIMENTAL, using search
-    #
     @classmethod
     def list_videos(cls, ids):
+        """
+        list videos - EXPERIMENTAL, using exact search for ids
+        """
+
         items = []
 
         rs = [
@@ -214,8 +198,6 @@ class bs4API(scrAPI):
                 "persist_app": 1,
             }
             for id in ids
-            # This may be more exact:
-            # {"search_query": '"' + id + '"', "sp": "EgIQAUICCAE%253D"} for id in ids
         ]
 
         for result in [cls.run_search(r)[0] for r in rs]:
@@ -227,10 +209,12 @@ class bs4API(scrAPI):
             json.dumps({"items": items}, sort_keys=False, indent=1)
         )
 
-    # list playlists - EXPERIMENTAL, using search
-    #
     @classmethod
     def list_playlists(cls, ids):
+        """
+        list playlists - EXPERIMENTAL, using exact search for ids
+        """
+
         items = []
 
         rs = [
