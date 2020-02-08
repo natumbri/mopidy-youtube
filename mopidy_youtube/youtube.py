@@ -319,8 +319,12 @@ class Playlist(Entry):
                 except Exception as e:
                     logger.error('list playlist items error "%s"', e)
                     break
-                if "error" in data:
-                    logger.error("error in list playlist items data")
+                if "error" in result:
+                    logger.error(
+                        "error in list playlist items data for playlist {}, page {}".format(
+                            self.id, page
+                        )
+                    )
                     break
                 page = result.get("nextPageToken") or None
                 data["items"].extend(result["items"])

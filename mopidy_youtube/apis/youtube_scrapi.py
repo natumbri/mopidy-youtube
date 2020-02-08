@@ -211,6 +211,8 @@ class scrAPI(Client):
 
         result = cls.session.get(cls.endpoint + "playlist", params=query)
 
+        # TODO: implement pagination to get playlist entries > 100
+
         regex = (
             r'<tr class\=\"pl-video.*\" data-title\=\"(?P<title>.+?)".*?'
             r"<a href\=\"\/watch\?v\=(?P<id>.{11})\&amp;(?:.|\n)*?"
