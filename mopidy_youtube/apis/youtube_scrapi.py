@@ -204,10 +204,12 @@ class scrAPI(Client):
         )
 
     @classmethod
-    def run_list_playlistitems(cls, query):
+    def list_playlistitems(cls, id, page, max_results):
         """
         list playlist items
         """
+        query = {"list": id, "app": "desktop", "persist_app": 1}
+        logger.info("session.get triggered: list_playlist_items")
 
         result = cls.session.get(cls.endpoint + "playlist", params=query)
 
@@ -248,13 +250,9 @@ class scrAPI(Client):
                 item.update({"contentDetails": {"duration": "PT" + duration}})
 
             items.append(item)
-        return items
 
-    @classmethod
-    def list_playlistitems(cls, id, page, max_results):
-        query = {"list": id, "app": "desktop", "persist_app": 1}
-        logger.info("session.get triggered: list_playlist_items")
-        items = cls.run_list_playlistitems(query)
+        del items[max_results:]
+
         result = json.loads(
             json.dumps(
                 {"nextPageToken": None, "items": items},  # noqa: E501

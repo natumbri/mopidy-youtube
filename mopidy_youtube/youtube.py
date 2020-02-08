@@ -321,9 +321,8 @@ class Playlist(Entry):
                     break
                 if "error" in result:
                     logger.error(
-                        "error in list playlist items data for playlist {}, page {}".format(
-                            self.id, page
-                        )
+                        "error in list playlist items data for",
+                        "playlist {}, page {}".format(self.id, page),
                     )
                     break
                 page = result.get("nextPageToken") or None
