@@ -80,9 +80,6 @@ class YouTubeBackend(pykka.ThreadingActor, backend.Backend):
             youtube.Entry.api = youtube_bs4api.bs4API(proxy, headers)
 
 
-#            youtube.Entry.api = youtube_scrapi.scrAPI(proxy, headers)
-
-
 class YouTubeLibraryProvider(backend.LibraryProvider):
     """
     Called when browsing or searching the library. To avoid horrible browsing
