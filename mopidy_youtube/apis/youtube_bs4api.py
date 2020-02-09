@@ -138,16 +138,19 @@ class bs4API(scrAPI):
 
         items = []
 
-        result = cls.session.get(
-            urljoin(cls.endpoint, "playlist"), params=query
-        )
+        r = cls.session.get(urljoin(cls.endpoint, "playlist"), params=query)
 
-        if result.status_code == 200:
-            soup = BeautifulSoup(result.text, "html.parser")
+        if r.status_code == 200:
+            soup = BeautifulSoup(r.text, "html.parser")
 
             # get load more button
             ajax_css = "button[data-uix-load-more-href]"
-            ajax = soup.select(ajax_css)[0]["data-uix-load-more-href"]
+            ajax = soup.select(ajax_css)
+            # if there is no more, there is no "Load more" button
+            if ajax:
+                ajax = ajax[0]["data-uix-load-more-href"]
+            else:
+                ajax = None
 
             # get first visible videos
             videos = [
@@ -162,7 +165,7 @@ class bs4API(scrAPI):
             ]
 
             # get the videos that are behind the ajax curtain
-            while len(videos) < max_results:
+            while ajax is not None and len(videos) < max_results:
                 r = cls.session.get(urljoin(cls.endpoint, ajax))
 
                 # next html is stored in the json.values()
