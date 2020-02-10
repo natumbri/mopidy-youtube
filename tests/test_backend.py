@@ -2,7 +2,7 @@ import youtube_dl
 from mopidy import httpclient
 
 # import os
-import mock
+from unittest import mock
 import pytest
 import vcr
 from mopidy_youtube import Extension, backend, youtube
@@ -38,10 +38,10 @@ def youtube_dl_mock_with_video(youtube_dl_mock):
     video_mock.bigthumb = "big thumb"
     video_mock.bigthumbhd = "big thumb in hd"
     video_mock.getbestaudio.return_value.url = "http://example.com/"
+    video_mock.extract_info.return_value.url = "http://example.com/"
     video_mock.length = 2000
     video_mock.title = "a title"
     video_mock.videoid = "a video id"
-
     return youtube_dl_mock
 
 
@@ -145,7 +145,7 @@ def test_search(config):
         assert len(videos) == 30
         assert videos[0]._title  # should be ready
         assert videos[0]._channel  # should be ready
-        # assert videos[0]._length  # should be ready (scrAPI)
+        assert videos[0]._length  # should be ready (scrAPI)
 
         video = youtube.Video.get("BZyzX4c1vIs")
 
