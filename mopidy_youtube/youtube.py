@@ -5,7 +5,7 @@ import traceback
 import pykka
 import requests
 import youtube_dl
-from cachetools import LRUCache, cached
+from cachetools import TTLCache, cached
 from mopidy.models import Image
 from requests.adapters import HTTPAdapter
 from requests.packages.urllib3.util.retry import Retry
@@ -54,9 +54,10 @@ class Entry:
     """
 
     cache_max_len = 400
+    cache_ttl = 43200
 
     @classmethod
-    @cached(cache=LRUCache(maxsize=cache_max_len))
+    @cached(cache=TTLCache(maxsize=cache_max_len, ttl=cache_ttl))
     def get(cls, id):
         """
         Use Video.get(id), Playlist.get(id), instead of Video(id), Playlist(id),
