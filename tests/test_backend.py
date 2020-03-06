@@ -226,7 +226,7 @@ def test_list_playlistitems(config):
         youtube.Entry.api = api(proxy, headers)
 
         playlistitems = api.list_playlistitems(
-            "PLvdVG7oER2eFutjd4xl3TGNDui9ELvY4D", None, 20
+            "PLHZ4bmFPEGndpOL8j_Xdgu7ainO7mf7nY", None, 20
         )
 
         assert len(playlistitems["items"]) == 20
