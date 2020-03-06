@@ -22,7 +22,7 @@ Installation
 
 Install from PyPI by running::
 
-    python3 -m pip install Mopidy-Youtube==3.0a1
+    python3 -m pip install Mopidy-Youtube==3.0
 
 Install from github by running::
 
