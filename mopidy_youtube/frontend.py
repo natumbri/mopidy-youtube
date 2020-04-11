@@ -16,6 +16,18 @@ class YoutubeAutoplayer(pykka.ThreadingActor, listener.CoreListener):
         self.autoplay_enabled = config["youtube"]["autoplay_enabled"]
         self.strict_autoplay = config["youtube"]["strict_autoplay"]
 
+    # Called by mopidy on end of playback of a URI
+    # This function emulates the youtube autoplay functionality by retrieving the most
+    # most related video to a video just played by a youtube API call, adding this new
+    # video URI to the tracklist and triggering it's playback
+    #
+    # With the option "strict_autoplay" enabled, the next played URI will be the newly
+    # added video. 
+    # Without the option "strict_autoplay" enabled [default], the autoplay functionality
+    # will only be executed if the end of the current tracklist is reached
+    #
+    # The autoplay functionality will not work correctly in combination with the repeat
+    # option and is therefore disabled if repeat is enabled
     def track_playback_ended(self, tl_track, time_position):
         if not self.autoplay_enabled:
             return None
