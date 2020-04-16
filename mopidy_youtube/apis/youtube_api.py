@@ -4,20 +4,24 @@ from mopidy_youtube.youtube import Client, Video
 youtube_api_key = None
 
 
-# Direct access to YouTube Data API
-# https://developers.google.com/youtube/v3/docs/
-#
 class API(Client):
+    """
+    Direct access to YouTube Data API
+    see https://developers.google.com/youtube/v3/docs/
+    """
+
     endpoint = "https://www.googleapis.com/youtube/v3/"
 
-    # search for both videos and playlists using a single API call
-    # https://developers.google.com/youtube/v3/docs/search
-    #
     @classmethod
     def search(cls, q):
+        """
+        search for both videos and playlists using a single API call
+        see https://developers.google.com/youtube/v3/docs/search
+        """
+
         query = {
             "part": "id, snippet",
-            "fields": "items(id, snippet(title, thumbnails(default), channelTitle))",  # noqa: E501
+            "fields": "items(id, snippet(title, thumbnails(default), channelTitle))",
             "maxResults": Video.search_results,
             "type": "video,playlist",
             "q": q,
@@ -27,11 +31,13 @@ class API(Client):
         result = cls.session.get(API.endpoint + "search", params=query)
         return result.json()
 
-    # queries related videos to a given video_id using a single API call
-    # https://developers.google.com/youtube/v3/docs/search
-    #
     @classmethod
     def get_related_videos(cls, video_id):
+        """
+        queries related videos to a given video_id using a single API call
+        https://developers.google.com/youtube/v3/docs/search
+        """
+        
         query = {
             "relatedToVideoId": video_id,
             "part": "snippet",
@@ -43,10 +49,13 @@ class API(Client):
         result = cls.session.get(API.endpoint + "search", params=query)
         return result.json()
 
-    # list videos
-    # https://developers.google.com/youtube/v3/docs/videos/list
     @classmethod
     def list_videos(cls, ids):
+        """
+        list videos
+        see https://developers.google.com/youtube/v3/docs/videos/list
+        """
+
         query = {
             "part": "id,snippet,contentDetails",
             "fields": "items(id,snippet(title,channelTitle),"
@@ -58,10 +67,13 @@ class API(Client):
         result = cls.session.get(API.endpoint + "videos", params=query)
         return result.json()
 
-    # list playlists
-    # https://developers.google.com/youtube/v3/docs/playlists/list
     @classmethod
     def list_playlists(cls, ids):
+        """
+        list playlists
+        see https://developers.google.com/youtube/v3/docs/playlists/list
+        """
+
         query = {
             "part": "id,snippet,contentDetails",
             "fields": "items(id,snippet(title,thumbnails,channelTitle),"
@@ -73,10 +85,13 @@ class API(Client):
         result = cls.session.get(API.endpoint + "playlists", params=query)
         return result.json()
 
-    # list playlist items
-    # https://developers.google.com/youtube/v3/docs/playlistItems/list
     @classmethod
     def list_playlistitems(cls, id, page, max_results):
+        """
+        list playlist items
+        see https://developers.google.com/youtube/v3/docs/playlistItems/list
+        """
+
         query = {
             "part": "id,snippet",
             "fields": "nextPageToken,"
