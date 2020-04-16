@@ -31,7 +31,7 @@ class Extension(ext.Extension):
 
     def setup(self, registry):
         from .backend import YouTubeBackend
-        from .frontend import YoutubeAutoplayer
+        from .frontend import YouTubeAutoplayer
 
         registry.add("backend", YouTubeBackend)
-        registry.add("frontend", YoutubeAutoplayer)
+        registry.add("frontend", YouTubeAutoplayer)

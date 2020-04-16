@@ -120,9 +120,9 @@ class Entry:
             obj._set_api_data(set_api_data, item)
             return obj
 
-        logger.info('youtube add next video to playlist')
+        logger.info("youtube add next video to playlist")
         data = cls.api.get_related_videos(video_id)
-        relatedVideos = list(map(create_object, data["items"]))        
+        relatedVideos = list(map(create_object, data["items"]))
         return relatedVideos[0]
 
     @classmethod

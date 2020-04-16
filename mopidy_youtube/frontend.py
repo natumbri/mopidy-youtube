@@ -1,14 +1,15 @@
 import pykka
-from mopidy.core import listener, TracklistController, PlaybackController
+from mopidy.core import PlaybackController, TracklistController, listener
 from mopidy.models import TlTrack, Track
 
-from mopidy_youtube import Extension, logger, youtube, backend
+from mopidy_youtube import Extension, backend, logger, youtube
 from mopidy_youtube.apis import youtube_api
 
 autoplay_enabled = False
 strict_autoplay = False
 
-class YoutubeAutoplayer(pykka.ThreadingActor, listener.CoreListener):
+
+class YouTubeAutoplayer(pykka.ThreadingActor, listener.CoreListener):
     def __init__(self, config, core):
         super().__init__()
         self.config = config
@@ -22,7 +23,7 @@ class YoutubeAutoplayer(pykka.ThreadingActor, listener.CoreListener):
     # video URI to the tracklist and triggering it's playback
     #
     # With the option "strict_autoplay" enabled, the next played URI will be the newly
-    # added video. 
+    # added video.
     # Without the option "strict_autoplay" enabled [default], the autoplay functionality
     # will only be executed if the end of the current tracklist is reached
     #
@@ -33,7 +34,10 @@ class YoutubeAutoplayer(pykka.ThreadingActor, listener.CoreListener):
             return None
 
         if not youtube.api_enabled:
-            logger.warning('Autoplayer: will not work with disabled youtube api, disabling Autoplayer.')
+            logger.warning(
+                "Autoplayer: will not work with disabled youtube api, "
+                "disabling Autoplayer."
+            )
             self.autoplay_enabled = False
             return None
 
@@ -46,30 +50,40 @@ class YoutubeAutoplayer(pykka.ThreadingActor, listener.CoreListener):
             tl = self.core.tracklist
 
             if tl.get_repeat().get() is True:
-                logger.info('Autoplayer: will not add tracks when repeat is enabled.')
+                logger.info(
+                    "Autoplayer: will not add tracks when repeat is enabled."
+                )
                 return None
 
             if tl.get_random().get() is True:
-                logger.info('Autoplayer: shuffle will not work when autoplay is enabled.')
+                logger.info(
+                    "Autoplayer: shuffle will not work when autoplay is enabled."
+                )
 
-            if time_position < (track.length-1000):
-                logger.debug('Autoplayer: called not at end of track.')
+            if time_position < (track.length - 1000):
+                logger.debug("Autoplayer: called not at end of track.")
                 return None
 
             if self.strict_autoplay is False:
                 tlTracks = tl.get_tl_tracks().get()
-                if len(tlTracks) is not 0:
+                if len(tlTracks) != 0:
                     if tlTrackId is not tlTracks[-1].tlid:
-                        logger.debug('Autoplayer: called not at end of track list.')
+                        logger.debug(
+                            "Autoplayer: called not at end of track list."
+                        )
                         return None
                     elif tl.get_consume().get() is True:
-                        logger.warning('Autoplayer: when having consume track enabled, try with "strict_autoplay" option enabled for better results')
+                        logger.warning(
+                            "Autoplayer: when having consume track enabled, "
+                            'try with "strict_autoplay" option enabled for '
+                            "better results"
+                        )
                         return None
 
             id = backend.extract_id(track.uri)
             nextVideo = youtube.Entry.get_next_video(id)
             name = nextVideo.title.get()
-            uri="youtube:video/%s.%s" % (backend.safe_url(name), nextVideo.id)
+            uri = "youtube:video/%s.%s" % (backend.safe_url(name), nextVideo.id)
             nextUriList = list()
             nextUriList.append(uri)
             tracklist = tl.add(uris=nextUriList).get()

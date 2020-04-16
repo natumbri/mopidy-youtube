@@ -37,7 +37,7 @@ class API(Client):
         queries related videos to a given video_id using a single API call
         https://developers.google.com/youtube/v3/docs/search
         """
-        
+
         query = {
             "relatedToVideoId": video_id,
             "part": "snippet",
