@@ -32,6 +32,24 @@ class API(Client):
         return result.json()
 
     @classmethod
+    def get_related_videos(cls, video_id):
+        """
+        queries related videos to a given video_id using a single API call
+        https://developers.google.com/youtube/v3/docs/search
+        """
+        
+        query = {
+            "relatedToVideoId": video_id,
+            "part": "snippet",
+            "maxResults": Video.search_results,
+            "type": "video",
+            "key": youtube_api_key,
+        }
+        logger.info("session.get triggered: relatedToVideoId")
+        result = cls.session.get(API.endpoint + "search", params=query)
+        return result.json()
+
+    @classmethod
     def list_videos(cls, ids):
         """
         list videos

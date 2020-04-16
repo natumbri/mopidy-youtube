@@ -105,6 +105,27 @@ class Entry:
             return None
 
     @classmethod
+    def get_next_video(cls, video_id):
+        def create_object(item):
+            set_api_data = ["title", "channel"]
+            if item["id"]["kind"] == "youtube#video":
+                obj = Video.get(item["id"]["videoId"])
+                if "contentDetails" in item:
+                    set_api_data.append("length")
+            else:
+                obj = []
+                return obj
+            if "thumbnails" in item["snippet"]:
+                set_api_data.append("thumbnails")
+            obj._set_api_data(set_api_data, item)
+            return obj
+
+        logger.info('youtube add next video to playlist')
+        data = cls.api.get_related_videos(video_id)
+        relatedVideos = list(map(create_object, data["items"]))        
+        return relatedVideos[0]
+
+    @classmethod
     def _add_futures(cls, futures_list, fields):
         """
         Adds futures for the given fields to all objects in list, unless they
