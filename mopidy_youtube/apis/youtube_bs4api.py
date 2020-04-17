@@ -338,4 +338,6 @@ class bs4API(scrAPI):
                         },
                     }
                     items.append(item)
-        return items
+        return json.loads(
+            json.dumps({"items": items}, sort_keys=False, indent=1)
+        )
