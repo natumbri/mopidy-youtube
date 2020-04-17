@@ -287,3 +287,55 @@ class bs4API(scrAPI):
         return json.loads(
             json.dumps({"items": items}, sort_keys=False, indent=1)
         )
+
+    @classmethod
+    def get_related_videos(cls, video_id):
+        """
+        returns related videos for a given video_id
+        """
+
+        items = []
+
+        query = {"v": video_id, "app": "desktop", "persist_app": 1}
+        logger.info("session.get triggered: get_related_videos")
+        result = cls.session.get(cls.endpoint + "watch", params=query)
+        if result.status_code == 200:
+            soup = BeautifulSoup(result.text, "html.parser")
+            results = soup.find_all("li", class_=["related-list-item"])
+            for result in results:
+                if "related-list-item-compact-video" in result.get("class"):
+                    duration_text = result.find(class_="video-time").text
+                    duration = cls.format_duration(
+                        re.match(cls.time_regex, duration_text)
+                    )
+                    item = {
+                        "id": {
+                            "kind": "youtube#video",
+                            "videoId": result.find("span", {"data-vid": True})[
+                                "data-vid"
+                            ],
+                        },
+                        "contentDetails": {"duration": "PT" + duration},
+                        "snippet": {
+                            "title": result.find(
+                                "span", class_="title"
+                            ).text.strip(),
+                            # TODO: full support for thumbnails
+                            "thumbnails": {
+                                "default": {
+                                    "url": "https://i.ytimg.com/vi/"
+                                    + result.find("span", {"data-vid": True})[
+                                        "data-vid"
+                                    ]
+                                    + "/default.jpg",
+                                    "width": 120,
+                                    "height": 90,
+                                },
+                            },
+                            "channelTitle": result.find(
+                                "span", class_="stat attribution"
+                            ).text.strip(),
+                        },
+                    }
+                    items.append(item)
+        return items

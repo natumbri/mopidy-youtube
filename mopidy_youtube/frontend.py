@@ -33,14 +33,6 @@ class YouTubeAutoplayer(pykka.ThreadingActor, listener.CoreListener):
         if not self.autoplay_enabled:
             return None
 
-        if not youtube.api_enabled:
-            logger.warning(
-                "Autoplayer: will not work with disabled youtube api, "
-                "disabling Autoplayer."
-            )
-            self.autoplay_enabled = False
-            return None
-
         [tlTrackId, track] = tl_track
         if "youtube:video/" not in track.uri:
             return None
