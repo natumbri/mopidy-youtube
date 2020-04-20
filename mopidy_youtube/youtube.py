@@ -105,33 +105,6 @@ class Entry:
             return None
 
     @classmethod
-    def get_next_video(cls, video_id):
-        def create_object(item):
-            set_api_data = ["title", "channel"]
-            if item["id"]["kind"] == "youtube#video":
-                obj = Video.get(item["id"]["videoId"])
-                if "contentDetails" in item:
-                    set_api_data.append("length")
-            else:
-                obj = []
-                return obj
-            if "thumbnails" in item["snippet"]:
-                set_api_data.append("thumbnails")
-            obj._set_api_data(set_api_data, item)
-            return obj
-
-        logger.info("youtube add next video to playlist")
-        data = cls.api.get_related_videos(video_id)
-        relatedVideos = list(map(create_object, data["items"]))
-        # should this be a list comprehension?
-        for relatedVideo in relatedVideos:
-            l = relatedVideo.length.get()
-            if l > 600:
-                relatedVideos.remove(relatedVideo)
-                logger.info("too long: %s, %d", relatedVideo.title.get(), l)
-        return relatedVideos[0]
-
-    @classmethod
     def _add_futures(cls, futures_list, fields):
         """
         Adds futures for the given fields to all objects in list, unless they
@@ -236,6 +209,25 @@ class Video(Entry):
         for i in range(0, len(list), 50):
             sublist = list[i : i + 50]
             ThreadPool.run(job, (sublist,))
+
+    @classmethod
+    def related_videos(cls, video_id):
+        def create_object(item):
+            set_api_data = ["title", "channel"]
+            if item["id"]["kind"] == "youtube#video":
+                obj = Video.get(item["id"]["videoId"])
+                if "contentDetails" in item:
+                    set_api_data.append("length")
+            else:
+                obj = []
+                return obj
+            if "thumbnails" in item["snippet"]:
+                set_api_data.append("thumbnails")
+            obj._set_api_data(set_api_data, item)
+            return obj
+
+        data = cls.api.list_related_videos(video_id)
+        return list(map(create_object, data["items"]))
 
     @async_property
     def length(self):

@@ -7,6 +7,8 @@ from mopidy_youtube.apis import youtube_api
 
 autoplay_enabled = False
 strict_autoplay = False
+max_autoplay_length = 600
+autoplayed = []
 
 
 class YouTubeAutoplayer(pykka.ThreadingActor, listener.CoreListener):
@@ -16,6 +18,7 @@ class YouTubeAutoplayer(pykka.ThreadingActor, listener.CoreListener):
         self.core = core
         self.autoplay_enabled = config["youtube"]["autoplay_enabled"]
         self.strict_autoplay = config["youtube"]["strict_autoplay"]
+        self.max_autoplay_length = 600
 
     # Called by mopidy on end of playback of a URI
     # This function emulates the youtube autoplay functionality by retrieving the most
@@ -72,13 +75,29 @@ class YouTubeAutoplayer(pykka.ThreadingActor, listener.CoreListener):
                         )
                         return None
 
-            id = backend.extract_id(track.uri)
-            nextVideo = youtube.Entry.get_next_video(id)
-            name = nextVideo.title.get()
-            uri = "youtube:video/%s.%s" % (backend.safe_url(name), nextVideo.id)
-            nextUriList = list()
-            nextUriList.append(uri)
-            tracklist = tl.add(uris=nextUriList).get()
+            current_track_id = backend.extract_id(track.uri)
+            related_videos = youtube.Video.related_videos(current_track_id)
+            # should this be a list comprehension?
+            for related_video in related_videos:
+                l = related_video.length.get()
+                if l > self.max_autoplay_length:
+                    related_videos.remove(related_video)
+                    logger.info(
+                        "too long: %s, %d", related_video.title.get(), l
+                    )
+                    continue
+                if related_video.id in frontend.autoplayed:
+                    related_videos.remove(related_video)
+                    logger.info("already played: %s", related_video.title.get())
+                    continue
+
+            next_video = related_videos[0]
+            frontend.autoplayed.append(next_video.id)
+            name = next_video.title.get()
+            uri = [
+                "youtube:video/%s.%s" % (backend.safe_url(name), next_video.id)
+            ]
+            tracklist = tl.add(uris=uri).get()
             playback.play(tlid=tracklist[-1].tlid)
             return None
 

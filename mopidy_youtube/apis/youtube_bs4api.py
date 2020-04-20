@@ -289,7 +289,7 @@ class bs4API(scrAPI):
         )
 
     @classmethod
-    def get_related_videos(cls, video_id):
+    def list_related_videos(cls, video_id):
         """
         returns related videos for a given video_id
         """
