@@ -123,6 +123,12 @@ class Entry:
         logger.info("youtube add next video to playlist")
         data = cls.api.get_related_videos(video_id)
         relatedVideos = list(map(create_object, data["items"]))
+        # should this be a list comprehension?
+        for relatedVideo in relatedVideos:
+            l = relatedVideo.length.get()
+            if l > 600:
+                relatedVideos.remove(relatedVideo)
+                logger.info("too long: %s, %d", relatedVideo.title.get(), l)
         return relatedVideos[0]
 
     @classmethod
