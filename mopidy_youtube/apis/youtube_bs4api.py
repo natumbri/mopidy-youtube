@@ -297,7 +297,7 @@ class bs4API(scrAPI):
         items = []
 
         query = {"v": video_id, "app": "desktop", "persist_app": 1}
-        logger.info("session.get triggered: get_related_videos")
+        logger.info("session.get triggered: list_related_videos")
         result = cls.session.get(cls.endpoint + "watch", params=query)
         if result.status_code == 200:
             soup = BeautifulSoup(result.text, "html.parser")

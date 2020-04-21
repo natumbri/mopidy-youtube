@@ -9,6 +9,7 @@ autoplay_enabled = False
 strict_autoplay = False
 max_autoplay_length = 600
 autoplayed = []
+max_degrees_of_separation = 3
 
 
 class YouTubeAutoplayer(pykka.ThreadingActor, listener.CoreListener):
@@ -18,7 +19,12 @@ class YouTubeAutoplayer(pykka.ThreadingActor, listener.CoreListener):
         self.core = core
         self.autoplay_enabled = config["youtube"]["autoplay_enabled"]
         self.strict_autoplay = config["youtube"]["strict_autoplay"]
-        self.max_autoplay_length = 600
+        self.max_degrees_of_separation = config["youtube"][
+            "max_degrees_of_separation"
+        ]
+        self.max_autoplay_length = config["youtube"]["max_autoplay_length"]
+        self.base_track_id = ""
+        self.degrees_of_separation = 0
 
     # Called by mopidy on end of playback of a URI
     # This function emulates the youtube autoplay functionality by retrieving the most
@@ -76,23 +82,34 @@ class YouTubeAutoplayer(pykka.ThreadingActor, listener.CoreListener):
                         return None
 
             current_track_id = backend.extract_id(track.uri)
+
+            if current_track_id not in autoplayed:
+                self.base_track_id = current_track_id
+                logger.info("setting base_track_id to %s", self.base_track_id)
+            else:
+                if self.degrees_of_separation < self.max_degrees_of_separation:
+                    self.degrees_of_separation += 1
+                else:
+                    current_track_id = self.base_track_id
+                    self.degrees_of_separation = 0
+                    logger.info("resetting to base_track_id")
+
             related_videos = youtube.Video.related_videos(current_track_id)
-            # should this be a list comprehension?
             for related_video in related_videos:
-                l = related_video.length.get()
-                if l > self.max_autoplay_length:
+                track_length = related_video.length.get()
+                if track_length > self.max_autoplay_length:
+                    related_videos.remove(related_video)
+                    logger.info("too long: %s", related_video.title.get())
+                    continue
+                if related_video.id in autoplayed:
                     related_videos.remove(related_video)
                     logger.info(
-                        "too long: %s, %d", related_video.title.get(), l
+                        "already autoplayed: %s", related_video.title.get()
                     )
-                    continue
-                if related_video.id in frontend.autoplayed:
-                    related_videos.remove(related_video)
-                    logger.info("already played: %s", related_video.title.get())
-                    continue
 
             next_video = related_videos[0]
-            frontend.autoplayed.append(next_video.id)
+            autoplayed.append(next_video.id)
+            logger.info(autoplayed)
             name = next_video.title.get()
             uri = [
                 "youtube:video/%s.%s" % (backend.safe_url(name), next_video.id)

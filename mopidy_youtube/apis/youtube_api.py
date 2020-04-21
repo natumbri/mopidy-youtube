@@ -41,11 +41,11 @@ class API(Client):
         query = {
             "relatedToVideoId": video_id,
             "part": "snippet",
-            "maxResults": 10,
+            "maxResults": 20,
             "type": "video",
             "key": youtube_api_key,
         }
-        logger.info("session.get triggered: relatedToVideoId")
+        logger.info("session.get triggered: list_related_videos")
         result = cls.session.get(API.endpoint + "search", params=query)
         return result.json()
 
