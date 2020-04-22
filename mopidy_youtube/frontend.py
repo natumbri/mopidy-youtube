@@ -1,9 +1,6 @@
 import pykka
-from mopidy.core import PlaybackController, TracklistController, listener
-from mopidy.models import TlTrack, Track
-
-from mopidy_youtube import Extension, backend, logger, youtube
-from mopidy_youtube.apis import youtube_api
+from mopidy.core import listener
+from mopidy_youtube import backend, logger, youtube
 
 autoplay_enabled = False
 strict_autoplay = False
