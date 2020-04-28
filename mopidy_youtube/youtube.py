@@ -260,6 +260,7 @@ class Video(Entry):
                         "format": "bestaudio/best",
                         "proxy": self.proxy,
                         "nocheckcertificate": True,
+                        "cachedir": False,
                     }
                 ).extract_info(
                     url="https://www.youtube.com/watch?v=%s" % self.id,

@@ -83,6 +83,7 @@ class YouTubeAutoplayer(pykka.ThreadingActor, listener.CoreListener):
             if current_track_id not in autoplayed:
                 self.base_track_id = current_track_id
                 logger.info("setting base_track_id to %s", self.base_track_id)
+                autoplayed.append(current_track_id)  # avoid replaying track
             else:
                 if self.degrees_of_separation < self.max_degrees_of_separation:
                     self.degrees_of_separation += 1
@@ -92,28 +93,47 @@ class YouTubeAutoplayer(pykka.ThreadingActor, listener.CoreListener):
                     logger.info("resetting to base_track_id")
 
             related_videos = youtube.Video.related_videos(current_track_id)
+
+            # try again, for testing...
+            if len(related_videos) == 0:
+                related_videos = youtube.Video.related_videos(current_track_id)
+
             for related_video in related_videos:
                 track_length = related_video.length.get()
+                if track_length is None:
+                    related_videos.remove(related_video)
+                    logger.info(
+                        "cannot get lenght: %s", related_video.title.get()
+                    )
+                    continue
+
                 if track_length > self.max_autoplay_length:
                     related_videos.remove(related_video)
                     logger.info("too long: %s", related_video.title.get())
                     continue
+
                 if related_video.id in autoplayed:
                     related_videos.remove(related_video)
                     logger.info(
                         "already autoplayed: %s", related_video.title.get()
                     )
 
-            next_video = related_videos[0]
-            autoplayed.append(next_video.id)
-            logger.info(autoplayed)
-            name = next_video.title.get()
-            uri = [
-                "youtube:video/%s.%s" % (backend.safe_url(name), next_video.id)
-            ]
-            tracklist = tl.add(uris=uri).get()
-            playback.play(tlid=tracklist[-1].tlid)
-            return None
+            logger.info("found %d valid related videos" % len(related_videos))
+
+            if len(related_videos) == 0:
+                logger.info("could not get related videos: ending autoplay")
+                return None
+            else:
+                next_video = related_videos[0]
+                autoplayed.append(next_video.id)
+                name = next_video.title.get()
+                uri = [
+                    "youtube:video/%s.%s"
+                    % (backend.safe_url(name), next_video.id)
+                ]
+                tracklist = tl.add(uris=uri).get()
+                playback.play(tlid=tracklist[-1].tlid)
+                return None
 
         except Exception as e:
             logger.error('Autoplayer error "%s"', e)

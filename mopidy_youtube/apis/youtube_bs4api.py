@@ -304,39 +304,53 @@ class bs4API(scrAPI):
             results = soup.find_all("li", class_=["related-list-item"])
             for result in results:
                 if "related-list-item-compact-video" in result.get("class"):
-                    duration_text = result.find(class_="video-time").text
-                    duration = cls.format_duration(
-                        re.match(cls.time_regex, duration_text)
+
+                    videoId = result.find("span", {"data-vid": True})[
+                        "data-vid"
+                    ]
+
+                    title_text = result.find("span", class_="title")
+                    try:
+                        title = title_text.text.strip()
+                    except Exception as e:
+                        title = "Unknown"
+                        logger.info("title exception %s" % e)
+
+                    channelTitle_text = result.find(
+                        "span", class_="stat attribution"
                     )
+                    try:
+                        channelTitle = channelTitle_text.text.strip()
+                    except Exception as e:
+                        channelTitle = "Unknown"
+                        logger.info("channelTitle exception %s" % e)
+
                     item = {
-                        "id": {
-                            "kind": "youtube#video",
-                            "videoId": result.find("span", {"data-vid": True})[
-                                "data-vid"
-                            ],
-                        },
-                        "contentDetails": {"duration": "PT" + duration},
+                        "id": {"kind": "youtube#video", "videoId": videoId},
                         "snippet": {
-                            "title": result.find(
-                                "span", class_="title"
-                            ).text.strip(),
+                            "title": title,
                             # TODO: full support for thumbnails
                             "thumbnails": {
                                 "default": {
                                     "url": "https://i.ytimg.com/vi/"
-                                    + result.find("span", {"data-vid": True})[
-                                        "data-vid"
-                                    ]
+                                    + videoId
                                     + "/default.jpg",
                                     "width": 120,
                                     "height": 90,
                                 },
                             },
-                            "channelTitle": result.find(
-                                "span", class_="stat attribution"
-                            ).text.strip(),
+                            "channelTitle": channelTitle,
                         },
                     }
+
+                    duration_text = result.find(class_="video-time")
+                    try:
+                        duration = cls.format_duration(
+                            re.match(cls.time_regex, duration_text.text)
+                        )
+                        item["contentDetails"] = {"duration": "PT" + duration}
+                    except Exception as e:
+                        logger.info("duration exception %s" % e)
                     items.append(item)
         return json.loads(
             json.dumps({"items": items}, sort_keys=False, indent=1)
