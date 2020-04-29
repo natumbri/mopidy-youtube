@@ -94,6 +94,8 @@ class Entry:
 
         try:
             data = cls.api.search(q)
+            if "error" in data:
+                raise Exception(data["error"])
         except Exception as e:
             logger.error('search error "%s"', e)
             return None

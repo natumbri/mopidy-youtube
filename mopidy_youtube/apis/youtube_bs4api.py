@@ -96,9 +96,9 @@ class bs4API(scrAPI):
                             .partition("list=")[2],
                         },
                         "contentDetails": {
-                            "itemCount": result.find(
+                            "itemCount": re.sub("[^\d\.]", "", result.find(
                                 class_="formatted-video-count-label"
-                            ).text.split(" ")[0]
+                            ).text.split(" ")[0])
                         },
                         "snippet": {
                             "title": result.find(
@@ -135,7 +135,6 @@ class bs4API(scrAPI):
     def list_playlistitems(cls, id, page, max_results):
         query = {"list": id, "app": "desktop", "persist_app": 1}
         logger.info("session.get triggered: list_playlist_items")
-
         items = []
 
         r = cls.session.get(urljoin(cls.endpoint, "playlist"), params=query)
@@ -167,7 +166,6 @@ class bs4API(scrAPI):
             # get the videos that are behind the ajax curtain
             while ajax is not None and len(videos) < max_results:
                 r = cls.session.get(urljoin(cls.endpoint, ajax))
-
                 # next html is stored in the json.values()
                 soup = BeautifulSoup("".join(r.json().values()), "html.parser")
                 videos.extend(
@@ -182,15 +180,12 @@ class bs4API(scrAPI):
                         )
                     ]
                 )
-
                 ajax = soup.select(ajax_css)
                 # if empty "Load more" button would be gone
                 if not ajax:
                     break
                 ajax = ajax[0]["data-uix-load-more-href"]
-
             del videos[max_results:]
-
             for video in videos:
                 item = {
                     "id": video["data-video-id"],
@@ -223,7 +218,6 @@ class bs4API(scrAPI):
                 }
 
                 items.append(item)
-
             result = json.loads(
                 json.dumps(
                     {"nextPageToken": None, "items": items},  # noqa: E501
