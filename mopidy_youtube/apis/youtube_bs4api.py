@@ -3,7 +3,6 @@ import re
 from urllib.parse import urljoin
 
 from bs4 import BeautifulSoup
-
 from mopidy_youtube import logger
 from mopidy_youtube.apis.youtube_scrapi import scrAPI
 
@@ -96,9 +95,13 @@ class bs4API(scrAPI):
                             .partition("list=")[2],
                         },
                         "contentDetails": {
-                            "itemCount": result.find(
-                                class_="formatted-video-count-label"
-                            ).text.split(" ")[0]
+                            "itemCount": re.sub(
+                                r"[^\d\.]",
+                                "",
+                                result.find(
+                                    class_="formatted-video-count-label"
+                                ).text.split(" ")[0],
+                            )
                         },
                         "snippet": {
                             "title": result.find(
@@ -140,37 +143,23 @@ class bs4API(scrAPI):
         items = []
         if page == "":
             r = cls.session.get(urljoin(cls.endpoint, "playlist"), params=query)
-
             if r.status_code == 200:
                 soup = BeautifulSoup(r.text, "html.parser")
-
-                # get load more button
-                full_ajax = soup.select(ajax_css)
-                # if there is no more, there is no "Load more" button
-                if len(full_ajax) > 0:
-                    ajax = full_ajax[0]["data-uix-load-more-href"]
-                else:
-                    ajax = None
-
-                # get first visible videos
-                videos = [
-                    video
-                    for video in soup.find_all("tr", {"class": "pl-video"})
-                    if all(
-                        [
-                            video.find(class_="timestamp"),
-                            video.find(class_="pl-video-owner"),
-                        ]
-                    )
-                ]
         else:
-
-            # get the videos that are behind the ajax curtain
             logger.info("behind the ajax curtain")
             r = cls.session.get(urljoin(cls.endpoint, page))
+            if r.status_code == 200:
+                soup = BeautifulSoup("".join(r.json().values()), "html.parser")
 
-            # next html is stored in the json.values()
-            soup = BeautifulSoup("".join(r.json().values()), "html.parser")
+        if soup:
+            # get load more button
+            full_ajax = soup.select(ajax_css)
+            # if there is no more, there is no "Load more" button
+            if len(full_ajax) > 0:
+                ajax = full_ajax[0]["data-uix-load-more-href"]
+            else:
+                ajax = None
+            # get videos
             videos = [
                 video
                 for video in soup.find_all("tr", {"class": "pl-video"})
@@ -181,12 +170,6 @@ class bs4API(scrAPI):
                     ]
                 )
             ]
-
-            full_ajax = soup.select(ajax_css)
-            if len(full_ajax) > 0:
-                ajax = full_ajax[0]["data-uix-load-more-href"]
-            else:
-                ajax = None
 
         for video in videos:
             item = {
