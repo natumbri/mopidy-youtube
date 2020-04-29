@@ -25,9 +25,15 @@ class Extension(ext.Extension):
         schema["search_results"] = config.Integer(minimum=1)
         schema["playlist_max_videos"] = config.Integer(minimum=1)
         schema["api_enabled"] = config.Boolean()
+        schema["autoplay_enabled"] = config.Boolean(optional=True)
+        schema["strict_autoplay"] = config.Boolean(optional=True)
+        schema["max_autoplay_length"] = config.Integer()
+        schema["max_degrees_of_separation"] = config.Integer()
         return schema
 
     def setup(self, registry):
         from .backend import YouTubeBackend
+        from .frontend import YouTubeAutoplayer
 
         registry.add("backend", YouTubeBackend)
+        registry.add("frontend", YouTubeAutoplayer)

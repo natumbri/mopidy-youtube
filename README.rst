@@ -22,7 +22,7 @@ Installation
 
 Install from PyPI by running::
 
-    python3 -m pip install Mopidy-Youtube==3.0
+    python3 -m pip install Mopidy-Youtube
 
 Install from github by running::
 
@@ -59,6 +59,15 @@ Other configuration options are::
     threads_max = 16
     search_results = 15
     playlist_max_videos = 20
+
+If you want mopidy-youtube to autoplay related videos use the following options::
+
+	[youtube]
+	autoplay_enabled = true
+	strict_autoplay = [true/false]
+
+If the option strict_autoplay is set, the current tracklist is ignored and the
+most related video automatically played afterwards.
 
 
 Usage

@@ -94,6 +94,8 @@ class Entry:
 
         try:
             data = cls.api.search(q)
+            if "error" in data:
+                raise Exception(data["error"])
         except Exception as e:
             logger.error('search error "%s"', e)
             return None
@@ -209,6 +211,25 @@ class Video(Entry):
             sublist = list[i : i + 50]
             ThreadPool.run(job, (sublist,))
 
+    @classmethod
+    def related_videos(cls, video_id):
+        def create_object(item):
+            set_api_data = ["title", "channel"]
+            if item["id"]["kind"] == "youtube#video":
+                obj = Video.get(item["id"]["videoId"])
+                if "contentDetails" in item:
+                    set_api_data.append("length")
+            else:
+                obj = []
+                return obj
+            if "thumbnails" in item["snippet"]:
+                set_api_data.append("thumbnails")
+            obj._set_api_data(set_api_data, item)
+            return obj
+
+        data = cls.api.list_related_videos(video_id)
+        return list(map(create_object, data["items"]))
+
     @async_property
     def length(self):
         self.load_info([self])
@@ -241,6 +262,7 @@ class Video(Entry):
                         "format": "bestaudio/best",
                         "proxy": self.proxy,
                         "nocheckcertificate": True,
+                        "cachedir": False,
                     }
                 ).extract_info(
                     url="https://www.youtube.com/watch?v=%s" % self.id,

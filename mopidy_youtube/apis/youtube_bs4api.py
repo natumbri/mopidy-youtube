@@ -146,7 +146,6 @@ class bs4API(scrAPI):
             if r.status_code == 200:
                 soup = BeautifulSoup(r.text, "html.parser")
         else:
-            logger.info("behind the ajax curtain")
             r = cls.session.get(urljoin(cls.endpoint, page))
             if r.status_code == 200:
                 soup = BeautifulSoup("".join(r.json().values()), "html.parser")
@@ -154,12 +153,11 @@ class bs4API(scrAPI):
         if soup:
             # get load more button
             full_ajax = soup.select(ajax_css)
-            # if there is no more, there is no "Load more" button
             if len(full_ajax) > 0:
                 ajax = full_ajax[0]["data-uix-load-more-href"]
             else:
                 ajax = None
-            # get videos
+            
             videos = [
                 video
                 for video in soup.find_all("tr", {"class": "pl-video"})
@@ -263,6 +261,74 @@ class bs4API(scrAPI):
             result.update({"id": result["id"]["playlistId"]})
             items.extend([result])
 
+        return json.loads(
+            json.dumps({"items": items}, sort_keys=False, indent=1)
+        )
+
+    @classmethod
+    def list_related_videos(cls, video_id):
+        """
+        returns related videos for a given video_id
+        """
+
+        items = []
+
+        query = {"v": video_id, "app": "desktop", "persist_app": 1}
+        logger.info("session.get triggered: list_related_videos")
+        result = cls.session.get(cls.endpoint + "watch", params=query)
+        if result.status_code == 200:
+            soup = BeautifulSoup(result.text, "html.parser")
+            results = soup.find_all("li", class_=["related-list-item"])
+            for result in results:
+                if "related-list-item-compact-video" in result.get("class"):
+
+                    videoId = result.find("span", {"data-vid": True})[
+                        "data-vid"
+                    ]
+
+                    title_text = result.find("span", class_="title")
+                    try:
+                        title = title_text.text.strip()
+                    except Exception as e:
+                        title = "Unknown"
+                        logger.info("title exception %s" % e)
+
+                    channelTitle_text = result.find(
+                        "span", class_="stat attribution"
+                    )
+                    try:
+                        channelTitle = channelTitle_text.text.strip()
+                    except Exception as e:
+                        channelTitle = "Unknown"
+                        logger.info("channelTitle exception %s" % e)
+
+                    item = {
+                        "id": {"kind": "youtube#video", "videoId": videoId},
+                        "snippet": {
+                            "title": title,
+                            # TODO: full support for thumbnails
+                            "thumbnails": {
+                                "default": {
+                                    "url": "https://i.ytimg.com/vi/"
+                                    + videoId
+                                    + "/default.jpg",
+                                    "width": 120,
+                                    "height": 90,
+                                },
+                            },
+                            "channelTitle": channelTitle,
+                        },
+                    }
+
+                    duration_text = result.find(class_="video-time")
+                    try:
+                        duration = cls.format_duration(
+                            re.match(cls.time_regex, duration_text.text)
+                        )
+                        item["contentDetails"] = {"duration": "PT" + duration}
+                    except Exception as e:
+                        logger.info("duration exception %s" % e)
+                    items.append(item)
         return json.loads(
             json.dumps({"items": items}, sort_keys=False, indent=1)
         )
