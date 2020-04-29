@@ -135,6 +135,7 @@ class bs4API(scrAPI):
     def list_playlistitems(cls, id, page, max_results):
         query = {"list": id, "app": "desktop", "persist_app": 1}
         logger.info("session.get triggered: list_playlist_items")
+        ajax_css = "button[data-uix-load-more-href]"
 
         items = []
         if page == "":
@@ -144,11 +145,10 @@ class bs4API(scrAPI):
                 soup = BeautifulSoup(r.text, "html.parser")
 
                 # get load more button
-                ajax_css = "button[data-uix-load-more-href]"
-                ajax = soup.select(ajax_css)
+                full_ajax = soup.select(ajax_css)
                 # if there is no more, there is no "Load more" button
-                if ajax:
-                    ajax = ajax[0]["data-uix-load-more-href"]
+                if len(full_ajax) > 0:
+                    ajax = full_ajax[0]["data-uix-load-more-href"]
                 else:
                     ajax = None
 
@@ -166,6 +166,7 @@ class bs4API(scrAPI):
         else:
 
             # get the videos that are behind the ajax curtain
+            logger.info("behind the ajax curtain")
             r = cls.session.get(urljoin(cls.endpoint, page))
 
             # next html is stored in the json.values()
