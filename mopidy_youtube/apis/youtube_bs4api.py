@@ -137,22 +137,39 @@ class bs4API(scrAPI):
         logger.info("session.get triggered: list_playlist_items")
 
         items = []
+        if page == "":
+            r = cls.session.get(urljoin(cls.endpoint, "playlist"), params=query)
 
-        r = cls.session.get(urljoin(cls.endpoint, "playlist"), params=query)
+            if r.status_code == 200:
+                soup = BeautifulSoup(r.text, "html.parser")
 
-        if r.status_code == 200:
-            soup = BeautifulSoup(r.text, "html.parser")
+                # get load more button
+                ajax_css = "button[data-uix-load-more-href]"
+                ajax = soup.select(ajax_css)
+                # if there is no more, there is no "Load more" button
+                if ajax:
+                    ajax = ajax[0]["data-uix-load-more-href"]
+                else:
+                    ajax = None
 
-            # get load more button
-            ajax_css = "button[data-uix-load-more-href]"
-            ajax = soup.select(ajax_css)
-            # if there is no more, there is no "Load more" button
-            if ajax:
-                ajax = ajax[0]["data-uix-load-more-href"]
-            else:
-                ajax = None
+                # get first visible videos
+                videos = [
+                    video
+                    for video in soup.find_all("tr", {"class": "pl-video"})
+                    if all(
+                        [
+                            video.find(class_="timestamp"),
+                            video.find(class_="pl-video-owner"),
+                        ]
+                    )
+                ]
+        else:
 
-            # get first visible videos
+            # get the videos that are behind the ajax curtain
+            r = cls.session.get(urljoin(cls.endpoint, page))
+
+            # next html is stored in the json.values()
+            soup = BeautifulSoup("".join(r.json().values()), "html.parser")
             videos = [
                 video
                 for video in soup.find_all("tr", {"class": "pl-video"})
@@ -164,75 +181,53 @@ class bs4API(scrAPI):
                 )
             ]
 
-            # get the videos that are behind the ajax curtain
-            while ajax is not None and len(videos) < max_results:
-                r = cls.session.get(urljoin(cls.endpoint, ajax))
+            full_ajax = soup.select(ajax_css)
+            if len(full_ajax) > 0:
+                ajax = full_ajax[0]["data-uix-load-more-href"]
+            else:
+                ajax = None
 
-                # next html is stored in the json.values()
-                soup = BeautifulSoup("".join(r.json().values()), "html.parser")
-                videos.extend(
-                    [
-                        video
-                        for video in soup.find_all("tr", {"class": "pl-video"})
-                        if all(
-                            [
-                                video.find(class_="timestamp"),
-                                video.find(class_="pl-video-owner"),
-                            ]
+        for video in videos:
+            item = {
+                "id": video["data-video-id"],
+                "contentDetails": {
+                    "duration": "PT"
+                    + cls.format_duration(
+                        re.match(
+                            cls.time_regex, video.find(class_="timestamp").text,
                         )
-                    ]
-                )
-
-                ajax = soup.select(ajax_css)
-                # if empty "Load more" button would be gone
-                if not ajax:
-                    break
-                ajax = ajax[0]["data-uix-load-more-href"]
-
-            del videos[max_results:]
-
-            for video in videos:
-                item = {
-                    "id": video["data-video-id"],
-                    "contentDetails": {
-                        "duration": "PT"
-                        + cls.format_duration(
-                            re.match(
-                                cls.time_regex,
-                                video.find(class_="timestamp").text,
-                            )
-                        ),
-                    },
-                    "snippet": {
-                        "resourceId": {"videoId": video["data-video-id"]},
-                        "title": video["data-title"],
-                        # TODO: full support for thumbnails
-                        "thumbnails": {
-                            "default": {
-                                "url": "https://i.ytimg.com/vi/"
-                                + video["data-video-id"]
-                                + "/default.jpg",
-                                "width": 120,
-                                "height": 90,
-                            },
+                    ),
+                },
+                "snippet": {
+                    "resourceId": {"videoId": video["data-video-id"]},
+                    "title": video["data-title"],
+                    # TODO: full support for thumbnails
+                    "thumbnails": {
+                        "default": {
+                            "url": "https://i.ytimg.com/vi/"
+                            + video["data-video-id"]
+                            + "/default.jpg",
+                            "width": 120,
+                            "height": 90,
                         },
-                        "channelTitle": video.find(class_="pl-video-owner")
-                        .find("a")
-                        .text,
                     },
-                }
+                    "channelTitle": video.find(class_="pl-video-owner")
+                    .find("a")
+                    .text,
+                },
+            }
 
-                items.append(item)
+            items.append(item)
 
-            result = json.loads(
-                json.dumps(
-                    {"nextPageToken": None, "items": items},  # noqa: E501
-                    sort_keys=False,
-                    indent=1,
-                )
+        result = json.loads(
+            json.dumps(
+                {"nextPageToken": ajax, "items": items},  # noqa: E501
+                sort_keys=False,
+                indent=1,
             )
+        )
 
-            return result
+        return result
 
     @classmethod
     def list_videos(cls, ids):
