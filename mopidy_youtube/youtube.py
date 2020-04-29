@@ -7,10 +7,9 @@ import requests
 import youtube_dl
 from cachetools import LRUCache, cached
 from mopidy.models import Image
+from mopidy_youtube import logger
 from requests.adapters import HTTPAdapter
 from requests.packages.urllib3.util.retry import Retry
-
-from mopidy_youtube import logger
 
 api_enabled = False
 
