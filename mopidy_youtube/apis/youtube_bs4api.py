@@ -276,6 +276,7 @@ class bs4API(scrAPI):
         query = {"v": video_id, "app": "desktop", "persist_app": 1}
         logger.info("session.get triggered: list_related_videos")
         result = cls.session.get(cls.endpoint + "watch", params=query)
+        logger.info(result)
         if result.status_code == 200:
             soup = BeautifulSoup(result.text, "html.parser")
             results = soup.find_all("li", class_=["related-list-item"])
@@ -329,6 +330,7 @@ class bs4API(scrAPI):
                     except Exception as e:
                         logger.info("duration exception %s" % e)
                     items.append(item)
+        logger.info("related items: %d" % len(items))
         return json.loads(
             json.dumps({"items": items}, sort_keys=False, indent=1)
         )

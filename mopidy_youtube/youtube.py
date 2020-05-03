@@ -228,6 +228,7 @@ class Video(Entry):
             return obj
 
         data = cls.api.list_related_videos(video_id)
+        logger.info('data: %d' % len(data))
         return list(map(create_object, data["items"]))
 
     @async_property
@@ -386,6 +387,10 @@ class Playlist(Entry):
     def is_video(self):
         return False
 
+class MyHTTPAdapter(requests.adapters.HTTPAdapter):
+        def get(self, *args, **kwargs):
+            kwargs['timeout'] = (6.05, 27)
+            return super(MyHTTPAdapter, self).get(*args, **kwargs)
 
 class Client:
     def __init__(self, proxy, headers):
@@ -410,7 +415,7 @@ class Client:
             backoff_factor=backoff_factor,
             status_forcelist=status_forcelist,
         )
-        adapter = HTTPAdapter(
+        adapter = MyHTTPAdapter(
             max_retries=retry, pool_maxsize=ThreadPool.threads_max
         )
         cls.session.mount("http://", adapter)
