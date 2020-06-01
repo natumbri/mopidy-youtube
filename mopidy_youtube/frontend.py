@@ -82,7 +82,6 @@ class YouTubeAutoplayer(pykka.ThreadingActor, listener.CoreListener):
 
             if current_track_id not in autoplayed:
                 self.base_track_id = current_track_id
-                logger.info("setting base_track_id to %s", self.base_track_id)
                 autoplayed.append(current_track_id)  # avoid replaying track
             else:
                 if self.degrees_of_separation < self.max_degrees_of_separation:
@@ -90,36 +89,29 @@ class YouTubeAutoplayer(pykka.ThreadingActor, listener.CoreListener):
                 else:
                     current_track_id = self.base_track_id
                     self.degrees_of_separation = 0
-                    logger.info("resetting to base_track_id")
 
             related_videos = youtube.Video.related_videos(current_track_id)
-
-            # try again, for testing...
-            if len(related_videos) == 0:
-                related_videos = youtube.Video.related_videos(current_track_id)
-
+            
             for related_video in related_videos:
-                track_length = related_video.length.get()
-                if track_length is None:
-                    related_videos.remove(related_video)
-                    logger.info(
-                        "cannot get lenght: %s", related_video.title.get()
-                    )
-                    continue
-
-                if track_length > self.max_autoplay_length:
-                    related_videos.remove(related_video)
-                    logger.info("too long: %s", related_video.title.get())
-                    continue
+                track_title = related_video.title
+                track_length = related_video.length
 
                 if related_video.id in autoplayed:
                     related_videos.remove(related_video)
-                    logger.info(
-                        "already autoplayed: %s", related_video.title.get()
-                    )
+                    # logger.info("already played: %s", track_title.get())
 
-            logger.info("found %d valid related videos" % len(related_videos))
+                elif track_length.get() is None:
+                    related_videos.remove(related_video)
+                    # logger.info("cannot get length: %s", track_title.get())
 
+                elif track_length.get() == 0:
+                    related_videos.remove(related_video)
+                    # logger.info("track length reported as 0: %s", track_title.get())
+
+                elif (track_length.get() > self.max_autoplay_length):
+                    related_videos.remove(related_video)
+                    # logger.info("track too long: %s, %d", (track_title.get(), track_length.get()))
+            logger.info(len(related_videos))
             if len(related_videos) == 0:
                 logger.info("could not get related videos: ending autoplay")
                 return None

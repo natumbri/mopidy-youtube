@@ -55,16 +55,11 @@ class bs4API(scrAPI):
             )
             for result in results:
                 if "yt-lockup-video" in result.get("class"):
-                    duration_text = result.find(class_="video-time").text
-                    duration = cls.format_duration(
-                        re.match(cls.time_regex, duration_text)
-                    )
                     item = {
                         "id": {
                             "kind": "youtube#video",
                             "videoId": result["data-context-item-id"],
                         },
-                        "contentDetails": {"duration": "PT" + duration},
                         "snippet": {
                             "title": result.find(
                                 class_="yt-lockup-title"
@@ -84,6 +79,16 @@ class bs4API(scrAPI):
                             ).text,
                         },
                     }
+
+                    try:
+                        duration_text = result.find(class_="video-time").text
+                        duration = "PT" + cls.format_duration(re.match(cls.time_regex, duration_text))
+                        item.update({"contentDetails": {"duration": "PT" + duration}})
+                    except Exception as e:
+                        logger.warn("no video-time, possibly live: ", e, result["data-context-item-id"])
+                        duration = "not found"
+                    item.update({"contentDetails": {"duration": duration}})
+
                     items.append(item)
 
                 elif "yt-lockup-playlist" in result.get("class"):
@@ -157,7 +162,6 @@ class bs4API(scrAPI):
                 ajax = full_ajax[0]["data-uix-load-more-href"]
             else:
                 ajax = None
-            
             videos = [
                 video
                 for video in soup.find_all("tr", {"class": "pl-video"})
@@ -276,7 +280,6 @@ class bs4API(scrAPI):
         query = {"v": video_id, "app": "desktop", "persist_app": 1}
         logger.info("session.get triggered: list_related_videos")
         result = cls.session.get(cls.endpoint + "watch", params=query)
-        logger.info(result)
         if result.status_code == 200:
             soup = BeautifulSoup(result.text, "html.parser")
             results = soup.find_all("li", class_=["related-list-item"])
@@ -292,7 +295,7 @@ class bs4API(scrAPI):
                         title = title_text.text.strip()
                     except Exception as e:
                         title = "Unknown"
-                        logger.info("title exception %s" % e)
+                        logger.error("title exception %s" % e)
 
                     channelTitle_text = result.find(
                         "span", class_="stat attribution"
@@ -301,7 +304,7 @@ class bs4API(scrAPI):
                         channelTitle = channelTitle_text.text.strip()
                     except Exception as e:
                         channelTitle = "Unknown"
-                        logger.info("channelTitle exception %s" % e)
+                        logger.error("channelTitle exception %s" % e)
 
                     item = {
                         "id": {"kind": "youtube#video", "videoId": videoId},
@@ -328,9 +331,8 @@ class bs4API(scrAPI):
                         )
                         item["contentDetails"] = {"duration": "PT" + duration}
                     except Exception as e:
-                        logger.info("duration exception %s" % e)
+                        logger.error("duration exception %s" % e)
                     items.append(item)
-        logger.info("related items: %d" % len(items))
         return json.loads(
             json.dumps({"items": items}, sort_keys=False, indent=1)
         )

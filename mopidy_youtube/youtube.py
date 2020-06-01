@@ -10,6 +10,7 @@ from mopidy.models import Image
 from mopidy_youtube import logger
 from requests.adapters import HTTPAdapter
 from requests.packages.urllib3.util.retry import Retry
+from urllib3.util import Timeout
 
 api_enabled = False
 
@@ -66,6 +67,25 @@ class Entry:
         obj.id = id
         return obj
 
+    def create_object(item):
+        set_api_data = ["title", "channel"]
+        if item["id"]["kind"] == "youtube#video":
+            obj = Video.get(item["id"]["videoId"])
+            if "contentDetails" in item:
+                set_api_data.append("length")
+        elif item["id"]["kind"] == "youtube#playlist":
+            obj = Playlist.get(item["id"]["playlistId"])
+            if "contentDetails" in item:
+                set_api_data.append("video_count")
+        else:
+            obj = []
+            return obj
+        if "thumbnails" in item["snippet"]:
+            set_api_data.append("thumbnails")
+        obj._set_api_data(set_api_data, item)
+        return obj
+
+
     @classmethod
     def search(cls, q):
         """
@@ -73,25 +93,6 @@ class Entry:
         only title, thumbnails, channel (extra queries are needed for length and
         video_count)
         """
-
-        def create_object(item):
-            set_api_data = ["title", "channel"]
-            if item["id"]["kind"] == "youtube#video":
-                obj = Video.get(item["id"]["videoId"])
-                if "contentDetails" in item:
-                    set_api_data.append("length")
-            elif item["id"]["kind"] == "youtube#playlist":
-                obj = Playlist.get(item["id"]["playlistId"])
-                if "contentDetails" in item:
-                    set_api_data.append("video_count")
-            else:
-                obj = []
-                return obj
-            if "thumbnails" in item["snippet"]:
-                set_api_data.append("thumbnails")
-            obj._set_api_data(set_api_data, item)
-            return obj
-
         try:
             data = cls.api.search(q)
             if "error" in data:
@@ -100,7 +101,7 @@ class Entry:
             logger.error('search error "%s"', e)
             return None
         try:
-            return list(map(create_object, data["items"]))
+            return list(map(cls.create_object, data["items"]))
         except Exception as e:
             logger.error('map error "%s"', e)
             return None
@@ -161,13 +162,16 @@ class Entry:
                     + r"((?P<seconds>\d+)S)?",
                     item["contentDetails"]["duration"],
                 )
-                val = (
-                    int(m.group("weeks") or 0) * 604800
-                    + int(m.group("days") or 0) * 86400
-                    + int(m.group("hours") or 0) * 3600
-                    + int(m.group("minutes") or 0) * 60
-                    + int(m.group("seconds") or 0)
-                )
+                if m:
+                    val = (
+                        int(m.group("weeks") or 0) * 604800
+                        + int(m.group("days") or 0) * 86400
+                        + int(m.group("hours") or 0) * 3600
+                        + int(m.group("minutes") or 0) * 60
+                        + int(m.group("seconds") or 0)
+                    )
+                else:
+                    val = 0
             elif k == "video_count":
                 val = min(
                     int(item["contentDetails"]["itemCount"]),
@@ -213,23 +217,8 @@ class Video(Entry):
 
     @classmethod
     def related_videos(cls, video_id):
-        def create_object(item):
-            set_api_data = ["title", "channel"]
-            if item["id"]["kind"] == "youtube#video":
-                obj = Video.get(item["id"]["videoId"])
-                if "contentDetails" in item:
-                    set_api_data.append("length")
-            else:
-                obj = []
-                return obj
-            if "thumbnails" in item["snippet"]:
-                set_api_data.append("thumbnails")
-            obj._set_api_data(set_api_data, item)
-            return obj
-
         data = cls.api.list_related_videos(video_id)
-        logger.info('data: %d' % len(data))
-        return list(map(create_object, data["items"]))
+        return list(map(cls.create_object, data["items"]))
 
     @async_property
     def length(self):
@@ -387,10 +376,16 @@ class Playlist(Entry):
     def is_video(self):
         return False
 
-class MyHTTPAdapter(requests.adapters.HTTPAdapter):
-        def get(self, *args, **kwargs):
-            kwargs['timeout'] = (6.05, 27)
-            return super(MyHTTPAdapter, self).get(*args, **kwargs)
+
+class MyHTTPAdapter(HTTPAdapter):
+    def get(self, *args, **kwargs):
+        kwargs["timeout"] = (6.05, 27)
+        return super(MyHTTPAdapter, self).get(*args, **kwargs)
+
+    def init_poolmanager(self, *args, **kwargs):
+        kwargs["timeout"] = Timeout(connect=6.05, read=27.0)
+        return super(MyHTTPAdapter, self).init_poolmanager(*args, **kwargs)
+
 
 class Client:
     def __init__(self, proxy, headers):
