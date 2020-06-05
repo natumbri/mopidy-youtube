@@ -10,7 +10,7 @@ from mopidy.models import Image
 from mopidy_youtube import logger
 from requests.adapters import HTTPAdapter
 from requests.packages.urllib3.util.retry import Retry
-from urllib3.util import Timeout
+from requests.packages.urllib3.util.timeout import Timeout
 
 api_enabled = False
 
@@ -84,7 +84,6 @@ class Entry:
             set_api_data.append("thumbnails")
         obj._set_api_data(set_api_data, item)
         return obj
-
 
     @classmethod
     def search(cls, q):
@@ -249,7 +248,7 @@ class Video(Entry):
             try:
                 info = youtube_dl.YoutubeDL(
                     {
-                        "format": "bestaudio/best",
+                        "format": "bestaudio/m4a/mp3/ogg/best",
                         "proxy": self.proxy,
                         "nocheckcertificate": True,
                         "cachedir": False,
@@ -397,7 +396,7 @@ class Client:
         cls,
         proxy,
         headers,
-        retries=3,
+        retries=10,
         backoff_factor=0.3,
         status_forcelist=(500, 502, 504),
         session=None,

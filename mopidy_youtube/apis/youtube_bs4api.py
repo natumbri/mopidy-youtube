@@ -82,10 +82,18 @@ class bs4API(scrAPI):
 
                     try:
                         duration_text = result.find(class_="video-time").text
-                        duration = "PT" + cls.format_duration(re.match(cls.time_regex, duration_text))
-                        item.update({"contentDetails": {"duration": "PT" + duration}})
+                        duration = "PT" + cls.format_duration(
+                            re.match(cls.time_regex, duration_text)
+                        )
+                        item.update(
+                            {"contentDetails": {"duration": "PT" + duration}}
+                        )
                     except Exception as e:
-                        logger.warn("no video-time, possibly live: ", e, result["data-context-item-id"])
+                        logger.warn(
+                            "no video-time, possibly live: ",
+                            e,
+                            result["data-context-item-id"],
+                        )
                         duration = "not found"
                     item.update({"contentDetails": {"duration": duration}})
 
