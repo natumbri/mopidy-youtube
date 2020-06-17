@@ -355,11 +355,11 @@ class Playlist(Entry):
             # start loading video info in the background
             Video.load_info(
                 [x for _, x in zip(range(self.playlist_max_videos), myvideos)]
-            )  # noqa: E501
+            )
 
             self._videos.set(
                 [x for _, x in zip(range(self.playlist_max_videos), myvideos)]
-            )  # noqa: E501
+            )
 
         ThreadPool.run(job)
 

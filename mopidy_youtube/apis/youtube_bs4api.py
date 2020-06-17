@@ -5,6 +5,7 @@ from urllib.parse import urljoin
 from bs4 import BeautifulSoup
 from mopidy_youtube import logger
 from mopidy_youtube.apis.youtube_scrapi import scrAPI
+from mopidy_youtube.apis.youtube_japi import jAPI
 
 
 class bs4API(scrAPI):
@@ -21,13 +22,10 @@ class bs4API(scrAPI):
 
     @classmethod
     def run_search(cls, query):
-        items = []
 
         result = cls.session.get(urljoin(cls.endpoint, "results"), params=query)
-
         if result.status_code == 200:
             soup = BeautifulSoup(result.text, "html.parser")
-
             # hack because youtube result sometimes seem to be missing a </script> tag
             if not soup.find_all(
                 "div", class_=["yt-lockup-video", "yt-lockup-playlist"]
@@ -50,101 +48,133 @@ class bs4API(scrAPI):
                 for ad in soup.find_all("div", class_="pyv-afc-ads-container")
             ]
 
-            results = soup.find_all(
+            if soup.find_all(
                 "div", class_=["yt-lockup-video", "yt-lockup-playlist"]
-            )
-            for result in results:
-                if "yt-lockup-video" in result.get("class"):
-                    item = {
-                        "id": {
-                            "kind": "youtube#video",
-                            "videoId": result["data-context-item-id"],
-                        },
-                        "snippet": {
-                            "title": result.find(
-                                class_="yt-lockup-title"
-                            ).next.text,
-                            # TODO: full support for thumbnails
-                            "thumbnails": {
-                                "default": {
-                                    "url": "https://i.ytimg.com/vi/"
-                                    + result["data-context-item-id"]
-                                    + "/default.jpg",
-                                    "width": 120,
-                                    "height": 90,
-                                },
-                            },
-                            "channelTitle": result.find(
-                                class_="yt-lockup-byline"
-                            ).text,
-                        },
-                    }
+            ):
+                return cls.soup_to_items(cls, soup)
+            else:
+                logger.info("nothing in the soup, trying japi")
+                json_regex = r'window\["ytInitialData"] = ({.*?});'
+                extracted_json = re.search(json_regex, result.text).group(1)
+                result_json = json.loads(extracted_json)["contents"][
+                    "twoColumnSearchResultsRenderer"
+                ]["primaryContents"]["sectionListRenderer"]["contents"][0][
+                    "itemSectionRenderer"
+                ][
+                    "contents"
+                ]  # noqa: E501
+                return jAPI.json_to_items(cls, result_json)
 
+    def soup_to_items(cls, soup):
+        items = []
+        results = soup.find_all(
+            "div", class_=["yt-lockup-video", "yt-lockup-playlist"]
+        )
+        for result in results:
+            if "yt-lockup-video" in result.get("class"):
+                try:
+                    videoId = result["data-context-item-id"]
+                except Exception as e:
+                    # videoID = "Unknown"
+                    logger.error("videoId exception %s" % e)
+                    continue
+
+                try:
+                    title_text = result.find("a", {"aria-describedby": True})
+                    title = title_text.text.strip()
+                except:
                     try:
-                        duration_text = result.find(class_="video-time").text
-                        duration = "PT" + cls.format_duration(
-                            re.match(cls.time_regex, duration_text)
-                        )
-                        item.update(
-                            {"contentDetails": {"duration": "PT" + duration}}
-                        )
+                        title_text = result.find("a", {"title": True})
+                        title = title_text.text.strip()
                     except Exception as e:
-                        logger.warn(
-                            "no video-time, possibly live: ",
-                            e,
-                            result["data-context-item-id"],
-                        )
-                        duration = "not found"
-                    item.update({"contentDetails": {"duration": duration}})
+                        # title = "Unknown"
+                        logger.error("title exception %s" % e, videoId)
+                        continue
 
-                    items.append(item)
+                try:
+                    channelTitle_text = result.find(class_="yt-lockup-byline")
+                    channelTitle = channelTitle_text.text.strip()
+                except Exception as e:
+                    # channelTitle = "Unknown"
+                    logger.error("channelTitle exception %s" % e)
+                    continue
 
-                elif "yt-lockup-playlist" in result.get("class"):
-                    item = {
-                        "id": {
-                            "kind": "youtube#playlist",
-                            "playlistId": result.find(class_="yt-lockup-title")
-                            .next["href"]
-                            .partition("list=")[2],
-                        },
-                        "contentDetails": {
-                            "itemCount": re.sub(
-                                r"[^\d\.]",
-                                "",
-                                result.find(
-                                    class_="formatted-video-count-label"
-                                ).text.split(" ")[0],
-                            )
-                        },
-                        "snippet": {
-                            "title": result.find(
-                                class_="yt-lockup-title"
-                            ).next.text,
-                            # TODO: full support for thumbnails
-                            "thumbnails": {
-                                "default": {
-                                    "url": (
-                                        "https://i.ytimg.com/vi/"
-                                        + result.find(
-                                            class_="yt-lockup-thumbnail"
-                                        )
-                                        .find("a")["href"]
-                                        .partition("v=")[2]
-                                        .partition("&")[0]
-                                        + "/default.jpg"
-                                    ),
-                                    "width": 120,
-                                    "height": 90,
-                                },
+                item = {
+                    "id": {"kind": "youtube#video", "videoId": videoId,},
+                    "snippet": {
+                        "title": title,
+                        # TODO: full support for thumbnails
+                        "thumbnails": {
+                            "default": {
+                                "url": "https://i.ytimg.com/vi/"
+                                + videoId
+                                + "/default.jpg",
+                                "width": 120,
+                                "height": 90,
                             },
-                            "channelTitle": result.find(
-                                class_="yt-lockup-byline"
-                            ).text,
                         },
-                    }
-                    # don't append radiolist playlists
-                    if str(item["id"]["playlistId"]).startswith("PL"):
-                        items.append(item)
+                        "channelTitle": channelTitle,
+                    },
+                }
+                try:
+                    duration_text = result.find(class_="video-time").text
+                    duration = "PT" + cls.format_duration(
+                        re.match(cls.time_regex, duration_text)
+                    )
+                except Exception as e:
+                    logger.info(
+                        "no video-time, possibly live: ",
+                        e,
+                        result["data-context-item-id"],
+                    )
+                    duration = "PT0S"
+                item.update({"contentDetails": {"duration": duration}})
+                items.append(item)
+
+            elif "yt-lockup-playlist" in result.get("class"):
+                item = {
+                    "id": {
+                        "kind": "youtube#playlist",
+                        "playlistId": result.find(class_="yt-lockup-title")
+                        .next["href"]
+                        .partition("list=")[2],
+                    },
+                    "contentDetails": {
+                        "itemCount": re.sub(
+                            r"[^\d\.]",
+                            "",
+                            result.find(
+                                class_="formatted-video-count-label"
+                            ).text.split(" ")[0],
+                        )
+                    },
+                    "snippet": {
+                        "title": result.find(
+                            class_="yt-lockup-title"
+                        ).next.text,
+                        # TODO: full support for thumbnails
+                        "thumbnails": {
+                            "default": {
+                                "url": (
+                                    "https://i.ytimg.com/vi/"
+                                    + result.find(class_="yt-lockup-thumbnail")
+                                    .find("a")["href"]
+                                    .partition("v=")[2]
+                                    .partition("&")[0]
+                                    + "/default.jpg"
+                                ),
+                                "width": 120,
+                                "height": 90,
+                            },
+                        },
+                        "channelTitle": result.find(
+                            class_="yt-lockup-byline"
+                        ).text,
+                    },
+                }
+                # don't append radiolist playlists
+                if str(item["id"]["playlistId"]).startswith("PL"):
+                    items.append(item)
         return items
 
     @classmethod
@@ -240,12 +270,11 @@ class bs4API(scrAPI):
             }
             for id in ids
         ]
-
         for result in [cls.run_search(r)[0] for r in rs]:
             logger.info("session.get triggered: list_videos (experimental)")
-            result.update({"id": result["id"]["videoId"]})
-            items.extend([result])
-
+            if result["id"]["videoId"]:
+                result.update({"id": result["id"]["videoId"]})
+                items.extend([result])
         return json.loads(
             json.dumps({"items": items}, sort_keys=False, indent=1)
         )
@@ -282,7 +311,6 @@ class bs4API(scrAPI):
         """
         returns related videos for a given video_id
         """
-
         items = []
 
         query = {"v": video_id, "app": "desktop", "persist_app": 1}
@@ -291,28 +319,47 @@ class bs4API(scrAPI):
         if result.status_code == 200:
             soup = BeautifulSoup(result.text, "html.parser")
             results = soup.find_all("li", class_=["related-list-item"])
+            if not results:
+                logger.info("nothing in the soup, trying japi related videos")
+                json_regex = r'window\["ytInitialData"] = ({.*?});'
+                extracted_json = re.search(json_regex, result.text).group(1)
+                result_json = json.loads(extracted_json)["contents"][
+                    "twoColumnWatchNextResults"
+                ]["secondaryResults"]["secondaryResults"][
+                    "results"
+                ]  # noqa: E501
+                items = jAPI.json_to_items(cls, result_json)
+                # return json.loads(json.dumps({"items": items}, sort_keys=False, indent=1))
+
             for result in results:
                 if "related-list-item-compact-video" in result.get("class"):
 
-                    videoId = result.find("span", {"data-vid": True})[
-                        "data-vid"
-                    ]
-
-                    title_text = result.find("span", class_="title")
                     try:
+                        videoId = result.find("span", {"data-vid": True})[
+                            "data-vid"
+                        ]
+                    except Exception as e:
+                        # videoID = "Unknown"
+                        logger.error("videoId exception %s" % e)
+                        continue
+
+                    try:
+                        title_text = result.find("span", class_="title")
                         title = title_text.text.strip()
                     except Exception as e:
-                        title = "Unknown"
+                        # title = "Unknown"
                         logger.error("title exception %s" % e)
+                        continue
 
-                    channelTitle_text = result.find(
-                        "span", class_="stat attribution"
-                    )
                     try:
+                        channelTitle_text = result.find(
+                            "span", class_="stat attribution"
+                        )
                         channelTitle = channelTitle_text.text.strip()
                     except Exception as e:
-                        channelTitle = "Unknown"
+                        # channelTitle = "Unknown"
                         logger.error("channelTitle exception %s" % e)
+                        continue
 
                     item = {
                         "id": {"kind": "youtube#video", "videoId": videoId},
@@ -332,15 +379,18 @@ class bs4API(scrAPI):
                         },
                     }
 
-                    duration_text = result.find(class_="video-time")
                     try:
-                        duration = cls.format_duration(
+                        duration_text = result.find(class_="video-time")
+                        duration = "PT" + cls.format_duration(
                             re.match(cls.time_regex, duration_text.text)
                         )
-                        item["contentDetails"] = {"duration": "PT" + duration}
+                        item.update({"contentDetails": {"duration": duration}})
                     except Exception as e:
-                        logger.error("duration exception %s" % e)
+                        # don't set duration on exception
+                        logger.warn("duration exception %s" % e)
+                        # because duration error doesn't invalidate item (live tracks, eg)
                     items.append(item)
+
         return json.loads(
             json.dumps({"items": items}, sort_keys=False, indent=1)
         )

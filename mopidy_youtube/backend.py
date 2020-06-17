@@ -134,7 +134,7 @@ class YouTubeLibraryProvider(backend.LibraryProvider):
 
             tracks.append(
                 Track(
-                    name=name.replace(";", ""),
+                    name=name.replace(";", ""),  # why is this .replace here?
                     comment=entry.id,
                     length=length,
                     artists=[Artist(name=entry.channel.get())],
@@ -174,7 +174,6 @@ class YouTubeLibraryProvider(backend.LibraryProvider):
         if "youtube.com" in uri:
             url = urlparse(uri.replace("yt:", "").replace("youtube:", ""))
             req = parse_qs(url.query)
-
             if "list" in req:
                 playlist_id = req.get("list")[0]
             else:
@@ -187,10 +186,12 @@ class YouTubeLibraryProvider(backend.LibraryProvider):
         if video_id:
             video = youtube.Video.get(video_id)
             video.audio_url  # start loading
-
+            video.title.get()
             return [
                 Track(
-                    name=video.title.get().replace(";", ""),
+                    name=video.title.get().replace(
+                        ";", ""
+                    ),  # why is this .replace here?
                     comment=video.id,
                     length=video.length.get() * 1000,
                     artists=[Artist(name=video.channel.get())],
@@ -216,7 +217,9 @@ class YouTubeLibraryProvider(backend.LibraryProvider):
 
             return [
                 Track(
-                    name=video.title.get().replace(";", ""),
+                    name=video.title.get().replace(
+                        ";", ""
+                    ),  # why is this .replace here?
                     comment=video.id,
                     length=video.length.get() * 1000,
                     track_no=count,

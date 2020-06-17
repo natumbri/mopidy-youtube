@@ -89,15 +89,14 @@ class YouTubeAutoplayer(pykka.ThreadingActor, listener.CoreListener):
                     current_track_id = self.base_track_id
                     self.degrees_of_separation = 0
                     logger.info("resetting autoplay base track id")
-
             related_videos = youtube.Video.related_videos(current_track_id)
-
             # retry once hack
             if not len(related_videos):
+                logger.warn(
+                    "got 0 related videos; waiting 30s and retrying once"
+                )
                 time.sleep(30)
-                logger.warn("got 0 related videos; retrying once")
                 related_videos = youtube.Video.related_videos(current_track_id)
-
             # remove already autoplayed
             related_videos[:] = [
                 related_video
