@@ -13,6 +13,47 @@ class scrAPI(Client):
     endpoint = "https://www.youtube.com/"
 
     @classmethod
+    def search(cls, q):
+        """
+        search for videos and playlists
+        """
+
+        search_results = []
+
+        # assume 20 results per page
+        pages = int(Video.search_results / 20) + (Video.search_results % 20 > 0)
+
+        logger.info("session.get triggered: search")
+
+        rs = [
+            {
+                "search_query": q.replace(" ", "+"),
+                "page": page + 1,
+                "app": "desktop",
+                "persist_app": 1,
+            }
+            for page in range(pages)
+        ]
+
+        for result in [cls.run_search(r) for r in rs]:
+            search_results.extend(result)
+
+        return json.loads(
+            json.dumps(
+                {
+                    "items": [
+                        x
+                        for _, x in zip(
+                            range(Video.search_results), search_results
+                        )
+                    ]
+                },
+                sort_keys=False,
+                indent=1,
+            )
+        )
+
+    @classmethod
     def run_search(cls, query):
         result = cls.session.get(cls.endpoint + "results", params=query)
         regex = (
@@ -78,47 +119,6 @@ class scrAPI(Client):
                 item["snippet"].update({"channelTitle": "NA"})
             items.append(item)
         return items
-
-    @classmethod
-    def search(cls, q):
-        """
-        search for videos and playlists
-        """
-
-        search_results = []
-
-        # assume 20 results per page
-        pages = int(Video.search_results / 20) + (Video.search_results % 20 > 0)
-
-        logger.info("session.get triggered: search")
-
-        rs = [
-            {
-                "search_query": q.replace(" ", "+"),
-                "page": page + 1,
-                "app": "desktop",
-                "persist_app": 1,
-            }
-            for page in range(pages)
-        ]
-
-        for result in [cls.run_search(r) for r in rs]:
-            search_results.extend(result)
-
-        return json.loads(
-            json.dumps(
-                {
-                    "items": [
-                        x
-                        for _, x in zip(
-                            range(Video.search_results), search_results
-                        )
-                    ]
-                },
-                sort_keys=False,
-                indent=1,
-            )
-        )
 
     @classmethod
     def list_videos(cls, ids):

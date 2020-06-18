@@ -89,8 +89,10 @@ class Entry:
     def search(cls, q):
         """
         Search for both videos and playlists using a single API call. Fetches
-        only title, thumbnails, channel (extra queries are needed for length and
-        video_count)
+        title, thumbnails, channel. Depending on the API, may also fetch  
+        length and video_count. The official youtube API will require an 
+        additional API call to fetch legth and video_count (taken care of 
+        at Video.load_info and Playlist.load_info).
         """
         try:
             data = cls.api.search(q)
@@ -216,6 +218,12 @@ class Video(Entry):
 
     @classmethod
     def related_videos(cls, video_id):
+        """
+        loads title, thumbnails, channel (and, optionally, length) of videos
+        that are related to a video.  Number of related videos returned is
+        uncertain. Usually between 1 and 19.  Does not return related
+        playlists.
+        """
         data = cls.api.list_related_videos(video_id)
         return list(map(cls.create_object, data["items"]))
 
@@ -375,7 +383,8 @@ class Playlist(Entry):
     def is_video(self):
         return False
 
-
+# is this necessary or worthwhile?  Are there any bad
+# consequences that arise if timeout isn't set like this?
 class MyHTTPAdapter(HTTPAdapter):
     def get(self, *args, **kwargs):
         kwargs["timeout"] = (6.05, 27)

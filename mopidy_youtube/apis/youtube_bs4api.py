@@ -48,11 +48,11 @@ class bs4API(scrAPI):
                 for ad in soup.find_all("div", class_="pyv-afc-ads-container")
             ]
 
-            if soup.find_all(
+            results = soup.find_all(
                 "div", class_=["yt-lockup-video", "yt-lockup-playlist"]
-            ):
-                return cls.soup_to_items(cls, soup)
-            else:
+            )
+
+            if not results:
                 logger.info("nothing in the soup, trying japi")
                 json_regex = r'window\["ytInitialData"] = ({.*?});'
                 extracted_json = re.search(json_regex, result.text).group(1)
@@ -64,12 +64,11 @@ class bs4API(scrAPI):
                     "contents"
                 ]  # noqa: E501
                 return jAPI.json_to_items(cls, result_json)
+            else:
+                return cls.soup_to_items(cls, results)
 
-    def soup_to_items(cls, soup):
+    def soup_to_items(cls, results):
         items = []
-        results = soup.find_all(
-            "div", class_=["yt-lockup-video", "yt-lockup-playlist"]
-        )
         for result in results:
             if "yt-lockup-video" in result.get("class"):
                 try:
@@ -82,7 +81,7 @@ class bs4API(scrAPI):
                 try:
                     title_text = result.find("a", {"aria-describedby": True})
                     title = title_text.text.strip()
-                except:
+                except Exception:
                     try:
                         title_text = result.find("a", {"title": True})
                         title = title_text.text.strip()
@@ -183,7 +182,7 @@ class bs4API(scrAPI):
         logger.info("session.get triggered: list_playlist_items")
         ajax_css = "button[data-uix-load-more-href]"
 
-        items = []
+        videos = items = []
         if page == "":
             r = cls.session.get(urljoin(cls.endpoint, "playlist"), params=query)
             if r.status_code == 200:
@@ -245,7 +244,7 @@ class bs4API(scrAPI):
 
         result = json.loads(
             json.dumps(
-                {"nextPageToken": ajax, "items": items},  # noqa: E501
+                {"nextPageToken": ajax, "items": items},
                 sort_keys=False,
                 indent=1,
             )
@@ -329,7 +328,6 @@ class bs4API(scrAPI):
                     "results"
                 ]  # noqa: E501
                 items = jAPI.json_to_items(cls, result_json)
-                # return json.loads(json.dumps({"items": items}, sort_keys=False, indent=1))
 
             for result in results:
                 if "related-list-item-compact-video" in result.get("class"):

@@ -14,4 +14,4 @@ mopidy-youtube.Rproj
 .Rproj.user
 .Rhistory
 .RData
-
+__pycache__/
