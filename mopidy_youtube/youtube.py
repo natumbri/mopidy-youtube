@@ -89,9 +89,9 @@ class Entry:
     def search(cls, q):
         """
         Search for both videos and playlists using a single API call. Fetches
-        title, thumbnails, channel. Depending on the API, may also fetch  
-        length and video_count. The official youtube API will require an 
-        additional API call to fetch legth and video_count (taken care of 
+        title, thumbnails, channel. Depending on the API, may also fetch
+        length and video_count. The official youtube API will require an
+        additional API call to fetch legth and video_count (taken care of
         at Video.load_info and Playlist.load_info).
         """
         try:
@@ -382,6 +382,7 @@ class Playlist(Entry):
     @property
     def is_video(self):
         return False
+
 
 # is this necessary or worthwhile?  Are there any bad
 # consequences that arise if timeout isn't set like this?

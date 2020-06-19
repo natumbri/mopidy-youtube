@@ -1,5 +1,4 @@
 import pykka
-import time
 from mopidy.core import listener
 from mopidy_youtube import backend, logger, youtube
 

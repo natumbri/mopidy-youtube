@@ -99,7 +99,7 @@ class bs4API(scrAPI):
                     continue
 
                 item = {
-                    "id": {"kind": "youtube#video", "videoId": videoId,},
+                    "id": {"kind": "youtube#video", "videoId": videoId},
                     "snippet": {
                         "title": title,
                         # TODO: full support for thumbnails

@@ -67,7 +67,7 @@ class jAPI(scrAPI):
                 try:
                     title = content[base]["title"]["simpleText"]
                     logger.debug(title)
-                except:
+                except Exception:
                     try:
                         title = content[base]["title"]["runs"][0]["text"]
                         logger.debug(title)
@@ -86,7 +86,7 @@ class jAPI(scrAPI):
                     continue
 
                 item = {
-                    "id": {"kind": "youtube#video", "videoId": videoId,},
+                    "id": {"kind": "youtube#video", "videoId": videoId},
                     "snippet": {
                         "title": title,
                         # TODO: full support for thumbnails
