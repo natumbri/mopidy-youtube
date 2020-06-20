@@ -3,7 +3,6 @@ import re
 
 from mopidy_youtube import logger
 
-# from youtube import Client, Video
 from mopidy_youtube.apis.youtube_scrapi import scrAPI
 
 
@@ -52,10 +51,15 @@ class jAPI(scrAPI):
                 base = "videoRenderer"
             elif "compactVideoRenderer" in content:
                 base = "compactVideoRenderer"
+            elif "playlistVideoRenderer" in content:
+                base = "playlistVideoRenderer"
             else:
                 base = ""
-
-            if base in ["videoRenderer", "compactVideoRenderer"]:
+            if base in [
+                "videoRenderer",
+                "compactVideoRenderer",
+                "playlistVideoRenderer",
+            ]:
                 try:
                     videoId = content[base]["videoId"]
                     logger.debug(videoId)
@@ -80,15 +84,22 @@ class jAPI(scrAPI):
                         "text"
                     ]
                     logger.debug(channelTitle)
-                except Exception as e:
-                    # channelTitle = "Unknown"
-                    logger.error("channelTitle exception %s" % e)
-                    continue
+                except Exception:
+                    try:
+                        channelTitle = content[base]["shortBylineText"]["runs"][
+                            0
+                        ]["text"]
+                        logger.debug(title)
+                    except Exception as e:
+                        # channelTitle = "Unknown"
+                        logger.error("channelTitle exception %s" % e)
+                        continue
 
                 item = {
                     "id": {"kind": "youtube#video", "videoId": videoId},
                     "snippet": {
                         "title": title,
+                        "resourceId": {"videoId": videoId},
                         # TODO: full support for thumbnails
                         "thumbnails": {
                             "default": {
@@ -114,6 +125,10 @@ class jAPI(scrAPI):
                     duration = "PT0S"
 
                 item.update({"contentDetails": {"duration": duration}})
+
+                # if base in ["playlistVideoRenderer"]:
+                #     item["snippet"].update({"resourceId": {"videoId": videoId}})
+
                 items.append(item)
 
             elif "radioRenderer" in content:
@@ -164,5 +179,4 @@ class jAPI(scrAPI):
             # for t in {json.dumps(d) for d in items}
             for t in {json.dumps(d, sort_keys=True) for d in items}
         ]
-
         return items

@@ -184,14 +184,17 @@ class bs4API(scrAPI):
 
         videos = items = []
         if page == "":
-            r = cls.session.get(urljoin(cls.endpoint, "playlist"), params=query)
-            if r.status_code == 200:
-                soup = BeautifulSoup(r.text, "html.parser")
+            result = cls.session.get(
+                urljoin(cls.endpoint, "playlist"), params=query
+            )
+            if result.status_code == 200:
+                soup = BeautifulSoup(result.text, "html.parser")
         else:
-            r = cls.session.get(urljoin(cls.endpoint, page))
-            if r.status_code == 200:
-                soup = BeautifulSoup("".join(r.json().values()), "html.parser")
-
+            result = cls.session.get(urljoin(cls.endpoint, page))
+            if result.status_code == 200:
+                soup = BeautifulSoup(
+                    "".join(result.json().values()), "html.parser"
+                )
         if soup:
             # get load more button
             full_ajax = soup.select(ajax_css)
@@ -210,6 +213,43 @@ class bs4API(scrAPI):
                 )
             ]
 
+            if not videos:
+                logger.info(
+                    "nothing in the soup, trying japi list_playlistitems"
+                )
+                json_regex = r'window\["ytInitialData"] = ({.*?});'
+                extracted_json = re.search(json_regex, result.text).group(1)
+                result_json = json.loads(extracted_json)["contents"][
+                    "twoColumnBrowseResultsRenderer"
+                ]["tabs"][0]["tabRenderer"]["content"]["sectionListRenderer"][
+                    "contents"
+                ][
+                    0
+                ][
+                    "itemSectionRenderer"
+                ][
+                    "contents"
+                ][
+                    0
+                ][
+                    "playlistVideoListRenderer"
+                ][
+                    "contents"
+                ]
+                items = jAPI.json_to_items(cls, result_json)
+            else:
+                items = cls.plsoup_to_items(cls, videos)
+
+            return json.loads(
+                json.dumps(
+                    {"nextPageToken": ajax, "items": items},
+                    sort_keys=False,
+                    indent=1,
+                )
+            )
+
+    def plsoup_to_items(cls, videos):
+        items = []
         for video in videos:
             item = {
                 "id": video["data-video-id"],
@@ -242,15 +282,7 @@ class bs4API(scrAPI):
 
             items.append(item)
 
-        result = json.loads(
-            json.dumps(
-                {"nextPageToken": ajax, "items": items},
-                sort_keys=False,
-                indent=1,
-            )
-        )
-
-        return result
+        return items
 
     @classmethod
     def list_videos(cls, ids):
