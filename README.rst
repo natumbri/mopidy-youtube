@@ -51,7 +51,7 @@ and set api_enabled = true::
 
     [youtube]
     youtube_api_key = <api key you got from Google>
-    api_enabled = false
+    api_enabled = true
 
 Other configuration options are::
 
