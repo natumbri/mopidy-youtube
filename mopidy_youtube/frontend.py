@@ -80,7 +80,8 @@ class YouTubeAutoplayer(pykka.ThreadingActor, listener.CoreListener):
                 self.base_track_id = current_track_id
                 autoplayed.append(current_track_id)  # avoid replaying track
                 logger.info("setting new autoplay base id")
-            else:
+
+            if self.max_degrees_of_separation:
                 if self.degrees_of_separation < self.max_degrees_of_separation:
                     self.degrees_of_separation += 1
                     logger.info("incrementing autoplay degrees of separation")

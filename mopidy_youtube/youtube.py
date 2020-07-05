@@ -2,15 +2,16 @@ import re
 import threading
 import traceback
 
-import pykka
 import requests
+from requests.adapters import HTTPAdapter
+from requests.packages.urllib3.util.retry import Retry
+from requests.packages.urllib3.util.timeout import Timeout
+
+import pykka
 import youtube_dl
 from cachetools import LRUCache, cached
 from mopidy.models import Image
 from mopidy_youtube import logger
-from requests.adapters import HTTPAdapter
-from requests.packages.urllib3.util.retry import Retry
-from requests.packages.urllib3.util.timeout import Timeout
 
 api_enabled = False
 
@@ -82,6 +83,8 @@ class Entry:
             return obj
         if "thumbnails" in item["snippet"]:
             set_api_data.append("thumbnails")
+        if "channelId" in item["snippet"]:
+            set_api_data.append("channelId")
         obj._set_api_data(set_api_data, item)
         return obj
 
@@ -130,6 +133,10 @@ class Entry:
 
     @async_property
     def channel(self):
+        self.load_info([self])
+
+    @async_property
+    def channelId(self):
         self.load_info([self])
 
     def _set_api_data(self, fields, item):
@@ -184,7 +191,8 @@ class Entry:
                     for (key, val) in item["snippet"]["thumbnails"].items()
                     if key in ["default", "medium", "high"]
                 ]
-
+            elif k == "channelId":
+                val = item["snippet"]["channelId"]
             future.set(val)
 
 
@@ -225,7 +233,23 @@ class Video(Entry):
         playlists.
         """
         data = cls.api.list_related_videos(video_id)
-        return list(map(cls.create_object, data["items"]))
+
+        relatedvideos = []
+
+        for item in data["items"]:
+            set_api_data = ["title", "channel"]
+            if "contentDetails" in item:
+                set_api_data.append("length")
+            if "thumbnails" in item["snippet"]:
+                set_api_data.append("thumbnails")
+            video = Video.get(item["snippet"]["resourceId"]["videoId"])
+            video._set_api_data(set_api_data, item)
+            relatedvideos.append(video)
+
+        # start loading video info in the background
+        Video.load_info(relatedvideos)
+
+        return relatedvideos
 
     @async_property
     def length(self):
@@ -383,6 +407,73 @@ class Playlist(Entry):
     def is_video(self):
         return False
 
+
+# class Channel(Entry):
+#
+#     @async_property
+#     def videos(self):
+#         """
+#         loads the list of videos of a channel using one API call for every 50
+#         fetched videos. For every page fetched, Video.load_info is called to
+#         start loading video info in a separate thread.
+#         """
+#
+#         self._videos = pykka.ThreadingFuture()
+#
+#         def job():
+#             data = {"items": []}
+#             page = ""
+#             while (
+#                 page is not None
+#                 and len(data["items"]) < self.playlist_max_videos
+#             ):
+#                 try:
+#                     max_results = min(
+#                         int(self.playlist_max_videos) - len(data["items"]), 50
+#                     )
+#                     result = self.api.list_channelitems(
+#                         self.id, page, max_results
+#                     )
+#                 except Exception as e:
+#                     logger.error('list channel items error "%s"', e)
+#                     break
+#                 if "error" in result:
+#                     logger.error(
+#                         "error in list channel items data for",
+#                         "channel {}, page {}".format(self.id, page),
+#                     )
+#                     break
+#                 page = result.get("nextPageToken") or None
+#                 data["items"].extend(result["items"])
+#
+#             del data["items"][int(self.playlist_max_videos) :]
+#
+#             myvideos = []
+#
+#             for item in data["items"]:
+#                 set_api_data = ["title", "channel"]
+#                 if "contentDetails" in item:
+#                     set_api_data.append("length")
+#                 if "thumbnails" in item["snippet"]:
+#                     set_api_data.append("thumbnails")
+#                 video = Video.get(item["snippet"]["resourceId"]["videoId"])
+#                 video._set_api_data(set_api_data, item)
+#                 myvideos.append(video)
+#
+#             # start loading video info in the background
+#             Video.load_info(
+#                 [x for _, x in zip(range(self.playlist_max_videos), myvideos)]
+#             )
+#
+#             self._videos.set(
+#                 [x for _, x in zip(range(self.playlist_max_videos), myvideos)]
+#             )
+#
+#         ThreadPool.run(job)
+#
+#     @property
+#     def is_video(self):
+#         return False
 
 # is this necessary or worthwhile?  Are there any bad
 # consequences that arise if timeout isn't set like this?

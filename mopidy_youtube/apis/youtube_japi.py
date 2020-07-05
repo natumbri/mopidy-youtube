@@ -2,22 +2,16 @@ import json
 import re
 
 from mopidy_youtube import logger
-
 from mopidy_youtube.apis.youtube_scrapi import scrAPI
 
 
 # JSON based scrAPI
 class jAPI(scrAPI):
 
-    # search for videos and playlists
-    #
+    # search for videos and playlists using japi
+    # **currently not working**
     @classmethod
-    def search(cls, q):
-        query = {
-            # get videos only
-            # 'sp': 'EgIQAQ%253D%253D',
-            "search_query": q.replace(" ", "+")
-        }
+    def run_search(cls, query):
 
         cls.session.headers = {
             "user-agent": "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:66.0)"
@@ -27,7 +21,7 @@ class jAPI(scrAPI):
             "content_type": "application/json",
         }
         logger.info("session.get triggered: jAPI search")
-        result = cls.session.get(jAPI.endpoint + "results", params=query)
+        result = cls.session.get(cls.endpoint + "results", params=query)
         json_regex = r'window\["ytInitialData"] = ({.*?});'
         extracted_json = re.search(json_regex, result.text).group(1)
         result_json = json.loads(extracted_json)["contents"][
@@ -36,13 +30,8 @@ class jAPI(scrAPI):
             "itemSectionRenderer"
         ][
             "contents"
-        ]  # noqa: E501
-        items = cls.json_to_items(cls, result_json)
-        return json.loads(
-            json.dumps(
-                {"items": [i for i in items if i]}, sort_keys=False, indent=1
-            )
-        )
+        ]
+        return cls.json_to_items(cls, result_json)
 
     def json_to_items(cls, result_json):
         items = []
@@ -55,11 +44,17 @@ class jAPI(scrAPI):
                 base = "playlistVideoRenderer"
             else:
                 base = ""
+
             if base in [
                 "videoRenderer",
                 "compactVideoRenderer",
                 "playlistVideoRenderer",
             ]:
+                if "longBylineText" in content[base]:
+                    byline = "longBylineText"
+                else:
+                    byline = "shortBylineText"
+
                 try:
                     videoId = content[base]["videoId"]
                     logger.debug(videoId)
@@ -80,20 +75,12 @@ class jAPI(scrAPI):
                         logger.error("title exception %s" % e)
                         continue
                 try:
-                    channelTitle = content[base]["longBylineText"]["runs"][0][
-                        "text"
-                    ]
+                    channelTitle = content[base][byline]["runs"][0]["text"]
                     logger.debug(channelTitle)
-                except Exception:
-                    try:
-                        channelTitle = content[base]["shortBylineText"]["runs"][
-                            0
-                        ]["text"]
-                        logger.debug(title)
-                    except Exception as e:
-                        # channelTitle = "Unknown"
-                        logger.error("channelTitle exception %s" % e)
-                        continue
+                except Exception as e:
+                    # channelTitle = "Unknown"
+                    logger.error("channelTitle exception %s, %s" % (e, title))
+                    continue
 
                 item = {
                     "id": {"kind": "youtube#video", "videoId": videoId},
@@ -126,8 +113,15 @@ class jAPI(scrAPI):
 
                 item.update({"contentDetails": {"duration": duration}})
 
-                # if base in ["playlistVideoRenderer"]:
-                #     item["snippet"].update({"resourceId": {"videoId": videoId}})
+                # is channelId useful for anything?
+                try:
+                    channelId = content[base][byline]["runs"][0][
+                        "navigationEndpoint"
+                    ]["browseEndpoint"]["browseId"]
+                    logger.debug(channelId)
+                    item["snippet"].update({"channelId": channelId})
+                except Exception as e:
+                    logger.error("channelId exception %s, %s" % (e, title))
 
                 items.append(item)
 
@@ -138,9 +132,7 @@ class jAPI(scrAPI):
                 item = {
                     "id": {
                         "kind": "youtube#playlist",
-                        "playlistId": content["playlistRenderer"][
-                            "playlistId"
-                        ],  # noqa: E501
+                        "playlistId": content["playlistRenderer"]["playlistId"],
                     },
                     "contentDetails": {
                         "itemCount": content["playlistRenderer"]["videoCount"]
@@ -148,16 +140,14 @@ class jAPI(scrAPI):
                     "snippet": {
                         "title": content["playlistRenderer"]["title"][
                             "simpleText"
-                        ],  # noqa: E501
+                        ],
                         # TODO: full support for thumbnails
                         "thumbnails": {
                             "default": {
                                 "url": "https://i.ytimg.com/vi/"
                                 + content["playlistRenderer"][
                                     "navigationEndpoint"
-                                ]["watchEndpoint"][
-                                    "videoId"
-                                ]  # noqa: E501
+                                ]["watchEndpoint"]["videoId"]
                                 + "/default.jpg",
                                 "width": 120,
                                 "height": 90,
@@ -165,9 +155,7 @@ class jAPI(scrAPI):
                         },
                         "channelTitle": content["playlistRenderer"][
                             "longBylineText"
-                        ]["runs"][0][
-                            "text"
-                        ],  # noqa: E501
+                        ]["runs"][0]["text"],
                     },
                 }
 

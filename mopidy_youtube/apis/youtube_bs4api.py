@@ -4,8 +4,8 @@ from urllib.parse import urljoin
 
 from bs4 import BeautifulSoup
 from mopidy_youtube import logger
-from mopidy_youtube.apis.youtube_scrapi import scrAPI
 from mopidy_youtube.apis.youtube_japi import jAPI
+from mopidy_youtube.apis.youtube_scrapi import scrAPI
 
 
 class bs4API(scrAPI):
@@ -62,7 +62,7 @@ class bs4API(scrAPI):
                     "itemSectionRenderer"
                 ][
                     "contents"
-                ]  # noqa: E501
+                ]
                 return jAPI.json_to_items(cls, result_json)
             else:
                 return cls.soup_to_items(cls, results)

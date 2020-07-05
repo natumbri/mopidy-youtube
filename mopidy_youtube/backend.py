@@ -119,12 +119,28 @@ class YouTubeLibraryProvider(backend.LibraryProvider):
         playlists = [entry for entry in entries if not entry.is_video]
         youtube.Playlist.load_info(playlists)
 
+        albums = []
+        artists = []
         tracks = []
+
         for entry in entries:
             if entry.is_video:
                 uri_base = "youtube:video"
                 album = "YouTube Video"
                 length = int(entry.length.get()) * 1000
+
+                # # does it make sense to try to return youtube 'channels' as
+                # # mopidy 'artists'? I'm not convinced.
+                # if entry.channelId.get():
+                #     artists.append(
+                #             Artist(
+                #                 name=f"YouTube channel: {entry.channel.get()}",
+                #                 uri="yotube:channel/%s.%s" % (safe_url(entry.channel.get()), entry.channelId.get()),
+                #                 )
+                #             )
+                # else:
+                #     logger.info("no channelId")
+
             else:
                 uri_base = "youtube:playlist"
                 album = "YouTube Playlist (%s videos)" % entry.video_count.get()
@@ -146,9 +162,27 @@ class YouTubeLibraryProvider(backend.LibraryProvider):
         # load video info and playlist videos in the background. they should be
         # ready by the time the user adds search results to the playing queue
         for pl in playlists:
+            name = pl.title.get()
+
+            # does it make sense to return youtube 'playlists' as mopidy 'albums'?
+            albums.append(
+                Album(
+                    name=name,
+                    artists=[
+                        Artist(
+                            name=f"YouTube Playlist ({pl.video_count.get()} videos)"
+                        )
+                    ],
+                    uri="%s/%s.%s"
+                    % ("youtube:playlist", safe_url(name), pl.id),
+                )
+            )
+
             pl.videos  # start loading
 
-        return SearchResult(uri="youtube:search", tracks=tracks)
+        return SearchResult(
+            uri="youtube:search", tracks=tracks, artists=artists, albums=albums
+        )
 
     def lookup(self, uri):
         """
@@ -169,7 +203,11 @@ class YouTubeLibraryProvider(backend.LibraryProvider):
 
         logger.info('youtube LibraryProvider.lookup "%s"', uri)
 
-        video_id = playlist_id = None
+        video_id = None
+        playlist_id = None
+
+        # # should channels be returned?
+        # channel_id = None
 
         if "youtube.com" in uri:
             url = urlparse(uri.replace("yt:", "").replace("youtube:", ""))
@@ -180,6 +218,8 @@ class YouTubeLibraryProvider(backend.LibraryProvider):
                 video_id = req.get("v")[0]
         elif "video/" in uri:
             video_id = extract_id(uri)
+        # elif "channel/" in uri:
+        #     channel_id = extract_id(uri)
         else:
             playlist_id = extract_id(uri)
 
@@ -200,8 +240,20 @@ class YouTubeLibraryProvider(backend.LibraryProvider):
                     % (safe_url(video.title.get()), video.id),
                 )
             ]
+        # elif channel_id:
+        #     logger.info(channel_id)
+        #     channel = youtube.Channel.get(channel_id)
+        #
+        #     if not channel.videos.get():
+        #         logger.info('Cannot load "%s"', uri)
+        #         return []
+
+        #     videos = [v for v in channel.videos.get() if v.length.get() is not None]
+        #     album_name = "YouTube Video"
+
         else:
             playlist = youtube.Playlist.get(playlist_id)
+
             if not playlist.videos.get():
                 logger.error('Cannot load "%s"', uri)
                 return []
@@ -210,26 +262,27 @@ class YouTubeLibraryProvider(backend.LibraryProvider):
             videos = [
                 v for v in playlist.videos.get() if v.length.get() is not None
             ]
+            album_name = playlist.title.get()
 
-            # load audio_url in the background to be ready for playback
-            for video in videos:
-                video.audio_url  # start loading
+        # load audio_url in the background to be ready for playback
+        for video in videos:
+            video.audio_url  # start loading
 
-            return [
-                Track(
-                    name=video.title.get().replace(
-                        ";", ""
-                    ),  # why is this .replace here?
-                    comment=video.id,
-                    length=video.length.get() * 1000,
-                    track_no=count,
-                    artists=[Artist(name=video.channel.get())],
-                    album=Album(name=playlist.title.get(),),
-                    uri="youtube:video/%s.%s"
-                    % (safe_url(video.title.get()), video.id),
-                )
-                for count, video in enumerate(videos, 1)
-            ]
+        return [
+            Track(
+                name=video.title.get().replace(
+                    ";", ""
+                ),  # why is this .replace here?
+                comment=video.id,
+                length=video.length.get() * 1000,
+                track_no=count,
+                artists=[Artist(name=video.channel.get())],
+                album=Album(name=album_name),
+                uri="youtube:video/%s.%s"
+                % (safe_url(video.title.get()), video.id),
+            )
+            for count, video in enumerate(videos, 1)
+        ]
 
     def get_images(self, uris):
         return {uri: youtube.Video.get(uri).thumbnails.get() for uri in uris}
