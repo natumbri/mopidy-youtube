@@ -51,7 +51,7 @@ and set api_enabled = true::
 
     [youtube]
     youtube_api_key = <api key you got from Google>
-    api_enabled = false
+    api_enabled = true
 
 Other configuration options are::
 
@@ -60,11 +60,16 @@ Other configuration options are::
     search_results = 15
     playlist_max_videos = 20
 
-If you want mopidy-youtube to autoplay related videos use the following options::
+If you want mopidy-youtube to autoplay related videos, set autoplay_enabled = true::
 
 	[youtube]
 	autoplay_enabled = true
+	
+If autoplay is enabled, other options are::
+
 	strict_autoplay = [true/false]
+	max_autoplay_length = [maximum length of track in seconds or None]
+	max_degrees_of_separation = [defaults to 3]
 
 If the option strict_autoplay is set, the current tracklist is ignored and the
 most related video automatically played afterwards.
