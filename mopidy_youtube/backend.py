@@ -240,6 +240,7 @@ class YouTubeLibraryProvider(backend.LibraryProvider):
                     % (safe_url(video.title.get()), video.id),
                 )
             ]
+
         # elif channel_id:
         #     logger.info(channel_id)
         #     channel = youtube.Channel.get(channel_id)
@@ -247,7 +248,6 @@ class YouTubeLibraryProvider(backend.LibraryProvider):
         #     if not channel.videos.get():
         #         logger.info('Cannot load "%s"', uri)
         #         return []
-
         #     videos = [v for v in channel.videos.get() if v.length.get() is not None]
         #     album_name = "YouTube Video"
 

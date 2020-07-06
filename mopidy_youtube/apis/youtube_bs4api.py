@@ -395,6 +395,7 @@ class bs4API(scrAPI):
                         "id": {"kind": "youtube#video", "videoId": videoId},
                         "snippet": {
                             "title": title,
+                            "resourceId": {"videoId": videoId},
                             # TODO: full support for thumbnails
                             "thumbnails": {
                                 "default": {
