@@ -289,6 +289,7 @@ class bs4API(scrAPI):
         """
         list videos - EXPERIMENTAL, using exact search for ids
         """
+        logger.info("session.get triggered: list_videos (experimental)")
 
         items = []
 
@@ -301,11 +302,10 @@ class bs4API(scrAPI):
             }
             for id in ids
         ]
-        for result in [cls.run_search(r)[0] for r in rs]:
-            logger.info("session.get triggered: list_videos (experimental)")
-            if result["id"]["videoId"]:
-                result.update({"id": result["id"]["videoId"]})
-                items.extend([result])
+        results = [result for r in rs for result in cls.run_search(r) if result["id"]["videoId"] in ids]
+        for result in results:
+            result.update({"id": result["id"]["videoId"]})
+            items.extend([result])
         return json.loads(
             json.dumps({"items": items}, sort_keys=False, indent=1)
         )
@@ -315,6 +315,7 @@ class bs4API(scrAPI):
         """
         list playlists - EXPERIMENTAL, using exact search for ids
         """
+        logger.info("session.get triggered: list_playlists (experimental)")
 
         items = []
 
@@ -327,9 +328,8 @@ class bs4API(scrAPI):
             }
             for id in ids
         ]
-
-        for result in [cls.run_search(r)[0] for r in rs]:
-            logger.info("session.get triggered: list_playlists (experimental)")
+        results = [result for r in rs for result in cls.run_search(r) if result["id"]["playlistId"] in ids]
+        for result in results: 
             result.update({"id": result["id"]["playlistId"]})
             items.extend([result])
 
