@@ -208,7 +208,6 @@ class YouTubeLibraryProvider(backend.LibraryProvider):
 
         # # should channels be returned?
         # channel_id = None
-
         if "youtube.com" in uri:
             url = urlparse(uri.replace("yt:", "").replace("youtube:", ""))
             req = parse_qs(url.query)
@@ -216,6 +215,15 @@ class YouTubeLibraryProvider(backend.LibraryProvider):
                 playlist_id = req.get("list")[0]
             else:
                 video_id = req.get("v")[0]
+
+        elif "youtu.be" in uri:
+            url = uri.replace("yt:", "").replace("youtube:", "")
+            if not re.match("(?:http|https)://", url):
+                url = "http://" + url
+            video_id = urlparse(url).path
+            if video_id[0] == "/":
+                video_id = video_id[1:]
+
         elif "video/" in uri:
             video_id = extract_id(uri)
         # elif "channel/" in uri:
