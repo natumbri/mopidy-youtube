@@ -302,7 +302,12 @@ class bs4API(scrAPI):
             }
             for id in ids
         ]
-        results = [result for r in rs for result in cls.run_search(r) if result["id"]["videoId"] in ids]
+        results = [
+            result
+            for r in rs
+            for result in cls.run_search(r)
+            if result["id"]["videoId"] in ids
+        ]
         for result in results:
             result.update({"id": result["id"]["videoId"]})
             items.extend([result])
@@ -328,8 +333,13 @@ class bs4API(scrAPI):
             }
             for id in ids
         ]
-        results = [result for r in rs for result in cls.run_search(r) if result["id"]["playlistId"] in ids]
-        for result in results: 
+        results = [
+            result
+            for r in rs
+            for result in cls.run_search(r)
+            if result["id"]["playlistId"] in ids
+        ]
+        for result in results:
             result.update({"id": result["id"]["playlistId"]})
             items.extend([result])
 
