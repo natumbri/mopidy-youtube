@@ -78,10 +78,11 @@ class YouTubeBackend(pykka.ThreadingActor, backend.Backend):
             logger.info("using bs4API")
             youtube.Entry.api = youtube_bs4api.bs4API(proxy, headers)
 
-        logger.info('Using YouTube Music API')
+        logger.info("Using YouTube Music API")
         music = youtube_music.Music(proxy, headers)
         music.get_token()
         youtube.Entry.api.search = music.search
+
 
 class YouTubeLibraryProvider(backend.LibraryProvider):
     """
