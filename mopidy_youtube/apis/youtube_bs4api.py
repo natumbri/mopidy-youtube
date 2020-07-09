@@ -14,12 +14,6 @@ class bs4API(scrAPI):
     using BS4 (instead of regex, as used by scrAPI)
     """
 
-    time_regex = (
-        r"(?:(?:(?P<durationHours>[0-9]+)\:)?"
-        r"(?P<durationMinutes>[0-9]+)\:"
-        r"(?P<durationSeconds>[0-9]{2}))"
-    )
-
     @classmethod
     def run_search(cls, query):
 
