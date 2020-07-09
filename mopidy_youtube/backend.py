@@ -7,7 +7,7 @@ import pykka
 from mopidy import backend, httpclient
 from mopidy.models import Album, Artist, SearchResult, Track
 from mopidy_youtube import Extension, logger, youtube
-from mopidy_youtube.apis import youtube_api, youtube_bs4api
+from mopidy_youtube.apis import youtube_api, youtube_bs4api, youtube_music
 
 
 """
@@ -78,6 +78,10 @@ class YouTubeBackend(pykka.ThreadingActor, backend.Backend):
             logger.info("using bs4API")
             youtube.Entry.api = youtube_bs4api.bs4API(proxy, headers)
 
+        logger.info('Using YouTube Music API')
+        music = youtube_music.Music(proxy, headers)
+        music.get_token()
+        youtube.Entry.api.search = music.search
 
 class YouTubeLibraryProvider(backend.LibraryProvider):
     """
