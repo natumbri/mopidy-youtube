@@ -24,9 +24,8 @@ class Music(Client):
                 "Accept-Language": "en;q=0.5",
                 "content_type": "application/json",
             }
-            logger.info('triggered session.get for api_key')
+            logger.info("triggered session.get for api_key")
             response = cls.session.get(Music.endpoint, headers=headers)
-            
             json_regex = r"ytcfg.set\((.*?)\);"
             extracted_json = re.search(json_regex, response.text).group(1)
 
@@ -77,9 +76,7 @@ class Music(Client):
         json_response = cls.session.post(
             Music.searchEndpoint, params=query, headers=searchHeaders, json=data
         )
-
         result_json = json_response.json()
-
         results = None
         if "contents" in result_json:
             results = result_json["contents"]["sectionListRenderer"]["contents"]
@@ -135,9 +132,17 @@ class Music(Client):
                             "videoId"
                         ],
                     },
-                    # 'contentDetails': {
-                    #     'duration': 'PT'+duration
-                    # }
+                    "contentDetails": {
+                        "duration": "PT"
+                        + cls.format_duration(
+                            re.match(
+                                cls.time_regex,
+                                item["flexColumns"][3][
+                                    "musicResponsiveListItemFlexColumnRenderer"
+                                ]["text"]["runs"][0]["text"],
+                            )
+                        )
+                    },
                     "snippet": {
                         "channelTitle": item["flexColumns"][1][
                             "musicResponsiveListItemFlexColumnRenderer"
@@ -219,4 +224,3 @@ class Music(Client):
                 indent=1,
             )
         )
-
