@@ -166,7 +166,7 @@ class bs4API(scrAPI):
                     },
                 }
                 # don't append radiolist playlists
-                if str(item["id"]["playlistId"]).startswith("PL"):
+                if str(item["id"]["playlistId"]).startswith(("PL", "OL")):
                     items.append(item)
         return items
 
