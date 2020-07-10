@@ -242,7 +242,7 @@ class Video(Entry):
                 set_api_data.append("length")
             if "thumbnails" in item["snippet"]:
                 set_api_data.append("thumbnails")
-            video = Video.get(item["snippet"]["resourceId"]["videoId"])
+            video = Video.get(item["id"]["videoId"])
             video._set_api_data(set_api_data, item)
             relatedvideos.append(video)
 
