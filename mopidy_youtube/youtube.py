@@ -482,6 +482,10 @@ class MyHTTPAdapter(HTTPAdapter):
         kwargs["timeout"] = (6.05, 27)
         return super(MyHTTPAdapter, self).get(*args, **kwargs)
 
+    def post(self, *args, **kwargs):
+        kwargs["timeout"] = (6.05, 27)
+        return super(MyHTTPAdapter, self).post(*args, **kwargs)
+
     def init_poolmanager(self, *args, **kwargs):
         kwargs["timeout"] = Timeout(connect=6.05, read=27.0)
         return super(MyHTTPAdapter, self).init_poolmanager(*args, **kwargs)
