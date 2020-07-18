@@ -3,6 +3,8 @@ import re
 
 from mopidy_youtube import logger
 from mopidy_youtube.youtube import Client, Video
+from mopidy_youtube.apis.youtube_japi import jAPI
+from mopidy_youtube.apis.youtube_scrapi import scrAPI
 
 
 # Direct access to YouTube Music API
@@ -215,12 +217,90 @@ class Music(Client):
                 {
                     "items": [
                         x
-                        for _, x in zip(
-                            range(Video.search_results), search_results
-                        )
+                        for x in search_results
+                        # for _, x in zip(
+                        #     range(Video.search_results), search_results
+                        # )
                     ]
                 },
                 sort_keys=False,
                 indent=1,
             )
+        )
+
+    @classmethod
+    def list_playlists(cls, ids):
+        """
+        list playlists
+        """
+
+        items = []
+
+        for id in ids:
+
+            query = {
+                "list": id,
+                "app": "desktop",
+                "persist_app": 1,
+            }
+
+            logger.info("session.get triggered: youtube-music list_playlists")
+            result = cls.session.get(scrAPI.endpoint + "playlist", params=query)
+
+            if result.status_code == 200:
+                logger.info("nothing in the soup, trying japi")
+                json_regex = r'window\["ytInitialData"] = ({.*?});'
+                extracted_json = re.search(json_regex, result.text).group(1)
+                thumbnails = json.loads(extracted_json)["microformat"][
+                    "microformatDataRenderer"
+                ]["thumbnail"]["thumbnails"][0]
+                title = json.loads(extracted_json)["microformat"][
+                    "microformatDataRenderer"
+                ]["title"]
+                channelTitle = "YouTube"
+                playlistVideos = json.loads(extracted_json)["contents"][
+                    "twoColumnBrowseResultsRenderer"
+                ]["tabs"][0]["tabRenderer"]["content"]["sectionListRenderer"][
+                    "contents"
+                ][
+                    0
+                ][
+                    "itemSectionRenderer"
+                ][
+                    "contents"
+                ][
+                    0
+                ][
+                    "playlistVideoListRenderer"
+                ][
+                    "contents"
+                ]
+
+                itemCount = len(playlistVideos)
+
+                item = {
+                    "id": id,
+                    "snippet": {
+                        "title": title,
+                        "thumbnails": {"default": thumbnails},
+                    },
+                    "channelTitle": channelTitle,
+                    "contentDetails": {"itemCount": itemCount},
+                }
+
+                for playlistVideo in jAPI.json_to_items(cls, playlistVideos):
+                    set_api_data = ["title", "channel"]
+                    if "contentDetails" in item:
+                        set_api_data.append("length")
+                    if "thumbnails" in item["snippet"]:
+                        set_api_data.append("thumbnails")
+                    video = Video.get(
+                        playlistVideo["snippet"]["resourceId"]["videoId"]
+                    )
+                    video._set_api_data(set_api_data, playlistVideo)
+
+                items.append(item)
+
+        return json.loads(
+            json.dumps({"items": items}, sort_keys=False, indent=1)
         )
