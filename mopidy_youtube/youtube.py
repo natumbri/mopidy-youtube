@@ -328,11 +328,14 @@ class Playlist(Entry):
             for pl in sublist:
                 pl._set_api_data(fields, dict.get(pl.id))
 
-        # 50 items at a time, make sure order is deterministic so that HTTP
-        # requests are replayable in tests
-        for i in range(0, len(list), 50):
-            sublist = list[i : i + 50]
-            ThreadPool.run(job, (sublist,))
+        if api_enabled is True:
+            # 50 items at a time, make sure order is deterministic so that HTTP
+            # requests are replayable in tests
+            for i in range(0, len(list), 50):
+                sublist = list[i : i + 50]
+                ThreadPool.run(job, (sublist,))
+        else:
+            [ThreadPool.run(job, ([v],)) for v in list]
 
     @async_property
     def videos(self):
@@ -407,73 +410,6 @@ class Playlist(Entry):
     def is_video(self):
         return False
 
-
-# class Channel(Entry):
-#
-#     @async_property
-#     def videos(self):
-#         """
-#         loads the list of videos of a channel using one API call for every 50
-#         fetched videos. For every page fetched, Video.load_info is called to
-#         start loading video info in a separate thread.
-#         """
-#
-#         self._videos = pykka.ThreadingFuture()
-#
-#         def job():
-#             data = {"items": []}
-#             page = ""
-#             while (
-#                 page is not None
-#                 and len(data["items"]) < self.playlist_max_videos
-#             ):
-#                 try:
-#                     max_results = min(
-#                         int(self.playlist_max_videos) - len(data["items"]), 50
-#                     )
-#                     result = self.api.list_channelitems(
-#                         self.id, page, max_results
-#                     )
-#                 except Exception as e:
-#                     logger.error('list channel items error "%s"', e)
-#                     break
-#                 if "error" in result:
-#                     logger.error(
-#                         "error in list channel items data for",
-#                         "channel {}, page {}".format(self.id, page),
-#                     )
-#                     break
-#                 page = result.get("nextPageToken") or None
-#                 data["items"].extend(result["items"])
-#
-#             del data["items"][int(self.playlist_max_videos) :]
-#
-#             myvideos = []
-#
-#             for item in data["items"]:
-#                 set_api_data = ["title", "channel"]
-#                 if "contentDetails" in item:
-#                     set_api_data.append("length")
-#                 if "thumbnails" in item["snippet"]:
-#                     set_api_data.append("thumbnails")
-#                 video = Video.get(item["snippet"]["resourceId"]["videoId"])
-#                 video._set_api_data(set_api_data, item)
-#                 myvideos.append(video)
-#
-#             # start loading video info in the background
-#             Video.load_info(
-#                 [x for _, x in zip(range(self.playlist_max_videos), myvideos)]
-#             )
-#
-#             self._videos.set(
-#                 [x for _, x in zip(range(self.playlist_max_videos), myvideos)]
-#             )
-#
-#         ThreadPool.run(job)
-#
-#     @property
-#     def is_video(self):
-#         return False
 
 # is this necessary or worthwhile?  Are there any bad
 # consequences that arise if timeout isn't set like this?

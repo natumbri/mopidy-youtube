@@ -82,6 +82,8 @@ class YouTubeBackend(pykka.ThreadingActor, backend.Backend):
         music = youtube_music.Music(proxy, headers)
         music.get_token()
         youtube.Entry.api.search = music.search
+        if youtube.api_enabled is False:
+            youtube.Entry.api.list_playlists = music.list_playlists
 
 
 class YouTubeLibraryProvider(backend.LibraryProvider):
@@ -134,35 +136,20 @@ class YouTubeLibraryProvider(backend.LibraryProvider):
                 album = "YouTube Video"
                 length = int(entry.length.get()) * 1000
 
-                # # does it make sense to try to return youtube 'channels' as
-                # # mopidy 'artists'? I'm not convinced.
-                # if entry.channelId.get():
-                #     artists.append(
-                #             Artist(
-                #                 name=f"YouTube channel: {entry.channel.get()}",
-                #                 uri="yotube:channel/%s.%s" % (safe_url(entry.channel.get()), entry.channelId.get()),
-                #                 )
-                #             )
-                # else:
-                #     logger.info("no channelId")
+                name = entry.title.get()
 
-            else:
-                uri_base = "youtube:playlist"
-                album = "YouTube Playlist (%s videos)" % entry.video_count.get()
-                length = 0
-
-            name = entry.title.get()
-
-            tracks.append(
-                Track(
-                    name=name.replace(";", ""),  # why is this .replace here?
-                    comment=entry.id,
-                    length=length,
-                    artists=[Artist(name=entry.channel.get())],
-                    album=Album(name=album),
-                    uri="%s/%s.%s" % (uri_base, safe_url(name), entry.id),
+                tracks.append(
+                    Track(
+                        name=name.replace(
+                            ";", ""
+                        ),  # why is this .replace here?
+                        comment=entry.id,
+                        length=length,
+                        artists=[Artist(name=entry.channel.get())],
+                        album=Album(name=album),
+                        uri="%s/%s.%s" % (uri_base, safe_url(name), entry.id),
+                    )
                 )
-            )
 
         # load video info and playlist videos in the background. they should be
         # ready by the time the user adds search results to the playing queue
@@ -211,8 +198,6 @@ class YouTubeLibraryProvider(backend.LibraryProvider):
         video_id = None
         playlist_id = None
 
-        # # should channels be returned?
-        # channel_id = None
         if "youtube.com" in uri:
             url = urlparse(uri.replace("yt:", "").replace("youtube:", ""))
             req = parse_qs(url.query)
@@ -231,8 +216,6 @@ class YouTubeLibraryProvider(backend.LibraryProvider):
 
         elif "video/" in uri:
             video_id = extract_id(uri)
-        # elif "channel/" in uri:
-        #     channel_id = extract_id(uri)
         else:
             playlist_id = extract_id(uri)
 
@@ -255,16 +238,6 @@ class YouTubeLibraryProvider(backend.LibraryProvider):
                     % (safe_url(video.title.get()), video.id),
                 )
             ]
-
-        # elif channel_id:
-        #     logger.info(channel_id)
-        #     channel = youtube.Channel.get(channel_id)
-        #
-        #     if not channel.videos.get():
-        #         logger.info('Cannot load "%s"', uri)
-        #         return []
-        #     videos = [v for v in channel.videos.get() if v.length.get() is not None]
-        #     album_name = "YouTube Video"
 
         else:
             playlist = youtube.Playlist.get(playlist_id)
