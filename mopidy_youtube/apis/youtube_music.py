@@ -2,7 +2,7 @@ import json
 import re
 
 from mopidy_youtube import logger
-from mopidy_youtube.youtube import Client, Video
+from mopidy_youtube.youtube import Client, Playlist, Video
 from mopidy_youtube.apis.youtube_japi import jAPI
 from mopidy_youtube.apis.youtube_scrapi import scrAPI
 
@@ -75,6 +75,8 @@ class Music(Client):
                 typeFilter["songs"] if videos else typeFilter["albums"]
             )
 
+        logger.info("session.post triggered: music base_search")
+
         json_response = cls.session.post(
             Music.searchEndpoint, params=query, headers=searchHeaders, json=data
         )
@@ -111,18 +113,19 @@ class Music(Client):
             for x in thing:
                 normalized_items.append(x["musicResponsiveListItemRenderer"])
 
-        if nextToken and len(normalized_items) < Video.search_results:
-            values = cls.base_search(
-                q, continuationToken=nextToken, videos=videos
-            )
-            if values:
-                normalized_items += values
-
-        return normalized_items
+        return {"nextPageToken": nextToken, "items": normalized_items}
 
     @classmethod
     def search_videos(cls, q):
-        results = cls.base_search(q)
+        results = []
+        continuationToken = None
+        while len(results) < Video.search_results:
+            result = cls.base_search(q, continuationToken=continuationToken)
+            results.extend(result["items"])
+            continuationToken = result["nextPageToken"]
+            if continuationToken is None:
+                break
+
         videos = []
         for item in results:
             video = {}
@@ -169,7 +172,16 @@ class Music(Client):
 
     @classmethod
     def search_albums(cls, q):
-        results = cls.base_search(q, videos=False)
+        results = []
+        continuationToken = None
+        while len(results) < Video.search_results:
+            result = cls.base_search(
+                q, continuationToken=continuationToken, videos=False
+            )
+            results.extend(result["items"])
+            continuationToken = result["nextPageToken"]
+            if continuationToken is None:
+                break
 
         playlists = []
         for item in results:
@@ -208,9 +220,9 @@ class Music(Client):
     def search(cls, q):
         search_results = []
         video_results = cls.search_albums(q)
-        [search_results.append(result) for result in video_results]
+        [search_results.append(result) for result in video_results[:int(Video.search_results)]]
         album_results = cls.search_videos(q)
-        [search_results.append(result) for result in album_results]
+        [search_results.append(result) for result in album_results[:int(Video.search_results)]]
 
         return json.loads(
             json.dumps(
@@ -233,7 +245,14 @@ class Music(Client):
         """
         list playlists
         """
+        # until this is faster, just return an empty dict
+        # the consequence is that the number of track on each
+        # album is shown as 'None videos'
+        return json.loads(json.dumps({"items": {}}, sort_keys=False, indent=1))
 
+        # what follows works, but takes ages, mainly because
+        # it loads each playlist separately. So, if you have 50 playlists
+        # that's 50 trips to the endpoint.
         items = []
 
         for id in ids:
@@ -248,7 +267,6 @@ class Music(Client):
             result = cls.session.get(scrAPI.endpoint + "playlist", params=query)
 
             if result.status_code == 200:
-                logger.info("nothing in the soup, trying japi")
                 json_regex = r'window\["ytInitialData"] = ({.*?});'
                 extracted_json = re.search(json_regex, result.text).group(1)
                 thumbnails = json.loads(extracted_json)["microformat"][
@@ -288,6 +306,8 @@ class Music(Client):
                     "contentDetails": {"itemCount": itemCount},
                 }
 
+                myvideos = []
+
                 for playlistVideo in jAPI.json_to_items(cls, playlistVideos):
                     set_api_data = ["title", "channel"]
                     if "contentDetails" in item:
@@ -297,7 +317,13 @@ class Music(Client):
                     video = Video.get(
                         playlistVideo["snippet"]["resourceId"]["videoId"]
                     )
+                    myvideos.append(video)
                     video._set_api_data(set_api_data, playlistVideo)
+
+                # start loading video info in the background
+                Video.load_info(
+                    [x for _, x in zip(range(Playlist.playlist_max_videos), myvideos)]
+                )
 
                 items.append(item)
 
