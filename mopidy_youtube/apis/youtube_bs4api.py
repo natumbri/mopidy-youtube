@@ -39,7 +39,7 @@ class bs4API(scrAPI):
 
     @classmethod
     def run_search(cls, query):
-
+        logger.info("session.get triggered: bs4api run_search")
         result = cls.session.get(urljoin(cls.endpoint, "results"), params=query)
         if result.status_code == 200:
             soup = BeautifulSoup(result.text, "html.parser")
@@ -201,7 +201,9 @@ class bs4API(scrAPI):
         logger.info("session.get triggered: list_playlist_items")
         ajax_css = "button[data-uix-load-more-href]"
 
-        videos = items = []
+        items = []
+        videos = []
+
         if page == "":
             result = cls.session.get(
                 urljoin(cls.endpoint, "playlist"), params=query
@@ -258,6 +260,7 @@ class bs4API(scrAPI):
 
                 items = jAPI.json_to_items(cls, extracted_json)
             else:
+                logger.info("found videos in the soup")
                 items = cls.plsoup_to_items(cls, videos)
 
             return json.loads(
