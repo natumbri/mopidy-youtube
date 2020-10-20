@@ -275,6 +275,9 @@ class YouTubeLibraryProvider(backend.LibraryProvider):
 
 
 class YouTubePlaybackProvider(backend.PlaybackProvider):
+    def should_download(self, uri):
+        return True
+
     def translate_uri(self, uri):
         """
         Called when a track us ready to play, we need to return the actual url of
