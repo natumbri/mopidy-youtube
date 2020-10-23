@@ -20,6 +20,24 @@ class bs4API(scrAPI):
         r"(?P<durationSeconds>[0-9]{2}))"
     )
 
+    ytdata_regex = (
+        r'window\["ytInitialData"] = ({.*?});',
+        r'ytInitialData = ({.*});'
+    )
+
+    @classmethod
+    def _find_yt_data(cls, text):
+        for r in cls.ytdata_regex:
+            result = re.search(r, text)
+            if not result:
+                continue
+
+            return json.loads(result.group(1))
+
+        logger.error("No data found on page")
+        raise Exception("No data found on page")
+
+
     @classmethod
     def run_search(cls, query):
 
@@ -52,21 +70,21 @@ class bs4API(scrAPI):
                 "div", class_=["yt-lockup-video", "yt-lockup-playlist"]
             )
 
-            if not results:
-                logger.info("nothing in the soup, trying japi")
-                json_regex = r'window\["ytInitialData"] = ({.*?});'
-                extracted_json = re.search(json_regex, result.text).group(1)
-                result_json = json.loads(extracted_json)["contents"][
-                    "twoColumnSearchResultsRenderer"
-                ]["primaryContents"]["sectionListRenderer"]["contents"][0][
-                    "itemSectionRenderer"
-                ][
-                    "contents"
-                ]
-                return jAPI.json_to_items(cls, result_json)
-            else:
+            if results:
                 return cls.soup_to_items(cls, results)
 
+            logger.info("nothing in the soup, trying japi")
+
+            yt_data = cls._find_yt_data(result.text)
+            json = yt_data["contents"]\
+                ["twoColumnSearchResultsRenderer"]["primaryContents"]\
+                ["sectionListRenderer"]["contents"][0]\
+                ["itemSectionRenderer"]["contents"]
+
+            return jAPI.json_to_items(cls, json)
+
+    
+    @classmethod
     def soup_to_items(cls, results):
         items = []
         for result in results:
@@ -217,26 +235,15 @@ class bs4API(scrAPI):
                 logger.info(
                     "nothing in the soup, trying japi list_playlistitems"
                 )
-                json_regex = r'window\["ytInitialData"] = ({.*?});'
-                extracted_json = re.search(json_regex, result.text).group(1)
-                result_json = json.loads(extracted_json)["contents"][
-                    "twoColumnBrowseResultsRenderer"
-                ]["tabs"][0]["tabRenderer"]["content"]["sectionListRenderer"][
-                    "contents"
-                ][
-                    0
-                ][
-                    "itemSectionRenderer"
-                ][
-                    "contents"
-                ][
-                    0
-                ][
-                    "playlistVideoListRenderer"
-                ][
-                    "contents"
-                ]
-                items = jAPI.json_to_items(cls, result_json)
+
+                yt_data = cls._find_yt_data(result.text)
+                json = yt_data["contents"]\
+                    ["twoColumnBrowseResultsRenderer"]["tabs"][0]\
+                    ["tabRenderer"]["content"]["sectionListRenderer"]\
+                    ["contents"][0]["itemSectionRenderer"]["contents"]\
+                    [0]["playlistVideoListRenderer"]["contents"]
+
+                items = jAPI.json_to_items(cls, json)
             else:
                 items = cls.plsoup_to_items(cls, videos)
 
@@ -248,6 +255,7 @@ class bs4API(scrAPI):
                 )
             )
 
+    @classmethod
     def plsoup_to_items(cls, videos):
         items = []
         for video in videos:
@@ -362,14 +370,13 @@ class bs4API(scrAPI):
             results = soup.find_all("li", class_=["related-list-item"])
             if not results:
                 logger.info("nothing in the soup, trying japi related videos")
-                json_regex = r'window\["ytInitialData"] = ({.*?});'
-                extracted_json = re.search(json_regex, result.text).group(1)
-                result_json = json.loads(extracted_json)["contents"][
-                    "twoColumnWatchNextResults"
-                ]["secondaryResults"]["secondaryResults"][
-                    "results"
-                ]  # noqa: E501
-                items = jAPI.json_to_items(cls, result_json)
+
+                yt_data = cls._find_yt_data(result.text)
+                json = yt_data["contents"]\
+                    ["twoColumnWatchNextResults"]["secondaryResults"]\
+                    ["secondaryResults"]["results"] # noqa: E501
+
+                items = jAPI.json_to_items(cls, json)
 
             for result in results:
                 if "related-list-item-compact-video" in result.get("class"):
