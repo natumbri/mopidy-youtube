@@ -220,9 +220,15 @@ class Music(Client):
     def search(cls, q):
         search_results = []
         video_results = cls.search_albums(q)
-        [search_results.append(result) for result in video_results[:int(Video.search_results)]]
+        [
+            search_results.append(result)
+            for result in video_results[: int(Video.search_results)]
+        ]
         album_results = cls.search_videos(q)
-        [search_results.append(result) for result in album_results[:int(Video.search_results)]]
+        [
+            search_results.append(result)
+            for result in album_results[: int(Video.search_results)]
+        ]
 
         return json.loads(
             json.dumps(
@@ -322,7 +328,12 @@ class Music(Client):
 
                 # start loading video info in the background
                 Video.load_info(
-                    [x for _, x in zip(range(Playlist.playlist_max_videos), myvideos)]
+                    [
+                        x
+                        for _, x in zip(
+                            range(Playlist.playlist_max_videos), myvideos
+                        )
+                    ]
                 )
 
                 items.append(item)

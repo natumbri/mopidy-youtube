@@ -22,7 +22,7 @@ class bs4API(scrAPI):
 
     ytdata_regex = (
         r'window\["ytInitialData"] = ({.*?});',
-        r'ytInitialData = ({.*});'
+        r"ytInitialData = ({.*});",
     )
 
     @classmethod
@@ -36,7 +36,6 @@ class bs4API(scrAPI):
 
         logger.error("No data found on page")
         raise Exception("No data found on page")
-
 
     @classmethod
     def run_search(cls, query):
@@ -76,14 +75,14 @@ class bs4API(scrAPI):
             logger.info("nothing in the soup, trying japi")
 
             yt_data = cls._find_yt_data(result.text)
-            json = yt_data["contents"]\
-                ["twoColumnSearchResultsRenderer"]["primaryContents"]\
-                ["sectionListRenderer"]["contents"][0]\
-                ["itemSectionRenderer"]["contents"]
+            json = yt_data["contents"]["twoColumnSearchResultsRenderer"][
+                "primaryContents"
+            ]["sectionListRenderer"]["contents"][0]["itemSectionRenderer"][
+                "contents"
+            ]
 
             return jAPI.json_to_items(cls, json)
 
-    
     @classmethod
     def soup_to_items(cls, results):
         items = []
@@ -239,11 +238,23 @@ class bs4API(scrAPI):
                 )
 
                 yt_data = cls._find_yt_data(result.text)
-                json = yt_data["contents"]\
-                    ["twoColumnBrowseResultsRenderer"]["tabs"][0]\
-                    ["tabRenderer"]["content"]["sectionListRenderer"]\
-                    ["contents"][0]["itemSectionRenderer"]["contents"]\
-                    [0]["playlistVideoListRenderer"]["contents"]
+                json = yt_data["contents"]["twoColumnBrowseResultsRenderer"][
+                    "tabs"
+                ][0]["tabRenderer"]["content"]["sectionListRenderer"][
+                    "contents"
+                ][
+                    0
+                ][
+                    "itemSectionRenderer"
+                ][
+                    "contents"
+                ][
+                    0
+                ][
+                    "playlistVideoListRenderer"
+                ][
+                    "contents"
+                ]
 
                 items = jAPI.json_to_items(cls, json)
             else:
@@ -375,9 +386,11 @@ class bs4API(scrAPI):
                 logger.info("nothing in the soup, trying japi related videos")
 
                 yt_data = cls._find_yt_data(result.text)
-                json = yt_data["contents"]\
-                    ["twoColumnWatchNextResults"]["secondaryResults"]\
-                    ["secondaryResults"]["results"] # noqa: E501
+                json = yt_data["contents"]["twoColumnWatchNextResults"][
+                    "secondaryResults"
+                ]["secondaryResults"][
+                    "results"
+                ]  # noqa: E501
 
                 items = jAPI.json_to_items(cls, json)
 
