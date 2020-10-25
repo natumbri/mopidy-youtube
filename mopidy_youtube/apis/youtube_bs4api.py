@@ -76,12 +76,12 @@ class bs4API(scrAPI):
             logger.info("nothing in the soup, trying japi")
 
             yt_data = cls._find_yt_data(result.text)
-            json = yt_data["contents"]\
+            extracted_json = yt_data["contents"]\
                 ["twoColumnSearchResultsRenderer"]["primaryContents"]\
                 ["sectionListRenderer"]["contents"][0]\
                 ["itemSectionRenderer"]["contents"]
 
-            return jAPI.json_to_items(cls, json)
+            return jAPI.json_to_items(cls, extracted_json)
 
     
     @classmethod
@@ -237,13 +237,13 @@ class bs4API(scrAPI):
                 )
 
                 yt_data = cls._find_yt_data(result.text)
-                json = yt_data["contents"]\
+                extracted_json = yt_data["contents"]\
                     ["twoColumnBrowseResultsRenderer"]["tabs"][0]\
                     ["tabRenderer"]["content"]["sectionListRenderer"]\
                     ["contents"][0]["itemSectionRenderer"]["contents"]\
                     [0]["playlistVideoListRenderer"]["contents"]
 
-                items = jAPI.json_to_items(cls, json)
+                items = jAPI.json_to_items(cls, extracted_json)
             else:
                 items = cls.plsoup_to_items(cls, videos)
 
@@ -372,11 +372,11 @@ class bs4API(scrAPI):
                 logger.info("nothing in the soup, trying japi related videos")
 
                 yt_data = cls._find_yt_data(result.text)
-                json = yt_data["contents"]\
+                extracted_json = yt_data["contents"]\
                     ["twoColumnWatchNextResults"]["secondaryResults"]\
                     ["secondaryResults"]["results"] # noqa: E501
 
-                items = jAPI.json_to_items(cls, json)
+                items = jAPI.json_to_items(cls, extracted_json)
 
             for result in results:
                 if "related-list-item-compact-video" in result.get("class"):
