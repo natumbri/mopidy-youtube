@@ -5,6 +5,9 @@ from mopidy_youtube import logger
 from mopidy_youtube.youtube import Client, Playlist, Video
 from mopidy_youtube.apis.youtube_japi import jAPI
 from mopidy_youtube.apis.youtube_scrapi import scrAPI
+from ytmusicapi import YTMusic
+
+ytmusic = YTMusic()
 
 
 # Direct access to YouTube Music API
@@ -13,6 +16,64 @@ class Music(Client):
     endpoint = "https://music.youtube.com"
     searchEndpoint = endpoint + "/youtubei/v1/search"
     api_key = ""
+
+    @classmethod
+    def search(cls, q):
+        search_results = []
+        api_search_results = ytmusic.search(query=q)
+        video_results = cls.search_albums(q)
+        [
+            search_results.append(result)
+            for result in video_results[: int(Video.search_results)]
+        ]
+        album_results = cls.search_videos(q)
+        [
+            search_results.append(result)
+            for result in album_results[: int(Video.search_results)]
+        ]
+
+        json_results = json.loads(
+            json.dumps(
+                {
+                    "items": [
+                        x
+                        for x in search_results
+                        # for _, x in zip(
+                        #     range(Video.search_results), search_results
+                        # )
+                    ]
+                },
+                sort_keys=False,
+                indent=1,
+            )
+        )
+
+        api_json_results = json.loads(
+            json.dumps(
+                {
+                    "items": [
+                        x
+                        for x in api_search_results
+                        # for _, x in zip(
+                        #     range(Video.search_results), search_results
+                        # )
+                    ]
+                },
+                sort_keys=False,
+                indent=1,
+            )
+        )
+
+        
+        # Writing to sample.json 
+        with open("/tmp/api.json", "w") as outfile: 
+                outfile.write(json.dumps(api_json_results))
+
+        # Writing to sample.json 
+        with open("/tmp/non-api.json", "w") as outfile: 
+                outfile.write(json.dumps(json_results)) 
+
+        return json_results
 
     # Get YouTube Music Token
     #
@@ -215,36 +276,6 @@ class Music(Client):
             )
             playlists.append(playlist)
         return playlists
-
-    @classmethod
-    def search(cls, q):
-        search_results = []
-        video_results = cls.search_albums(q)
-        [
-            search_results.append(result)
-            for result in video_results[: int(Video.search_results)]
-        ]
-        album_results = cls.search_videos(q)
-        [
-            search_results.append(result)
-            for result in album_results[: int(Video.search_results)]
-        ]
-
-        return json.loads(
-            json.dumps(
-                {
-                    "items": [
-                        x
-                        for x in search_results
-                        # for _, x in zip(
-                        #     range(Video.search_results), search_results
-                        # )
-                    ]
-                },
-                sort_keys=False,
-                indent=1,
-            )
-        )
 
     @classmethod
     def list_playlists(cls, ids):
