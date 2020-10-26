@@ -80,8 +80,8 @@ class YouTubeBackend(pykka.ThreadingActor, backend.Backend):
 
         logger.info("Using YouTube Music API")
         music = youtube_music.Music(proxy, headers)
-        music.get_token()
         youtube.Entry.api.search = music.search
+        youtube.Entry.api.list_playlistitems = music.list_playlistitems
         if youtube.api_enabled is False:
             youtube.Entry.api.list_playlists = music.list_playlists
 
