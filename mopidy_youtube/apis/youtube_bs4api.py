@@ -75,13 +75,13 @@ class bs4API(scrAPI):
             logger.info("nothing in the soup, trying japi")
 
             yt_data = cls._find_yt_data(result.text)
-            json = yt_data["contents"]["twoColumnSearchResultsRenderer"][
+            extracted_json = yt_data["contents"]["twoColumnSearchResultsRenderer"][
                 "primaryContents"
             ]["sectionListRenderer"]["contents"][0]["itemSectionRenderer"][
                 "contents"
             ]
 
-            return jAPI.json_to_items(cls, json)
+            return jAPI.json_to_items(cls, extracted_json)
 
     @classmethod
     def soup_to_items(cls, results):
@@ -238,7 +238,7 @@ class bs4API(scrAPI):
                 )
 
                 yt_data = cls._find_yt_data(result.text)
-                json = yt_data["contents"]["twoColumnBrowseResultsRenderer"][
+                extracted_json = yt_data["contents"]["twoColumnBrowseResultsRenderer"][
                     "tabs"
                 ][0]["tabRenderer"]["content"]["sectionListRenderer"][
                     "contents"
@@ -256,7 +256,7 @@ class bs4API(scrAPI):
                     "contents"
                 ]
 
-                items = jAPI.json_to_items(cls, json)
+                items = jAPI.json_to_items(cls, extracted_json)
             else:
                 logger.info("found videos in the soup")
                 items = cls.plsoup_to_items(cls, videos)
@@ -386,13 +386,13 @@ class bs4API(scrAPI):
                 logger.info("nothing in the soup, trying japi related videos")
 
                 yt_data = cls._find_yt_data(result.text)
-                json = yt_data["contents"]["twoColumnWatchNextResults"][
+                extracted_json = yt_data["contents"]["twoColumnWatchNextResults"][
                     "secondaryResults"
                 ]["secondaryResults"][
                     "results"
                 ]  # noqa: E501
 
-                items = jAPI.json_to_items(cls, json)
+                items = jAPI.json_to_items(cls, extracted_json)
 
             for result in results:
                 if "related-list-item-compact-video" in result.get("class"):

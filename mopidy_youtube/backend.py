@@ -80,8 +80,8 @@ class YouTubeBackend(pykka.ThreadingActor, backend.Backend):
 
         logger.info("Using YouTube Music API")
         music = youtube_music.Music(proxy, headers)
-        music.get_token()
         youtube.Entry.api.search = music.search
+        youtube.Entry.api.list_playlistitems = music.list_playlistitems
         if youtube.api_enabled is False:
             youtube.Entry.api.list_playlists = music.list_playlists
 
@@ -231,7 +231,9 @@ class YouTubeLibraryProvider(backend.LibraryProvider):
                     comment=video.id,
                     length=video.length.get() * 1000,
                     artists=[Artist(name=video.channel.get())],
-                    album=Album(name="YouTube Video",),
+                    album=Album(
+                        name="YouTube Video",
+                    ),
                     uri="youtube:video/%s.%s"
                     % (safe_url(video.title.get()), video.id),
                 )

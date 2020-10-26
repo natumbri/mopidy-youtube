@@ -72,15 +72,18 @@ class Entry:
         set_api_data = ["title", "channel"]
         if item["id"]["kind"] == "youtube#video":
             obj = Video.get(item["id"]["videoId"])
-            if "contentDetails" in item:
-                set_api_data.append("length")
         elif item["id"]["kind"] == "youtube#playlist":
             obj = Playlist.get(item["id"]["playlistId"])
-            if "contentDetails" in item:
-                set_api_data.append("video_count")
         else:
             obj = []
             return obj
+
+        if "contentDetails" in item:
+            if "duration" in item["contentDetails"]:
+                set_api_data.append("length")
+            elif "itemCount" in item["contentDetails"]:
+                set_api_data.append("video_count")
+
         if "thumbnails" in item["snippet"]:
             set_api_data.append("thumbnails")
         if "channelId" in item["snippet"]:
@@ -94,7 +97,7 @@ class Entry:
         Search for both videos and playlists using a single API call. Fetches
         title, thumbnails, channel. Depending on the API, may also fetch
         length and video_count. The official youtube API will require an
-        additional API call to fetch legth and video_count (taken care of
+        additional API call to fetch length and video_count (taken care of
         at Video.load_info and Playlist.load_info).
         """
         try:
