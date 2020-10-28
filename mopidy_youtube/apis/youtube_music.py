@@ -13,7 +13,6 @@ ytmusic = YTMusic()
 class Music(Client):
     endpoint = None
     searchEndpoint = None
-    api_key = ""
 
     @classmethod
     def search(cls, q):
