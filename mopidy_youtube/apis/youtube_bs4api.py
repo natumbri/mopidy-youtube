@@ -71,7 +71,7 @@ class bs4API(scrAPI):
             )
 
             if results:
-                return cls.soup_to_items(cls, results)
+                return cls.soup_to_items(results)
 
             logger.info("nothing in the soup, trying japi")
 
@@ -245,7 +245,7 @@ class bs4API(scrAPI):
 
                 items = jAPI.json_to_items(cls, extracted_json)
             else:
-                items = cls.plsoup_to_items(cls, videos)
+                items = cls.plsoup_to_items(videos)
 
             return json.loads(
                 json.dumps(
