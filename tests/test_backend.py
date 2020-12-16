@@ -25,7 +25,7 @@ yak = "fakeyoutubekey"
 youtube_api.youtube_api_key = yak
 
 
-@pytest.yield_fixture
+@pytest.fixture
 def youtube_dl_mock():
     patcher = mock.patch.object(youtube, "youtube_dl", spec=youtube_dl)
     yield patcher.start()

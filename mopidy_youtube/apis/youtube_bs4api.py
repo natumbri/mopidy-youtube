@@ -71,7 +71,7 @@ class bs4API(scrAPI):
             )
 
             if results:
-                return cls.soup_to_items(cls, results)
+                return cls.soup_to_items(results)
 
             logger.info("nothing in the soup, trying japi")
 
