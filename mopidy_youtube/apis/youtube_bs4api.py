@@ -278,7 +278,8 @@ class bs4API(scrAPI):
                     "duration": "PT"
                     + cls.format_duration(
                         re.match(
-                            cls.time_regex, video.find(class_="timestamp").text,
+                            cls.time_regex,
+                            video.find(class_="timestamp").text,
                         )
                     ),
                 },
