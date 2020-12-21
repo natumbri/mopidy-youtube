@@ -363,7 +363,7 @@ class Playlist(Entry):
                     break
                 if "error" in result:
                     logger.error(
-                        "error in list playlist items data for",
+                        "error in list playlist items data for "
                         "playlist {}, page {}".format(self.id, page),
                     )
                     break
