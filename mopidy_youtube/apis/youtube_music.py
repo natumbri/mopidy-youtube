@@ -47,6 +47,7 @@ class Music(Client):
         )
 
         return json_results
+<<<<<<< HEAD
 
     @classmethod
     def search_videos(cls, q):
