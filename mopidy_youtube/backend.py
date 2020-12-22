@@ -243,7 +243,9 @@ class YouTubeLibraryProvider(backend.LibraryProvider):
                     comment=video.id,
                     length=video.length.get() * 1000,
                     artists=[Artist(name=video.channel.get())],
-                    album=Album(name="YouTube Video",),
+                    album=Album(
+                        name="YouTube Video",
+                    ),
                     uri="youtube:video/%s.%s"
                     % (safe_url(video.title.get()), video.id),
                 )
