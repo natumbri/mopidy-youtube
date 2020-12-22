@@ -42,7 +42,7 @@ class YouTubeBackend(pykka.ThreadingActor, backend.Backend):
         youtube_api.youtube_api_key = (
             config["youtube"]["youtube_api_key"] or None
         )
-        youtube.ThreadPool.threads_max = config["youtube"]["threads_max"]
+        youtube.threads_max = config["youtube"]["threads_max"]
         youtube.Video.search_results = config["youtube"]["search_results"]
         youtube.Playlist.playlist_max_videos = config["youtube"][
             "playlist_max_videos"

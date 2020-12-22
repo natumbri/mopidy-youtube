@@ -1,5 +1,5 @@
 import re
-import threading
+from concurrent.futures.thread import ThreadPoolExecutor
 import traceback
 
 import requests
@@ -14,7 +14,7 @@ from mopidy.models import Image
 from mopidy_youtube import logger
 
 api_enabled = False
-
+threads_max = 8
 
 def async_property(func):
     """
@@ -225,7 +225,8 @@ class Video(Entry):
         # requests are replayable in tests
         for i in range(0, len(list), 50):
             sublist = list[i : i + 50]
-            ThreadPool.run(job, (sublist,))
+            ThreadPoolExecutor(max_workers=threads_max).submit(job, sublist)
+
 
     @classmethod
     def related_videos(cls, video_id):
@@ -302,8 +303,8 @@ class Video(Entry):
                 return
             self._audio_url.set(info["url"])
 
-        ThreadPool.run(job)
-
+        ThreadPoolExecutor(max_workers=threads_max).submit(job)
+        
     @property
     def is_video(self):
         return True
@@ -336,9 +337,9 @@ class Playlist(Entry):
             # requests are replayable in tests
             for i in range(0, len(list), 50):
                 sublist = list[i : i + 50]
-                ThreadPool.run(job, (sublist,))
+                ThreadPoolExecutor(max_workers=threads_max).submit(job, sublist)
         else:
-            [ThreadPool.run(job, ([v],)) for v in list]
+            [ThreadPoolExecutor(max_workers=threads_max).submit(job, [v]) for v in list]
 
     @async_property
     def videos(self):
@@ -399,7 +400,7 @@ class Playlist(Entry):
                 [x for _, x in zip(range(self.playlist_max_videos), myvideos)]
             )
 
-        ThreadPool.run(job)
+        ThreadPoolExecutor(max_workers=threads_max).submit(job)
 
     @async_property
     def video_count(self):
@@ -461,7 +462,7 @@ class Client:
             status_forcelist=status_forcelist,
         )
         adapter = MyHTTPAdapter(
-            max_retries=retry, pool_maxsize=ThreadPool.threads_max
+            max_retries=retry, pool_maxsize=threads_max
         )
         cls.session.mount("http://", adapter)
         cls.session.mount("https://", adapter)
@@ -478,48 +479,3 @@ class Client:
         if match.group("durationSeconds") is not None:
             duration += match.group("durationSeconds") + "S"
         return duration
-
-
-class ThreadPool:
-    """
-    simple 'dynamic' thread pool. Threads are created when new jobs arrive, stay
-    active for as long as there are active jobs, and get destroyed afterwards
-    (so that there are no long-term threads staying active)
-    """
-
-    threads_active = 0
-    jobs = []
-    lock = threading.Lock()  # controls access to threads_active and jobs
-
-    @classmethod
-    def worker(cls):
-        while True:
-            cls.lock.acquire()
-            if len(cls.jobs):
-                f, args = cls.jobs.pop()
-            else:
-                # no more jobs, exit thread
-                cls.threads_active -= 1
-                cls.lock.release()
-                break
-            cls.lock.release()
-
-            try:
-                f(*args)
-            except Exception as e:
-                logger.error(
-                    "youtube thread error: %s\n%s", e, traceback.format_exc()
-                )
-
-    @classmethod
-    def run(cls, f, args=()):
-        cls.lock.acquire()
-
-        cls.jobs.append((f, args))
-        if cls.threads_active < cls.threads_max:
-            thread = threading.Thread(target=cls.worker)
-            thread.daemon = True
-            thread.start()
-            cls.threads_active += 1
-
-        cls.lock.release()

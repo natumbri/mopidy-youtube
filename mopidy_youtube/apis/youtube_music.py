@@ -1,8 +1,10 @@
 import json
 import re
 
+from concurrent.futures.thread import ThreadPoolExecutor
+
 from mopidy_youtube import logger
-from mopidy_youtube.youtube import Client, Playlist, Video
+from mopidy_youtube.youtube import Client, Playlist, Video, threads_max
 from ytmusicapi import YTMusic
 
 ytmusic = YTMusic()
@@ -48,7 +50,9 @@ class Music(Client):
 
     @classmethod
     def search_videos(cls, q):
-        results = ytmusic.search(query=q, filter="songs")
+        results = ytmusic.search(
+            query=q, filter="songs", limit=Video.search_results
+        )
         videos = [
             {
                 "id": {
@@ -109,24 +113,40 @@ class Music(Client):
 
     @classmethod
     def search_albums(cls, q):
-        results = ytmusic.search(query=q, filter="albums")
-        playlists = [
-            {
-                "id": {
-                    "kind": "youtube#playlist",
-                    "playlistId": item["browseId"],
-                },
-                "snippet": {
-                    "channelTitle": item["type"],
-                    "thumbnails": {"default": item["thumbnails"][0]},
-                    "title": item["title"],
-                },
-                "contentDetails": cls.list_playlists([item["browseId"]])[
-                    "items"
-                ][0]["contentDetails"],
-            }
-            for item in results
-        ]
+        playlists = []
+        results = ytmusic.search(
+            query=q, filter="albums", limit=Video.search_results
+        )
+
+        def job(item):
+            try:
+                playlist = cls.list_playlists([item["browseId"]])
+                if playlist is None:
+                    return
+                else:
+                    playlistItem = {
+                        "id": {
+                            "kind": "youtube#playlist",
+                            "playlistId": item["browseId"],
+                        },
+                        "snippet": {
+                            "channelTitle": item["type"],
+                            "thumbnails": {"default": item["thumbnails"][0]},
+                            "title": item["title"],
+                        },
+                        "contentDetails": playlist["items"][0][
+                            "contentDetails"
+                        ],
+                    }
+                    playlists.append(playlistItem)
+
+            except Exception as e:
+                logger.error('search_albums error "%s"', e)
+
+        with ThreadPoolExecutor(max_workers=threads_max) as executor:
+            for item in results:
+                executor.submit(job, item)
+
         return playlists
 
     @classmethod
@@ -139,8 +159,19 @@ class Music(Client):
         # So, if you have 50 playlists that's 50 trips to the endpoint.
 
         logger.info("session.get triggered: youtube-music list_playlists")
+        results = []
+        for id in ids:
+            try:
+                results.append(ytmusic.get_album(browseId=id))
+            except Exception as e:
+                logger.info(
+                    f"ytmusic.get_album failed with {e} for playlist {id}"
+                )
 
-        results = [ytmusic.get_album(browseId=id) for id in ids]
+        if len(results) == 0:
+            logger.info(f"list_playlists for {ids} returned no results")
+            return None
+
         items = [
             {
                 "id": result["playlistId"],
@@ -153,7 +184,6 @@ class Music(Client):
             }
             for result in results
         ]
-
         # get the videos in the playlist and
         # start loading video info in the background
         album_tracks = [
