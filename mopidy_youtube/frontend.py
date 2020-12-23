@@ -3,6 +3,7 @@ from mopidy.core import listener
 from mopidy_youtube import logger, youtube
 from mopidy_youtube.data import extract_video_id, format_video_uri
 
+
 autoplay_enabled = False
 strict_autoplay = False
 max_autoplay_length = 600

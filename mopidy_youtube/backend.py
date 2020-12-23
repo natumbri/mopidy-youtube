@@ -10,6 +10,8 @@ from mopidy_youtube import Extension, logger, youtube
 from mopidy_youtube.apis import youtube_api, youtube_bs4api
 from mopidy_youtube.data import format_video_uri, format_playlist_uri, format_channel_uri, extract_video_id, extract_playlist_id, extract_channel_id
 
+from mopidy_youtube import Extension, logger, youtube
+from mopidy_youtube.apis import youtube_api, youtube_bs4api, youtube_music
 
 """
 A typical interaction:
@@ -81,12 +83,12 @@ class YouTubeBackend(pykka.ThreadingActor, backend.Backend):
         youtube_api.youtube_api_key = (
             config["youtube"]["youtube_api_key"] or None
         )
-        youtube.ThreadPool.threads_max = config["youtube"]["threads_max"]
         youtube.Video.search_results = config["youtube"]["search_results"]
         youtube.Playlist.playlist_max_videos = config["youtube"][
             "playlist_max_videos"
         ]
         youtube.api_enabled = config["youtube"]["api_enabled"]
+        youtube.musicapi_enabled = config["youtube"]["musicapi_enabled"]
         self.uri_schemes = ["youtube", "yt"]
         self.user_agent = "{}/{}".format(Extension.dist_name, Extension.version)
 
@@ -116,6 +118,14 @@ class YouTubeBackend(pykka.ThreadingActor, backend.Backend):
         if youtube.api_enabled is False:
             logger.info("using bs4API")
             youtube.Entry.api = youtube_bs4api.bs4API(proxy, headers)
+
+        if youtube.musicapi_enabled is True:
+            logger.info("Using YouTube Music API")
+            music = youtube_music.Music(proxy, headers)
+            youtube.Entry.api.search = music.search
+            youtube.Entry.api.list_playlistitems = music.list_playlistitems
+            if youtube.api_enabled is False:
+                youtube.Entry.api.list_playlists = music.list_playlists
 
 
 class YouTubeLibraryProvider(backend.LibraryProvider):
@@ -302,6 +312,9 @@ class YouTubeLibraryProvider(backend.LibraryProvider):
 
 
 class YouTubePlaybackProvider(backend.PlaybackProvider):
+    def should_download(self, uri):
+        return True
+
     def translate_uri(self, uri):
         """
         Called when a track us ready to play, we need to return the actual url of
