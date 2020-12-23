@@ -261,8 +261,8 @@ class bs4API(scrAPI):
 
                 items = jAPI.json_to_items(cls, extracted_json)
             else:
-                logger.info("found videos in the soup")
-                items = cls.plsoup_to_items(cls, videos)
+                items = cls.plsoup_to_items(videos)
+
 
             return json.loads(
                 json.dumps(
