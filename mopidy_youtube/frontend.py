@@ -1,8 +1,8 @@
 import pykka
 from mopidy.core import listener
+
 from mopidy_youtube import logger, youtube
 from mopidy_youtube.data import extract_video_id, format_video_uri
-
 
 autoplay_enabled = False
 strict_autoplay = False
@@ -43,7 +43,9 @@ class YouTubeAutoplayer(pykka.ThreadingActor, listener.CoreListener):
 
         [tlTrackId, track] = tl_track
 
-        if not track.uri.startswith("youtube:") and not track.uri.startswith("yt:"):
+        if not track.uri.startswith("youtube:") and not track.uri.startswith(
+            "yt:"
+        ):
             return None
 
         try:
@@ -120,9 +122,7 @@ class YouTubeAutoplayer(pykka.ThreadingActor, listener.CoreListener):
             else:
                 next_video = related_videos[0]
                 autoplayed.append(next_video.id)
-                uri = [
-                    format_video_uri(next_video)
-                ]
+                uri = [format_video_uri(next_video)]
                 tl.add(uris=uri).get()
                 return None
 

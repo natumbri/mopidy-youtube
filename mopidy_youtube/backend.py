@@ -1,17 +1,18 @@
 import re
-import string
-import unicodedata
 from urllib.parse import parse_qs, urlparse
 
 import pykka
 from mopidy import backend, httpclient
 from mopidy.models import Album, Artist, SearchResult, Track
-from mopidy_youtube import Extension, logger, youtube
-from mopidy_youtube.apis import youtube_api, youtube_bs4api
-from mopidy_youtube.data import format_video_uri, format_playlist_uri, format_channel_uri, extract_video_id, extract_playlist_id, extract_channel_id
 
 from mopidy_youtube import Extension, logger, youtube
 from mopidy_youtube.apis import youtube_api, youtube_bs4api, youtube_music
+from mopidy_youtube.data import (
+    extract_playlist_id,
+    extract_video_id,
+    format_playlist_uri,
+    format_video_uri,
+)
 
 """
 A typical interaction:
@@ -23,11 +24,11 @@ background, so steps 2/3 are usually instantaneous.
 """
 
 
-def convert_video_to_track(video: youtube.Video, album_name: str, **kwargs) -> Track:
+def convert_video_to_track(
+    video: youtube.Video, album_name: str, **kwargs
+) -> Track:
     return Track(
-        name=video.title.get().replace(
-            ";", ""
-        ),  # why is this .replace here?
+        name=video.title.get(),
         comment=video.id,
         length=video.length.get() * 1000,
         artists=[Artist(name=video.channel.get())],
@@ -55,9 +56,7 @@ def convert_videos_to_tracks(videos, album_name: str):
 def convert_playlist_to_track(playlist: youtube.Playlist) -> Track:
     album_name = f"YouTube Playlist ({playlist.video_count.get()} videos)"
     return Track(
-        name=playlist.title.get().replace(
-            ";", ""
-        ),  # why is this .replace here?
+        name=playlist.title.get(),
         comment=playlist.id,
         length=0,
         artists=[Artist(name=playlist.channel.get())],
@@ -69,7 +68,11 @@ def convert_playlist_to_track(playlist: youtube.Playlist) -> Track:
 def convert_playlist_to_album(playlist: youtube.Playlist) -> Album:
     return Album(
         name=playlist.title.get(),
-        artists=[Artist(name=f"YouTube Playlist ({playlist.video_count.get()} videos)")],
+        artists=[
+            Artist(
+                name=f"YouTube Playlist ({playlist.video_count.get()} videos)"
+            )
+        ],
         uri=format_playlist_uri(playlist),
     )
 
@@ -215,7 +218,9 @@ class YouTubeLibraryProvider(backend.LibraryProvider):
 
         # ignore videos for which no info was found (removed, etc)
         videos = [
-            video for video in playlist.videos.get() if video.length.get() is not None
+            video
+            for video in playlist.videos.get()
+            if video.length.get() is not None
         ]
         album_name = playlist.title.get()
 
@@ -294,7 +299,6 @@ class YouTubeLibraryProvider(backend.LibraryProvider):
                 return []
             else:
                 return playlist_tracks
-
 
         # channel_id = extract_channel_id(uri)
         # if channel_id:

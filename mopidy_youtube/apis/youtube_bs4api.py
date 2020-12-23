@@ -263,7 +263,6 @@ class bs4API(scrAPI):
             else:
                 items = cls.plsoup_to_items(videos)
 
-
             return json.loads(
                 json.dumps(
                     {"nextPageToken": ajax, "items": items},

@@ -264,7 +264,7 @@ class Video(Entry):
     @async_property
     def thumbnails(self):
         # make it "async" for uniformity with Playlist.thumbnails
-        identifier = self.id.split(".")[-1]
+        identifier = self.id.split(":")[-1]
         self._thumbnails = pykka.ThreadingFuture()
         self._thumbnails.set(
             [
@@ -417,7 +417,10 @@ class Playlist(Entry):
 
     @async_property
     def thumbnails(self):
-        self.load_info([self])
+        self._thumbnails = pykka.ThreadingFuture()
+        self._thumbnails.set(
+            [Image(uri=imageUri) for imageUri in self.load_info([self])]
+        )
 
     @property
     def is_video(self):
