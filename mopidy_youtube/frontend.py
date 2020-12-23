@@ -1,5 +1,6 @@
 import pykka
 from mopidy.core import listener
+
 from mopidy_youtube import backend, logger, youtube
 
 autoplay_enabled = False

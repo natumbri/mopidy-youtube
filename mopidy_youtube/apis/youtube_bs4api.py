@@ -3,6 +3,7 @@ import re
 from urllib.parse import urljoin
 
 from bs4 import BeautifulSoup
+
 from mopidy_youtube import logger
 from mopidy_youtube.apis.youtube_japi import jAPI
 from mopidy_youtube.apis.youtube_scrapi import scrAPI

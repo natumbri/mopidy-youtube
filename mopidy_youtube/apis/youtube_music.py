@@ -1,11 +1,11 @@
 import json
 import re
-
 from concurrent.futures.thread import ThreadPoolExecutor
 
-from mopidy_youtube import logger
-from mopidy_youtube.youtube import Client, Playlist, Video, threads_max
 from ytmusicapi import YTMusic
+
+from mopidy_youtube import logger
+from mopidy_youtube.youtube import Client, Playlist, Video
 
 ytmusic = YTMusic()
 
@@ -143,9 +143,8 @@ class Music(Client):
             except Exception as e:
                 logger.error('search_albums error "%s"', e)
 
-        with ThreadPoolExecutor(max_workers=threads_max) as executor:
-            for item in results:
-                executor.submit(job, item)
+        with ThreadPoolExecutor() as executor:
+            executor.map(job, results)
 
         return playlists
 

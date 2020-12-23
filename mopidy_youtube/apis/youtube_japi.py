@@ -155,7 +155,6 @@ class jAPI(scrAPI):
                         ]["runs"][0]["text"],
                     },
                 }
-
                 items.append(item)
 
         # remove duplicates

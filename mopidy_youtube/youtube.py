@@ -1,20 +1,19 @@
 import re
 from concurrent.futures.thread import ThreadPoolExecutor
-import traceback
 
+import pykka
 import requests
+import youtube_dl
+from cachetools import LRUCache, cached
+from mopidy.models import Image
 from requests.adapters import HTTPAdapter
 from requests.packages.urllib3.util.retry import Retry
 from requests.packages.urllib3.util.timeout import Timeout
 
-import pykka
-import youtube_dl
-from cachetools import LRUCache, cached
-from mopidy.models import Image
 from mopidy_youtube import logger
 
 api_enabled = False
-threads_max = 8
+
 
 def async_property(func):
     """
@@ -201,14 +200,14 @@ class Entry:
 
 class Video(Entry):
     @classmethod
-    def load_info(cls, list):
+    def load_info(cls, listOfVideos):
         """
         loads title, length, channel of multiple videos using one API call for
         every 50 videos. API calls are split in separate threads.
         """
 
         fields = ["title", "length", "channel"]
-        list = cls._add_futures(list, fields)
+        listOfVideos = cls._add_futures(listOfVideos, fields)
 
         def job(sublist):
             try:
@@ -221,12 +220,15 @@ class Video(Entry):
             for video in sublist:
                 video._set_api_data(fields, dict.get(video.id))
 
-        # 50 items at a time, make sure order is deterministic so that HTTP
-        # requests are replayable in tests
-        for i in range(0, len(list), 50):
-            sublist = list[i : i + 50]
-            ThreadPoolExecutor(max_workers=threads_max).submit(job, sublist)
-
+        with ThreadPoolExecutor() as executor:
+            # make sure order is deterministic so that HTTP requests are replayable in tests
+            executor.map(
+                job,
+                [
+                    listOfVideos[i : i + 50]
+                    for i in range(0, len(listOfVideos), 50)
+                ],
+            )
 
     @classmethod
     def related_videos(cls, video_id):
@@ -303,8 +305,10 @@ class Video(Entry):
                 return
             self._audio_url.set(info["url"])
 
-        ThreadPoolExecutor(max_workers=threads_max).submit(job)
-        
+        executor = ThreadPoolExecutor(max_workers=1)
+        executor.submit(job)
+        executor.shutdown(wait=False)
+
     @property
     def is_video(self):
         return True
@@ -312,14 +316,14 @@ class Video(Entry):
 
 class Playlist(Entry):
     @classmethod
-    def load_info(cls, list):
+    def load_info(cls, listOfPlaylists):
         """
         loads title, thumbnails, video_count, channel of multiple playlists using
         one API call for every 50 lists. API calls are split in separate threads.
         """
 
         fields = ["title", "video_count", "thumbnails", "channel"]
-        list = cls._add_futures(list, fields)
+        listOfPlaylists = cls._add_futures(listOfPlaylists, fields)
 
         def job(sublist):
             try:
@@ -332,14 +336,17 @@ class Playlist(Entry):
             for pl in sublist:
                 pl._set_api_data(fields, dict.get(pl.id))
 
-        if api_enabled is True:
-            # 50 items at a time, make sure order is deterministic so that HTTP
-            # requests are replayable in tests
-            for i in range(0, len(list), 50):
-                sublist = list[i : i + 50]
-                ThreadPoolExecutor(max_workers=threads_max).submit(job, sublist)
-        else:
-            [ThreadPoolExecutor(max_workers=threads_max).submit(job, [v]) for v in list]
+        # with API enabled, 50 items at a time
+        batch = 1 + (api_enabled * 49)
+        with ThreadPoolExecutor() as executor:
+            # make sure order is deterministic so that HTTP requests are replayable in tests
+            executor.map(
+                job,
+                [
+                    listOfPlaylists[i : i + batch]
+                    for i in range(0, len(listOfPlaylists), batch)
+                ],
+            )
 
     @async_property
     def videos(self):
@@ -400,7 +407,9 @@ class Playlist(Entry):
                 [x for _, x in zip(range(self.playlist_max_videos), myvideos)]
             )
 
-        ThreadPoolExecutor(max_workers=threads_max).submit(job)
+        executor = ThreadPoolExecutor(max_workers=1)
+        executor.submit(job)
+        executor.shutdown(wait=False)
 
     @async_property
     def video_count(self):
@@ -461,9 +470,7 @@ class Client:
             backoff_factor=backoff_factor,
             status_forcelist=status_forcelist,
         )
-        adapter = MyHTTPAdapter(
-            max_retries=retry, pool_maxsize=threads_max
-        )
+        adapter = MyHTTPAdapter(max_retries=retry, pool_maxsize=4)
         cls.session.mount("http://", adapter)
         cls.session.mount("https://", adapter)
         cls.session.proxies = {"http": proxy, "https": proxy}
