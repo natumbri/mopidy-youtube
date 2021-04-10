@@ -53,6 +53,14 @@ class Music(Client):
         results = ytmusic.search(
             query=q, filter="songs", limit=Video.search_results
         )
+
+        def _channelTitle(item):
+            try:
+                channelTitle = item["artists"][0]["name"]
+            except:
+                channelTitle = "unknown"
+            return channelTitle
+
         videos = [
             {
                 "id": {
@@ -70,7 +78,7 @@ class Music(Client):
                     "resourceId": {"videoId": item["videoId"]},
                     # TODO: full support for thumbnails
                     "thumbnails": {"default": item["thumbnails"][0]},
-                    "channelTitle": item["artists"][0]["name"],
+                    "channelTitle": _channelTitle(item),
                 },
             }
             for item in results
@@ -80,7 +88,10 @@ class Music(Client):
     @classmethod
     def playlist_item_to_video(cls, item, thumbnail):
         def _convertMillis(milliseconds):
-            hours, miliseconds = divmod(int(milliseconds), 3600000)
+            try:
+                hours, miliseconds = divmod(int(milliseconds), 3600000)
+            except:
+                return "00:00:00"
             minutes, miliseconds = divmod(miliseconds, 60000)
             seconds = int(miliseconds) / 1000
             return "%i:%02i:%02i" % (hours, minutes, seconds)
@@ -145,7 +156,6 @@ class Music(Client):
 
         with ThreadPoolExecutor() as executor:
             executor.map(job, results)
-
         return playlists
 
     @classmethod
@@ -171,18 +181,28 @@ class Music(Client):
             logger.info(f"list_playlists for {ids} returned no results")
             return None
 
+        def _channelTitle(result):
+            try:
+                channelTitle = result["artists"][0]["name"]
+            except:
+                channelTitle = "unknown"
+            return channelTitle
+
         items = [
             {
                 "id": result["playlistId"],
                 "snippet": {
                     "title": result["title"],
                     "thumbnails": {"default": result["thumbnails"][0]},
-                    "channelTitle": result["artist"][0]["name"],
+                    # apparently, result["artist"] can be empty
+                    "channelTitle": _channelTitle(result),
                 },
                 "contentDetails": {"itemCount": result["trackCount"]},
             }
+
             for result in results
         ]
+
         # get the videos in the playlist and
         # start loading video info in the background
         album_tracks = [
