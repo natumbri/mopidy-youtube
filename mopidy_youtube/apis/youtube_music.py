@@ -57,7 +57,7 @@ class Music(Client):
         def _channelTitle(item):
             try:
                 channelTitle = item["artists"][0]["name"]
-            except:
+            except Exception:
                 channelTitle = "unknown"
             return channelTitle
 
@@ -90,7 +90,7 @@ class Music(Client):
         def _convertMillis(milliseconds):
             try:
                 hours, miliseconds = divmod(int(milliseconds), 3600000)
-            except:
+            except Exception:
                 return "00:00:00"
             minutes, miliseconds = divmod(miliseconds, 60000)
             seconds = int(miliseconds) / 1000
@@ -184,7 +184,7 @@ class Music(Client):
         def _channelTitle(result):
             try:
                 channelTitle = result["artists"][0]["name"]
-            except:
+            except Exception:
                 channelTitle = "unknown"
             return channelTitle
 
@@ -199,7 +199,6 @@ class Music(Client):
                 },
                 "contentDetails": {"itemCount": result["trackCount"]},
             }
-
             for result in results
         ]
 
