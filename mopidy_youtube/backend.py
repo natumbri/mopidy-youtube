@@ -27,10 +27,16 @@ background, so steps 2/3 are usually instantaneous.
 def convert_video_to_track(
     video: youtube.Video, album_name: str, **kwargs
 ) -> Track:
+
+    try:
+        adjustedLength = video.length.get() * 1000
+    except Exception:
+        adjustedLength = 0
+
     return Track(
         name=video.title.get(),
         comment=video.id,
-        length=video.length.get() * 1000,
+        length=adjustedLength,
         artists=[Artist(name=video.channel.get())],
         album=Album(name=album_name),
         uri=format_video_uri(video),
