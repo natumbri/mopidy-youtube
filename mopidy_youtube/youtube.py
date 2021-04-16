@@ -1,16 +1,15 @@
 import re
-import threading
-import traceback
+from concurrent.futures.thread import ThreadPoolExecutor
 
+import pykka
 import requests
+import youtube_dl
+from cachetools import TTLCache, cached
+from mopidy.models import Image
 from requests.adapters import HTTPAdapter
 from requests.packages.urllib3.util.retry import Retry
 from requests.packages.urllib3.util.timeout import Timeout
 
-import pykka
-import youtube_dl
-from cachetools import LRUCache, cached
-from mopidy.models import Image
 from mopidy_youtube import logger
 
 api_enabled = False
@@ -55,9 +54,10 @@ class Entry:
     """
 
     cache_max_len = 400
+    cache_ttl = 21600
 
     @classmethod
-    @cached(cache=LRUCache(maxsize=cache_max_len))
+    @cached(cache=TTLCache(maxsize=cache_max_len, ttl=cache_ttl))
     def get(cls, id):
         """
         Use Video.get(id), Playlist.get(id), instead of Video(id), Playlist(id),
@@ -72,15 +72,18 @@ class Entry:
         set_api_data = ["title", "channel"]
         if item["id"]["kind"] == "youtube#video":
             obj = Video.get(item["id"]["videoId"])
-            if "contentDetails" in item:
-                set_api_data.append("length")
         elif item["id"]["kind"] == "youtube#playlist":
             obj = Playlist.get(item["id"]["playlistId"])
-            if "contentDetails" in item:
-                set_api_data.append("video_count")
         else:
             obj = []
             return obj
+
+        if "contentDetails" in item:
+            if "duration" in item["contentDetails"]:
+                set_api_data.append("length")
+            elif "itemCount" in item["contentDetails"]:
+                set_api_data.append("video_count")
+
         if "thumbnails" in item["snippet"]:
             set_api_data.append("thumbnails")
         if "channelId" in item["snippet"]:
@@ -94,7 +97,7 @@ class Entry:
         Search for both videos and playlists using a single API call. Fetches
         title, thumbnails, channel. Depending on the API, may also fetch
         length and video_count. The official youtube API will require an
-        additional API call to fetch legth and video_count (taken care of
+        additional API call to fetch length and video_count (taken care of
         at Video.load_info and Playlist.load_info).
         """
         try:
@@ -198,14 +201,14 @@ class Entry:
 
 class Video(Entry):
     @classmethod
-    def load_info(cls, list):
+    def load_info(cls, listOfVideos):
         """
         loads title, length, channel of multiple videos using one API call for
         every 50 videos. API calls are split in separate threads.
         """
 
         fields = ["title", "length", "channel"]
-        list = cls._add_futures(list, fields)
+        listOfVideos = cls._add_futures(listOfVideos, fields)
 
         def job(sublist):
             try:
@@ -218,11 +221,15 @@ class Video(Entry):
             for video in sublist:
                 video._set_api_data(fields, dict.get(video.id))
 
-        # 50 items at a time, make sure order is deterministic so that HTTP
-        # requests are replayable in tests
-        for i in range(0, len(list), 50):
-            sublist = list[i : i + 50]
-            ThreadPool.run(job, (sublist,))
+        with ThreadPoolExecutor() as executor:
+            # make sure order is deterministic so that HTTP requests are replayable in tests
+            executor.map(
+                job,
+                [
+                    listOfVideos[i : i + 50]
+                    for i in range(0, len(listOfVideos), 50)
+                ],
+            )
 
     @classmethod
     def related_videos(cls, video_id):
@@ -258,7 +265,7 @@ class Video(Entry):
     @async_property
     def thumbnails(self):
         # make it "async" for uniformity with Playlist.thumbnails
-        identifier = self.id.split(".")[-1]
+        identifier = self.id.split(":")[-1]
         self._thumbnails = pykka.ThreadingFuture()
         self._thumbnails.set(
             [
@@ -299,7 +306,9 @@ class Video(Entry):
                 return
             self._audio_url.set(info["url"])
 
-        ThreadPool.run(job)
+        executor = ThreadPoolExecutor(max_workers=1)
+        executor.submit(job)
+        executor.shutdown(wait=False)
 
     @property
     def is_video(self):
@@ -308,14 +317,14 @@ class Video(Entry):
 
 class Playlist(Entry):
     @classmethod
-    def load_info(cls, list):
+    def load_info(cls, listOfPlaylists):
         """
         loads title, thumbnails, video_count, channel of multiple playlists using
         one API call for every 50 lists. API calls are split in separate threads.
         """
 
         fields = ["title", "video_count", "thumbnails", "channel"]
-        list = cls._add_futures(list, fields)
+        listOfPlaylists = cls._add_futures(listOfPlaylists, fields)
 
         def job(sublist):
             try:
@@ -328,11 +337,17 @@ class Playlist(Entry):
             for pl in sublist:
                 pl._set_api_data(fields, dict.get(pl.id))
 
-        # 50 items at a time, make sure order is deterministic so that HTTP
-        # requests are replayable in tests
-        for i in range(0, len(list), 50):
-            sublist = list[i : i + 50]
-            ThreadPool.run(job, (sublist,))
+        # with API enabled, 50 items at a time
+        batch = 1 + (api_enabled * 49)
+        with ThreadPoolExecutor() as executor:
+            # make sure order is deterministic so that HTTP requests are replayable in tests
+            executor.map(
+                job,
+                [
+                    listOfPlaylists[i : i + batch]
+                    for i in range(0, len(listOfPlaylists), batch)
+                ],
+            )
 
     @async_property
     def videos(self):
@@ -363,7 +378,7 @@ class Playlist(Entry):
                     break
                 if "error" in result:
                     logger.error(
-                        "error in list playlist items data for",
+                        "error in list playlist items data for "
                         "playlist {}, page {}".format(self.id, page),
                     )
                     break
@@ -393,7 +408,9 @@ class Playlist(Entry):
                 [x for _, x in zip(range(self.playlist_max_videos), myvideos)]
             )
 
-        ThreadPool.run(job)
+        executor = ThreadPoolExecutor(max_workers=1)
+        executor.submit(job)
+        executor.shutdown(wait=False)
 
     @async_property
     def video_count(self):
@@ -401,79 +418,15 @@ class Playlist(Entry):
 
     @async_property
     def thumbnails(self):
-        self.load_info([self])
+        self._thumbnails = pykka.ThreadingFuture()
+        self._thumbnails.set(
+            [Image(uri=imageUri) for imageUri in self.load_info([self])]
+        )
 
     @property
     def is_video(self):
         return False
 
-
-# class Channel(Entry):
-#
-#     @async_property
-#     def videos(self):
-#         """
-#         loads the list of videos of a channel using one API call for every 50
-#         fetched videos. For every page fetched, Video.load_info is called to
-#         start loading video info in a separate thread.
-#         """
-#
-#         self._videos = pykka.ThreadingFuture()
-#
-#         def job():
-#             data = {"items": []}
-#             page = ""
-#             while (
-#                 page is not None
-#                 and len(data["items"]) < self.playlist_max_videos
-#             ):
-#                 try:
-#                     max_results = min(
-#                         int(self.playlist_max_videos) - len(data["items"]), 50
-#                     )
-#                     result = self.api.list_channelitems(
-#                         self.id, page, max_results
-#                     )
-#                 except Exception as e:
-#                     logger.error('list channel items error "%s"', e)
-#                     break
-#                 if "error" in result:
-#                     logger.error(
-#                         "error in list channel items data for",
-#                         "channel {}, page {}".format(self.id, page),
-#                     )
-#                     break
-#                 page = result.get("nextPageToken") or None
-#                 data["items"].extend(result["items"])
-#
-#             del data["items"][int(self.playlist_max_videos) :]
-#
-#             myvideos = []
-#
-#             for item in data["items"]:
-#                 set_api_data = ["title", "channel"]
-#                 if "contentDetails" in item:
-#                     set_api_data.append("length")
-#                 if "thumbnails" in item["snippet"]:
-#                     set_api_data.append("thumbnails")
-#                 video = Video.get(item["snippet"]["resourceId"]["videoId"])
-#                 video._set_api_data(set_api_data, item)
-#                 myvideos.append(video)
-#
-#             # start loading video info in the background
-#             Video.load_info(
-#                 [x for _, x in zip(range(self.playlist_max_videos), myvideos)]
-#             )
-#
-#             self._videos.set(
-#                 [x for _, x in zip(range(self.playlist_max_videos), myvideos)]
-#             )
-#
-#         ThreadPool.run(job)
-#
-#     @property
-#     def is_video(self):
-#         return False
 
 # is this necessary or worthwhile?  Are there any bad
 # consequences that arise if timeout isn't set like this?
@@ -482,12 +435,23 @@ class MyHTTPAdapter(HTTPAdapter):
         kwargs["timeout"] = (6.05, 27)
         return super(MyHTTPAdapter, self).get(*args, **kwargs)
 
+    def post(self, *args, **kwargs):
+        kwargs["timeout"] = (6.05, 27)
+        return super(MyHTTPAdapter, self).post(*args, **kwargs)
+
     def init_poolmanager(self, *args, **kwargs):
-        kwargs["timeout"] = Timeout(connect=6.05, read=27.0)
+        kwargs["timeout"] = Timeout(connect=6.05, read=27)
         return super(MyHTTPAdapter, self).init_poolmanager(*args, **kwargs)
 
 
 class Client:
+
+    time_regex = (
+        r"(?:(?:(?P<durationHours>[0-9]+)\:)?"
+        r"(?P<durationMinutes>[0-9]+)\:"
+        r"(?P<durationSeconds>[0-9]{2}))"
+    )
+
     def __init__(self, proxy, headers):
         if not hasattr(type(self), "session"):
             self._create_session(proxy, headers)
@@ -510,9 +474,7 @@ class Client:
             backoff_factor=backoff_factor,
             status_forcelist=status_forcelist,
         )
-        adapter = MyHTTPAdapter(
-            max_retries=retry, pool_maxsize=ThreadPool.threads_max
-        )
+        adapter = MyHTTPAdapter(max_retries=retry, pool_maxsize=4)
         cls.session.mount("http://", adapter)
         cls.session.mount("https://", adapter)
         cls.session.proxies = {"http": proxy, "https": proxy}
@@ -528,48 +490,3 @@ class Client:
         if match.group("durationSeconds") is not None:
             duration += match.group("durationSeconds") + "S"
         return duration
-
-
-class ThreadPool:
-    """
-    simple 'dynamic' thread pool. Threads are created when new jobs arrive, stay
-    active for as long as there are active jobs, and get destroyed afterwards
-    (so that there are no long-term threads staying active)
-    """
-
-    threads_active = 0
-    jobs = []
-    lock = threading.Lock()  # controls access to threads_active and jobs
-
-    @classmethod
-    def worker(cls):
-        while True:
-            cls.lock.acquire()
-            if len(cls.jobs):
-                f, args = cls.jobs.pop()
-            else:
-                # no more jobs, exit thread
-                cls.threads_active -= 1
-                cls.lock.release()
-                break
-            cls.lock.release()
-
-            try:
-                f(*args)
-            except Exception as e:
-                logger.error(
-                    "youtube thread error: %s\n%s", e, traceback.format_exc()
-                )
-
-    @classmethod
-    def run(cls, f, args=()):
-        cls.lock.acquire()
-
-        cls.jobs.append((f, args))
-        if cls.threads_active < cls.threads_max:
-            thread = threading.Thread(target=cls.worker)
-            thread.daemon = True
-            thread.start()
-            cls.threads_active += 1
-
-        cls.lock.release()

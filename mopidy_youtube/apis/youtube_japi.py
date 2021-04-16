@@ -22,16 +22,13 @@ class jAPI(scrAPI):
         }
         logger.info("session.get triggered: jAPI search")
         result = cls.session.get(cls.endpoint + "results", params=query)
-        json_regex = r'window\["ytInitialData"] = ({.*?});'
-        extracted_json = re.search(json_regex, result.text).group(1)
-        result_json = json.loads(extracted_json)["contents"][
-            "twoColumnSearchResultsRenderer"
-        ]["primaryContents"]["sectionListRenderer"]["contents"][0][
-            "itemSectionRenderer"
-        ][
+        yt_data = cls._find_yt_data(result.text)
+        extracted_json = yt_data["contents"]["twoColumnSearchResultsRenderer"][
+            "primaryContents"
+        ]["sectionListRenderer"]["contents"][0]["itemSectionRenderer"][
             "contents"
         ]
-        return cls.json_to_items(cls, result_json)
+        return cls.json_to_items(cls, extracted_json)
 
     def json_to_items(cls, result_json):
         items = []
@@ -158,7 +155,6 @@ class jAPI(scrAPI):
                         ]["runs"][0]["text"],
                     },
                 }
-
                 items.append(item)
 
         # remove duplicates

@@ -53,14 +53,21 @@ and set api_enabled = true::
     youtube_api_key = <api key you got from Google>
     api_enabled = true
 
+If you want modipy-youtube to use YouTube Muisc, instead of regular YouTube, set
+musicapi_enabled = true::
+
+    [youtube]
+    musicapi_enabled = true  
+
 Other configuration options are::
 
     [youtube]
-    threads_max = 16
-    search_results = 15
-    playlist_max_videos = 20
+    threads_max = 16            : number of parallel threads to run
+    search_results = 15         : maximum number of search results to return
+    playlist_max_videos = 20    : maximum number of videos in a playlist to return
 
-If you want mopidy-youtube to autoplay related videos, set autoplay_enabled = true::
+mopidy-youtube can automatically play 'related' tracks after the last track in the play queue
+is played.  If you want mopidy-youtube to autoplay related videos, set autoplay_enabled = true::
 
 	[youtube]
 	autoplay_enabled = true
@@ -74,20 +81,27 @@ If autoplay is enabled, other options are::
 If the option strict_autoplay is set, the current tracklist is ignored and the
 most related video automatically played afterwards.
 
+Max degrees of separation controls how distantly related to the track that triggered autoplay
+the autoplayed tracks can be.
+
 
 Usage
 =====
 
-Simply use search for filename in your MPD client or add YouTube URL to
-playlist prefixed by ``yt:``.
+Simply use search for filename in your MPD client or add YouTube URL or URI to
+playlist prefixed by ``yt:`` or ``youtube:``.
 
 Example video::
 
-    yt:http://www.youtube.com/watch?v=Njpw2PVb1c0
+    [yt|youtube]:<url to youtube video>
+    [yt|youtube]:video:<id>
+    [yt|youtube]:video/<title>.<id>
 
 Example for playlist::
 
-    yt:http://www.youtube.com/playlist?list=PLeCg_YDclAETQHa8VyFUHKC_Ly0HUWUnq
+    [yt|youtube]:<url to youtube playlist>
+    [yt|youtube]:playlist:<id>
+    [yt|youtube]:playlist/<title>.<id>
 
 
 Troubleshooting

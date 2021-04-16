@@ -3,6 +3,7 @@ import re
 from urllib.parse import urljoin
 
 from bs4 import BeautifulSoup
+
 from mopidy_youtube import logger
 from mopidy_youtube.apis.youtube_japi import jAPI
 from mopidy_youtube.apis.youtube_scrapi import scrAPI
@@ -22,7 +23,7 @@ class bs4API(scrAPI):
 
     ytdata_regex = (
         r'window\["ytInitialData"] = ({.*?});',
-        r'ytInitialData = ({.*});'
+        r"ytInitialData = ({.*});",
     )
 
     @classmethod
@@ -37,10 +38,9 @@ class bs4API(scrAPI):
         logger.error("No data found on page")
         raise Exception("No data found on page")
 
-
     @classmethod
     def run_search(cls, query):
-
+        logger.info("session.get triggered: bs4api run_search")
         result = cls.session.get(urljoin(cls.endpoint, "results"), params=query)
         if result.status_code == 200:
             soup = BeautifulSoup(result.text, "html.parser")
@@ -71,19 +71,21 @@ class bs4API(scrAPI):
             )
 
             if results:
-                return cls.soup_to_items(cls, results)
+                return cls.soup_to_items(results)
 
             logger.info("nothing in the soup, trying japi")
 
             yt_data = cls._find_yt_data(result.text)
-            extracted_json = yt_data["contents"]\
-                ["twoColumnSearchResultsRenderer"]["primaryContents"]\
-                ["sectionListRenderer"]["contents"][0]\
-                ["itemSectionRenderer"]["contents"]
+            extracted_json = yt_data["contents"][
+                "twoColumnSearchResultsRenderer"
+            ]["primaryContents"]["sectionListRenderer"]["contents"][0][
+                "itemSectionRenderer"
+            ][
+                "contents"
+            ]
 
             return jAPI.json_to_items(cls, extracted_json)
 
-    
     @classmethod
     def soup_to_items(cls, results):
         items = []
@@ -190,7 +192,7 @@ class bs4API(scrAPI):
                     },
                 }
                 # don't append radiolist playlists
-                if str(item["id"]["playlistId"]).startswith("PL"):
+                if str(item["id"]["playlistId"]).startswith(("PL", "OL")):
                     items.append(item)
         return items
 
@@ -200,7 +202,9 @@ class bs4API(scrAPI):
         logger.info("session.get triggered: list_playlist_items")
         ajax_css = "button[data-uix-load-more-href]"
 
-        videos = items = []
+        items = []
+        videos = []
+
         if page == "":
             result = cls.session.get(
                 urljoin(cls.endpoint, "playlist"), params=query
@@ -237,15 +241,27 @@ class bs4API(scrAPI):
                 )
 
                 yt_data = cls._find_yt_data(result.text)
-                extracted_json = yt_data["contents"]\
-                    ["twoColumnBrowseResultsRenderer"]["tabs"][0]\
-                    ["tabRenderer"]["content"]["sectionListRenderer"]\
-                    ["contents"][0]["itemSectionRenderer"]["contents"]\
-                    [0]["playlistVideoListRenderer"]["contents"]
+                extracted_json = yt_data["contents"][
+                    "twoColumnBrowseResultsRenderer"
+                ]["tabs"][0]["tabRenderer"]["content"]["sectionListRenderer"][
+                    "contents"
+                ][
+                    0
+                ][
+                    "itemSectionRenderer"
+                ][
+                    "contents"
+                ][
+                    0
+                ][
+                    "playlistVideoListRenderer"
+                ][
+                    "contents"
+                ]
 
                 items = jAPI.json_to_items(cls, extracted_json)
             else:
-                items = cls.plsoup_to_items(cls, videos)
+                items = cls.plsoup_to_items(videos)
 
             return json.loads(
                 json.dumps(
@@ -265,7 +281,8 @@ class bs4API(scrAPI):
                     "duration": "PT"
                     + cls.format_duration(
                         re.match(
-                            cls.time_regex, video.find(class_="timestamp").text,
+                            cls.time_regex,
+                            video.find(class_="timestamp").text,
                         )
                     ),
                 },
@@ -372,9 +389,11 @@ class bs4API(scrAPI):
                 logger.info("nothing in the soup, trying japi related videos")
 
                 yt_data = cls._find_yt_data(result.text)
-                extracted_json = yt_data["contents"]\
-                    ["twoColumnWatchNextResults"]["secondaryResults"]\
-                    ["secondaryResults"]["results"] # noqa: E501
+                extracted_json = yt_data["contents"][
+                    "twoColumnWatchNextResults"
+                ]["secondaryResults"]["secondaryResults"][
+                    "results"
+                ]  # noqa: E501
 
                 items = jAPI.json_to_items(cls, extracted_json)
 
