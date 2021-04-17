@@ -3,11 +3,12 @@ from urllib.parse import parse_qs, urlparse
 
 import pykka
 from mopidy import backend, httpclient
-from mopidy.models import Album, Artist, SearchResult, Track
+from mopidy.models import Album, Artist, SearchResult, Track, Ref
 
 from mopidy_youtube import Extension, logger, youtube
 from mopidy_youtube.apis import youtube_api, youtube_bs4api, youtube_music
 from mopidy_youtube.data import (
+    extract_channel_id,
     extract_playlist_id,
     extract_video_id,
     format_playlist_uri,
@@ -344,3 +345,41 @@ class YouTubePlaybackProvider(backend.PlaybackProvider):
         except Exception as e:
             logger.error('translate_uri error "%s"', e)
             return None
+
+    ROOT_DIR = Ref.directory(uri="youtube:", name="Youtube Playlists")
+
+    _ROOT_DIR_CONTENTS = [
+        Ref.directory(uri='youtube:collection/CHNL.UCKLtqNl0BkPfwM0Wzb4cSvw', name='My playlists')
+    ]
+
+    root_directory = ROOT_DIR
+
+    def browse(self, uri):
+        logger.info('__________________')
+        logger.info('browse: ' + uri)
+        if uri == self.ROOT_DIR.uri:
+            return self._ROOT_DIR_CONTENTS
+        elif uri.startswith("youtube:playlist"):
+            logger.info('entered playlist')
+            trackrefs = []
+            tracks = self.lookup(uri)
+            for track in tracks:
+                trackrefs.append(Ref.track(uri=track.uri, name=track.name))
+            return trackrefs
+        elif uri.startswith("youtube:collection"):
+            logger.info('entered collection')
+            playlistrefs = []
+            playlists = self.get_channel_playlists(uri)
+            for playlist in playlists:
+                playlistrefs.append(Ref.playlist(uri=playlist.uri, name=playlist.title.get()))
+            return playlistrefs
+
+    def get_channel_playlists(self, uri):
+        albums = []
+        channel_id = extract_channel_id(uri)
+        logger.info(channel_id)
+        playlists = youtube.Entry.get_channel_playlists(channel_id)
+
+        for pl in playlists:
+            albums.append(convert_playlist_to_album(pl))
+        return albums
