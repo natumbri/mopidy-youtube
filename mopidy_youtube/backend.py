@@ -218,14 +218,6 @@ class YouTubeLibraryProvider(backend.LibraryProvider):
             uri="youtube:search", tracks=tracks, artists=artists, albums=albums
         )
 
-
-    def lookup_channel_playlists(self, video_id: str) -> Track:
-        video = youtube.Video.get(video_id)
-        video.audio_url  # start loading
-        video.title.get()
-        return convert_video_to_track(video, "YouTube Video")
-
-
     def lookup_video_track(self, video_id: str) -> Track:
         video = youtube.Video.get(video_id)
         video.audio_url  # start loading
@@ -248,6 +240,19 @@ class YouTubeLibraryProvider(backend.LibraryProvider):
 
         return convert_videos_to_tracks(videos, album_name)
 
+    # def lookup_channel_tracks(self, channel_id: str):
+    #     channel = youtube.Channel.get(channel_id)
+    #
+    #     if not channel.videos.get():
+    #         return None
+    #
+    #     # ignore videos for which no info was found (removed, etc)
+    #     videos = [
+    #         video for video in channel.videos.get() if video.length.get() is not None
+    #     ]
+    #     album_name = channel.title.get()
+    #
+    #     return convert_videos_to_tracks(videos, album_name)
 
     def lookup(self, uri):
         """
@@ -320,12 +325,11 @@ class YouTubeLibraryProvider(backend.LibraryProvider):
 
         return []
 
-
-
     def browse(self, uri):
         """
         Called when root_directory is set to the URI of "My Youtube Channel" in channel_storage.py.
         When enabled makes possible to browse public playlists of the channel as well as browse separate tracks in playlists
+        Requires enabled API at the moment
         """
         logger.debug('browse: ' + uri)
         if uri.startswith("youtube:playlist"):
@@ -336,7 +340,6 @@ class YouTubeLibraryProvider(backend.LibraryProvider):
             return trackrefs
         elif uri.startswith("youtube:channel"):
             playlistrefs = []
-
             albums = []
             channel_id = extract_channel_id(uri)
             playlists = youtube.Channel.get_channel_playlists(channel_id)
