@@ -7,6 +7,7 @@ from mopidy.models import Album, Artist, SearchResult, Track, Ref
 
 from mopidy_youtube import Extension, logger, youtube
 from mopidy_youtube.apis import youtube_api, youtube_bs4api, youtube_music
+from mopidy_youtube import channel_storage
 from mopidy_youtube.data import (
     extract_channel_id,
     extract_playlist_id,
@@ -139,6 +140,12 @@ class YouTubeBackend(pykka.ThreadingActor, backend.Backend):
 
 
 class YouTubeLibraryProvider(backend.LibraryProvider):
+    channel = channel_storage.my_channel
+    if channel:
+        print(type(channel))
+        my_channel_uri = "youtube:channel:{}".format(channel)
+        root_directory = Ref.directory(uri=my_channel_uri, name='My Youtube playlists')
+
     """
     Called when browsing or searching the library. To avoid horrible browsing
     performance, and since only search makes sense for youtube anyway, we we
@@ -211,6 +218,14 @@ class YouTubeLibraryProvider(backend.LibraryProvider):
             uri="youtube:search", tracks=tracks, artists=artists, albums=albums
         )
 
+
+    def lookup_channel_playlists(self, video_id: str) -> Track:
+        video = youtube.Video.get(video_id)
+        video.audio_url  # start loading
+        video.title.get()
+        return convert_video_to_track(video, "YouTube Video")
+
+
     def lookup_video_track(self, video_id: str) -> Track:
         video = youtube.Video.get(video_id)
         video.audio_url  # start loading
@@ -233,19 +248,6 @@ class YouTubeLibraryProvider(backend.LibraryProvider):
 
         return convert_videos_to_tracks(videos, album_name)
 
-    # def lookup_channel_tracks(self, channel_id: str):
-    #     channel = youtube.Channel.get(channel_id)
-    #
-    #     if not channel.videos.get():
-    #         return None
-    #
-    #     # ignore videos for which no info was found (removed, etc)
-    #     videos = [
-    #         video for video in channel.videos.get() if video.length.get() is not None
-    #     ]
-    #     album_name = channel.title.get()
-    #
-    #     return convert_videos_to_tracks(videos, album_name)
 
     def lookup(self, uri):
         """
@@ -318,6 +320,32 @@ class YouTubeLibraryProvider(backend.LibraryProvider):
 
         return []
 
+
+
+    def browse(self, uri):
+        """
+        Called when root_directory is set to the URI of "My Youtube Channel" in channel_storage.py.
+        When enabled makes possible to browse public playlists of the channel as well as browse separate tracks in playlists
+        """
+        logger.debug('browse: ' + uri)
+        if uri.startswith("youtube:playlist"):
+            trackrefs = []
+            tracks = self.lookup(uri)
+            for track in tracks:
+                trackrefs.append(Ref.track(uri=track.uri, name=track.name))
+            return trackrefs
+        elif uri.startswith("youtube:channel"):
+            playlistrefs = []
+
+            albums = []
+            channel_id = extract_channel_id(uri)
+            playlists = youtube.Channel.get_channel_playlists(channel_id)
+            for pl in playlists:
+                albums.append(convert_playlist_to_album(pl))
+            for album in albums:
+                playlistrefs.append(Ref.playlist(uri=album.uri, name=album.name))
+            return playlistrefs
+
     def get_images(self, uris):
         return {uri: youtube.Video.get(uri).thumbnails.get() for uri in uris}
 
@@ -345,41 +373,3 @@ class YouTubePlaybackProvider(backend.PlaybackProvider):
         except Exception as e:
             logger.error('translate_uri error "%s"', e)
             return None
-
-    ROOT_DIR = Ref.directory(uri="youtube:", name="Youtube Playlists")
-
-    _ROOT_DIR_CONTENTS = [
-        Ref.directory(uri='youtube:collection/CHNL.UCKLtqNl0BkPfwM0Wzb4cSvw', name='My playlists')
-    ]
-
-    root_directory = ROOT_DIR
-
-    def browse(self, uri):
-        logger.info('__________________')
-        logger.info('browse: ' + uri)
-        if uri == self.ROOT_DIR.uri:
-            return self._ROOT_DIR_CONTENTS
-        elif uri.startswith("youtube:playlist"):
-            logger.info('entered playlist')
-            trackrefs = []
-            tracks = self.lookup(uri)
-            for track in tracks:
-                trackrefs.append(Ref.track(uri=track.uri, name=track.name))
-            return trackrefs
-        elif uri.startswith("youtube:collection"):
-            logger.info('entered collection')
-            playlistrefs = []
-            playlists = self.get_channel_playlists(uri)
-            for playlist in playlists:
-                playlistrefs.append(Ref.playlist(uri=playlist.uri, name=playlist.title.get()))
-            return playlistrefs
-
-    def get_channel_playlists(self, uri):
-        albums = []
-        channel_id = extract_channel_id(uri)
-        logger.info(channel_id)
-        playlists = youtube.Entry.get_channel_playlists(channel_id)
-
-        for pl in playlists:
-            albums.append(convert_playlist_to_album(pl))
-        return albums

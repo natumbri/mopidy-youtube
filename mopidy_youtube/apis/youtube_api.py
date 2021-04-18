@@ -108,7 +108,7 @@ class API(Client):
     @classmethod
     def list_channel_playlists(cls, channel_id):
         """
-        list channel playlists
+        get channel playlists
         see https://developers.google.com/youtube/v3/docs/playlists/list
         """
 
