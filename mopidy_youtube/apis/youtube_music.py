@@ -7,14 +7,17 @@ from ytmusicapi import YTMusic
 from mopidy_youtube import logger
 from mopidy_youtube.youtube import Client, Playlist, Video
 
-ytmusic = YTMusic()
-
-
+ytmusic = None
 # Direct access to YouTube Music API
 #
 class Music(Client):
     endpoint = None
     searchEndpoint = None
+
+    def __init__(self, proxy, headers, *args, **kwargs):
+        global ytmusic
+        super().__init__(proxy, headers, *args, **kwargs)
+        ytmusic = YTMusic(auth=json.dumps(headers))
 
     @classmethod
     def search(cls, q):
@@ -49,17 +52,40 @@ class Music(Client):
         return json_results
 
     @classmethod
+    def _channelTitle(cls, results):
+        try:
+            channelTitle = results[0]["name"]
+        except Exception:
+            channelTitle = "unknown"
+        return channelTitle
+
+    @classmethod
+    def browse(cls):
+        results = ytmusic.get_library_playlists()
+        items = [
+            {
+                "id": {
+                    "kind": "youtube#playlist",
+                    "playlistId": item["playlistId"],
+                },
+                "contentDetails": {"itemCount": item.get("count", 1)},
+                "snippet": {
+                    "title": item.get("title", "Unknown"),
+                    "resourceId": {"playlistId": item["playlistId"]},
+                    # TODO: full support for thumbnails
+                    "thumbnails": {"default": item["thumbnails"][0]},
+                    "channelTitle": "unknown",
+                },
+            }
+            for item in results
+        ]
+        return items
+
+    @classmethod
     def search_videos(cls, q):
         results = ytmusic.search(
             query=q, filter="songs", limit=Video.search_results
         )
-
-        def _channelTitle(item):
-            try:
-                channelTitle = item["artists"][0]["name"]
-            except Exception:
-                channelTitle = "unknown"
-            return channelTitle
 
         videos = [
             {
@@ -78,7 +104,7 @@ class Music(Client):
                     "resourceId": {"videoId": item["videoId"]},
                     # TODO: full support for thumbnails
                     "thumbnails": {"default": item["thumbnails"][0]},
-                    "channelTitle": _channelTitle(item),
+                    "channelTitle": cls._channelTitle(item["artists"]),
                 },
             }
             for item in results
@@ -106,9 +132,7 @@ class Music(Client):
                 "contentDetails": {
                     "duration": "PT"
                     + cls.format_duration(
-                        re.match(
-                            cls.time_regex, _convertMillis(item["lengthMs"])
-                        )
+                        re.match(cls.time_regex, item["duration"])
                     )
                 },
                 "snippet": {
@@ -116,7 +140,7 @@ class Music(Client):
                     "resourceId": {"videoId": item["videoId"]},
                     # TODO: full support for thumbnails
                     "thumbnails": {"default": thumbnail},
-                    "channelTitle": item["artists"],
+                    "channelTitle": cls._channelTitle(item["artists"]),
                 },
             }
         )
@@ -181,13 +205,6 @@ class Music(Client):
             logger.info(f"list_playlists for {ids} returned no results")
             return None
 
-        def _channelTitle(result):
-            try:
-                channelTitle = result["artists"][0]["name"]
-            except Exception:
-                channelTitle = "unknown"
-            return channelTitle
-
         items = [
             {
                 "id": result["playlistId"],
@@ -195,7 +212,7 @@ class Music(Client):
                     "title": result["title"],
                     "thumbnails": {"default": result["thumbnails"][0]},
                     # apparently, result["artist"] can be empty
-                    "channelTitle": _channelTitle(result),
+                    "channelTitle": cls._channelTitle(result["artists"]),
                 },
                 "contentDetails": {"itemCount": result["trackCount"]},
             }
@@ -230,7 +247,7 @@ class Music(Client):
 
     @classmethod
     def list_playlistitems(cls, id, page=None, max_results=None):
-        result = ytmusic.get_album(browseId=id)
+        result = ytmusic.get_playlist(id)
         items = [
             cls.playlist_item_to_video(item, result["thumbnails"][0])
             for item in result["tracks"]
