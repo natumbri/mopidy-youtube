@@ -427,6 +427,32 @@ class Playlist(Entry):
         return False
 
 
+class Channel(Entry):
+    @classmethod
+    def get_channel_playlists(cls, channel_id):
+        """
+        Get all public playlists from the channel.
+        """
+        set_api_data = ["title", "video_count"]
+        try:
+            data = cls.api.list_channel_playlists(channel_id)
+            if "error" in data:
+                raise Exception(data["error"])
+        except Exception as e:
+            logger.error('get_channel_playlists error "%s"', e)
+            return None
+        try:
+            channel_playlists = []
+            for item in data["items"]:
+                pl = Playlist.get(item["id"])
+                pl._set_api_data(set_api_data, item)
+                channel_playlists.append(pl)
+            return channel_playlists
+        except Exception as e:
+            logger.error('map error "%s"', e)
+            return None
+
+
 # is this necessary or worthwhile?  Are there any bad
 # consequences that arise if timeout isn't set like this?
 class MyHTTPAdapter(HTTPAdapter):

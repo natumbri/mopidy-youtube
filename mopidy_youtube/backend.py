@@ -3,11 +3,13 @@ from urllib.parse import parse_qs, urlparse
 
 import pykka
 from mopidy import backend, httpclient
-from mopidy.models import Album, Artist, SearchResult, Track
+from mopidy.models import Album, Artist, SearchResult, Track, Ref
 
 from mopidy_youtube import Extension, logger, youtube
 from mopidy_youtube.apis import youtube_api, youtube_bs4api, youtube_music
+from mopidy_youtube import channel_storage
 from mopidy_youtube.data import (
+    extract_channel_id,
     extract_playlist_id,
     extract_video_id,
     format_playlist_uri,
@@ -138,6 +140,12 @@ class YouTubeBackend(pykka.ThreadingActor, backend.Backend):
 
 
 class YouTubeLibraryProvider(backend.LibraryProvider):
+    channel = channel_storage.my_channel
+    if channel:
+        print(type(channel))
+        my_channel_uri = "youtube:channel:{}".format(channel)
+        root_directory = Ref.directory(uri=my_channel_uri, name='My Youtube playlists')
+
     """
     Called when browsing or searching the library. To avoid horrible browsing
     performance, and since only search makes sense for youtube anyway, we we
@@ -316,6 +324,30 @@ class YouTubeLibraryProvider(backend.LibraryProvider):
         #         return channel_tracks
 
         return []
+
+    def browse(self, uri):
+        """
+        Called when root_directory is set to the URI of "My Youtube Channel" in channel_storage.py.
+        When enabled makes possible to browse public playlists of the channel as well as browse separate tracks in playlists
+        Requires enabled API at the moment
+        """
+        logger.debug('browse: ' + uri)
+        if uri.startswith("youtube:playlist"):
+            trackrefs = []
+            tracks = self.lookup(uri)
+            for track in tracks:
+                trackrefs.append(Ref.track(uri=track.uri, name=track.name))
+            return trackrefs
+        elif uri.startswith("youtube:channel"):
+            playlistrefs = []
+            albums = []
+            channel_id = extract_channel_id(uri)
+            playlists = youtube.Channel.get_channel_playlists(channel_id)
+            for pl in playlists:
+                albums.append(convert_playlist_to_album(pl))
+            for album in albums:
+                playlistrefs.append(Ref.playlist(uri=album.uri, name=album.name))
+            return playlistrefs
 
     def get_images(self, uris):
         return {uri: youtube.Video.get(uri).thumbnails.get() for uri in uris}
