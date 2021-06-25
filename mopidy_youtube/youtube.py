@@ -289,7 +289,6 @@ class Video(Entry):
                     {
                         "format": "bestaudio/m4a/mp3/ogg/best",
                         "proxy": self.proxy,
-                        "nocheckcertificate": True,
                         "cachedir": False,
                     }
                 ).extract_info(
