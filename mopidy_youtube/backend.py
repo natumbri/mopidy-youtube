@@ -100,6 +100,7 @@ class YouTubeBackend(pykka.ThreadingActor, backend.Backend):
         ]
         youtube.api_enabled = config["youtube"]["api_enabled"]
         youtube.musicapi_enabled = config["youtube"]["musicapi_enabled"]
+        youtube.musicapi_cookie = config["youtube"].get("musicapi_cookie", None)
         self.uri_schemes = ["youtube", "yt"]
         self.user_agent = "{}/{}".format(Extension.dist_name, Extension.version)
 
@@ -132,8 +133,19 @@ class YouTubeBackend(pykka.ThreadingActor, backend.Backend):
 
         if youtube.musicapi_enabled is True:
             logger.info("Using YouTube Music API")
+            if youtube.musicapi_cookie:
+                headers.update(
+                    {
+                        "Accept": "*/*",
+                        "Accept-Language": "en-US,en;q=0.5",
+                        "Content-Type": "application/json",
+                        "origin": "https://music.youtube.com",
+                        "Cookie": youtube.musicapi_cookie,
+                    }
+                )
             music = youtube_music.Music(proxy, headers)
             youtube.Entry.api.search = music.search
+            youtube.Entry.api.browse = music.browse
             youtube.Entry.api.list_playlistitems = music.list_playlistitems
             if youtube.api_enabled is False:
                 youtube.Entry.api.list_playlists = music.list_playlists
@@ -163,6 +175,32 @@ class YouTubeLibraryProvider(backend.LibraryProvider):
     YouTubeLibraryProvider.lookup) will most likely be instantaneous, since
     all info will be ready by that time.
     """
+
+    root_directory = Ref.directory(
+        uri="youtube:channel", name="My Youtube playlists"
+    )
+
+    def browse(self, uri):
+        if uri.startswith("youtube:playlist"):
+            logger.info("browse playlist: " + uri)
+            trackrefs = []
+            tracks = self.lookup(uri)
+            for track in tracks:
+                trackrefs.append(Ref.track(uri=track.uri, name=track.name))
+            return trackrefs
+        elif uri.startswith("youtube:channel"):
+            logger.info("browse channel: " + uri)
+            playlistrefs = []
+            albums = []
+            playlists = youtube.Entry.api.browse()
+            playlists = list(map(youtube.Entry.create_object, playlists))
+            for pl in playlists:
+                albums.append(convert_playlist_to_album(pl))
+            for album in albums:
+                playlistrefs.append(
+                    Ref.playlist(uri=album.uri, name=album.name)
+                )
+            return playlistrefs
 
     def search(self, query=None, uris=None, exact=False):
         # TODO Support exact search
