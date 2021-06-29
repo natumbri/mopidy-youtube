@@ -17,7 +17,13 @@ class Music(Client):
     def __init__(self, proxy, headers, *args, **kwargs):
         global ytmusic
         super().__init__(proxy, headers, *args, **kwargs)
-        ytmusic = YTMusic(auth=json.dumps(headers))
+        auth = None if headers.get('Cookie', None) is None else \
+            json.dumps(headers)
+        try:
+            ytmusic = YTMusic(auth=auth)
+        except Exception as e:
+            logger.error("YTMusic init error: %s", str(e))
+            ytmusic = YTMusic()
 
     @classmethod
     def search(cls, q):
