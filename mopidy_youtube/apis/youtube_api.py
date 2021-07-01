@@ -106,7 +106,7 @@ class API(Client):
         return result.json()
 
     @classmethod
-    def browse(cls, channel_id):
+    def browse_channel_playlists(cls, channel_id):
         """
         browse (get channel playlists)
         see https://developers.google.com/youtube/v3/docs/playlists/list
@@ -114,8 +114,7 @@ class API(Client):
 
         query = {
             "part": "id,snippet,contentDetails",
-            "fields": "items(id,snippet(title),"
-            + "contentDetails(itemCount))",
+            "fields": "items(id,snippet(title)," + "contentDetails(itemCount))",
             "maxResults": 50,
             "channelId": channel_id,
             "key": youtube_api_key,

@@ -15,6 +15,7 @@ from mopidy_youtube import logger
 api_enabled = False
 channel = None
 
+
 def async_property(func):
     """
     decorator for creating async properties using pykka.ThreadingFuture
@@ -243,19 +244,29 @@ class Video(Entry):
 
         relatedvideos = []
 
+        # for item in data["items"]:
+        #     set_api_data = ["title", "channel"]
+        #     if "contentDetails" in item:
+        #         set_api_data.append("length")
+        #     if "thumbnails" in item["snippet"]:
+        #         set_api_data.append("thumbnails")
+        #     video = Video.get(item["id"]["videoId"])
+        #     video._set_api_data(set_api_data, item)
+        #     relatedvideos.append(video)
         for item in data["items"]:
-            set_api_data = ["title", "channel"]
-            if "contentDetails" in item:
-                set_api_data.append("length")
-            if "thumbnails" in item["snippet"]:
-                set_api_data.append("thumbnails")
-            video = Video.get(item["id"]["videoId"])
-            video._set_api_data(set_api_data, item)
-            relatedvideos.append(video)
+            # why are some results returned without a 'snippet'?
+            if "snippet" in item:
+                set_api_data = ["title", "channel"]
+                if "contentDetails" in item:
+                    set_api_data.append("length")
+                    if "thumbnails" in item["snippet"]:
+                        set_api_data.append("thumbnails")
+                video = Video.get(item["id"]["videoId"])
+                video._set_api_data(set_api_data, item)
+                relatedvideos.append(video)
 
         # start loading video info in the background
         Video.load_info(relatedvideos)
-
         return relatedvideos
 
     @async_property
@@ -394,9 +405,10 @@ class Playlist(Entry):
                     set_api_data.append("length")
                 if "thumbnails" in item["snippet"]:
                     set_api_data.append("thumbnails")
-                video = Video.get(item["snippet"]["resourceId"]["videoId"])
-                video._set_api_data(set_api_data, item)
-                myvideos.append(video)
+                if item["snippet"]["resourceId"]["videoId"] is not None:
+                    video = Video.get(item["snippet"]["resourceId"]["videoId"])
+                    video._set_api_data(set_api_data, item)
+                    myvideos.append(video)
 
             # start loading video info in the background
             Video.load_info(
@@ -437,7 +449,7 @@ class Channel(Entry):
         try:
             if channel_id is None:
                 channel_id = channel
-            data = cls.api.browse(channel_id)
+            data = cls.api.browse_channel_playlists(channel_id)
             if "error" in data:
                 raise Exception(data["error"])
         except Exception as e:

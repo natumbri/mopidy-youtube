@@ -8,6 +8,8 @@ from mopidy_youtube import logger
 from mopidy_youtube.youtube import Client, Playlist, Video
 
 ytmusic = None
+
+
 # Direct access to YouTube Music API
 #
 class Music(Client):
@@ -17,8 +19,9 @@ class Music(Client):
     def __init__(self, proxy, headers, *args, **kwargs):
         global ytmusic
         super().__init__(proxy, headers, *args, **kwargs)
-        auth = None if headers.get('Cookie', None) is None else \
-            json.dumps(headers)
+        auth = (
+            None if headers.get("Cookie", None) is None else json.dumps(headers)
+        )
         try:
             ytmusic = YTMusic(auth=auth)
         except Exception as e:

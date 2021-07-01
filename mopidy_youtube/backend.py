@@ -8,7 +8,7 @@ from mopidy.models import Album, Artist, SearchResult, Track, Ref
 from mopidy_youtube import Extension, logger, youtube
 from mopidy_youtube.apis import youtube_api, youtube_bs4api, youtube_music
 from mopidy_youtube.data import (
-    extract_channel_id,
+    # extract_channel_id,
     extract_playlist_id,
     extract_video_id,
     format_playlist_uri,
@@ -153,7 +153,9 @@ class YouTubeBackend(pykka.ThreadingActor, backend.Backend):
 
 class YouTubeLibraryProvider(backend.LibraryProvider):
 
-    root_directory = Ref.directory(uri="youtube:channel", name='My Youtube playlists')
+    root_directory = Ref.directory(
+        uri="youtube:channel", name="My Youtube playlists"
+    )
 
     """
     Called when root_directory is set to the URI of the youtube channel ID in the mopidy.conf
@@ -171,8 +173,10 @@ class YouTubeLibraryProvider(backend.LibraryProvider):
             return trackrefs
         elif uri.startswith("youtube:channel"):
             logger.info("browse channel / library")
-            if youtube.channel in ('', None):
-                logger.info("no channel / library to browse, please set up one in the config")
+            if youtube.channel in ("", None):
+                logger.info(
+                    "no channel / library to browse, please set up one in the config"
+                )
                 return []
             else:
                 playlistrefs = []
@@ -183,7 +187,9 @@ class YouTubeLibraryProvider(backend.LibraryProvider):
                 for pl in playlists:
                     albums.append(convert_playlist_to_album(pl))
                 for album in albums:
-                    playlistrefs.append(Ref.playlist(uri=album.uri, name=album.name))
+                    playlistrefs.append(
+                        Ref.playlist(uri=album.uri, name=album.name)
+                    )
             return playlistrefs
 
     """
@@ -277,7 +283,6 @@ class YouTubeLibraryProvider(backend.LibraryProvider):
             if video.length.get() is not None
         ]
         album_name = playlist.title.get()
-
         return convert_videos_to_tracks(videos, album_name)
 
     # def lookup_channel_tracks(self, channel_id: str):
@@ -364,7 +369,6 @@ class YouTubeLibraryProvider(backend.LibraryProvider):
         #         return channel_tracks
 
         return []
-
 
     def get_images(self, uris):
         return {uri: youtube.Video.get(uri).thumbnails.get() for uri in uris}
