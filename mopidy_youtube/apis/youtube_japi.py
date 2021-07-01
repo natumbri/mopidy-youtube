@@ -157,6 +157,63 @@ class jAPI(scrAPI):
                 }
                 items.append(item)
 
+            elif "gridPlaylistRenderer" in content:
+                item = {
+                    "id": content["gridPlaylistRenderer"]["playlistId"],
+                    "contentDetails": {
+                        "itemCount": int(
+                            content["gridPlaylistRenderer"][
+                                "videoCountShortText"
+                            ]["simpleText"].replace(",", "")
+                        )
+                    },
+                    "snippet": {
+                        "title": content["gridPlaylistRenderer"]["title"][
+                            "runs"
+                        ][0]["text"],
+                        # TODO: full support for thumbnails
+                        "thumbnails": {
+                            "default": {
+                                "url": content["gridPlaylistRenderer"][
+                                    "thumbnailRenderer"
+                                ]["playlistVideoThumbnailRenderer"][
+                                    "thumbnail"
+                                ][
+                                    "thumbnails"
+                                ][
+                                    0
+                                ][
+                                    "url"
+                                ],
+                                "width": content["gridPlaylistRenderer"][
+                                    "thumbnailRenderer"
+                                ]["playlistVideoThumbnailRenderer"][
+                                    "thumbnail"
+                                ][
+                                    "thumbnails"
+                                ][
+                                    0
+                                ][
+                                    "width"
+                                ],
+                                "height": content["gridPlaylistRenderer"][
+                                    "thumbnailRenderer"
+                                ]["playlistVideoThumbnailRenderer"][
+                                    "thumbnail"
+                                ][
+                                    "thumbnails"
+                                ][
+                                    0
+                                ][
+                                    "height"
+                                ],
+                            },
+                        },
+                        "channelTitle": "unknown",
+                    },
+                }
+                items.append(item)
+
         # remove duplicates
         items[:] = [
             json.loads(t)

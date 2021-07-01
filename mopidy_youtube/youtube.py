@@ -441,7 +441,7 @@ class Playlist(Entry):
 
 class Channel(Entry):
     @classmethod
-    def get_channel_playlists(cls, channel_id=None):
+    def playlists(cls, channel_id=None):
         """
         Get all public playlists from the channel.
         """
@@ -449,7 +449,7 @@ class Channel(Entry):
         try:
             if channel_id is None:
                 channel_id = channel
-            data = cls.api.browse_channel_playlists(channel_id)
+            data = cls.api.list_channelplaylists(channel_id)
             if "error" in data:
                 raise Exception(data["error"])
         except Exception as e:

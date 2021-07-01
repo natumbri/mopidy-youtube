@@ -106,9 +106,9 @@ class API(Client):
         return result.json()
 
     @classmethod
-    def browse_channel_playlists(cls, channel_id):
+    def list_channelplaylists(cls, channel_id):
         """
-        browse (get channel playlists)
+        list channel playlists
         see https://developers.google.com/youtube/v3/docs/playlists/list
         """
 
@@ -119,6 +119,6 @@ class API(Client):
             "channelId": channel_id,
             "key": youtube_api_key,
         }
-        logger.info("session.get triggered: browse")
+        logger.info("session.get triggered: list_channelplaylists")
         result = cls.session.get(API.endpoint + "playlists", params=query)
         return result.json()

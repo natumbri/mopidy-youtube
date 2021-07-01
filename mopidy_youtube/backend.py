@@ -183,7 +183,7 @@ class YouTubeLibraryProvider(backend.LibraryProvider):
                 albums = []
                 # playlists = youtube.Entry.api.browse()
                 # playlists = list(map(youtube.Entry.create_object, playlists))
-                playlists = youtube.Channel.get_channel_playlists()
+                playlists = youtube.Channel.playlists()
                 for pl in playlists:
                     albums.append(convert_playlist_to_album(pl))
                 for album in albums:
