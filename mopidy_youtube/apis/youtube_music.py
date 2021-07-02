@@ -8,6 +8,7 @@ from mopidy_youtube import logger
 from mopidy_youtube.youtube import Client, Playlist, Video
 
 ytmusic = None
+own_channel_id = None
 
 
 # Direct access to YouTube Music API
@@ -73,8 +74,23 @@ class Music(Client):
 
         # this really should be ytmusic.get_user_playlists(), I think, with channel_id
         # controlling which channel's (user's) playlists are retrieved. get_library_playlists()
-        # allows only the playlists of the authenticated user
-        results = ytmusic.get_library_playlists()
+        # allows only the playlists of the authenticated user.
+        # sigma67 says that ytmusic.get_user_playlists should work without authentication
+        # but I can't get it to work.
+
+        results = []
+        # if channel_id is None or own_channel_id then try to retrieve public and private playlists
+        if channel_id in (None, own_channel_id):
+            try:
+                results = ytmusic.get_library_playlists()
+            except Exception as e:
+                logger.info(f"list_channelplaylists exception {e}")
+                if channel_id:
+                    results = ytmusic.get_user(channel_id)["playlists"][
+                        "results"
+                    ]
+        else:  # if channel_id is not own channel_id retrieve only public playlists:
+            results = ytmusic.get_user(channel_id)["playlists"]["results"]
 
         items = [
             {

@@ -102,6 +102,7 @@ class YouTubeBackend(pykka.ThreadingActor, backend.Backend):
         youtube.api_enabled = config["youtube"]["api_enabled"]
         youtube.musicapi_enabled = config["youtube"]["musicapi_enabled"]
         youtube.musicapi_cookie = config["youtube"].get("musicapi_cookie", None)
+        youtube_music.own_channel_id = youtube.channel
         self.uri_schemes = ["youtube", "yt"]
         self.user_agent = "{}/{}".format(Extension.dist_name, Extension.version)
 
@@ -145,10 +146,9 @@ class YouTubeBackend(pykka.ThreadingActor, backend.Backend):
             )
             music = youtube_music.Music(proxy, headers)
             youtube.Entry.api.search = music.search
-            if youtube.musicapi_cookie:
-                youtube.Entry.api.list_channelplaylists = (
-                    music.list_channelplaylists
-                )
+            youtube.Entry.api.list_channelplaylists = (
+                music.list_channelplaylists
+            )
             youtube.Entry.api.list_playlistitems = music.list_playlistitems
             if youtube.api_enabled is False:
                 youtube.Entry.api.list_playlists = music.list_playlists
@@ -176,17 +176,10 @@ class YouTubeLibraryProvider(backend.LibraryProvider):
             return trackrefs
         elif uri.startswith("youtube:channel"):
             logger.info("browse channel / library")
-            if youtube.channel in ("", None):
-                logger.info(
-                    "no channel / library to browse, please set up one in the config"
-                )
-                return []
-            else:
-                playlistrefs = []
-                albums = []
-                # playlists = youtube.Entry.api.browse()
-                # playlists = list(map(youtube.Entry.create_object, playlists))
-                playlists = youtube.Channel.playlists()
+            playlistrefs = []
+            albums = []
+            playlists = youtube.Channel.playlists()
+            if playlists:
                 for pl in playlists:
                     albums.append(convert_playlist_to_album(pl))
                 for album in albums:
