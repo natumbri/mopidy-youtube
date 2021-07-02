@@ -160,6 +160,11 @@ class YouTubeLibraryProvider(backend.LibraryProvider):
         uri="youtube:channel", name="My Youtube playlists"
     )
 
+    def is_channel_configured(self):
+        ytapi_channel = youtube.channel in ("", None)
+        ytmusic_channel = youtube.musicapi_enabled and youtube.musicapi_cookie
+        return (not ytapi_channel) or ytmusic_channel
+
     """
     Called when root_directory is set to the URI of the youtube channel ID in the mopidy.conf
     When enabled makes possible to browse public playlists of the channel as well as browse separate tracks in playlists
@@ -176,7 +181,7 @@ class YouTubeLibraryProvider(backend.LibraryProvider):
             return trackrefs
         elif uri.startswith("youtube:channel"):
             logger.info("browse channel / library")
-            if youtube.channel in ("", None):
+            if not self.is_channel_configured():
                 logger.info(
                     "no channel / library to browse, please set up one in the config"
                 )
