@@ -69,15 +69,19 @@ class Music(Client):
         return channelTitle
 
     @classmethod
-    def browse(cls):
+    def list_channelplaylists(cls, channel_id):
+        
+        # this really should be ytmusic.get_user_playlists(), I think, with channel_id
+        # controlling which channel's (user's) playlists are retrieved. get_library_playlists()
+        # allows only the playlists of the authenticated user
         results = ytmusic.get_library_playlists()
+
         items = [
             {
-                "id": {
-                    "kind": "youtube#playlist",
-                    "playlistId": item["playlistId"],
+                "id": item["playlistId"],
+                "contentDetails": {
+                    "itemCount": int(item.get("count", "1").replace(",", ""))
                 },
-                "contentDetails": {"itemCount": item.get("count", 1)},
                 "snippet": {
                     "title": item.get("title", "Unknown"),
                     "resourceId": {"playlistId": item["playlistId"]},
@@ -88,7 +92,9 @@ class Music(Client):
             }
             for item in results
         ]
-        return items
+        return json.loads(
+            json.dumps({"items": items}, sort_keys=False, indent=1)
+        )
 
     @classmethod
     def search_videos(cls, q):

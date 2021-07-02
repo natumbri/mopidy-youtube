@@ -173,41 +173,13 @@ class jAPI(scrAPI):
                         ][0]["text"],
                         # TODO: full support for thumbnails
                         "thumbnails": {
-                            "default": {
-                                "url": content["gridPlaylistRenderer"][
-                                    "thumbnailRenderer"
-                                ]["playlistVideoThumbnailRenderer"][
-                                    "thumbnail"
-                                ][
-                                    "thumbnails"
-                                ][
-                                    0
-                                ][
-                                    "url"
-                                ],
-                                "width": content["gridPlaylistRenderer"][
-                                    "thumbnailRenderer"
-                                ]["playlistVideoThumbnailRenderer"][
-                                    "thumbnail"
-                                ][
-                                    "thumbnails"
-                                ][
-                                    0
-                                ][
-                                    "width"
-                                ],
-                                "height": content["gridPlaylistRenderer"][
-                                    "thumbnailRenderer"
-                                ]["playlistVideoThumbnailRenderer"][
-                                    "thumbnail"
-                                ][
-                                    "thumbnails"
-                                ][
-                                    0
-                                ][
-                                    "height"
-                                ],
-                            },
+                            "default": content["gridPlaylistRenderer"][
+                                "thumbnailRenderer"
+                            ]["playlistVideoThumbnailRenderer"]["thumbnail"][
+                                "thumbnails"
+                            ][
+                                0
+                            ],
                         },
                         "channelTitle": "unknown",
                     },
