@@ -70,7 +70,7 @@ class Music(Client):
 
     @classmethod
     def list_channelplaylists(cls, channel_id):
-        
+
         # this really should be ytmusic.get_user_playlists(), I think, with channel_id
         # controlling which channel's (user's) playlists are retrieved. get_library_playlists()
         # allows only the playlists of the authenticated user
