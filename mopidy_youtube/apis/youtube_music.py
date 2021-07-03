@@ -21,7 +21,9 @@ class Music(Client):
         global ytmusic
         super().__init__(proxy, headers, *args, **kwargs)
         auth = (
-            None if headers.get("Cookie", None) is None else json.dumps(headers)
+            None
+            if headers.get("Cookie") == "PREF=hl=en; CONSENT=YES+20210329;"
+            else json.dumps(headers)
         )
         try:
             ytmusic = YTMusic(auth=auth)

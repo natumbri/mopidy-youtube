@@ -391,7 +391,6 @@ class bs4API(scrAPI):
             results = soup.find_all("li", class_=["related-list-item"])
             if not results:
                 logger.info("nothing in the soup, trying japi related videos")
-
                 yt_data = cls._find_yt_data(result.text)
                 extracted_json = yt_data["contents"][
                     "twoColumnWatchNextResults"
