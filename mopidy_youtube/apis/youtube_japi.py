@@ -31,6 +31,8 @@ class jAPI(scrAPI):
         return cls.json_to_items(cls, extracted_json)
 
     def json_to_items(cls, result_json):
+        if "itemSectionRenderer" in result_json[1]:
+            result_json = result_json[1]["itemSectionRenderer"]["contents"]
         items = []
         for content in result_json:
             if "videoRenderer" in content:

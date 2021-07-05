@@ -29,7 +29,7 @@ class Extension(ext.Extension):
         schema["musicapi_cookie"] = config.String(optional=True)
         schema["autoplay_enabled"] = config.Boolean(optional=True)
         schema["strict_autoplay"] = config.Boolean(optional=True)
-        schema["max_autoplay_length"] = config.Integer()
+        schema["max_autoplay_length"] = config.Integer(optional=True)
         schema["max_degrees_of_separation"] = config.Integer()
         return schema
 

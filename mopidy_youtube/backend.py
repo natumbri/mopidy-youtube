@@ -138,10 +138,10 @@ class YouTubeBackend(pykka.ThreadingActor, backend.Backend):
             headers.update(
                 {
                     "Accept": "*/*",
-                    "Accept-Language": "en-US,en;q=0.5",
                     "Content-Type": "application/json",
                     "origin": "https://music.youtube.com",
-                    "Cookie": youtube.musicapi_cookie or None,
+                    "Cookie": youtube.musicapi_cookie
+                    or "PREF=hl=en; CONSENT=YES+20210329;",
                 }
             )
             music = youtube_music.Music(proxy, headers)
