@@ -5,7 +5,7 @@ from concurrent.futures.thread import ThreadPoolExecutor
 from ytmusicapi import YTMusic
 
 from mopidy_youtube import logger
-from mopidy_youtube.youtube import Client, Playlist, Video
+from mopidy_youtube.youtube import Client, Video
 
 ytmusic = None
 own_channel_id = None
@@ -39,10 +39,10 @@ class Music(Client):
             search_results.append(result)
             for result in album_results[: int(Video.search_results)]
         ]
-        video_results = cls.search_videos(q)
+        song_results = cls.search_songs(q)
         [
             search_results.append(result)
-            for result in video_results[: int(Video.search_results)]
+            for result in song_results[: int(Video.search_results)]
         ]
 
         json_results = json.loads(
@@ -60,16 +60,7 @@ class Music(Client):
                 indent=1,
             )
         )
-
         return json_results
-
-    @classmethod
-    def _channelTitle(cls, results):
-        try:
-            channelTitle = results[0]["name"]
-        except Exception:
-            channelTitle = "unknown"
-        return channelTitle
 
     @classmethod
     def list_channelplaylists(cls, channel_id):
@@ -94,6 +85,11 @@ class Music(Client):
         else:  # if channel_id is not own channel_id retrieve only public playlists:
             results = ytmusic.get_user(channel_id)["playlists"]["results"]
 
+        if channel_id:
+            channelTitle = ytmusic.get_user(channel_id)["name"]
+        else:
+            channelTitle = "unknown"
+
         items = [
             {
                 "id": item["playlistId"],
@@ -105,7 +101,7 @@ class Music(Client):
                     "resourceId": {"playlistId": item["playlistId"]},
                     # TODO: full support for thumbnails
                     "thumbnails": {"default": item["thumbnails"][0]},
-                    "channelTitle": "unknown",
+                    "channelTitle": channelTitle,
                 },
             }
             for item in results
@@ -115,12 +111,12 @@ class Music(Client):
         )
 
     @classmethod
-    def search_videos(cls, q):
+    def search_songs(cls, q):
         results = ytmusic.search(
             query=q, filter="songs", limit=Video.search_results
         )
 
-        videos = [
+        songs = [
             {
                 "id": {
                     "kind": "youtube#video",
@@ -137,15 +133,43 @@ class Music(Client):
                     "resourceId": {"videoId": item["videoId"]},
                     # TODO: full support for thumbnails
                     "thumbnails": {"default": item["thumbnails"][0]},
-                    "channelTitle": cls._channelTitle(item["artists"]),
+                    "channelTitle": item["artists"][0]["name"],
+                    "album": item["album"],
+                    "artists": item["artists"],
                 },
             }
             for item in results
         ]
-        return videos
+        return songs
 
     @classmethod
-    def playlist_item_to_video(cls, item, thumbnail):
+    def ytplaylist_item_to_video(cls, item, thumbnail):
+        video = {}
+        video.update(
+            {
+                "id": {
+                    "kind": "youtube#video",
+                    "videoId": item["videoId"],
+                },
+                "contentDetails": {
+                    "duration": "PT"
+                    + cls.format_duration(
+                        re.match(cls.time_regex, item["duration"])
+                    )
+                },
+                "snippet": {
+                    "title": item["title"],
+                    "resourceId": {"videoId": item["videoId"]},
+                    # TODO: full support for thumbnails
+                    "thumbnails": {"default": thumbnail},
+                    "channelTitle": item["artists"][0]["name"],
+                },
+            }
+        )
+        return video
+
+    @classmethod
+    def ytalbum_item_to_video(cls, item, thumbnail):
         def _convertMillis(milliseconds):
             try:
                 hours, miliseconds = divmod(int(milliseconds), 3600000)
@@ -165,7 +189,9 @@ class Music(Client):
                 "contentDetails": {
                     "duration": "PT"
                     + cls.format_duration(
-                        re.match(cls.time_regex, item["duration"])
+                        re.match(
+                            cls.time_regex, _convertMillis(item["lengthMs"])
+                        )
                     )
                 },
                 "snippet": {
@@ -173,7 +199,7 @@ class Music(Client):
                     "resourceId": {"videoId": item["videoId"]},
                     # TODO: full support for thumbnails
                     "thumbnails": {"default": thumbnail},
-                    "channelTitle": cls._channelTitle(item["artists"]),
+                    "channelTitle": item["artists"],
                 },
             }
         )
@@ -181,39 +207,37 @@ class Music(Client):
 
     @classmethod
     def search_albums(cls, q):
-        playlists = []
+        albums = []
         results = ytmusic.search(
             query=q, filter="albums", limit=Video.search_results
         )
 
         def job(item):
             try:
-                playlist = cls.list_playlists([item["browseId"]])
-                if playlist is None:
+                album = ytmusic.get_album(item["browseId"])
+                if album is None:
                     return
                 else:
-                    playlistItem = {
+                    albumItem = {
                         "id": {
                             "kind": "youtube#playlist",
                             "playlistId": item["browseId"],
                         },
                         "snippet": {
-                            "channelTitle": item["type"],
-                            "thumbnails": {"default": item["thumbnails"][0]},
-                            "title": item["title"],
+                            "channelTitle": "YouTube Music Album",  # item["type"],
+                            "thumbnails": {"default": album["thumbnails"][0]},
+                            "title": album["title"],
                         },
-                        "contentDetails": playlist["items"][0][
-                            "contentDetails"
-                        ],
+                        "contentDetails": {"itemCount": album["trackCount"]},
                     }
-                    playlists.append(playlistItem)
+                    albums.append(albumItem)
 
             except Exception as e:
                 logger.error('search_albums error "%s"', e)
 
         with ThreadPoolExecutor() as executor:
             executor.map(job, results)
-        return playlists
+        return albums
 
     @classmethod
     def list_playlists(cls, ids):
@@ -245,7 +269,7 @@ class Music(Client):
                     "title": result["title"],
                     "thumbnails": {"default": result["thumbnails"][0]},
                     # apparently, result["artist"] can be empty
-                    "channelTitle": cls._channelTitle(result["artists"]),
+                    "channelTitle": result["artist"][0]["name"],
                 },
                 "contentDetails": {"itemCount": result["trackCount"]},
             }
@@ -254,25 +278,28 @@ class Music(Client):
 
         # get the videos in the playlist and
         # start loading video info in the background
-        album_tracks = [
-            cls.playlist_item_to_video(track, result["thumbnails"][0])
-            for result in results
-            for track in result["tracks"]
-        ]
-        videos = [
-            Video.get(album_track["snippet"]["resourceId"]["videoId"])
-            for album_track in album_tracks
-        ]
-        [
-            video._set_api_data(
-                ["title", "channel", "length", "thumbnails"], album_track
-            )
-            for video, album_track in zip(videos, album_tracks)
-        ]
+        # this isn't really part of the api - should it be removed? does it
+        # speed anything up?
 
-        Video.load_info(
-            [x for _, x in zip(range(Playlist.playlist_max_videos), videos)]
-        )
+        # album_tracks = [
+        #     cls.ytalbum_item_to_video(track, result["thumbnails"][0])
+        #     for result in results
+        #     for track in result["tracks"]
+        # ]
+        # videos = [
+        #     Video.get(album_track["snippet"]["resourceId"]["videoId"])
+        #     for album_track in album_tracks
+        # ]
+        # [
+        #     video._set_api_data(
+        #         ["title", "channel", "length", "thumbnails"], album_track
+        #     )
+        #     for video, album_track in zip(videos, album_tracks)
+        # ]
+
+        # Video.load_info(
+        #     [x for _, x in zip(range(Playlist.playlist_max_videos), videos)]
+        # )
 
         return json.loads(
             json.dumps({"items": items}, sort_keys=False, indent=1)
@@ -280,11 +307,18 @@ class Music(Client):
 
     @classmethod
     def list_playlistitems(cls, id, page=None, max_results=None):
-        result = ytmusic.get_playlist(id)
-        items = [
-            cls.playlist_item_to_video(item, result["thumbnails"][0])
-            for item in result["tracks"]
-        ]
+        if id.startswith("PL"):
+            result = ytmusic.get_playlist(id)
+            items = [
+                cls.ytplaylist_item_to_video(item, result["thumbnails"][0])
+                for item in result["tracks"]
+            ]
+        else:
+            result = ytmusic.get_album(id)
+            items = [
+                cls.ytalbum_item_to_video(item, result["thumbnails"][0])
+                for item in result["tracks"]
+            ]
         ajax = None
         return json.loads(
             json.dumps(
