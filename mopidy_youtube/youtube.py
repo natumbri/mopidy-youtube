@@ -1,4 +1,5 @@
 import re
+import os
 from concurrent.futures.thread import ThreadPoolExecutor
 
 import pykka
@@ -244,15 +245,6 @@ class Video(Entry):
 
         relatedvideos = []
 
-        # for item in data["items"]:
-        #     set_api_data = ["title", "channel"]
-        #     if "contentDetails" in item:
-        #         set_api_data.append("length")
-        #     if "thumbnails" in item["snippet"]:
-        #         set_api_data.append("thumbnails")
-        #     video = Video.get(item["id"]["videoId"])
-        #     video._set_api_data(set_api_data, item)
-        #     relatedvideos.append(video)
         for item in data["items"]:
             # why are some results returned without a 'snippet'?
             if "snippet" in item:
@@ -513,7 +505,9 @@ class Client:
             backoff_factor=backoff_factor,
             status_forcelist=status_forcelist,
         )
-        adapter = MyHTTPAdapter(max_retries=retry, pool_maxsize=4)
+        adapter = MyHTTPAdapter(
+            max_retries=retry, pool_maxsize=min(32, os.cpu_count() + 4)
+        )
         cls.session.mount("http://", adapter)
         cls.session.mount("https://", adapter)
         cls.session.proxies = {"http": proxy, "https": proxy}

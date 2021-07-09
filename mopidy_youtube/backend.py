@@ -85,6 +85,20 @@ def convert_playlist_to_album(playlist: youtube.Playlist) -> Album:
     )
 
 
+# YouTube Music supports 'Albums'; probably should take advantage and use
+#
+# def convert_ytalbum_to_album(album: youtube.Album) -> Album:
+#     return Album(
+#         name=album.title.get(),
+#         artists=[
+#             Artist(
+#                 name=f"YouTube Music Album ({album.track_count.get()} tracks)"
+#             )
+#         ],
+#         uri=format_album_uri(album),
+#     )
+
+
 class YouTubeBackend(pykka.ThreadingActor, backend.Backend):
     def __init__(self, config, audio):
         super().__init__()
