@@ -61,18 +61,6 @@ def convert_videos_to_tracks(videos, album_name: str):
     ]
 
 
-def convert_playlist_to_track(playlist: youtube.Playlist) -> Track:
-    album_name = f"YouTube Playlist ({playlist.video_count.get()} videos)"
-    return Track(
-        name=playlist.title.get(),
-        comment=playlist.id,
-        length=0,
-        artists=[Artist(name=playlist.channel.get())],
-        album=Album(name=album_name),
-        uri=format_playlist_uri(playlist),
-    )
-
-
 def convert_playlist_to_album(playlist: youtube.Playlist) -> Album:
     return Album(
         name=playlist.title.get(),
@@ -234,21 +222,6 @@ class YouTubeLibraryProvider(backend.LibraryProvider):
         for entry in entries:
             if entry.is_video:
                 tracks.append(convert_video_to_track(entry, "YouTube Video"))
-
-                # # does it make sense to try to return youtube 'channels' as
-                # # mopidy 'artists'? I'm not convinced.
-                # if entry.channelId.get():
-                #     artists.append(
-                #         Artist(
-                #             name=f"YouTube Channel: {entry.channel.get()}",
-                #             uri=f"youtube:channel:{entry.channelId.get()}",
-                #         )
-                #     )
-                # else:
-                #     logger.info("no channelId")
-
-            else:
-                tracks.append(convert_playlist_to_track(entry))
 
         # load video info and playlist videos in the background. they should be
         # ready by the time the user adds search results to the playing queue
