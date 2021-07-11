@@ -471,7 +471,6 @@ class bs4API(scrAPI):
         """
         list playlists in a channel
         """
-        query = {}
         logger.info("session.get triggered: list_channelplaylists")
 
         result = cls.session.get(cls.endpoint + "channel/" + channel_id)
