@@ -402,7 +402,10 @@ class Playlist(Entry):
             myvideos = []
 
             for item in data["items"]:
-                set_api_data = ["title", "owner_channel"]
+                if "videoOwnerChannelTitle" in item["snippet"]:
+                    set_api_data = ["title", "owner_channel"]
+                else:
+                    set_api_data = ["title", "channel"]
                 if "contentDetails" in item:
                     set_api_data.append("length")
                 if "thumbnails" in item["snippet"]:
