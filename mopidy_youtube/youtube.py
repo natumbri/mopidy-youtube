@@ -164,6 +164,8 @@ class Entry:
                 val = item["snippet"]["title"]
             elif k == "channel":
                 val = item["snippet"]["channelTitle"]
+            elif k == "owner_channel":
+                val = item["snippet"]["videoOwnerChannelTitle"]
             elif k == "length":
                 # convert PT1H2M10S to 3730
                 m = re.search(
@@ -176,11 +178,11 @@ class Entry:
                 )
                 if m:
                     val = (
-                        int(m.group("weeks") or 0) * 604800
-                        + int(m.group("days") or 0) * 86400
-                        + int(m.group("hours") or 0) * 3600
-                        + int(m.group("minutes") or 0) * 60
-                        + int(m.group("seconds") or 0)
+                            int(m.group("weeks") or 0) * 604800
+                            + int(m.group("days") or 0) * 86400
+                            + int(m.group("hours") or 0) * 3600
+                            + int(m.group("minutes") or 0) * 60
+                            + int(m.group("seconds") or 0)
                     )
                 else:
                     val = 0
@@ -227,7 +229,7 @@ class Video(Entry):
             executor.map(
                 job,
                 [
-                    listOfVideos[i : i + 50]
+                    listOfVideos[i: i + 50]
                     for i in range(0, len(listOfVideos), 50)
                 ],
             )
@@ -354,7 +356,7 @@ class Playlist(Entry):
             executor.map(
                 job,
                 [
-                    listOfPlaylists[i : i + batch]
+                    listOfPlaylists[i: i + batch]
                     for i in range(0, len(listOfPlaylists), batch)
                 ],
             )
@@ -373,8 +375,8 @@ class Playlist(Entry):
             data = {"items": []}
             page = ""
             while (
-                page is not None
-                and len(data["items"]) < self.playlist_max_videos
+                    page is not None
+                    and len(data["items"]) < self.playlist_max_videos
             ):
                 try:
                     max_results = min(
@@ -395,12 +397,12 @@ class Playlist(Entry):
                 page = result.get("nextPageToken") or None
                 data["items"].extend(result["items"])
 
-            del data["items"][int(self.playlist_max_videos) :]
+            del data["items"][int(self.playlist_max_videos):]
 
             myvideos = []
 
             for item in data["items"]:
-                set_api_data = ["title", "channel"]
+                set_api_data = ["title", "owner_channel"]
                 if "contentDetails" in item:
                     set_api_data.append("length")
                 if "thumbnails" in item["snippet"]:
@@ -484,7 +486,6 @@ class MyHTTPAdapter(HTTPAdapter):
 
 
 class Client:
-
     time_regex = (
         r"(?:(?:(?P<durationHours>[0-9]+)\:)?"
         r"(?P<durationMinutes>[0-9]+)\:"
@@ -497,13 +498,13 @@ class Client:
 
     @classmethod
     def _create_session(
-        cls,
-        proxy,
-        headers,
-        retries=10,
-        backoff_factor=0.3,
-        status_forcelist=(500, 502, 504),
-        session=None,
+            cls,
+            proxy,
+            headers,
+            retries=10,
+            backoff_factor=0.3,
+            status_forcelist=(500, 502, 504),
+            session=None,
     ):
         cls.session = session or requests.Session()
         retry = Retry(
