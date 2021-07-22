@@ -55,7 +55,7 @@ class Entry:
     Entry is a base class of Video and Playlist
     """
 
-    cache_max_len = 400
+    cache_max_len = 4000
     cache_ttl = 21600
 
     @classmethod
@@ -361,7 +361,7 @@ class Playlist(Entry):
 
         self._videos = pykka.ThreadingFuture()
 
-        def job():
+        def load_items():
             data = {"items": []}
             page = ""
             while (
@@ -385,6 +385,7 @@ class Playlist(Entry):
                     )
                     break
                 page = result.get("nextPageToken") or None
+
                 data["items"].extend(result["items"])
 
             del data["items"][int(self.playlist_max_videos) :]
@@ -412,7 +413,7 @@ class Playlist(Entry):
             )
 
         executor = ThreadPoolExecutor(max_workers=1)
-        executor.submit(job)
+        executor.submit(load_items)
         executor.shutdown(wait=False)
 
     @async_property

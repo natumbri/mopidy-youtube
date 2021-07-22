@@ -152,6 +152,7 @@ class YouTubeBackend(pykka.ThreadingActor, backend.Backend):
                 music.list_channelplaylists
             )
             youtube.Entry.api.list_playlistitems = music.list_playlistitems
+            youtube.Entry.api.list_related_videos = music.list_related_videos
             if youtube.api_enabled is False:
                 youtube.Entry.api.list_playlists = music.list_playlists
 
