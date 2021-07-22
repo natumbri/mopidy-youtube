@@ -9,7 +9,7 @@ from concurrent.futures import as_completed
 from ytmusicapi import YTMusic
 
 from mopidy_youtube import logger
-from mopidy_youtube.youtube import Client, Playlist, Video
+from mopidy_youtube.youtube import Client, Video
 
 ytmusic = None
 own_channel_id = None
@@ -64,7 +64,7 @@ class Music(Client):
 
         # does this help with anything?
         # Music.loadTracks(tracks)
-        
+
         return json.loads(
             json.dumps({"items": tracks}, sort_keys=False, indent=1)
         )
@@ -342,9 +342,7 @@ class Music(Client):
     @classmethod
     def loadTracks(cls, tracks):
 
-        videos = [
-            Video.create_object(track) for track in tracks
-        ]
+        videos = [Video.create_object(track) for track in tracks]
 
         Video.load_info(videos)
 
