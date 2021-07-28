@@ -19,7 +19,6 @@ own_channel_id = None
 #
 class Music(Client):
     endpoint = None
-    searchEndpoint = None
 
     def __init__(self, proxy, headers, *args, **kwargs):
         global ytmusic
@@ -87,6 +86,14 @@ class Music(Client):
                     "ytmusic.get_library_playlists triggered: youtube-music list_channelplaylists"
                 )
                 results = ytmusic.get_library_playlists()
+                if channel_id:
+                    logger.debug(
+                        "ytmusic.get_user triggered: youtube-music list_channelplaylists"
+                    )
+                    channelTitle = ytmusic.get_user(channel_id)["name"]
+                else:
+                    channelTitle = "unknown"
+
             except Exception as e:
                 logger.debug(f"list_channelplaylists exception {e}")
                 if channel_id:
@@ -97,22 +104,13 @@ class Music(Client):
                     results = user["playlists"]["results"]
                     channelTitle = user["name"]
 
-        else:  # if channel_id is not own channel_id retrieve only public playlists:
+        else:  # if channel_id is not None and not own_channel_id retrieve only public playlists:
             logger.debug(
                 "ytmusic.get_user triggered: youtube-music list_channelplaylists"
             )
             user = ytmusic.get_user(channel_id)
             results = user["playlists"]["results"]
             channelTitle = user["name"]
-
-        if channelTitle is None:
-            if channel_id:
-                logger.debug(
-                    "ytmusic.get_user triggered: youtube-music list_channelplaylists"
-                )
-                channelTitle = ytmusic.get_user(channel_id)["name"]
-            else:
-                channelTitle = "unknown"
 
         items = [
             {
