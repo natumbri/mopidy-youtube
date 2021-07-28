@@ -6,7 +6,7 @@ from mopidy_youtube.data import extract_video_id, format_video_uri
 
 autoplay_enabled = False
 strict_autoplay = False
-max_autoplay_length = 600
+max_autoplay_length = None
 autoplayed = []
 max_degrees_of_separation = 3
 
@@ -95,7 +95,6 @@ class YouTubeAutoplayer(pykka.ThreadingActor, listener.CoreListener):
                     logger.info("resetting autoplay base track id")
 
             related_videos = youtube.Video.related_videos(current_track_id)
-
             # remove already autoplayed
             related_videos[:] = [
                 related_video

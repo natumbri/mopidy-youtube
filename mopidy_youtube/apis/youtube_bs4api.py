@@ -33,7 +33,11 @@ class bs4API(scrAPI):
             if not result:
                 continue
 
-            return json.loads(result.group(1))
+            try:
+                return json.loads(result.group(1))
+            except Exception as e:
+                logger.error(f"_find_yt_data exception {e}")
+                return json.loads(result.group(1)[: e.pos])
 
         logger.error("No data found on page")
         raise Exception("No data found on page")
@@ -457,6 +461,41 @@ class bs4API(scrAPI):
                         logger.warn("duration exception %s" % e)
                         # because duration error doesn't invalidate item (live tracks, eg)
                     items.append(item)
+
+        return json.loads(
+            json.dumps({"items": items}, sort_keys=False, indent=1)
+        )
+
+    @classmethod
+    def list_channelplaylists(cls, channel_id):
+        """
+        list playlists in a channel
+        """
+        logger.info("session.get triggered: list_channelplaylists")
+
+        result = cls.session.get(cls.endpoint + "channel/" + channel_id)
+
+        yt_data = cls._find_yt_data(result.text)
+
+        extracted_json = yt_data["contents"]["twoColumnBrowseResultsRenderer"][
+            "tabs"
+        ][0]["tabRenderer"]["content"]["sectionListRenderer"]["contents"][0][
+            "itemSectionRenderer"
+        ][
+            "contents"
+        ][
+            0
+        ][
+            "shelfRenderer"
+        ][
+            "content"
+        ][
+            "horizontalListRenderer"
+        ][
+            "items"
+        ]
+
+        items = jAPI.json_to_items(cls, extracted_json)
 
         return json.loads(
             json.dumps({"items": items}, sort_keys=False, indent=1)

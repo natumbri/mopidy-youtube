@@ -3,16 +3,18 @@ from urllib.parse import parse_qs, urlparse
 
 import pykka
 from mopidy import backend, httpclient
-from mopidy.models import Album, Artist, SearchResult, Track
+from mopidy.models import Album, Artist, SearchResult, Track, Ref
 
 from mopidy_youtube import Extension, logger, youtube
 from mopidy_youtube.apis import youtube_api, youtube_bs4api, youtube_music
 from mopidy_youtube.data import (
+    # extract_channel_id,
     extract_playlist_id,
     extract_video_id,
     format_playlist_uri,
     format_video_uri,
 )
+
 
 """
 A typical interaction:
@@ -59,18 +61,6 @@ def convert_videos_to_tracks(videos, album_name: str):
     ]
 
 
-def convert_playlist_to_track(playlist: youtube.Playlist) -> Track:
-    album_name = f"YouTube Playlist ({playlist.video_count.get()} videos)"
-    return Track(
-        name=playlist.title.get(),
-        comment=playlist.id,
-        length=0,
-        artists=[Artist(name=playlist.channel.get())],
-        album=Album(name=album_name),
-        uri=format_playlist_uri(playlist),
-    )
-
-
 def convert_playlist_to_album(playlist: youtube.Playlist) -> Album:
     return Album(
         name=playlist.title.get(),
@@ -83,6 +73,20 @@ def convert_playlist_to_album(playlist: youtube.Playlist) -> Album:
     )
 
 
+# YouTube Music supports 'Albums'; probably should take advantage and use
+#
+# def convert_ytalbum_to_album(album: youtube.Album) -> Album:
+#     return Album(
+#         name=album.title.get(),
+#         artists=[
+#             Artist(
+#                 name=f"YouTube Music Album ({album.track_count.get()} tracks)"
+#             )
+#         ],
+#         uri=format_album_uri(album),
+#     )
+
+
 class YouTubeBackend(pykka.ThreadingActor, backend.Backend):
     def __init__(self, config, audio):
         super().__init__()
@@ -92,12 +96,15 @@ class YouTubeBackend(pykka.ThreadingActor, backend.Backend):
         youtube_api.youtube_api_key = (
             config["youtube"]["youtube_api_key"] or None
         )
+        youtube.channel = config["youtube"]["channel_id"]
         youtube.Video.search_results = config["youtube"]["search_results"]
         youtube.Playlist.playlist_max_videos = config["youtube"][
             "playlist_max_videos"
         ]
         youtube.api_enabled = config["youtube"]["api_enabled"]
         youtube.musicapi_enabled = config["youtube"]["musicapi_enabled"]
+        youtube.musicapi_cookie = config["youtube"].get("musicapi_cookie", None)
+        youtube_music.own_channel_id = youtube.channel
         self.uri_schemes = ["youtube", "yt"]
         self.user_agent = "{}/{}".format(Extension.dist_name, Extension.version)
 
@@ -106,7 +113,7 @@ class YouTubeBackend(pykka.ThreadingActor, backend.Backend):
         youtube.Video.proxy = proxy
         headers = {
             "user-agent": httpclient.format_user_agent(self.user_agent),
-            "Cookie": "PREF=hl=en;",
+            "Cookie": "PREF=hl=en; CONSENT=YES+20210329;",
             "Accept-Language": "en;q=0.8",
         }
 
@@ -130,14 +137,60 @@ class YouTubeBackend(pykka.ThreadingActor, backend.Backend):
 
         if youtube.musicapi_enabled is True:
             logger.info("Using YouTube Music API")
+            headers.update(
+                {
+                    "Accept": "*/*",
+                    "Content-Type": "application/json",
+                    "origin": "https://music.youtube.com",
+                    "Cookie": youtube.musicapi_cookie
+                    or "PREF=hl=en; CONSENT=YES+20210329;",
+                }
+            )
             music = youtube_music.Music(proxy, headers)
             youtube.Entry.api.search = music.search
+            youtube.Entry.api.list_channelplaylists = (
+                music.list_channelplaylists
+            )
             youtube.Entry.api.list_playlistitems = music.list_playlistitems
+            youtube.Entry.api.list_related_videos = music.list_related_videos
             if youtube.api_enabled is False:
                 youtube.Entry.api.list_playlists = music.list_playlists
 
 
 class YouTubeLibraryProvider(backend.LibraryProvider):
+
+    root_directory = Ref.directory(
+        uri="youtube:channel", name="My Youtube playlists"
+    )
+
+    """
+    Called when root_directory is set to the URI of the youtube channel ID in the mopidy.conf
+    When enabled makes possible to browse public playlists of the channel as well as browse separate tracks in playlists
+    Requires enabled API at the moment
+    """
+
+    def browse(self, uri):
+        if uri.startswith("youtube:playlist"):
+            logger.info("browse playlist: " + uri)
+            trackrefs = []
+            tracks = self.lookup(uri)
+            for track in tracks:
+                trackrefs.append(Ref.track(uri=track.uri, name=track.name))
+            return trackrefs
+        elif uri.startswith("youtube:channel"):
+            logger.info("browse channel / library")
+            playlistrefs = []
+            albums = []
+            playlists = youtube.Channel.playlists()
+            if playlists:
+                for pl in playlists:
+                    albums.append(convert_playlist_to_album(pl))
+                for album in albums:
+                    playlistrefs.append(
+                        Ref.playlist(uri=album.uri, name=album.name)
+                    )
+            return playlistrefs
+
     """
     Called when browsing or searching the library. To avoid horrible browsing
     performance, and since only search makes sense for youtube anyway, we we
@@ -185,21 +238,6 @@ class YouTubeLibraryProvider(backend.LibraryProvider):
             if entry.is_video:
                 tracks.append(convert_video_to_track(entry, "YouTube Video"))
 
-                # # does it make sense to try to return youtube 'channels' as
-                # # mopidy 'artists'? I'm not convinced.
-                # if entry.channelId.get():
-                #     artists.append(
-                #         Artist(
-                #             name=f"YouTube Channel: {entry.channel.get()}",
-                #             uri=f"youtube:channel:{entry.channelId.get()}",
-                #         )
-                #     )
-                # else:
-                #     logger.info("no channelId")
-
-            else:
-                tracks.append(convert_playlist_to_track(entry))
-
         # load video info and playlist videos in the background. they should be
         # ready by the time the user adds search results to the playing queue
         for pl in playlists:
@@ -229,7 +267,6 @@ class YouTubeLibraryProvider(backend.LibraryProvider):
             if video.length.get() is not None
         ]
         album_name = playlist.title.get()
-
         return convert_videos_to_tracks(videos, album_name)
 
     # def lookup_channel_tracks(self, channel_id: str):

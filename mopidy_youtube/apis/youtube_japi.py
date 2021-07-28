@@ -31,6 +31,8 @@ class jAPI(scrAPI):
         return cls.json_to_items(cls, extracted_json)
 
     def json_to_items(cls, result_json):
+        if "itemSectionRenderer" in result_json[1]:
+            result_json = result_json[1]["itemSectionRenderer"]["contents"]
         items = []
         for content in result_json:
             if "videoRenderer" in content:
@@ -153,6 +155,35 @@ class jAPI(scrAPI):
                         "channelTitle": content["playlistRenderer"][
                             "longBylineText"
                         ]["runs"][0]["text"],
+                    },
+                }
+                items.append(item)
+
+            elif "gridPlaylistRenderer" in content:
+                item = {
+                    "id": content["gridPlaylistRenderer"]["playlistId"],
+                    "contentDetails": {
+                        "itemCount": int(
+                            content["gridPlaylistRenderer"][
+                                "videoCountShortText"
+                            ]["simpleText"].replace(",", "")
+                        )
+                    },
+                    "snippet": {
+                        "title": content["gridPlaylistRenderer"]["title"][
+                            "runs"
+                        ][0]["text"],
+                        # TODO: full support for thumbnails
+                        "thumbnails": {
+                            "default": content["gridPlaylistRenderer"][
+                                "thumbnailRenderer"
+                            ]["playlistVideoThumbnailRenderer"]["thumbnail"][
+                                "thumbnails"
+                            ][
+                                0
+                            ],
+                        },
+                        "channelTitle": "unknown",
                     },
                 }
                 items.append(item)

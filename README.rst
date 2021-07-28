@@ -75,14 +75,25 @@ is played.  If you want mopidy-youtube to autoplay related videos, set autoplay_
 If autoplay is enabled, other options are::
 
 	strict_autoplay = [true/false]
-	max_autoplay_length = [maximum length of track in seconds or None]
+	max_autoplay_length = [maximum length of track in seconds or None]  : defaults to 600s
 	max_degrees_of_separation = [defaults to 3]
 
 If the option strict_autoplay is set, the current tracklist is ignored and the
 most related video automatically played afterwards.
 
+The max_autoplay_length option sets the maximum length of a track that will be played
+by the autoplayer.  Any interger value is acceptable; the default is 600s.
+If you don't want a maximum length, include the following in mopidy.conf::
+
+        max_autoplay_length =
+
 Max degrees of separation controls how distantly related to the track that triggered autoplay
-the autoplayed tracks can be.
+(the 'seed' track) the autoplayed tracks can be. For example, with the value set to the default
+of 3, the first track autoplayed will be related to the seed track (one degree of separation).
+The second track autoplayed will be related to the first track autoplayed (two degrees of
+separation). The third track autoplayed will be related to the second track autoplayed (three
+degrees of separation, the maximum). The fourth track autoplayed will be related to the seed
+track (back to one degree of separation).
 
 
 Usage

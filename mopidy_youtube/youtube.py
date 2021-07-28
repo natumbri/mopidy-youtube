@@ -1,4 +1,5 @@
 import re
+import os
 from concurrent.futures.thread import ThreadPoolExecutor
 
 import pykka
@@ -13,6 +14,7 @@ from requests.packages.urllib3.util.timeout import Timeout
 from mopidy_youtube import logger
 
 api_enabled = False
+channel = None
 
 
 def async_property(func):
@@ -53,7 +55,7 @@ class Entry:
     Entry is a base class of Video and Playlist
     """
 
-    cache_max_len = 400
+    cache_max_len = 4000
     cache_ttl = 21600
 
     @classmethod
@@ -244,18 +246,19 @@ class Video(Entry):
         relatedvideos = []
 
         for item in data["items"]:
-            set_api_data = ["title", "channel"]
-            if "contentDetails" in item:
-                set_api_data.append("length")
-            if "thumbnails" in item["snippet"]:
-                set_api_data.append("thumbnails")
-            video = Video.get(item["id"]["videoId"])
-            video._set_api_data(set_api_data, item)
-            relatedvideos.append(video)
+            # why are some results returned without a 'snippet'?
+            if "snippet" in item:
+                set_api_data = ["title", "channel"]
+                if "contentDetails" in item:
+                    set_api_data.append("length")
+                    if "thumbnails" in item["snippet"]:
+                        set_api_data.append("thumbnails")
+                video = Video.get(item["id"]["videoId"])
+                video._set_api_data(set_api_data, item)
+                relatedvideos.append(video)
 
         # start loading video info in the background
         Video.load_info(relatedvideos)
-
         return relatedvideos
 
     @async_property
@@ -289,7 +292,6 @@ class Video(Entry):
                     {
                         "format": "bestaudio/m4a/mp3/ogg/best",
                         "proxy": self.proxy,
-                        "nocheckcertificate": True,
                         "cachedir": False,
                     }
                 ).extract_info(
@@ -359,7 +361,7 @@ class Playlist(Entry):
 
         self._videos = pykka.ThreadingFuture()
 
-        def job():
+        def load_items():
             data = {"items": []}
             page = ""
             while (
@@ -383,6 +385,7 @@ class Playlist(Entry):
                     )
                     break
                 page = result.get("nextPageToken") or None
+
                 data["items"].extend(result["items"])
 
             del data["items"][int(self.playlist_max_videos) :]
@@ -395,9 +398,10 @@ class Playlist(Entry):
                     set_api_data.append("length")
                 if "thumbnails" in item["snippet"]:
                     set_api_data.append("thumbnails")
-                video = Video.get(item["snippet"]["resourceId"]["videoId"])
-                video._set_api_data(set_api_data, item)
-                myvideos.append(video)
+                if item["snippet"]["resourceId"]["videoId"] is not None:
+                    video = Video.get(item["snippet"]["resourceId"]["videoId"])
+                    video._set_api_data(set_api_data, item)
+                    myvideos.append(video)
 
             # start loading video info in the background
             Video.load_info(
@@ -409,7 +413,7 @@ class Playlist(Entry):
             )
 
         executor = ThreadPoolExecutor(max_workers=1)
-        executor.submit(job)
+        executor.submit(load_items)
         executor.shutdown(wait=False)
 
     @async_property
@@ -426,6 +430,34 @@ class Playlist(Entry):
     @property
     def is_video(self):
         return False
+
+
+class Channel(Entry):
+    @classmethod
+    def playlists(cls, channel_id=None):
+        """
+        Get all public playlists from the channel.
+        """
+        set_api_data = ["title", "video_count"]
+        try:
+            if channel_id is None:
+                channel_id = channel
+            data = cls.api.list_channelplaylists(channel_id)
+            if "error" in data:
+                raise Exception(data["error"])
+        except Exception as e:
+            logger.error('get_channel_playlists error "%s"', e)
+            return None
+        try:
+            channel_playlists = []
+            for item in data["items"]:
+                pl = Playlist.get(item["id"])
+                pl._set_api_data(set_api_data, item)
+                channel_playlists.append(pl)
+            return channel_playlists
+        except Exception as e:
+            logger.error('map error "%s"', e)
+            return None
 
 
 # is this necessary or worthwhile?  Are there any bad
@@ -474,7 +506,9 @@ class Client:
             backoff_factor=backoff_factor,
             status_forcelist=status_forcelist,
         )
-        adapter = MyHTTPAdapter(max_retries=retry, pool_maxsize=4)
+        adapter = MyHTTPAdapter(
+            max_retries=retry, pool_maxsize=min(32, os.cpu_count() + 4)
+        )
         cls.session.mount("http://", adapter)
         cls.session.mount("https://", adapter)
         cls.session.proxies = {"http": proxy, "https": proxy}
