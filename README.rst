@@ -49,23 +49,33 @@ If you want modipy-youtube to use the YouTube API, before starting Mopidy,
 you must add your Google API key to your Mopidy configuration file
 and set api_enabled = true::
 
-    [youtube]
     youtube_api_key = <api key you got from Google>
     api_enabled = true
 
 If you want modipy-youtube to use YouTube Muisc, instead of regular YouTube, set
 musicapi_enabled = true::
 
-    [youtube]
     musicapi_enabled = true  
 
-Other configuration options are::
+The musicapi may be used with or without the youtube api.
 
-    [youtube]
-    threads_max = 16            : number of parallel threads to run
-    search_results = 15         : maximum number of search results to return
-    playlist_max_videos = 20    : maximum number of videos in a playlist to return
+If you want to see the YouTube playlists of a channel in your mopidy library,
+you need to include the channel ID in your config file::
 
+    channel_id = <channel id>
+
+If you want to see your own channel's private YouTube Music playlists in your
+mopidy library, you need to::
+
+    - set channel_id to the id for your own channel
+    - enable the music api and 
+    - set a musicapi_cookie.  
+
+You can obtain the cookie by process mentioned in the `ytmusicapi readme <https://ytmusicapi.readthedocs.io/en/latest/setup.html#copy-authentication-headers>`_. You only have to look out for Cookie in the network tab, not all the headers, and include
+it in your config file as musicapi_cookie::
+
+    musicapi_cookie = <cookie>  
+    
 mopidy-youtube can automatically play 'related' tracks after the last track in the play queue
 is played.  If you want mopidy-youtube to autoplay related videos, set autoplay_enabled = true::
 
@@ -94,6 +104,13 @@ The second track autoplayed will be related to the first track autoplayed (two d
 separation). The third track autoplayed will be related to the second track autoplayed (three
 degrees of separation, the maximum). The fourth track autoplayed will be related to the seed
 track (back to one degree of separation).
+
+Other configuration options are::
+
+    [youtube]
+    threads_max = 16            : number of parallel threads to run
+    search_results = 15         : maximum number of search results to return
+    playlist_max_videos = 20    : maximum number of videos in a playlist to return
 
 
 Usage
