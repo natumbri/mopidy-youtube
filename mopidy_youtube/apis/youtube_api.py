@@ -95,7 +95,7 @@ class API(Client):
         query = {
             "part": "id,snippet",
             "fields": "nextPageToken,"
-            + "items(snippet(title, resourceId(videoId), channelTitle))",
+            + "items(snippet(title, resourceId(videoId), videoOwnerChannelTitle))",
             "maxResults": max_results,
             "playlistId": id,
             "key": youtube_api_key,
