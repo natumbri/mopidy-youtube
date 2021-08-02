@@ -230,7 +230,7 @@ class YouTubeLibraryProvider(backend.LibraryProvider):
         playlists = [entry for entry in entries if not entry.is_video]
         youtube.Playlist.load_info(playlists)
 
-        # load video info (to get lenght) of all videos together
+        # load video info (to get length) of all videos together
         youtube.Video.load_info([entry for entry in entries if entry.is_video])
 
         albums = []
