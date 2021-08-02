@@ -38,6 +38,12 @@ class scrAPI(Client):
         for result in [cls.run_search(r) for r in rs]:
             search_results.extend(result)
 
+        # remove duplicates - but where do they come from...?
+        search_results[:] = [
+            json.loads(t)
+            for t in {json.dumps(d, sort_keys=True) for d in search_results}
+        ]
+
         return json.loads(
             json.dumps(
                 {

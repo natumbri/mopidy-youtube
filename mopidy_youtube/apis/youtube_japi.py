@@ -73,6 +73,15 @@ class jAPI(scrAPI):
                         # title = "Unknown"
                         logger.error("title exception %s" % e)
                         continue
+
+                try:
+                    thumbnails = content[base]["thumbnail"]["thumbnails"][0]
+                    thumbnails["url"] = thumbnails["url"].split("?", 1)[
+                        0
+                    ]  # is the rest tracking stuff? Omit
+                except Exception as e:
+                    logger.error(f"thumbnail exception {e}")
+
                 try:
                     channelTitle = content[base][byline]["runs"][0]["text"]
                     logger.debug(channelTitle)
@@ -86,16 +95,7 @@ class jAPI(scrAPI):
                     "snippet": {
                         "title": title,
                         "resourceId": {"videoId": videoId},
-                        # TODO: full support for thumbnails
-                        "thumbnails": {
-                            "default": {
-                                "url": "https://i.ytimg.com/vi/"
-                                + videoId
-                                + "/default.jpg",
-                                "width": 120,
-                                "height": 90,
-                            },
-                        },
+                        "thumbnails": {"default": thumbnails,},
                         "channelTitle": channelTitle,
                     },
                 }
@@ -128,6 +128,19 @@ class jAPI(scrAPI):
                 continue
 
             elif "playlistRenderer" in content:
+
+                try:
+                    thumbnails = content["playlistRenderer"]["thumbnails"][0][
+                        "thumbnails"
+                    ][0]
+                    thumbnails["url"] = thumbnails["url"].split("?", 1)[
+                        0
+                    ]  # is the rest tracking stuff? Omit
+                except Exception as e:
+                    logger.error(
+                        f"thumbnail exception {e}, {content['playlistRenderer']['playlistId']}"
+                    )
+
                 item = {
                     "id": {
                         "kind": "youtube#playlist",
@@ -140,17 +153,10 @@ class jAPI(scrAPI):
                         "title": content["playlistRenderer"]["title"][
                             "simpleText"
                         ],
-                        # TODO: full support for thumbnails
                         "thumbnails": {
-                            "default": {
-                                "url": "https://i.ytimg.com/vi/"
-                                + content["playlistRenderer"][
-                                    "navigationEndpoint"
-                                ]["watchEndpoint"]["videoId"]
-                                + "/default.jpg",
-                                "width": 120,
-                                "height": 90,
-                            },
+                            "default": content["playlistRenderer"][
+                                "thumbnails"
+                            ][0]["thumbnails"][0],
                         },
                         "channelTitle": content["playlistRenderer"][
                             "longBylineText"
@@ -173,7 +179,6 @@ class jAPI(scrAPI):
                         "title": content["gridPlaylistRenderer"]["title"][
                             "runs"
                         ][0]["text"],
-                        # TODO: full support for thumbnails
                         "thumbnails": {
                             "default": content["gridPlaylistRenderer"][
                                 "thumbnailRenderer"
@@ -194,4 +199,5 @@ class jAPI(scrAPI):
             # for t in {json.dumps(d) for d in items}
             for t in {json.dumps(d, sort_keys=True) for d in items}
         ]
+
         return items
