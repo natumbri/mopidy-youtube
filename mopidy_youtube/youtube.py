@@ -273,7 +273,7 @@ class Video(Entry):
     def thumbnails(self):
         # make it "async" for uniformity with Playlist.thumbnails
         identifier = self.id.split(":")[-1]
-        requiresThumbnail = self._add_futures(self, "thumbnails")
+        requiresThumbnail = self._add_futures([self], "thumbnails")
         if requiresThumbnail:
             requiresThumbnail[0]._thumbnails = pykka.ThreadingFuture()
             requiresThumbnail[0]._thumbnails.set(
