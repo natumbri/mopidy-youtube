@@ -343,7 +343,7 @@ class Music(Client):
             )
             result = ytmusic.get_playlist(id)
             items = [
-                cls.ytplaylist_item_to_video(item, result["thumbnails"][0])
+                cls.ytplaylist_item_to_video(item, item["thumbnails"][0])
                 for item in result["tracks"]
             ]
         else:
