@@ -153,11 +153,7 @@ class jAPI(scrAPI):
                         "title": content["playlistRenderer"]["title"][
                             "simpleText"
                         ],
-                        "thumbnails": {
-                            "default": content["playlistRenderer"][
-                                "thumbnails"
-                            ][0]["thumbnails"][0],
-                        },
+                        "thumbnails": {"default": thumbnails,},
                         "channelTitle": content["playlistRenderer"][
                             "longBylineText"
                         ]["runs"][0]["text"],
@@ -166,6 +162,23 @@ class jAPI(scrAPI):
                 items.append(item)
 
             elif "gridPlaylistRenderer" in content:
+
+                try:
+                    thumbnails = content["gridPlaylistRenderer"][
+                        "thumbnailRenderer"
+                    ]["playlistVideoThumbnailRenderer"]["thumbnail"][
+                        "thumbnails"
+                    ][
+                        0
+                    ]
+                    thumbnails["url"] = thumbnails["url"].split("?", 1)[
+                        0
+                    ]  # is the rest tracking stuff? Omit
+                except Exception as e:
+                    logger.error(
+                        f"thumbnail exception {e}, {content['gridPlaylistRenderer']['playlistId']}"
+                    )
+
                 item = {
                     "id": content["gridPlaylistRenderer"]["playlistId"],
                     "contentDetails": {
@@ -179,15 +192,7 @@ class jAPI(scrAPI):
                         "title": content["gridPlaylistRenderer"]["title"][
                             "runs"
                         ][0]["text"],
-                        "thumbnails": {
-                            "default": content["gridPlaylistRenderer"][
-                                "thumbnailRenderer"
-                            ]["playlistVideoThumbnailRenderer"]["thumbnail"][
-                                "thumbnails"
-                            ][
-                                0
-                            ],
-                        },
+                        "thumbnails": {"default": thumbnails,},
                         "channelTitle": "unknown",
                     },
                 }
