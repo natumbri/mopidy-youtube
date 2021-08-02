@@ -194,10 +194,12 @@ class Entry:
                 )
             elif k == "thumbnails":
                 val = [
-                    val["url"]
+                    Image(
+                        uri=val["url"], width=val["width"], height=val["height"]
+                    )
                     for (key, val) in item["snippet"]["thumbnails"].items()
                     if key in ["default", "medium", "high"]
-                ]
+                ] or None  # is this "or None" necessary?
             elif k == "channelId":
                 val = item["snippet"]["channelId"]
             future.set(val)
@@ -253,8 +255,8 @@ class Video(Entry):
                 set_api_data = ["title", "channel"]
                 if "contentDetails" in item:
                     set_api_data.append("length")
-                    if "thumbnails" in item["snippet"]:
-                        set_api_data.append("thumbnails")
+                if "thumbnails" in item["snippet"]:
+                    set_api_data.append("thumbnails")
                 video = Video.get(item["id"]["videoId"])
                 video._set_api_data(set_api_data, item)
                 relatedvideos.append(video)
@@ -271,13 +273,15 @@ class Video(Entry):
     def thumbnails(self):
         # make it "async" for uniformity with Playlist.thumbnails
         identifier = self.id.split(":")[-1]
-        self._thumbnails = pykka.ThreadingFuture()
-        self._thumbnails.set(
-            [
-                Image(uri=f"https://i.ytimg.com/vi/{identifier}/{type}.jpg")
-                for type in ["default", "mqdefault", "hqdefault"]
-            ]
-        )
+        requiresThumbnail = self._add_futures(self, "thumbnails")
+        if requiresThumbnail:
+            requiresThumbnail[0]._thumbnails = pykka.ThreadingFuture()
+            requiresThumbnail[0]._thumbnails.set(
+                [
+                    Image(uri=f"https://i.ytimg.com/vi/{identifier}/{type}.jpg")
+                    for type in ["default", "mqdefault", "hqdefault"]
+                ]
+            )
 
     @async_property
     def audio_url(self):
@@ -427,10 +431,7 @@ class Playlist(Entry):
 
     @async_property
     def thumbnails(self):
-        self._thumbnails = pykka.ThreadingFuture()
-        self._thumbnails.set(
-            [Image(uri=imageUri) for imageUri in self.load_info([self])]
-        )
+        self.load_info([self])
 
     @property
     def is_video(self):

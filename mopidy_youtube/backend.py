@@ -230,6 +230,9 @@ class YouTubeLibraryProvider(backend.LibraryProvider):
         playlists = [entry for entry in entries if not entry.is_video]
         youtube.Playlist.load_info(playlists)
 
+        # load video info (to get lenght) of all videos together
+        youtube.Video.load_info([entry for entry in entries if entry.is_video])
+
         albums = []
         artists = []
         tracks = []
@@ -355,7 +358,26 @@ class YouTubeLibraryProvider(backend.LibraryProvider):
         return []
 
     def get_images(self, uris):
-        return {uri: youtube.Video.get(uri).thumbnails.get() for uri in uris}
+        images = {}
+        if not isinstance(uris, list):
+            uris = [uris]
+        video_ids = [extract_video_id(uri) for uri in uris]
+        images.update(
+            {
+                uri: youtube.Video.get(video_id).thumbnails.get()
+                for (uri, video_id) in zip(uris, video_ids)
+                if video_id
+            }
+        )
+        playlist_ids = [extract_playlist_id(uri) for uri in uris]
+        images.update(
+            {
+                uri: youtube.Playlist.get(playlist_id).thumbnails.get()
+                for (uri, playlist_id) in zip(uris, playlist_ids)
+                if playlist_id
+            }
+        )
+        return images
 
 
 class YouTubePlaybackProvider(backend.PlaybackProvider):
