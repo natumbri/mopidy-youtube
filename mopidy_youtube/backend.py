@@ -52,7 +52,11 @@ def convert_videos_to_tracks(videos, album_name: str):
         video.audio_url  # start loading
 
     return [
-        convert_video_to_track(video, album_name, track_no=count,)
+        convert_video_to_track(
+            video,
+            album_name,
+            track_no=count,
+        )
         for count, video in enumerate(videos, 1)
     ]
 
@@ -180,6 +184,7 @@ class YouTubeLibraryProvider(backend.LibraryProvider):
             playlists = youtube.Channel.playlists()
             if playlists:
                 for pl in playlists:
+                    pl.videos
                     albums.append(convert_playlist_to_album(pl))
                 for album in albums:
                     playlistrefs.append(

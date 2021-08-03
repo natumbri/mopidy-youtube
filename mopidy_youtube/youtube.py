@@ -237,33 +237,42 @@ class Video(Entry):
                 ],
             )
 
-    @classmethod
-    def related_videos(cls, video_id):
+    @async_property
+    def related_videos(self):
         """
         loads title, thumbnails, channel (and, optionally, length) of videos
         that are related to a video.  Number of related videos returned is
         uncertain. Usually between 1 and 19.  Does not return related
         playlists.
         """
-        data = cls.api.list_related_videos(video_id)
 
-        relatedvideos = []
+        requiresRelatedVideos = self._add_futures([self], ["related_videos"])
 
-        for item in data["items"]:
-            # why are some results returned without a 'snippet'?
-            if "snippet" in item:
-                set_api_data = ["title", "channel"]
-                if "contentDetails" in item:
-                    set_api_data.append("length")
-                if "thumbnails" in item["snippet"]:
-                    set_api_data.append("thumbnails")
-                video = Video.get(item["id"]["videoId"])
-                video._set_api_data(set_api_data, item)
-                relatedvideos.append(video)
+        def job():
+            relatedvideos = []
+            data = self.api.list_related_videos(self.id)
 
-        # start loading video info in the background
-        Video.load_info(relatedvideos)
-        return relatedvideos
+            for item in data["items"]:
+                # why are some results returned without a 'snippet'?
+                if "snippet" in item:
+                    set_api_data = ["title", "channel"]
+                    if "contentDetails" in item:
+                        set_api_data.append("length")
+                    if "thumbnails" in item["snippet"]:
+                        set_api_data.append("thumbnails")
+                    video = Video.get(item["id"]["videoId"])
+                    video._set_api_data(set_api_data, item)
+                    relatedvideos.append(video)
+
+            # start loading video info in the background
+            Video.load_info(relatedvideos)
+            self._related_videos.set(relatedvideos)
+
+        if requiresRelatedVideos:
+            logger.info("getting related videos")
+            executor = ThreadPoolExecutor(max_workers=1)
+            executor.submit(job)
+            executor.shutdown(wait=False)
 
     @async_property
     def length(self):
@@ -273,7 +282,7 @@ class Video(Entry):
     def thumbnails(self):
         # make it "async" for uniformity with Playlist.thumbnails
         identifier = self.id.split(":")[-1]
-        requiresThumbnail = self._add_futures([self], "thumbnails")
+        requiresThumbnail = self._add_futures([self], ["thumbnails"])
         if requiresThumbnail:
             requiresThumbnail[0]._thumbnails = pykka.ThreadingFuture()
             requiresThumbnail[0]._thumbnails.set(
@@ -309,7 +318,7 @@ class Video(Entry):
                     force_generic_extractor=False,
                 )
             except Exception as e:
-                logger.error('audio_url error "%s"', e)
+                logger.error(f"audio_url error {e} (videoId: {self.id})")
                 self._audio_url.set(None)
                 return
             self._audio_url.set(info["url"])
@@ -330,17 +339,19 @@ class Playlist(Entry):
         loads title, thumbnails, video_count, channel of multiple playlists using
         one API call for every 50 lists. API calls are split in separate threads.
         """
-
         fields = ["title", "video_count", "thumbnails", "channel"]
         listOfPlaylists = cls._add_futures(listOfPlaylists, fields)
 
         def job(sublist):
+            dict = {}
+
             try:
                 data = cls.api.list_playlists([x.id for x in sublist])
-                dict = {item["id"]: item for item in data["items"]}
             except Exception as e:
-                logger.error('list_playlists error "%s"', e)
-                dict = {}
+                logger.error(f"Playlist.load_info list_playlists error {e}")
+
+            if data:
+                dict = {item["id"]: item for item in data["items"]}
 
             for pl in sublist:
                 pl._set_api_data(fields, dict.get(pl.id))
@@ -407,7 +418,6 @@ class Playlist(Entry):
             del data["items"][int(self.playlist_max_videos) :]
 
             myvideos = []
-
             for item in data["items"]:
                 if "videoOwnerChannelTitle" in item["snippet"]:
                     set_api_data = ["title", "owner_channel"]
@@ -473,6 +483,7 @@ class Channel(Entry):
                 pl = Playlist.get(item["id"])
                 pl._set_api_data(set_api_data, item)
                 channel_playlists.append(pl)
+            Playlist.load_info(channel_playlists)
             return channel_playlists
         except Exception as e:
             logger.error('map error "%s"', e)

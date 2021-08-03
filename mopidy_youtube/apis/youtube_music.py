@@ -141,7 +141,10 @@ class Music(Client):
 
         songs = [
             {
-                "id": {"kind": "youtube#video", "videoId": item["videoId"],},
+                "id": {
+                    "kind": "youtube#video",
+                    "videoId": item["videoId"],
+                },
                 "contentDetails": {
                     "duration": "PT"
                     + cls.format_duration(
@@ -180,7 +183,10 @@ class Music(Client):
 
         video.update(
             {
-                "id": {"kind": "youtube#video", "videoId": item["videoId"],},
+                "id": {
+                    "kind": "youtube#video",
+                    "videoId": item["videoId"],
+                },
                 "contentDetails": {
                     "duration": "PT"
                     + cls.format_duration(re.match(cls.time_regex, duration))
@@ -210,7 +216,10 @@ class Music(Client):
         video = {}
         video.update(
             {
-                "id": {"kind": "youtube#video", "videoId": item["videoId"],},
+                "id": {
+                    "kind": "youtube#video",
+                    "videoId": item["videoId"],
+                },
                 "contentDetails": {
                     "duration": "PT"
                     + cls.format_duration(
@@ -279,7 +288,6 @@ class Music(Client):
 
         # what follows works, but it loads each playlist separately.
         # So, if you have 50 playlists that's 50 trips to the endpoint.
-
         results = []
 
         def job(id):
@@ -296,9 +304,10 @@ class Music(Client):
 
         with ThreadPoolExecutor() as executor:
             futures = executor.map(job, ids)
-            [results.append(value) for value in futures]
+            [results.append(value) for value in futures if value is not None]
 
         if len(results) == 0:
+            # why would this happen?
             logger.debug(f"list_playlists for {ids} returned no results")
             return None
 
@@ -308,7 +317,7 @@ class Music(Client):
                 "snippet": {
                     "title": result["title"],
                     "thumbnails": {"default": result["thumbnails"][0]},
-                    # apparently, result["artist"] can be empty
+                    # apparently, result["artist"] can be empty??
                     "channelTitle": result["artist"][0]["name"],
                 },
                 "contentDetails": {"itemCount": result["trackCount"]},

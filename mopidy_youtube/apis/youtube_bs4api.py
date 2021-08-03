@@ -36,7 +36,7 @@ class bs4API(scrAPI):
             try:
                 return json.loads(result.group(1))
             except Exception as e:
-                logger.error(f"_find_yt_data exception {e}")
+                logger.warn(f"_find_yt_data exception {e}; probably ok")
                 return json.loads(result.group(1)[: e.pos])
 
         logger.error("No data found on page")
@@ -285,7 +285,8 @@ class bs4API(scrAPI):
                     "duration": "PT"
                     + cls.format_duration(
                         re.match(
-                            cls.time_regex, video.find(class_="timestamp").text,
+                            cls.time_regex,
+                            video.find(class_="timestamp").text,
                         )
                     ),
                 },
@@ -488,13 +489,29 @@ class bs4API(scrAPI):
             "shelfRenderer"
         ][
             "content"
-        ][
-            "horizontalListRenderer"
-        ][
-            "items"
         ]
 
-        items = jAPI.json_to_items(cls, extracted_json)
+        if "expandedShelfContentsRenderer" in extracted_json:
+            extracted_json = extracted_json["expandedShelfContentsRenderer"]
+
+        if "horizontalListRenderer" in extracted_json:
+            extracted_json = extracted_json["horizontalListRenderer"]
+
+        if "items" in extracted_json:
+            extracted_json = extracted_json["items"]
+        else:
+            logger.info("no items found")
+
+        try:
+            items = jAPI.json_to_items(cls, extracted_json)
+            [
+                item.update({"id": item["id"]["playlistId"]})
+                for item in items
+                if "playlistId" in item["id"]
+            ]
+        except Exception as e:
+            logger.info(f"items exception {e}")
+            items = []
 
         return json.loads(
             json.dumps({"items": items}, sort_keys=False, indent=1)

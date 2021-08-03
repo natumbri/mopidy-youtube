@@ -47,7 +47,6 @@ class YouTubeAutoplayer(pykka.ThreadingActor, listener.CoreListener):
             "yt:"
         ):
             return None
-
         try:
             tl = self.core.tracklist
 
@@ -80,11 +79,6 @@ class YouTubeAutoplayer(pykka.ThreadingActor, listener.CoreListener):
 
             current_track_id = extract_video_id(track.uri)
 
-            if current_track_id not in autoplayed:
-                self.base_track_id = current_track_id
-                autoplayed.append(current_track_id)  # avoid replaying track
-                logger.info("setting new autoplay base id")
-
             if self.max_degrees_of_separation:
                 if self.degrees_of_separation < self.max_degrees_of_separation:
                     self.degrees_of_separation += 1
@@ -94,7 +88,16 @@ class YouTubeAutoplayer(pykka.ThreadingActor, listener.CoreListener):
                     self.degrees_of_separation = 0
                     logger.info("resetting autoplay base track id")
 
-            related_videos = youtube.Video.related_videos(current_track_id)
+            if current_track_id not in autoplayed:
+                self.base_track_id = current_track_id
+                autoplayed.append(current_track_id)  # avoid replaying track
+                self.degrees_of_separation = 0
+                logger.info("setting new autoplay base id")
+
+            current_track = youtube.Video.get(current_track_id)
+            current_track.related_videos
+            related_videos = current_track.related_videos.get()
+
             # remove already autoplayed
             related_videos[:] = [
                 related_video
@@ -124,7 +127,6 @@ class YouTubeAutoplayer(pykka.ThreadingActor, listener.CoreListener):
                 uri = [format_video_uri(next_video)]
                 tl.add(uris=uri).get()
                 return None
-
         except Exception as e:
             logger.error('Autoplayer error "%s"', e)
             return None
