@@ -388,7 +388,17 @@ class Playlist(Entry):
                     break
                 page = result.get("nextPageToken") or None
 
-                data["items"].extend(result["items"])
+                # remove private and deleted videos from items
+                filtered_result = [
+                    item
+                    for item in result["items"]
+                    if not (
+                        item["snippet"]["title"]
+                        in ["Deleted video", "Private video"]
+                    )
+                ]
+
+                data["items"].extend(filtered_result)
 
             del data["items"][int(self.playlist_max_videos) :]
 
@@ -397,8 +407,11 @@ class Playlist(Entry):
             for item in data["items"]:
                 if "videoOwnerChannelTitle" in item["snippet"]:
                     set_api_data = ["title", "owner_channel"]
-                else:
+                elif "channelTitle" in item["snippet"]:
                     set_api_data = ["title", "channel"]
+                else:
+                    logger.info(f"no channel or owner_channel; skipping {item}")
+                    continue
                 if "contentDetails" in item:
                     set_api_data.append("length")
                 if "thumbnails" in item["snippet"]:

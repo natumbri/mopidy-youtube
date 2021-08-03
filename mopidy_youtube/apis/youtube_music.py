@@ -141,10 +141,7 @@ class Music(Client):
 
         songs = [
             {
-                "id": {
-                    "kind": "youtube#video",
-                    "videoId": item["videoId"],
-                },
+                "id": {"kind": "youtube#video", "videoId": item["videoId"],},
                 "contentDetails": {
                     "duration": "PT"
                     + cls.format_duration(
@@ -183,10 +180,7 @@ class Music(Client):
 
         video.update(
             {
-                "id": {
-                    "kind": "youtube#video",
-                    "videoId": item["videoId"],
-                },
+                "id": {"kind": "youtube#video", "videoId": item["videoId"],},
                 "contentDetails": {
                     "duration": "PT"
                     + cls.format_duration(re.match(cls.time_regex, duration))
@@ -216,10 +210,7 @@ class Music(Client):
         video = {}
         video.update(
             {
-                "id": {
-                    "kind": "youtube#video",
-                    "videoId": item["videoId"],
-                },
+                "id": {"kind": "youtube#video", "videoId": item["videoId"],},
                 "contentDetails": {
                     "duration": "PT"
                     + cls.format_duration(
