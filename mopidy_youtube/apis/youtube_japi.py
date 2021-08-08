@@ -93,9 +93,7 @@ class jAPI(scrAPI):
                     "snippet": {
                         "title": title,
                         "resourceId": {"videoId": videoId},
-                        "thumbnails": {
-                            "default": thumbnails,
-                        },
+                        "thumbnails": {"default": thumbnails,},
                         "channelTitle": channelTitle,
                     },
                 }
@@ -162,9 +160,7 @@ class jAPI(scrAPI):
                         "title": content["playlistRenderer"]["title"][
                             "simpleText"
                         ],
-                        "thumbnails": {
-                            "default": thumbnails,
-                        },
+                        "thumbnails": {"default": thumbnails,},
                         "channelTitle": channelTitle,
                     },
                 }
@@ -206,9 +202,7 @@ class jAPI(scrAPI):
                         "title": content["gridPlaylistRenderer"]["title"][
                             "runs"
                         ][0]["text"],
-                        "thumbnails": {
-                            "default": thumbnails,
-                        },
+                        "thumbnails": {"default": thumbnails,},
                         "channelTitle": "unknown",  # note: do better
                     },
                 }

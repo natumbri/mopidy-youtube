@@ -1,8 +1,8 @@
 import re
 from urllib.parse import parse_qs, urlparse
-
 import pykka
 from mopidy import backend, httpclient
+from mopidy.core import CoreListener
 from mopidy.models import Album, Artist, SearchResult, Track, Ref
 
 from mopidy_youtube import Extension, logger, youtube
@@ -46,21 +46,6 @@ def convert_video_to_track(
     )
 
 
-def convert_videos_to_tracks(videos, album_name: str):
-    # load audio_url in the background to be ready for playback
-    for video in videos:
-        video.audio_url  # start loading
-
-    return [
-        convert_video_to_track(
-            video,
-            album_name,
-            track_no=count,
-        )
-        for count, video in enumerate(videos, 1)
-    ]
-
-
 def convert_playlist_to_album(playlist: youtube.Playlist) -> Album:
     return Album(
         name=playlist.title.get(),
@@ -85,6 +70,36 @@ def convert_playlist_to_album(playlist: youtube.Playlist) -> Album:
 #         ],
 #         uri=format_album_uri(album),
 #     )
+
+
+class YouTubeCoreListener(pykka.ThreadingActor, CoreListener):
+    def __init__(self, config, core):
+        super().__init__()
+        self.config = config
+        self.core = core
+
+    def tracklist_changed(self):
+        # We really only need an audio url for tracks that are going to be played
+        # (ie have been added to the tracklist): when a track is added to the
+        # tracklist, get the audio_url for the added track.
+        # Previously this was taken care of by YouTubeLibraryProvider.lookup(),
+        # but that seems to get called for tracks that are not being added to the
+        # tracklist. So how do you do that?
+        # This method is triggered when the tracklist is changed. At the moment,
+        # it then tries to get the audio_url for all youtube tracks in the tracklist.
+        # Since audio_url is low cost for tracks that already have an audio url, it
+        # doesn't bother to keep track of which tracks it has and hasn't requested an
+        # audio url for. There must be a better way.
+
+        tracks = self.core.tracklist.get_tracks().get()
+        video_ids = [
+            extract_video_id(track.uri)
+            for track in tracks
+            if track.uri.startswith("youtube:video:")
+            or track.uri.startswith("yt:video:")
+        ]
+        videos = [youtube.Video.get(video_id) for video_id in video_ids]
+        [video.audio_url for video in videos]
 
 
 class YouTubeBackend(pykka.ThreadingActor, backend.Backend):
@@ -116,6 +131,13 @@ class YouTubeBackend(pykka.ThreadingActor, backend.Backend):
             "Cookie": "PREF=hl=en; CONSENT=YES+20210329;",
             "Accept-Language": "en;q=0.8",
         }
+
+        if self.config["youtube"]["allow_cache"]:
+            youtube.cache_location = Extension.get_cache_dir(self.config)
+            logger.info(f"file caching enabled (at {youtube.cache_location})")
+        else:
+            youtube.cache_location = None
+            logger.info(f"file caching not enabled")
 
         if youtube.api_enabled is True:
             if youtube_api.youtube_api_key is None:
@@ -165,13 +187,12 @@ class YouTubeLibraryProvider(backend.LibraryProvider):
 
     """
     Called when root_directory is set to the URI of the youtube channel ID in the mopidy.conf
-    When enabled makes possible to browse public playlists of the channel as well as browse separate tracks in playlists
-    Requires enabled API at the moment
+    When enabled makes possible to browse public playlists of the channel as well as browse
+    separate tracks in playlists.
     """
 
     def browse(self, uri):
         if uri.startswith("youtube:playlist"):
-            logger.info("browse playlist: " + uri)
             trackrefs = []
             tracks = self.lookup(uri)
             for track in tracks:
@@ -224,7 +245,7 @@ class YouTubeLibraryProvider(backend.LibraryProvider):
         try:
             entries = youtube.Entry.search(search_query)
         except Exception as e:
-            logger.error('search error "%s"', e)
+            logger.error('backend search error "%s"', e)
             return None
 
         # load playlist info (to get video_count) of all playlists together
@@ -254,7 +275,6 @@ class YouTubeLibraryProvider(backend.LibraryProvider):
 
     def lookup_video_track(self, video_id: str) -> Track:
         video = youtube.Video.get(video_id)
-        video.audio_url  # start loading
         video.title.get()
         return convert_video_to_track(video, "YouTube Video")
 
@@ -269,8 +289,12 @@ class YouTubeLibraryProvider(backend.LibraryProvider):
             for video in playlist.videos.get()
             if video.length.get() is not None
         ]
-        album_name = playlist.title.get()
-        return convert_videos_to_tracks(videos, album_name)
+
+        tracks = [
+            convert_video_to_track(video, playlist.title.get(), track_no=count,)
+            for count, video in enumerate(videos, 1)
+        ]
+        return tracks
 
     # def lookup_channel_tracks(self, channel_id: str):
     #     channel = youtube.Channel.get(channel_id)
@@ -365,7 +389,7 @@ class YouTubeLibraryProvider(backend.LibraryProvider):
         images.update(
             {
                 uri: youtube.Video.get(video_id).thumbnails.get()
-                for (uri, video_id) in zip(uris, video_ids)
+                for uri, video_id in zip(uris, video_ids)
                 if video_id
             }
         )
@@ -373,7 +397,7 @@ class YouTubeLibraryProvider(backend.LibraryProvider):
         images.update(
             {
                 uri: youtube.Playlist.get(playlist_id).thumbnails.get()
-                for (uri, playlist_id) in zip(uris, playlist_ids)
+                for uri, playlist_id in zip(uris, playlist_ids)
                 if playlist_id
             }
         )

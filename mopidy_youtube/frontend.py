@@ -1,4 +1,6 @@
 import pykka
+import random
+
 from mopidy.core import listener
 
 from mopidy_youtube import logger, youtube
@@ -97,7 +99,9 @@ class YouTubeAutoplayer(pykka.ThreadingActor, listener.CoreListener):
             current_track = youtube.Video.get(current_track_id)
             current_track.related_videos
             related_videos = current_track.related_videos.get()
-
+            logger.info(
+                f"autoplaying a track related to {current_track.title.get()}"
+            )
             # remove already autoplayed
             related_videos[:] = [
                 related_video
@@ -122,7 +126,7 @@ class YouTubeAutoplayer(pykka.ThreadingActor, listener.CoreListener):
                 logger.info("could not get related videos: ending autoplay")
                 return None
             else:
-                next_video = related_videos[0]
+                next_video = random.choice(related_videos)
                 autoplayed.append(next_video.id)
                 uri = [format_video_uri(next_video)]
                 tl.add(uris=uri).get()

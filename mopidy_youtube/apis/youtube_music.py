@@ -141,10 +141,7 @@ class Music(Client):
 
         songs = [
             {
-                "id": {
-                    "kind": "youtube#video",
-                    "videoId": item["videoId"],
-                },
+                "id": {"kind": "youtube#video", "videoId": item["videoId"],},
                 "contentDetails": {
                     "duration": "PT"
                     + cls.format_duration(
@@ -153,7 +150,10 @@ class Music(Client):
                 },
                 "snippet": {
                     "title": item["title"],
-                    "resourceId": {"videoId": item["videoId"]},
+                    "resourceId": {
+                        "kind": "youtube#video",
+                        "videoId": item["videoId"],
+                    },
                     # TODO: full support for thumbnails
                     "thumbnails": {"default": item["thumbnails"][0]},
                     "channelTitle": item["artists"][0]["name"],
@@ -183,17 +183,17 @@ class Music(Client):
 
         video.update(
             {
-                "id": {
-                    "kind": "youtube#video",
-                    "videoId": item["videoId"],
-                },
+                "id": {"kind": "youtube#video", "videoId": item["videoId"],},
                 "contentDetails": {
                     "duration": "PT"
                     + cls.format_duration(re.match(cls.time_regex, duration))
                 },
                 "snippet": {
                     "title": item["title"],
-                    "resourceId": {"videoId": item["videoId"]},
+                    "resourceId": {
+                        "kind": "youtube#video",
+                        "videoId": item["videoId"],
+                    },
                     # TODO: full support for thumbnails
                     "thumbnails": {"default": thumbnail},
                     "channelTitle": channelTitle,
@@ -216,10 +216,7 @@ class Music(Client):
         video = {}
         video.update(
             {
-                "id": {
-                    "kind": "youtube#video",
-                    "videoId": item["videoId"],
-                },
+                "id": {"kind": "youtube#video", "videoId": item["videoId"],},
                 "contentDetails": {
                     "duration": "PT"
                     + cls.format_duration(
@@ -230,7 +227,10 @@ class Music(Client):
                 },
                 "snippet": {
                     "title": item["title"],
-                    "resourceId": {"videoId": item["videoId"]},
+                    "resourceId": {
+                        "kind": "youtube#video",
+                        "videoId": item["videoId"],
+                    },
                     # TODO: full support for thumbnails
                     "thumbnails": {"default": thumbnail},
                     "channelTitle": item["artists"],
@@ -364,6 +364,23 @@ class Music(Client):
                 cls.ytalbum_item_to_video(item, result["thumbnails"][0])
                 for item in result["tracks"]
             ]
+
+        # why do ytplaylist_item_to_video and ytalbum_item_to_video both include
+        # {"id": {"kind": "youtube#video", "videoId": item["videoId"],}} instead of
+        # {"id": item["videoId"]}?
+
+        # And, given that they do include the longer one, why isn't the following
+        # necessary for compatibility with the youtube API?
+
+        [
+            item.update({"id": item["id"]["videoId"]})
+            for item in items
+            if "videoId" in item["id"]
+        ]
+
+        # Because Playlist.videos gets the id from {"snippet": {"resourceId":
+        # {"videoId": item["videoId"]},}}. But it doesn't hurt to keep them consistent.
+
         ajax = None
         return json.loads(
             json.dumps(
