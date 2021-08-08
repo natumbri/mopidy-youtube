@@ -45,6 +45,11 @@ Mopidy-YouTube to your Mopidy configuration file::
     [youtube]
     enabled = true
 
+If you want to cache files, set allow_cache to true. The cache directory
+will be the one specified for cache_dir in mopidy [core] configuration::
+
+    allow_cache = true
+
 If you want modipy-youtube to use the YouTube API, before starting Mopidy, 
 you must add your Google API key to your Mopidy configuration file
 and set api_enabled = true::
