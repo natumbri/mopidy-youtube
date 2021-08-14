@@ -7,11 +7,7 @@ from mopidy.core import CoreListener
 from mopidy.models import Album, Artist, Ref, SearchResult, Track
 
 from mopidy_youtube import Extension, logger, youtube
-from mopidy_youtube.apis import (
-    youtube_api,
-    youtube_bs4api,
-    youtube_music,
-)
+from mopidy_youtube.apis import youtube_api, youtube_japi, youtube_music
 from mopidy_youtube.data import (  # extract_channel_id,
     extract_playlist_id,
     extract_video_id,
@@ -157,8 +153,8 @@ class YouTubeBackend(pykka.ThreadingActor, backend.Backend):
                     logger.info("YouTube API key verified")
 
         if youtube.api_enabled is False:
-            logger.info("using bs4API")
-            youtube.Entry.api = youtube_bs4api.bs4API(proxy, headers)
+            logger.info("using jAPI")
+            youtube.Entry.api = youtube_japi.jAPI(proxy, headers)
 
         if youtube.musicapi_enabled is True:
             logger.info("Using YouTube Music API")

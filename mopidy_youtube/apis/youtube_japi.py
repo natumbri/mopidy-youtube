@@ -3,12 +3,20 @@ import re
 from urllib.parse import urlencode, urljoin
 
 from mopidy_youtube import logger
-from mopidy_youtube.apis.youtube_scrapi import scrAPI
+from mopidy_youtube.comms import Client
 from mopidy_youtube.youtube import Video
 
 
-# JSON based scrAPI
-class jAPI(scrAPI):
+class jAPI(Client):
+    """
+    Indirect access to YouTube data, without API
+    using json where available
+    """
+
+    ytdata_regex = (
+        r'window\["ytInitialData"] = ({.*?});',
+        r"ytInitialData = ({.*});",
+    )
 
     endpoint = "https://www.youtube.com/"
 
@@ -33,81 +41,6 @@ class jAPI(scrAPI):
                 indent=1,
             )
         )
-
-    @classmethod
-    def list_playlistitems(cls, id, page, max_results):
-        query = {"list": id, "app": "desktop", "persist_app": 1}
-        logger.info(f"bs4api list_playlistitems triggered session.get: {id}")
-        ajax_css = "button[data-uix-load-more-href]"
-
-        items = []
-        videos = []
-
-        if page == "":
-            result = cls.session.get(
-                urljoin(cls.endpoint, "playlist"), params=query
-            )
-            if result.status_code == 200:
-                soup = BeautifulSoup(result.text, "html.parser")
-        else:
-            result = cls.session.get(urljoin(cls.endpoint, page))
-            if result.status_code == 200:
-                soup = BeautifulSoup(
-                    "".join(result.json().values()), "html.parser"
-                )
-        if soup:
-            # get load more button
-            full_ajax = soup.select(ajax_css)
-            if len(full_ajax) > 0:
-                ajax = full_ajax[0]["data-uix-load-more-href"]
-            else:
-                ajax = None
-            videos = [
-                video
-                for video in soup.find_all("tr", {"class": "pl-video"})
-                if all(
-                    [
-                        video.find(class_="timestamp"),
-                        video.find(class_="pl-video-owner"),
-                    ]
-                )
-            ]
-
-            if not videos:
-                logger.info(
-                    "nothing in the soup, trying japi list_playlistitems"
-                )
-
-                yt_data = cls._find_yt_data(result.text)
-                extracted_json = yt_data["contents"][
-                    "twoColumnBrowseResultsRenderer"
-                ]["tabs"][0]["tabRenderer"]["content"]["sectionListRenderer"][
-                    "contents"
-                ][
-                    0
-                ][
-                    "itemSectionRenderer"
-                ][
-                    "contents"
-                ][
-                    0
-                ][
-                    "playlistVideoListRenderer"
-                ][
-                    "contents"
-                ]
-
-                items = jAPI.json_to_items(cls, extracted_json)
-            else:
-                items = cls.plsoup_to_items(videos)
-
-            return json.loads(
-                json.dumps(
-                    {"nextPageToken": ajax, "items": items},
-                    sort_keys=False,
-                    indent=1,
-                )
-            )
 
     @classmethod
     def run_search(cls, search_query):
@@ -148,7 +81,7 @@ class jAPI(scrAPI):
                 data.update({"continuation": continuation})
 
             logger.info(
-                f"japi run_search triggered session.post: {search_query}"
+                f"jAPI run_search triggered session.post: {search_query}"
             )
 
             result = cls.session.post(
@@ -194,9 +127,24 @@ class jAPI(scrAPI):
 
         return results
 
+    def _find_yt_data(cls, text):
+        for r in cls.ytdata_regex:
+            result = re.search(r, text)
+            if not result:
+                continue
+
+            try:
+                return json.loads(result.group(1))
+            except Exception as e:
+                logger.warn(f"_find_yt_data exception {e}; probably ok")
+                return json.loads(result.group(1)[: e.pos])
+
+        logger.error("No data found on page")
+        raise Exception("No data found on page")
+
     @classmethod
     def pl_run_search(cls, query):
-        logger.info(f"japi run_search triggered session.get: {query}")
+        logger.info(f"jAPI pl_run_search triggered session.get: {query}")
         result = cls.session.get(urljoin(cls.endpoint, "results"), params=query)
         if result.status_code == 200:
             yt_data = None
@@ -213,6 +161,185 @@ class jAPI(scrAPI):
                 return results
 
         return []
+
+    @classmethod
+    def list_playlistitems(cls, id, page, max_results):
+        query = {"list": id, "app": "desktop", "persist_app": 1}
+        logger.info(f"jAPI list_playlistitems triggered session.get: {id}")
+
+        items = []
+
+        result = cls.session.get(
+            urljoin(cls.endpoint, "playlist"), params=query
+        )
+        if result.status_code == 200:
+            yt_data = cls._find_yt_data(cls, result.text)
+            extracted_json = yt_data["contents"][
+                "twoColumnBrowseResultsRenderer"
+            ]["tabs"][0]["tabRenderer"]["content"]["sectionListRenderer"][
+                "contents"
+            ][
+                0
+            ][
+                "itemSectionRenderer"
+            ][
+                "contents"
+            ][
+                0
+            ][
+                "playlistVideoListRenderer"
+            ][
+                "contents"
+            ]
+
+            items = cls.json_to_items(cls, extracted_json)
+
+            return json.loads(
+                json.dumps(
+                    {"nextPageToken": None, "items": items},
+                    sort_keys=False,
+                    indent=1,
+                )
+            )
+
+        return []
+
+    @classmethod
+    def list_videos(cls, ids):
+        # """
+        # list videos - EXPERIMENTAL, using exact search for ids
+        # """
+        # logger.info("session.get triggered: list_videos (experimental)")
+
+        # items = []
+
+        # rs = [
+        #     {
+        #         "search_query": '"' + id + '"',
+        #         "sp": "EgIQAQ%3D%3D",
+        #         "app": "desktop",
+        #         "persist_app": 1,
+        #     }
+        #     for id in ids
+        # ]
+        # results = [
+        #     result
+        #     for r in rs
+        #     for result in cls.pl_run_search(r)
+        #     if result["id"]["videoId"] in ids
+        # ]
+        # for result in results:
+        #     result.update({"id": result["id"]["videoId"]})
+        #     items.extend([result])
+        # return json.loads(
+        #     json.dumps({"items": items}, sort_keys=False, indent=1)
+        # )
+        pass
+    
+    @classmethod
+    def list_playlists(cls, ids):
+        # """
+        # list playlists - EXPERIMENTAL, using exact search for ids
+        # """
+        # logger.info("session.get triggered: list_playlists (experimental)")
+
+        # items = []
+
+        # rs = [
+        #     {
+        #         "search_query": '"' + id + '"',
+        #         "sp": "EgIQAw%3D%3D",
+        #         "app": "desktop",
+        #         "persist_app": 1,
+        #     }
+        #     for id in ids
+        # ]
+        # results = [
+        #     result
+        #     for r in rs
+        #     for result in cls.pl_run_search(r)
+        #     if result["id"]["playlistId"] in ids
+        # ]
+        # for result in results:
+        #     result.update({"id": result["id"]["playlistId"]})
+        #     items.extend([result])
+
+        # return json.loads(
+        #     json.dumps({"items": items}, sort_keys=False, indent=1)
+        # )
+        pass
+
+    @classmethod
+    def list_related_videos(cls, video_id):
+        """
+        returns related videos for a given video_id
+        """
+        items = []
+
+        query = {"v": video_id, "app": "desktop", "persist_app": 1}
+        logger.info(f"jAPI list_related_videos triggered session.get: {video_id}")
+        result = cls.session.get(cls.endpoint + "watch", params=query)
+        if result.status_code == 200:
+            yt_data = cls._find_yt_data(cls, result.text)
+            extracted_json = yt_data["contents"]["twoColumnWatchNextResults"][
+                "secondaryResults"
+            ]["secondaryResults"]["results"]
+
+            items = cls.json_to_items(cls, extracted_json)
+
+        return json.loads(
+            json.dumps({"items": items}, sort_keys=False, indent=1)
+        )
+
+    @classmethod
+    def list_channelplaylists(cls, channel_id):
+        """
+        list playlists in a channel
+        """
+        logger.info(f"jAPI list_channelplaylists triggered session.get: {channel_id}")
+        result = cls.session.get(cls.endpoint + "channel/" + channel_id)
+        yt_data = cls._find_yt_data(cls, result.text)
+
+        extracted_json = yt_data["contents"]["twoColumnBrowseResultsRenderer"][
+            "tabs"
+        ][0]["tabRenderer"]["content"]["sectionListRenderer"]["contents"][0][
+            "itemSectionRenderer"
+        ][
+            "contents"
+        ][
+            0
+        ][
+            "shelfRenderer"
+        ][
+            "content"
+        ]
+
+        if "expandedShelfContentsRenderer" in extracted_json:
+            extracted_json = extracted_json["expandedShelfContentsRenderer"]
+
+        if "horizontalListRenderer" in extracted_json:
+            extracted_json = extracted_json["horizontalListRenderer"]
+
+        if "items" in extracted_json:
+            extracted_json = extracted_json["items"]
+        else:
+            logger.info("no items found")
+
+        try:
+            items = cls.json_to_items(cls, extracted_json)
+            [
+                item.update({"id": item["id"]["playlistId"]})
+                for item in items
+                if "playlistId" in item["id"]
+            ]
+        except Exception as e:
+            logger.info(f"items exception {e}")
+            items = []
+
+        return json.loads(
+            json.dumps({"items": items}, sort_keys=False, indent=1)
+        )
+
 
     def json_to_items(cls, result_json):
         if len(result_json) > 1 and "itemSectionRenderer" in result_json[1]:
@@ -394,7 +521,6 @@ class jAPI(scrAPI):
         # remove duplicates
         items[:] = [
             json.loads(t)
-            # for t in {json.dumps(d) for d in items}
             for t in {json.dumps(d, sort_keys=True) for d in items}
         ]
 

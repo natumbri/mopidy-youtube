@@ -6,7 +6,7 @@ from concurrent.futures.thread import ThreadPoolExecutor
 from ytmusicapi import YTMusic
 
 from mopidy_youtube import logger
-from mopidy_youtube.apis import youtube_bs4api
+from mopidy_youtube.apis import youtube_japi
 from mopidy_youtube.comms import Client
 from mopidy_youtube.youtube import Video
 
@@ -64,11 +64,11 @@ class Music(Client):
         # happens, get related videos using the bs4API.
 
         if len(tracks) < 10:
-            bs4_related_videos = youtube_bs4api.bs4API.list_related_videos(
+            japi_related_videos = youtube_japi.jAPI.list_related_videos(
                 video_id
             )
-            bs4_related_videos["items"].extend(tracks)
-            return bs4_related_videos
+            japi_related_videos["items"].extend(tracks)
+            return japi_related_videos
 
         return json.loads(
             json.dumps({"items": tracks}, sort_keys=False, indent=1)
@@ -235,11 +235,7 @@ class Music(Client):
                 "id": {"kind": "youtube#video", "videoId": item["videoId"],},
                 "contentDetails": {
                     "duration": "PT"
-                    + cls.format_duration(
-                        re.match(
-                            cls.time_regex, duration
-                        )
-                    )
+                    + cls.format_duration(re.match(cls.time_regex, duration))
                 },
                 "snippet": {
                     "title": item["title"],
