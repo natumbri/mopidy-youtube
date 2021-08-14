@@ -1,15 +1,16 @@
 import json
 import re
-from urllib.parse import urljoin
+from urllib.parse import urlencode, urljoin
 
 from bs4 import BeautifulSoup
 
 from mopidy_youtube import logger
 from mopidy_youtube.apis.youtube_japi import jAPI
-from mopidy_youtube.apis.youtube_scrapi import scrAPI
+from mopidy_youtube.comms import Client
+from mopidy_youtube.youtube import Video
 
 
-class bs4API(scrAPI):
+class bs4API(Client):
     """
     Indirect access to YouTube data, without API
     using BS4 (instead of regex, as used by scrAPI)
@@ -26,7 +27,113 @@ class bs4API(scrAPI):
         r"ytInitialData = ({.*});",
     )
 
+    endpoint = "https://www.youtube.com/"
+
     @classmethod
+    def search(cls, q):
+        """
+        search for videos and playlists
+        """
+
+        search_results = []
+
+        logger.info(f"jAPI search triggered session.get: {q}")
+
+        search_results = cls.run_search(q)
+
+        return json.loads(
+            json.dumps(
+                {
+                    "items": [
+                        x
+                        for _, x in zip(
+                            range(Video.search_results), search_results
+                        )
+                    ]
+                },
+                sort_keys=False,
+                indent=1,
+            )
+        )
+
+    @classmethod
+    def run_search(cls, search_query):
+        continuation = None
+        results = []
+        data = {}
+        logger.info("session.get triggered: japi run_search")
+
+        while len(results) < Video.search_results:
+
+            query = {
+                "query": search_query,
+                "key": "AIzaSyAO_FJ2SlqU8Q4STEHLGCilw_Y9_11qcW8",
+                "contentCheckOk": True,
+                "racyCheckOk": True,
+            }
+
+            if continuation:
+                data["continuation"] = continuation
+
+            data.update(
+                {
+                    "context": {
+                        "client": {
+                            "clientName": "WEB",
+                            "clientVersion": "2.20200720.00.02",
+                        },
+                    },
+                }
+            )
+
+            result = cls.session.post(
+                url=f'{urljoin(cls.endpoint, "youtubei/v1/search")}?{urlencode(query)}',
+                data=bytes(json.dumps(data), encoding="utf-8"),
+                headers={
+                    "User-Agent": "Mozilla/5.0",
+                    "accept-language": "en-US,en",
+                    "Content-Type": "application/json",
+                },
+            )
+
+            if result.status_code == 200:
+                logger.info("trying japi")
+                yt_data = json.loads(result.text)
+                if yt_data:
+                    # Initial result is handled by try block, continuations by except block
+                    try:
+                        sections = yt_data["contents"][
+                            "twoColumnSearchResultsRenderer"
+                        ]["primaryContents"]["sectionListRenderer"]["contents"]
+                    except KeyError:
+                        sections = yt_data["onResponseReceivedCommands"][0][
+                            "appendContinuationItemsAction"
+                        ]["continuationItems"]
+
+                    extracted_json = None
+                    continuation_renderer = None
+
+                    for s in sections:
+                        if "itemSectionRenderer" in s:
+                            extracted_json = s["itemSectionRenderer"][
+                                "contents"
+                            ]
+                        if "continuationItemRenderer" in s:
+                            continuation_renderer = s[
+                                "continuationItemRenderer"
+                            ]
+
+                    # If the continuationItemRenderer doesn't exist, assume no further results
+                    if continuation_renderer:
+                        continuation = continuation_renderer[
+                            "continuationEndpoint"
+                        ]["continuationCommand"]["token"]
+                    else:
+                        continuation = None
+                    results.extend(jAPI.json_to_items(cls, extracted_json))
+
+        return results
+
     def _find_yt_data(cls, text):
         for r in cls.ytdata_regex:
             result = re.search(r, text)
@@ -43,52 +150,63 @@ class bs4API(scrAPI):
         raise Exception("No data found on page")
 
     @classmethod
-    def run_search(cls, query):
-        logger.info("session.get triggered: bs4api run_search")
+    def pl_run_search(cls, query):
+        logger.info(f"bs4api pl_run_search triggered session.get: {query}")
         result = cls.session.get(urljoin(cls.endpoint, "results"), params=query)
         if result.status_code == 200:
-            soup = BeautifulSoup(result.text, "html.parser")
-            # hack because youtube result sometimes seem to be missing a </script> tag
-            if not soup.find_all(
-                "div", class_=["yt-lockup-video", "yt-lockup-playlist"]
-            ):
-                for script in soup.find_all("script"):
-                    # assume scripts should not contain "<div>" tags
-                    # and that, if they do, there is a missing "</script>" tag
-                    if script.find(text=re.compile("<div")):
-                        new_soup = BeautifulSoup(
-                            re.sub(
-                                "<div", "</script><div", script.string, count=1
-                            ),
-                            "html.parser",
-                        )
-                        script.replace_with(new_soup)
 
-            # strip out ads that are returned
-            [
-                ad.decompose()
-                for ad in soup.find_all("div", class_="pyv-afc-ads-container")
-            ]
+            # make japi first option, since it seems to be most reliable
+            logger.info("trying japi")
+            yt_data = None
+            yt_data = cls._find_yt_data(cls, result.text)
+            if yt_data:
+                extracted_json = yt_data["contents"][
+                    "twoColumnSearchResultsRenderer"
+                ]["primaryContents"]["sectionListRenderer"]["contents"][0][
+                    "itemSectionRenderer"
+                ][
+                    "contents"
+                ]
+                results = jAPI.json_to_items(cls, extracted_json)
+                return results
 
-            results = soup.find_all(
-                "div", class_=["yt-lockup-video", "yt-lockup-playlist"]
-            )
+            else:
 
-            if results:
-                return cls.soup_to_items(results)
+                logger.info("japi failed, trying bs4 as a last ditch attempt")
+                soup = BeautifulSoup(result.text, "html.parser")
+                # hack because youtube result sometimes seem to be missing a </script> tag
+                if not soup.find_all(
+                    "div", class_=["yt-lockup-video", "yt-lockup-playlist"]
+                ):
+                    for script in soup.find_all("script"):
+                        # assume scripts should not contain "<div>" tags
+                        # and that, if they do, there is a missing "</script>" tag
+                        if script.find(text=re.compile("<div")):
+                            new_soup = BeautifulSoup(
+                                re.sub(
+                                    "<div",
+                                    "</script><div",
+                                    script.string,
+                                    count=1,
+                                ),
+                                "html.parser",
+                            )
+                            script.replace_with(new_soup)
 
-            logger.info("nothing in the soup, trying japi")
+                # strip out ads that are returned
+                [
+                    ad.decompose()
+                    for ad in soup.find_all(
+                        "div", class_="pyv-afc-ads-container"
+                    )
+                ]
 
-            yt_data = cls._find_yt_data(result.text)
-            extracted_json = yt_data["contents"][
-                "twoColumnSearchResultsRenderer"
-            ]["primaryContents"]["sectionListRenderer"]["contents"][0][
-                "itemSectionRenderer"
-            ][
-                "contents"
-            ]
+                results = soup.find_all(
+                    "div", class_=["yt-lockup-video", "yt-lockup-playlist"]
+                )
 
-            return jAPI.json_to_items(cls, extracted_json)
+                if results:
+                    return cls.soup_to_items(results)
 
     @classmethod
     def soup_to_items(cls, results):
@@ -203,7 +321,7 @@ class bs4API(scrAPI):
     @classmethod
     def list_playlistitems(cls, id, page, max_results):
         query = {"list": id, "app": "desktop", "persist_app": 1}
-        logger.info("session.get triggered: list_playlist_items")
+        logger.info(f"bs4api list_playlistitems triggered session.get: {id}")
         ajax_css = "button[data-uix-load-more-href]"
 
         items = []
@@ -285,8 +403,7 @@ class bs4API(scrAPI):
                     "duration": "PT"
                     + cls.format_duration(
                         re.match(
-                            cls.time_regex,
-                            video.find(class_="timestamp").text,
+                            cls.time_regex, video.find(class_="timestamp").text,
                         )
                     ),
                 },
@@ -334,7 +451,7 @@ class bs4API(scrAPI):
         results = [
             result
             for r in rs
-            for result in cls.run_search(r)
+            for result in cls.pl_run_search(r)
             if result["id"]["videoId"] in ids
         ]
         for result in results:
@@ -365,7 +482,7 @@ class bs4API(scrAPI):
         results = [
             result
             for r in rs
-            for result in cls.run_search(r)
+            for result in cls.pl_run_search(r)
             if result["id"]["playlistId"] in ids
         ]
         for result in results:
@@ -395,9 +512,7 @@ class bs4API(scrAPI):
                 yt_data = cls._find_yt_data(result.text)
                 extracted_json = yt_data["contents"][
                     "twoColumnWatchNextResults"
-                ]["secondaryResults"]["secondaryResults"][
-                    "results"
-                ]  # noqa: E501
+                ]["secondaryResults"]["secondaryResults"]["results"]
 
                 items = jAPI.json_to_items(cls, extracted_json)
 

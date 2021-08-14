@@ -1,5 +1,6 @@
 from mopidy_youtube import logger
-from mopidy_youtube.youtube import Client, Video
+from mopidy_youtube.comms import Client
+from mopidy_youtube.youtube import Video
 
 youtube_api_key = None
 
@@ -27,7 +28,7 @@ class API(Client):
             "q": q,
             "key": youtube_api_key,
         }
-        logger.info("session.get triggered: search")
+        logger.debug(f"youtube_api 'search' triggered session.get: {q}")
         result = cls.session.get(API.endpoint + "search", params=query)
         return result.json()
 
@@ -45,7 +46,9 @@ class API(Client):
             "type": "video",
             "key": youtube_api_key,
         }
-        logger.info("session.get triggered: list_related_videos")
+        logger.debug(
+            f"youtube_api 'list_related_videos' triggered session.get: {video_id}"
+        )
         result = cls.session.get(API.endpoint + "search", params=query)
         return result.json()
 
@@ -63,7 +66,7 @@ class API(Client):
             "id": ",".join(ids),
             "key": youtube_api_key,
         }
-        logger.info("session.get triggered: list_videos")
+        logger.debug(f"youtube_api 'list_videos' triggered session.get: {ids}")
         result = cls.session.get(API.endpoint + "videos", params=query)
         return result.json()
 
@@ -81,7 +84,9 @@ class API(Client):
             "id": ",".join(ids),
             "key": youtube_api_key,
         }
-        logger.info("session.get triggered: list_playlists")
+        logger.debug(
+            f"youtube_api 'list_playlists' triggered session.get: {ids}"
+        )
         result = cls.session.get(API.endpoint + "playlists", params=query)
         return result.json()
 
@@ -101,7 +106,9 @@ class API(Client):
             "key": youtube_api_key,
             "pageToken": page,
         }
-        logger.info("session.get triggered: list_playlistitems")
+        logger.debug(
+            f"youtube_api 'list_playlistitems' triggered session.get: {id}"
+        )
         result = cls.session.get(API.endpoint + "playlistItems", params=query)
         return result.json()
 
@@ -119,6 +126,8 @@ class API(Client):
             "channelId": channel_id,
             "key": youtube_api_key,
         }
-        logger.info("session.get triggered: list_channelplaylists")
+        logger.debug(
+            f"youtube_api 'list_channelplaylists' triggered session.get: {channel_id}"
+        )
         result = cls.session.get(API.endpoint + "playlists", params=query)
         return result.json()

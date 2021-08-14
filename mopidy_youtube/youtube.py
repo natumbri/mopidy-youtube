@@ -1,20 +1,17 @@
-import re
 import os
+import re
 from concurrent.futures.thread import ThreadPoolExecutor
 
 import pykka
-import requests
 import youtube_dl
 from cachetools import TTLCache, cached
 from mopidy.models import Image
-from requests.adapters import HTTPAdapter
-from requests.packages.urllib3.util.retry import Retry
-from requests.packages.urllib3.util.timeout import Timeout
 
 from mopidy_youtube import logger
 
 api_enabled = False
 channel = None
+cache_location = None
 
 
 def async_property(func):
@@ -107,7 +104,7 @@ class Entry:
             if "error" in data:
                 raise Exception(data["error"])
         except Exception as e:
-            logger.error('search error "%s"', e)
+            logger.error('youtube search error "%s"', e)
             return None
         try:
             return list(map(cls.create_object, data["items"]))
@@ -248,7 +245,7 @@ class Video(Entry):
 
         requiresRelatedVideos = self._add_futures([self], ["related_videos"])
 
-        def job():
+        if requiresRelatedVideos:
             relatedvideos = []
             data = self.api.list_related_videos(self.id)
 
@@ -268,12 +265,6 @@ class Video(Entry):
             Video.load_info(relatedvideos)
             self._related_videos.set(relatedvideos)
 
-        if requiresRelatedVideos:
-            logger.info("getting related videos")
-            executor = ThreadPoolExecutor(max_workers=1)
-            executor.submit(job)
-            executor.shutdown(wait=False)
-
     @async_property
     def length(self):
         self.load_info([self])
@@ -281,14 +272,13 @@ class Video(Entry):
     @async_property
     def thumbnails(self):
         # make it "async" for uniformity with Playlist.thumbnails
-        identifier = self.id.split(":")[-1]
         requiresThumbnail = self._add_futures([self], ["thumbnails"])
         if requiresThumbnail:
-            requiresThumbnail[0]._thumbnails = pykka.ThreadingFuture()
-            requiresThumbnail[0]._thumbnails.set(
+            self._thumbnails.set(
                 [
-                    Image(uri=f"https://i.ytimg.com/vi/{identifier}/{type}.jpg")
-                    for type in ["default", "mqdefault", "hqdefault"]
+                    Image(
+                        uri=f"https://i.ytimg.com/vi/{self.id.split(':')[-1]}/default.jpg"
+                    )
                 ]
             )
 
@@ -296,36 +286,59 @@ class Video(Entry):
     def audio_url(self):
         """
         audio_url is the only property retrived using youtube_dl, it's much more
-        expensive than the rest
+        expensive than the rest. If caching is turned on and the track is cached,
+        return a file uri. If caching is turned on, and the track isn't cached,
+        cache it, and return a file uri. Otherwise, return a url obtained with
+        youtube_dl.
         """
 
-        self._audio_url = pykka.ThreadingFuture()
+        requiresUrl = self._add_futures([self], ["audio_url"])
+        if requiresUrl:
+            ytdl_options = {
+                "format": "bestaudio/m4a/mp3/ogg/best",
+                "proxy": self.proxy,
+                "cachedir": False,
+            }
 
-        def job():
+            if cache_location:
+                cached = [
+                    cached_file
+                    for cached_file in os.listdir(cache_location)
+                    if cached_file.split(".")[0] == self.id
+                ]
+                if cached:
+                    fileUri = (
+                        f"file://{(os.path.join(cache_location, cached[0]))}"
+                    )
+                    self._audio_url.set(fileUri)
+                    return
+                else:
+                    ytdl_options["outtmpl"] = os.path.join(
+                        cache_location, "%(id)s.%(ext)s"
+                    )
+
             try:
-                info = youtube_dl.YoutubeDL(
-                    {
-                        "format": "bestaudio/m4a/mp3/ogg/best",
-                        "proxy": self.proxy,
-                        "cachedir": False,
-                    }
-                ).extract_info(
-                    url="https://www.youtube.com/watch?v=%s" % self.id,
-                    download=False,
-                    ie_key=None,
-                    extra_info={},
-                    process=True,
-                    force_generic_extractor=False,
-                )
+                with youtube_dl.YoutubeDL(ytdl_options) as ydl:
+                    info = ydl.extract_info(
+                        url="https://www.youtube.com/watch?v=%s" % self.id,
+                        download=False,
+                        ie_key=None,
+                        extra_info={},
+                        process=True,
+                        force_generic_extractor=False,
+                    )
+                    if cache_location:
+                        ydl.download(
+                            ["https://www.youtube.com/watch?v=%s" % self.id]
+                        )
+                        fileUri = f"file://{ydl.prepare_filename(info)}"
+                        self._audio_url.set(fileUri)
+                    else:
+                        self._audio_url.set(info["url"])
             except Exception as e:
                 logger.error(f"audio_url error {e} (videoId: {self.id})")
                 self._audio_url.set(None)
                 return
-            self._audio_url.set(info["url"])
-
-        executor = ThreadPoolExecutor(max_workers=1)
-        executor.submit(job)
-        executor.shutdown(wait=False)
 
     @property
     def is_video(self):
@@ -393,7 +406,9 @@ class Playlist(Entry):
                         self.id, page, max_results
                     )
                 except Exception as e:
-                    logger.error('list playlist items error "%s"', e)
+                    logger.error(
+                        'Playlist.videos list_playlistitems error "%s"', e
+                    )
                     break
                 if "error" in result:
                     logger.error(
@@ -424,7 +439,7 @@ class Playlist(Entry):
                 elif "channelTitle" in item["snippet"]:
                     set_api_data = ["title", "channel"]
                 else:
-                    logger.info(f"no channel or owner_channel; skipping {item}")
+                    logger.warn(f"no channel or owner_channel; skipping {item}")
                     continue
                 if "contentDetails" in item:
                     set_api_data.append("length")
@@ -475,7 +490,9 @@ class Channel(Entry):
             if "error" in data:
                 raise Exception(data["error"])
         except Exception as e:
-            logger.error('get_channel_playlists error "%s"', e)
+            logger.error(
+                'Channel.playlists list_channelplaylists error "%s"', e
+            )
             return None
         try:
             channel_playlists = []
@@ -488,68 +505,3 @@ class Channel(Entry):
         except Exception as e:
             logger.error('map error "%s"', e)
             return None
-
-
-# is this necessary or worthwhile?  Are there any bad
-# consequences that arise if timeout isn't set like this?
-class MyHTTPAdapter(HTTPAdapter):
-    def get(self, *args, **kwargs):
-        kwargs["timeout"] = (6.05, 27)
-        return super(MyHTTPAdapter, self).get(*args, **kwargs)
-
-    def post(self, *args, **kwargs):
-        kwargs["timeout"] = (6.05, 27)
-        return super(MyHTTPAdapter, self).post(*args, **kwargs)
-
-    def init_poolmanager(self, *args, **kwargs):
-        kwargs["timeout"] = Timeout(connect=6.05, read=27)
-        return super(MyHTTPAdapter, self).init_poolmanager(*args, **kwargs)
-
-
-class Client:
-    time_regex = (
-        r"(?:(?:(?P<durationHours>[0-9]+)\:)?"
-        r"(?P<durationMinutes>[0-9]+)\:"
-        r"(?P<durationSeconds>[0-9]{2}))"
-    )
-
-    def __init__(self, proxy, headers):
-        if not hasattr(type(self), "session"):
-            self._create_session(proxy, headers)
-
-    @classmethod
-    def _create_session(
-        cls,
-        proxy,
-        headers,
-        retries=10,
-        backoff_factor=0.3,
-        status_forcelist=(500, 502, 504),
-        session=None,
-    ):
-        cls.session = session or requests.Session()
-        retry = Retry(
-            total=retries,
-            read=retries,
-            connect=retries,
-            backoff_factor=backoff_factor,
-            status_forcelist=status_forcelist,
-        )
-        adapter = MyHTTPAdapter(
-            max_retries=retry, pool_maxsize=min(32, os.cpu_count() + 4)
-        )
-        cls.session.mount("http://", adapter)
-        cls.session.mount("https://", adapter)
-        cls.session.proxies = {"http": proxy, "https": proxy}
-        cls.session.headers = headers
-
-    @classmethod
-    def format_duration(cls, match):
-        duration = ""
-        if match.group("durationHours") is not None:
-            duration += match.group("durationHours") + "H"
-        if match.group("durationMinutes") is not None:
-            duration += match.group("durationMinutes") + "M"
-        if match.group("durationSeconds") is not None:
-            duration += match.group("durationSeconds") + "S"
-        return duration

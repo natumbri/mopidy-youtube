@@ -1,34 +1,218 @@
 import json
 import re
+from urllib.parse import urlencode, urljoin
 
 from mopidy_youtube import logger
 from mopidy_youtube.apis.youtube_scrapi import scrAPI
+from mopidy_youtube.youtube import Video
 
 
 # JSON based scrAPI
 class jAPI(scrAPI):
 
-    # search for videos and playlists using japi
-    # **currently not working**
-    # @classmethod
-    # def run_search(cls, query):
-    #
-    #     cls.session.headers = {
-    #         "user-agent": "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:66.0)"
-    #         " Gecko/20100101 Firefox/66.0",
-    #         "Cookie": "PREF=hl=en;",
-    #         "Accept-Language": "en;q=0.5",
-    #         "content_type": "application/json",
-    #     }
-    #     logger.info("session.get triggered: jAPI search")
-    #     result = cls.session.get(cls.endpoint + "results", params=query)
-    #     yt_data = cls._find_yt_data(result.text)
-    #     extracted_json = yt_data["contents"]["twoColumnSearchResultsRenderer"][
-    #         "primaryContents"
-    #     ]["sectionListRenderer"]["contents"][0]["itemSectionRenderer"][
-    #         "contents"
-    #     ]
-    #     return cls.json_to_items(cls, extracted_json)
+    endpoint = "https://www.youtube.com/"
+
+    @classmethod
+    def search(cls, q):
+        """
+        search for videos and playlists
+        """
+
+        logger.info(f"jAPI search triggered session.get: {q}")
+
+        result = cls.run_search(q)
+
+        return json.loads(
+            json.dumps(
+                {
+                    "items": [
+                        x for _, x in zip(range(Video.search_results), result)
+                    ]
+                },
+                sort_keys=False,
+                indent=1,
+            )
+        )
+
+    @classmethod
+    def list_playlistitems(cls, id, page, max_results):
+        query = {"list": id, "app": "desktop", "persist_app": 1}
+        logger.info(f"bs4api list_playlistitems triggered session.get: {id}")
+        ajax_css = "button[data-uix-load-more-href]"
+
+        items = []
+        videos = []
+
+        if page == "":
+            result = cls.session.get(
+                urljoin(cls.endpoint, "playlist"), params=query
+            )
+            if result.status_code == 200:
+                soup = BeautifulSoup(result.text, "html.parser")
+        else:
+            result = cls.session.get(urljoin(cls.endpoint, page))
+            if result.status_code == 200:
+                soup = BeautifulSoup(
+                    "".join(result.json().values()), "html.parser"
+                )
+        if soup:
+            # get load more button
+            full_ajax = soup.select(ajax_css)
+            if len(full_ajax) > 0:
+                ajax = full_ajax[0]["data-uix-load-more-href"]
+            else:
+                ajax = None
+            videos = [
+                video
+                for video in soup.find_all("tr", {"class": "pl-video"})
+                if all(
+                    [
+                        video.find(class_="timestamp"),
+                        video.find(class_="pl-video-owner"),
+                    ]
+                )
+            ]
+
+            if not videos:
+                logger.info(
+                    "nothing in the soup, trying japi list_playlistitems"
+                )
+
+                yt_data = cls._find_yt_data(result.text)
+                extracted_json = yt_data["contents"][
+                    "twoColumnBrowseResultsRenderer"
+                ]["tabs"][0]["tabRenderer"]["content"]["sectionListRenderer"][
+                    "contents"
+                ][
+                    0
+                ][
+                    "itemSectionRenderer"
+                ][
+                    "contents"
+                ][
+                    0
+                ][
+                    "playlistVideoListRenderer"
+                ][
+                    "contents"
+                ]
+
+                items = jAPI.json_to_items(cls, extracted_json)
+            else:
+                items = cls.plsoup_to_items(videos)
+
+            return json.loads(
+                json.dumps(
+                    {"nextPageToken": ajax, "items": items},
+                    sort_keys=False,
+                    indent=1,
+                )
+            )
+
+    @classmethod
+    def run_search(cls, search_query):
+        # with thanks (or perhaps apologies) to pytube:
+        # https://pytube.io/en/stable/api.html#pytube.contrib.search.Search.fetch_and_parse
+
+        continuation = None
+        results = []
+        headers = {
+            "User-Agent": "Mozilla/5.0",
+            "accept-language": "en-US,en",
+            "Content-Type": "application/json",
+        }
+
+        data = {
+            "context": {
+                "client": {
+                    "clientName": "WEB",
+                    "clientVersion": "2.20200720.00.02",
+                },
+            },
+        }
+
+        query = {
+            "query": search_query,
+            "key": "AIzaSyAO_FJ2SlqU8Q4STEHLGCilw_Y9_11qcW8",
+            "contentCheckOk": True,
+            "racyCheckOk": True,
+        }
+
+        url = (
+            f'{urljoin(cls.endpoint, "youtubei/v1/search")}?{urlencode(query)}'
+        )
+
+        while len(results) < Video.search_results:
+
+            if continuation:
+                data.update({"continuation": continuation})
+
+            logger.info(
+                f"japi run_search triggered session.post: {search_query}"
+            )
+
+            result = cls.session.post(
+                url=url,
+                data=bytes(json.dumps(data), encoding="utf-8"),
+                headers=headers,
+            )
+
+            if result.status_code == 200:
+                yt_data = json.loads(result.text)
+                if yt_data:
+                    # Initial result is handled by try block, continuations by except block
+                    try:
+                        sections = yt_data["contents"][
+                            "twoColumnSearchResultsRenderer"
+                        ]["primaryContents"]["sectionListRenderer"]["contents"]
+                    except KeyError:
+                        sections = yt_data["onResponseReceivedCommands"][0][
+                            "appendContinuationItemsAction"
+                        ]["continuationItems"]
+
+                    extracted_json = None
+                    continuation_renderer = None
+
+                    for s in sections:
+                        if "itemSectionRenderer" in s:
+                            extracted_json = s["itemSectionRenderer"][
+                                "contents"
+                            ]
+                        if "continuationItemRenderer" in s:
+                            continuation_renderer = s[
+                                "continuationItemRenderer"
+                            ]
+
+                    # If the continuationItemRenderer doesn't exist, assume no further results
+                    if continuation_renderer:
+                        continuation = continuation_renderer[
+                            "continuationEndpoint"
+                        ]["continuationCommand"]["token"]
+                    else:
+                        continuation = None
+                    results.extend(cls.json_to_items(cls, extracted_json))
+
+        return results
+
+    @classmethod
+    def pl_run_search(cls, query):
+        logger.info(f"japi run_search triggered session.get: {query}")
+        result = cls.session.get(urljoin(cls.endpoint, "results"), params=query)
+        if result.status_code == 200:
+            yt_data = None
+            yt_data = cls._find_yt_data(cls, result.text)
+            if yt_data:
+                extracted_json = yt_data["contents"][
+                    "twoColumnSearchResultsRenderer"
+                ]["primaryContents"]["sectionListRenderer"]["contents"][0][
+                    "itemSectionRenderer"
+                ][
+                    "contents"
+                ]
+                results = cls.json_to_items(cls, extracted_json)
+                return results
+
+        return []
 
     def json_to_items(cls, result_json):
         if len(result_json) > 1 and "itemSectionRenderer" in result_json[1]:
@@ -74,7 +258,7 @@ class jAPI(scrAPI):
                         continue
 
                 try:
-                    thumbnails = content[base]["thumbnail"]["thumbnails"][0]
+                    thumbnails = content[base]["thumbnail"]["thumbnails"][-1]
                     thumbnails["url"] = thumbnails["url"].split("?", 1)[
                         0
                     ]  # is the rest tracking stuff? Omit
@@ -93,9 +277,7 @@ class jAPI(scrAPI):
                     "snippet": {
                         "title": title,
                         "resourceId": {"videoId": videoId},
-                        "thumbnails": {
-                            "default": thumbnails,
-                        },
+                        "thumbnails": {"default": thumbnails,},
                         "channelTitle": channelTitle,
                     },
                 }
@@ -132,7 +314,7 @@ class jAPI(scrAPI):
                 try:
                     thumbnails = content["playlistRenderer"]["thumbnails"][0][
                         "thumbnails"
-                    ][0]
+                    ][-1]
                     thumbnails["url"] = thumbnails["url"].split("?", 1)[
                         0
                     ]  # is the rest tracking stuff? Omit
@@ -162,23 +344,20 @@ class jAPI(scrAPI):
                         "title": content["playlistRenderer"]["title"][
                             "simpleText"
                         ],
-                        "thumbnails": {
-                            "default": thumbnails,
-                        },
+                        "thumbnails": {"default": thumbnails,},
                         "channelTitle": channelTitle,
                     },
                 }
                 items.append(item)
 
             elif "gridPlaylistRenderer" in content:
-                logger.info(content)
                 try:
                     thumbnails = content["gridPlaylistRenderer"][
                         "thumbnailRenderer"
                     ]["playlistVideoThumbnailRenderer"]["thumbnail"][
                         "thumbnails"
                     ][
-                        0
+                        -1
                     ]
                     thumbnails["url"] = thumbnails["url"].split("?", 1)[
                         0
@@ -206,9 +385,7 @@ class jAPI(scrAPI):
                         "title": content["gridPlaylistRenderer"]["title"][
                             "runs"
                         ][0]["text"],
-                        "thumbnails": {
-                            "default": thumbnails,
-                        },
+                        "thumbnails": {"default": thumbnails,},
                         "channelTitle": "unknown",  # note: do better
                     },
                 }

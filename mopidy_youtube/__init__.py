@@ -20,6 +20,7 @@ class Extension(ext.Extension):
 
     def get_config_schema(self):
         schema = super().get_config_schema()
+        schema["allow_cache"] = config.String(optional=True)
         schema["youtube_api_key"] = config.String(optional=True)
         schema["search_results"] = config.Integer(minimum=1)
         schema["playlist_max_videos"] = config.Integer(minimum=1)
@@ -34,8 +35,9 @@ class Extension(ext.Extension):
         return schema
 
     def setup(self, registry):
-        from .backend import YouTubeBackend
+        from .backend import YouTubeBackend, YouTubeCoreListener
         from .frontend import YouTubeAutoplayer
 
         registry.add("backend", YouTubeBackend)
         registry.add("frontend", YouTubeAutoplayer)
+        registry.add("frontend", YouTubeCoreListener)

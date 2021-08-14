@@ -1,10 +1,11 @@
+# import os
+from unittest import mock
+
+import pytest
+import vcr
 import youtube_dl
 from mopidy import httpclient
 
-# import os
-from unittest import mock
-import pytest
-import vcr
 from mopidy_youtube import Extension, backend, youtube
 from mopidy_youtube.apis import youtube_api, youtube_bs4api, youtube_scrapi
 
