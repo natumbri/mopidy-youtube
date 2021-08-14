@@ -10,30 +10,32 @@ class jAPI(scrAPI):
 
     # search for videos and playlists using japi
     # **currently not working**
-    @classmethod
-    def run_search(cls, query):
-
-        cls.session.headers = {
-            "user-agent": "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:66.0)"
-            " Gecko/20100101 Firefox/66.0",
-            "Cookie": "PREF=hl=en;",
-            "Accept-Language": "en;q=0.5",
-            "content_type": "application/json",
-        }
-        logger.info("session.get triggered: jAPI search")
-        result = cls.session.get(cls.endpoint + "results", params=query)
-        yt_data = cls._find_yt_data(result.text)
-        extracted_json = yt_data["contents"]["twoColumnSearchResultsRenderer"][
-            "primaryContents"
-        ]["sectionListRenderer"]["contents"][0]["itemSectionRenderer"][
-            "contents"
-        ]
-        return cls.json_to_items(cls, extracted_json)
+    # @classmethod
+    # def run_search(cls, query):
+    #
+    #     cls.session.headers = {
+    #         "user-agent": "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:66.0)"
+    #         " Gecko/20100101 Firefox/66.0",
+    #         "Cookie": "PREF=hl=en;",
+    #         "Accept-Language": "en;q=0.5",
+    #         "content_type": "application/json",
+    #     }
+    #     logger.info("session.get triggered: jAPI search")
+    #     result = cls.session.get(cls.endpoint + "results", params=query)
+    #     yt_data = cls._find_yt_data(result.text)
+    #     extracted_json = yt_data["contents"]["twoColumnSearchResultsRenderer"][
+    #         "primaryContents"
+    #     ]["sectionListRenderer"]["contents"][0]["itemSectionRenderer"][
+    #         "contents"
+    #     ]
+    #     return cls.json_to_items(cls, extracted_json)
 
     def json_to_items(cls, result_json):
-        if "itemSectionRenderer" in result_json[1]:
+        if len(result_json) > 1 and "itemSectionRenderer" in result_json[1]:
             result_json = result_json[1]["itemSectionRenderer"]["contents"]
+
         items = []
+
         for content in result_json:
             if "videoRenderer" in content:
                 base = "videoRenderer"
@@ -56,7 +58,6 @@ class jAPI(scrAPI):
 
                 try:
                     videoId = content[base]["videoId"]
-                    logger.debug(videoId)
                 except Exception as e:
                     # videoID = "Unknown"
                     logger.error("videoId exception %s" % e)
@@ -64,18 +65,24 @@ class jAPI(scrAPI):
 
                 try:
                     title = content[base]["title"]["simpleText"]
-                    logger.debug(title)
                 except Exception:
                     try:
                         title = content[base]["title"]["runs"][0]["text"]
-                        logger.debug(title)
                     except Exception as e:
                         # title = "Unknown"
                         logger.error("title exception %s" % e)
                         continue
+
+                try:
+                    thumbnails = content[base]["thumbnail"]["thumbnails"][0]
+                    thumbnails["url"] = thumbnails["url"].split("?", 1)[
+                        0
+                    ]  # is the rest tracking stuff? Omit
+                except Exception as e:
+                    logger.error(f"thumbnail exception {e}")
+
                 try:
                     channelTitle = content[base][byline]["runs"][0]["text"]
-                    logger.debug(channelTitle)
                 except Exception as e:
                     # channelTitle = "Unknown"
                     logger.error("channelTitle exception %s, %s" % (e, title))
@@ -86,15 +93,8 @@ class jAPI(scrAPI):
                     "snippet": {
                         "title": title,
                         "resourceId": {"videoId": videoId},
-                        # TODO: full support for thumbnails
                         "thumbnails": {
-                            "default": {
-                                "url": "https://i.ytimg.com/vi/"
-                                + videoId
-                                + "/default.jpg",
-                                "width": 120,
-                                "height": 90,
-                            },
+                            "default": thumbnails,
                         },
                         "channelTitle": channelTitle,
                     },
@@ -128,6 +128,28 @@ class jAPI(scrAPI):
                 continue
 
             elif "playlistRenderer" in content:
+
+                try:
+                    thumbnails = content["playlistRenderer"]["thumbnails"][0][
+                        "thumbnails"
+                    ][0]
+                    thumbnails["url"] = thumbnails["url"].split("?", 1)[
+                        0
+                    ]  # is the rest tracking stuff? Omit
+                except Exception as e:
+                    logger.error(
+                        f"thumbnail exception {e}, {content['playlistRenderer']['playlistId']}"
+                    )
+
+                try:
+                    channelTitle = content["playlistRenderer"][
+                        "longBylineText"
+                    ]["runs"][0]["text"]
+                except Exception as e:
+                    logger.error(
+                        f"channelTitle exception {e}, {content['playlistRenderer']['playlistId']}"
+                    )
+
                 item = {
                     "id": {
                         "kind": "youtube#playlist",
@@ -140,28 +162,39 @@ class jAPI(scrAPI):
                         "title": content["playlistRenderer"]["title"][
                             "simpleText"
                         ],
-                        # TODO: full support for thumbnails
                         "thumbnails": {
-                            "default": {
-                                "url": "https://i.ytimg.com/vi/"
-                                + content["playlistRenderer"][
-                                    "navigationEndpoint"
-                                ]["watchEndpoint"]["videoId"]
-                                + "/default.jpg",
-                                "width": 120,
-                                "height": 90,
-                            },
+                            "default": thumbnails,
                         },
-                        "channelTitle": content["playlistRenderer"][
-                            "longBylineText"
-                        ]["runs"][0]["text"],
+                        "channelTitle": channelTitle,
                     },
                 }
                 items.append(item)
 
             elif "gridPlaylistRenderer" in content:
+                logger.info(content)
+                try:
+                    thumbnails = content["gridPlaylistRenderer"][
+                        "thumbnailRenderer"
+                    ]["playlistVideoThumbnailRenderer"]["thumbnail"][
+                        "thumbnails"
+                    ][
+                        0
+                    ]
+                    thumbnails["url"] = thumbnails["url"].split("?", 1)[
+                        0
+                    ]  # is the rest tracking stuff? Omit
+                except Exception as e:
+                    logger.error(
+                        f"thumbnail exception {e}, {content['gridPlaylistRenderer']['playlistId']}"
+                    )
+
                 item = {
-                    "id": content["gridPlaylistRenderer"]["playlistId"],
+                    "id": {
+                        "kind": "youtube#playlist",
+                        "playlistId": content["gridPlaylistRenderer"][
+                            "playlistId"
+                        ],
+                    },
                     "contentDetails": {
                         "itemCount": int(
                             content["gridPlaylistRenderer"][
@@ -173,17 +206,10 @@ class jAPI(scrAPI):
                         "title": content["gridPlaylistRenderer"]["title"][
                             "runs"
                         ][0]["text"],
-                        # TODO: full support for thumbnails
                         "thumbnails": {
-                            "default": content["gridPlaylistRenderer"][
-                                "thumbnailRenderer"
-                            ]["playlistVideoThumbnailRenderer"]["thumbnail"][
-                                "thumbnails"
-                            ][
-                                0
-                            ],
+                            "default": thumbnails,
                         },
-                        "channelTitle": "unknown",
+                        "channelTitle": "unknown",  # note: do better
                     },
                 }
                 items.append(item)
@@ -194,4 +220,5 @@ class jAPI(scrAPI):
             # for t in {json.dumps(d) for d in items}
             for t in {json.dumps(d, sort_keys=True) for d in items}
         ]
+
         return items

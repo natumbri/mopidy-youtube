@@ -52,7 +52,11 @@ def convert_videos_to_tracks(videos, album_name: str):
         video.audio_url  # start loading
 
     return [
-        convert_video_to_track(video, album_name, track_no=count,)
+        convert_video_to_track(
+            video,
+            album_name,
+            track_no=count,
+        )
         for count, video in enumerate(videos, 1)
     ]
 
@@ -180,6 +184,7 @@ class YouTubeLibraryProvider(backend.LibraryProvider):
             playlists = youtube.Channel.playlists()
             if playlists:
                 for pl in playlists:
+                    pl.videos
                     albums.append(convert_playlist_to_album(pl))
                 for album in albums:
                     playlistrefs.append(
@@ -225,6 +230,9 @@ class YouTubeLibraryProvider(backend.LibraryProvider):
         # load playlist info (to get video_count) of all playlists together
         playlists = [entry for entry in entries if not entry.is_video]
         youtube.Playlist.load_info(playlists)
+
+        # load video info (to get length) of all videos together
+        youtube.Video.load_info([entry for entry in entries if entry.is_video])
 
         albums = []
         artists = []
@@ -350,7 +358,26 @@ class YouTubeLibraryProvider(backend.LibraryProvider):
         return []
 
     def get_images(self, uris):
-        return {uri: youtube.Video.get(uri).thumbnails.get() for uri in uris}
+        images = {}
+        if not isinstance(uris, list):
+            uris = [uris]
+        video_ids = [extract_video_id(uri) for uri in uris]
+        images.update(
+            {
+                uri: youtube.Video.get(video_id).thumbnails.get()
+                for (uri, video_id) in zip(uris, video_ids)
+                if video_id
+            }
+        )
+        playlist_ids = [extract_playlist_id(uri) for uri in uris]
+        images.update(
+            {
+                uri: youtube.Playlist.get(playlist_id).thumbnails.get()
+                for (uri, playlist_id) in zip(uris, playlist_ids)
+                if playlist_id
+            }
+        )
+        return images
 
 
 class YouTubePlaybackProvider(backend.PlaybackProvider):
