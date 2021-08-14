@@ -1,20 +1,23 @@
 import re
 from urllib.parse import parse_qs, urlparse
+
 import pykka
 from mopidy import backend, httpclient
 from mopidy.core import CoreListener
-from mopidy.models import Album, Artist, SearchResult, Track, Ref
+from mopidy.models import Album, Artist, Ref, SearchResult, Track
 
 from mopidy_youtube import Extension, logger, youtube
-from mopidy_youtube.apis import youtube_api, youtube_bs4api, youtube_music
-from mopidy_youtube.data import (
-    # extract_channel_id,
+from mopidy_youtube.apis import (
+    youtube_api,
+    youtube_bs4api,
+    youtube_music,
+)
+from mopidy_youtube.data import (  # extract_channel_id,
     extract_playlist_id,
     extract_video_id,
     format_playlist_uri,
     format_video_uri,
 )
-
 
 """
 A typical interaction:
@@ -137,7 +140,7 @@ class YouTubeBackend(pykka.ThreadingActor, backend.Backend):
             logger.info(f"file caching enabled (at {youtube.cache_location})")
         else:
             youtube.cache_location = None
-            logger.info(f"file caching not enabled")
+            logger.info("file caching not enabled")
 
         if youtube.api_enabled is True:
             if youtube_api.youtube_api_key is None:
@@ -199,7 +202,7 @@ class YouTubeLibraryProvider(backend.LibraryProvider):
                 trackrefs.append(Ref.track(uri=track.uri, name=track.name))
             return trackrefs
         elif uri.startswith("youtube:channel"):
-            logger.info("browse channel / library")
+            logger.debug(f"browse channel / library {uri}")
             playlistrefs = []
             albums = []
             playlists = youtube.Channel.playlists()
@@ -233,14 +236,14 @@ class YouTubeLibraryProvider(backend.LibraryProvider):
 
     def search(self, query=None, uris=None, exact=False):
         # TODO Support exact search
-        logger.info('youtube LibraryProvider.search "%s"', query)
+        logger.debug('youtube LibraryProvider.search "%s"', query)
 
         # handle only searching (queries with 'any') not browsing!
         if not (query and "any" in query):
             return None
 
         search_query = " ".join(query["any"])
-        logger.info('Searching YouTube for query "%s"', search_query)
+        logger.debug('Searching YouTube for query "%s"', search_query)
 
         try:
             entries = youtube.Entry.search(search_query)
@@ -329,7 +332,7 @@ class YouTubeLibraryProvider(backend.LibraryProvider):
         be ready for playback (see YouTubePlaybackProvider.translate_uri).
         """
 
-        logger.info('youtube LibraryProvider.lookup "%s"', uri)
+        logger.debug('youtube LibraryProvider.lookup "%s"', uri)
 
         if "youtube.com" in uri:
             url = urlparse(uri.replace("yt:", "").replace("youtube:", ""))
@@ -416,7 +419,7 @@ class YouTubePlaybackProvider(backend.PlaybackProvider):
         YouTubeLibraryProvider.lookup)
         """
 
-        logger.info('youtube PlaybackProvider.translate_uri "%s"', uri)
+        logger.debug('youtube PlaybackProvider.translate_uri "%s"', uri)
 
         video_id = extract_video_id(uri)
         if not video_id:

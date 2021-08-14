@@ -2,7 +2,8 @@ import json
 import re
 
 from mopidy_youtube import logger
-from mopidy_youtube.youtube import Client, Video
+from mopidy_youtube.comms import Client
+from mopidy_youtube.youtube import Video
 
 
 class scrAPI(Client):

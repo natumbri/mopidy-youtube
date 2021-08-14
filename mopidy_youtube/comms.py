@@ -1,10 +1,10 @@
-import re
 import os
 
 import requests
 from requests.adapters import HTTPAdapter
 from requests.packages.urllib3.util.retry import Retry
 from requests.packages.urllib3.util.timeout import Timeout
+
 
 # is this necessary or worthwhile?  Are there any bad
 # consequences that arise if timeout isn't set like this?

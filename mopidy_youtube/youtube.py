@@ -1,6 +1,5 @@
-import re
 import os
-
+import re
 from concurrent.futures.thread import ThreadPoolExecutor
 
 import pykka
@@ -9,7 +8,6 @@ from cachetools import TTLCache, cached
 from mopidy.models import Image
 
 from mopidy_youtube import logger
-from mopidy_youtube.comms import Client
 
 api_enabled = False
 channel = None
@@ -441,7 +439,7 @@ class Playlist(Entry):
                 elif "channelTitle" in item["snippet"]:
                     set_api_data = ["title", "channel"]
                 else:
-                    logger.info(f"no channel or owner_channel; skipping {item}")
+                    logger.warn(f"no channel or owner_channel; skipping {item}")
                     continue
                 if "contentDetails" in item:
                     set_api_data.append("length")
@@ -461,8 +459,9 @@ class Playlist(Entry):
                 [x for _, x in zip(range(self.playlist_max_videos), myvideos)]
             )
 
-        load_items()
-
+        executor = ThreadPoolExecutor(max_workers=1)
+        executor.submit(load_items)
+        executor.shutdown(wait=False)
 
     @async_property
     def video_count(self):
@@ -491,7 +490,9 @@ class Channel(Entry):
             if "error" in data:
                 raise Exception(data["error"])
         except Exception as e:
-            logger.error('Channel.playlists list_channelplaylists error "%s"', e)
+            logger.error(
+                'Channel.playlists list_channelplaylists error "%s"', e
+            )
             return None
         try:
             channel_playlists = []
@@ -504,4 +505,3 @@ class Channel(Entry):
         except Exception as e:
             logger.error('map error "%s"', e)
             return None
-

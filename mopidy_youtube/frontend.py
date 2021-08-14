@@ -1,6 +1,6 @@
-import pykka
 import random
 
+import pykka
 from mopidy.core import listener
 
 from mopidy_youtube import logger, youtube
@@ -53,13 +53,13 @@ class YouTubeAutoplayer(pykka.ThreadingActor, listener.CoreListener):
             tl = self.core.tracklist
 
             if tl.get_repeat().get() is True:
-                logger.info(
+                logger.warn(
                     "Autoplayer: will not add tracks when repeat is enabled."
                 )
                 return None
 
             if tl.get_random().get() is True:
-                logger.info(
+                logger.warn(
                     "Autoplayer: shuffle will not work when autoplay is enabled."
                 )
 
@@ -84,23 +84,23 @@ class YouTubeAutoplayer(pykka.ThreadingActor, listener.CoreListener):
             if self.max_degrees_of_separation:
                 if self.degrees_of_separation < self.max_degrees_of_separation:
                     self.degrees_of_separation += 1
-                    logger.info("incrementing autoplay degrees of separation")
+                    logger.debug("incrementing autoplay degrees of separation")
                 else:
                     current_track_id = self.base_track_id
                     self.degrees_of_separation = 0
-                    logger.info("resetting autoplay base track id")
+                    logger.debug("resetting to autoplay base track id")
 
             if current_track_id not in autoplayed:
                 self.base_track_id = current_track_id
                 autoplayed.append(current_track_id)  # avoid replaying track
                 self.degrees_of_separation = 0
-                logger.info("setting new autoplay base id")
+                logger.debug("setting new autoplay base id")
 
             current_track = youtube.Video.get(current_track_id)
             current_track.related_videos
             related_videos = current_track.related_videos.get()
-            logger.info(
-                f"autoplaying a track related to {current_track.title.get()}"
+            logger.debug(
+                f"autoplayer is adding a track related to {current_track.title.get()}"
             )
             # remove already autoplayed
             related_videos[:] = [
@@ -123,7 +123,9 @@ class YouTubeAutoplayer(pykka.ThreadingActor, listener.CoreListener):
                 ]
 
             if len(related_videos) == 0:
-                logger.info("could not get related videos: ending autoplay")
+                logger.warn(
+                    f"could not get videos related to {current_track.title.get()}: ending autoplay"
+                )
                 return None
             else:
                 next_video = random.choice(related_videos)

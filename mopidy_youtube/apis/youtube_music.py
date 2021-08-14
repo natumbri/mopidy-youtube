@@ -1,15 +1,14 @@
 import json
 import re
-import random
-
-from concurrent.futures.thread import ThreadPoolExecutor
 from concurrent.futures import as_completed
-
+from concurrent.futures.thread import ThreadPoolExecutor
 
 from ytmusicapi import YTMusic
 
 from mopidy_youtube import logger
-from mopidy_youtube.youtube import Client, Video
+from mopidy_youtube.apis import youtube_bs4api
+from mopidy_youtube.comms import Client
+from mopidy_youtube.youtube import Video
 
 ytmusic = None
 own_channel_id = None
@@ -59,10 +58,17 @@ class Music(Client):
             cls.ytplaylist_item_to_video(track)
             for track in related_videos["tracks"]
         ]
-        random.shuffle(tracks)
 
-        # does this help with anything?
-        # Music.loadTracks(tracks)
+        # sometimes, ytmusic.get_watch_playlist seems to return very few, or even
+        # only one, related video, which may be the original video, itself.  If this
+        # happens, get related videos using the bs4API.
+
+        if len(tracks) < 10:
+            bs4_related_videos = youtube_bs4api.bs4API.list_related_videos(
+                video_id
+            )
+            bs4_related_videos["items"].extend(tracks)
+            return bs4_related_videos
 
         return json.loads(
             json.dumps({"items": tracks}, sort_keys=False, indent=1)
@@ -179,7 +185,7 @@ class Music(Client):
             channelTitle = item["byline"]
 
         if thumbnail is None and "thumbnail" in item:
-            thumbnail = item["thumbnail"][0]
+            thumbnail = item["thumbnail"][-1]
 
         video.update(
             {
@@ -213,6 +219,16 @@ class Music(Client):
             seconds = int(miliseconds) / 1000
             return "%i:%02i:%02i" % (hours, minutes, seconds)
 
+        if "duration" in item:
+            duration = item["duration"]
+        elif "length" in item:
+            duration = item["length"]
+        elif "lengthMs" in item:
+            duration = _convertMillis(item["lengthMs"])
+        else:
+            duration = "0:00"
+            logger.info(f"duration missing: {item}")
+
         video = {}
         video.update(
             {
@@ -221,7 +237,7 @@ class Music(Client):
                     "duration": "PT"
                     + cls.format_duration(
                         re.match(
-                            cls.time_regex, _convertMillis(item["lengthMs"])
+                            cls.time_regex, duration
                         )
                     )
                 },
@@ -272,7 +288,7 @@ class Music(Client):
                 return album
 
             except Exception as e:
-                logger.error('search_albums error "%s"', e)
+                logger.error('youtube_music search_albums error "%s"', e)
 
         with ThreadPoolExecutor() as executor:
             futures = executor.map(job, results)
@@ -360,6 +376,7 @@ class Music(Client):
                 f"ytmusic.get_album({id}) triggered: youtube-music list_playlistitems"
             )
             result = ytmusic.get_album(id)
+
             items = [
                 cls.ytalbum_item_to_video(item, result["thumbnails"][0])
                 for item in result["tracks"]
