@@ -6,12 +6,28 @@ from mopidy_youtube import logger
 from mopidy_youtube.comms import Client
 from mopidy_youtube.youtube import Video
 
+def traverse(input_dict, keys):
+    internal_dict_value = input_dict
+    for key in keys:
+        internal_dict_value = internal_dict_value.get(key, None)
+        if internal_dict_value is None:
+            raise Exception
+    logger.info(internal_dict_value)
+    return internal_dict_value
+
+sectionListRendererContentsPath = ["contents", "twoColumnSearchResultsRenderer", "primaryContents", "sectionListRenderer", "contents"]
 
 class jAPI(Client):
     """
     Indirect access to YouTube data, without API
     using json where available
     """
+
+    time_regex = (
+        r"(?:(?:(?P<durationHours>[0-9]+)\:)?"
+        r"(?P<durationMinutes>[0-9]+)\:"
+        r"(?P<durationSeconds>[0-9]{2}))"
+    )
 
     ytdata_regex = (
         r'window\["ytInitialData"] = ({.*?});',
@@ -20,13 +36,13 @@ class jAPI(Client):
 
     endpoint = "https://www.youtube.com/"
 
+
+
     @classmethod
     def search(cls, q):
         """
         search for videos and playlists
         """
-
-        logger.info(f"jAPI search triggered session.get: {q}")
 
         result = cls.run_search(q)
 
@@ -40,6 +56,187 @@ class jAPI(Client):
                 sort_keys=False,
                 indent=1,
             )
+        )
+
+    @classmethod
+    def list_related_videos(cls, video_id):
+        """
+        returns related videos for a given video_id
+        """
+        items = []
+        query = {"v": video_id, "app": "desktop", "persist_app": 1}
+
+        logger.debug(
+            f"jAPI 'list_related_videos' triggered session.get: {video_id}"
+        )
+        result = cls.session.get(cls.endpoint + "watch", params=query)
+
+        if result.status_code == 200:
+            yt_data = cls._find_yt_data(cls, result.text)
+            extracted_json = yt_data["contents"]["twoColumnWatchNextResults"][
+                "secondaryResults"
+            ]["secondaryResults"]["results"]
+
+            items = cls.json_to_items(cls, extracted_json)
+
+        return json.loads(
+            json.dumps({"items": items}, sort_keys=False, indent=1)
+        )
+
+    @classmethod
+    def list_videos(cls, ids):
+        """
+        list videos - EXPERIMENTAL, using exact search for ids
+        """
+
+        items = []
+
+        rs = [
+            {
+                "search_query": '"' + id + '"',
+                "sp": "EgIQAQ%3D%3D",
+                "app": "desktop",
+                "persist_app": 1,
+            }
+            for id in ids
+        ]
+        results = [
+            result
+            for r in rs
+            for result in cls.pl_run_search(r)
+            if result["id"]["videoId"] in ids
+        ]
+        for result in results:
+            result.update({"id": result["id"]["videoId"]})
+            items.extend([result])
+        return json.loads(
+            json.dumps({"items": items}, sort_keys=False, indent=1)
+        )
+
+    @classmethod
+    def list_playlists(cls, ids):
+        """
+        list playlists - EXPERIMENTAL, using exact search for ids
+        """
+
+        items = []
+
+        rs = [
+            {
+                "search_query": '"' + id + '"',
+                "sp": "EgIQAw%3D%3D",
+                "app": "desktop",
+                "persist_app": 1,
+            }
+            for id in ids
+        ]
+        results = [
+            result
+            for r in rs
+            for result in cls.pl_run_search(r)
+            if result["id"]["playlistId"] in ids
+        ]
+        for result in results:
+            result.update({"id": result["id"]["playlistId"]})
+            items.extend([result])
+
+        return json.loads(
+            json.dumps({"items": items}, sort_keys=False, indent=1)
+        )
+
+    @classmethod
+    def list_playlistitems(cls, id, page, max_results):
+        query = {"list": id, "app": "desktop", "persist_app": 1}
+        logger.debug(f"jAPI 'list_playlistitems' triggered session.get: {id}")
+
+        items = []
+
+        result = cls.session.get(
+            urljoin(cls.endpoint, "playlist"), params=query
+        )
+        if result.status_code == 200:
+            yt_data = cls._find_yt_data(cls, result.text)
+            extracted_json = yt_data["contents"][
+                "twoColumnBrowseResultsRenderer"
+            ]["tabs"][0]["tabRenderer"]["content"]["sectionListRenderer"][
+                "contents"
+            ][
+                0
+            ][
+                "itemSectionRenderer"
+            ][
+                "contents"
+            ][
+                0
+            ][
+                "playlistVideoListRenderer"
+            ][
+                "contents"
+            ]
+
+            items = cls.json_to_items(cls, extracted_json)
+
+            return json.loads(
+                json.dumps(
+                    {"nextPageToken": None, "items": items},
+                    sort_keys=False,
+                    indent=1,
+                )
+            )
+
+        return []
+
+    @classmethod
+    def list_channelplaylists(cls, channel_id):
+        """
+        list playlists in a channel
+        """
+        logger.debug(
+            f"jAPI 'list_channelplaylists' triggered session.get: {channel_id}"
+        )
+        result = cls.session.get(cls.endpoint + "channel/" + channel_id)
+
+        yt_data = cls._find_yt_data(cls, result.text)
+        extracted_json = yt_data["contents"]["twoColumnBrowseResultsRenderer"][
+            "tabs"
+        ][0]["tabRenderer"]["content"]["sectionListRenderer"]["contents"][0][
+            "itemSectionRenderer"
+        ][
+            "contents"
+        ][
+            0
+        ][
+            "shelfRenderer"
+        ][
+            "content"
+        ]
+
+        if "expandedShelfContentsRenderer" in extracted_json:
+            extracted_json = extracted_json["expandedShelfContentsRenderer"]
+
+        if "horizontalListRenderer" in extracted_json:
+            extracted_json = extracted_json["horizontalListRenderer"]
+
+        if "items" in extracted_json:
+            extracted_json = extracted_json["items"]
+        else:
+            logger.warn(
+                f"jAPI 'list_channelplaylists', no items found: {channel_id}"
+            )
+
+        try:
+            items = cls.json_to_items(cls, extracted_json)
+            [
+                item.update({"id": item["id"]["playlistId"]})
+                for item in items
+                if "playlistId" in item["id"]
+            ]
+        except Exception as e:
+            logger.error(f"jAPI 'list_channelplaylists' exception {e}")
+            items = []
+
+        return json.loads(
+            json.dumps({"items": items}, sort_keys=False, indent=1)
         )
 
     @classmethod
@@ -95,10 +292,12 @@ class jAPI(Client):
                 if yt_data:
                     # Initial result is handled by try block, continuations by except block
                     try:
-                        sections = yt_data["contents"][
-                            "twoColumnSearchResultsRenderer"
-                        ]["primaryContents"]["sectionListRenderer"]["contents"]
-                    except KeyError:
+                        sections = traverse(yt_data, sectionListRendererContentsPath)
+                        # sections = yt_data["contents"][
+                        #     "twoColumnSearchResultsRenderer"
+                        # ]["primaryContents"]["sectionListRenderer"]["contents"]
+                    except Exception as e:  # KeyError:
+                        logger.info(e)
                         sections = yt_data["onResponseReceivedCommands"][0][
                             "appendContinuationItemsAction"
                         ]["continuationItems"]
@@ -162,185 +361,6 @@ class jAPI(Client):
 
         return []
 
-    @classmethod
-    def list_playlistitems(cls, id, page, max_results):
-        query = {"list": id, "app": "desktop", "persist_app": 1}
-        logger.info(f"jAPI list_playlistitems triggered session.get: {id}")
-
-        items = []
-
-        result = cls.session.get(
-            urljoin(cls.endpoint, "playlist"), params=query
-        )
-        if result.status_code == 200:
-            yt_data = cls._find_yt_data(cls, result.text)
-            extracted_json = yt_data["contents"][
-                "twoColumnBrowseResultsRenderer"
-            ]["tabs"][0]["tabRenderer"]["content"]["sectionListRenderer"][
-                "contents"
-            ][
-                0
-            ][
-                "itemSectionRenderer"
-            ][
-                "contents"
-            ][
-                0
-            ][
-                "playlistVideoListRenderer"
-            ][
-                "contents"
-            ]
-
-            items = cls.json_to_items(cls, extracted_json)
-
-            return json.loads(
-                json.dumps(
-                    {"nextPageToken": None, "items": items},
-                    sort_keys=False,
-                    indent=1,
-                )
-            )
-
-        return []
-
-    @classmethod
-    def list_videos(cls, ids):
-        # """
-        # list videos - EXPERIMENTAL, using exact search for ids
-        # """
-        # logger.info("session.get triggered: list_videos (experimental)")
-
-        # items = []
-
-        # rs = [
-        #     {
-        #         "search_query": '"' + id + '"',
-        #         "sp": "EgIQAQ%3D%3D",
-        #         "app": "desktop",
-        #         "persist_app": 1,
-        #     }
-        #     for id in ids
-        # ]
-        # results = [
-        #     result
-        #     for r in rs
-        #     for result in cls.pl_run_search(r)
-        #     if result["id"]["videoId"] in ids
-        # ]
-        # for result in results:
-        #     result.update({"id": result["id"]["videoId"]})
-        #     items.extend([result])
-        # return json.loads(
-        #     json.dumps({"items": items}, sort_keys=False, indent=1)
-        # )
-        pass
-    
-    @classmethod
-    def list_playlists(cls, ids):
-        # """
-        # list playlists - EXPERIMENTAL, using exact search for ids
-        # """
-        # logger.info("session.get triggered: list_playlists (experimental)")
-
-        # items = []
-
-        # rs = [
-        #     {
-        #         "search_query": '"' + id + '"',
-        #         "sp": "EgIQAw%3D%3D",
-        #         "app": "desktop",
-        #         "persist_app": 1,
-        #     }
-        #     for id in ids
-        # ]
-        # results = [
-        #     result
-        #     for r in rs
-        #     for result in cls.pl_run_search(r)
-        #     if result["id"]["playlistId"] in ids
-        # ]
-        # for result in results:
-        #     result.update({"id": result["id"]["playlistId"]})
-        #     items.extend([result])
-
-        # return json.loads(
-        #     json.dumps({"items": items}, sort_keys=False, indent=1)
-        # )
-        pass
-
-    @classmethod
-    def list_related_videos(cls, video_id):
-        """
-        returns related videos for a given video_id
-        """
-        items = []
-
-        query = {"v": video_id, "app": "desktop", "persist_app": 1}
-        logger.info(f"jAPI list_related_videos triggered session.get: {video_id}")
-        result = cls.session.get(cls.endpoint + "watch", params=query)
-        if result.status_code == 200:
-            yt_data = cls._find_yt_data(cls, result.text)
-            extracted_json = yt_data["contents"]["twoColumnWatchNextResults"][
-                "secondaryResults"
-            ]["secondaryResults"]["results"]
-
-            items = cls.json_to_items(cls, extracted_json)
-
-        return json.loads(
-            json.dumps({"items": items}, sort_keys=False, indent=1)
-        )
-
-    @classmethod
-    def list_channelplaylists(cls, channel_id):
-        """
-        list playlists in a channel
-        """
-        logger.info(f"jAPI list_channelplaylists triggered session.get: {channel_id}")
-        result = cls.session.get(cls.endpoint + "channel/" + channel_id)
-        yt_data = cls._find_yt_data(cls, result.text)
-
-        extracted_json = yt_data["contents"]["twoColumnBrowseResultsRenderer"][
-            "tabs"
-        ][0]["tabRenderer"]["content"]["sectionListRenderer"]["contents"][0][
-            "itemSectionRenderer"
-        ][
-            "contents"
-        ][
-            0
-        ][
-            "shelfRenderer"
-        ][
-            "content"
-        ]
-
-        if "expandedShelfContentsRenderer" in extracted_json:
-            extracted_json = extracted_json["expandedShelfContentsRenderer"]
-
-        if "horizontalListRenderer" in extracted_json:
-            extracted_json = extracted_json["horizontalListRenderer"]
-
-        if "items" in extracted_json:
-            extracted_json = extracted_json["items"]
-        else:
-            logger.info("no items found")
-
-        try:
-            items = cls.json_to_items(cls, extracted_json)
-            [
-                item.update({"id": item["id"]["playlistId"]})
-                for item in items
-                if "playlistId" in item["id"]
-            ]
-        except Exception as e:
-            logger.info(f"items exception {e}")
-            items = []
-
-        return json.loads(
-            json.dumps({"items": items}, sort_keys=False, indent=1)
-        )
-
-
     def json_to_items(cls, result_json):
         if len(result_json) > 1 and "itemSectionRenderer" in result_json[1]:
             result_json = result_json[1]["itemSectionRenderer"]["contents"]
@@ -371,7 +391,7 @@ class jAPI(Client):
                     videoId = content[base]["videoId"]
                 except Exception as e:
                     # videoID = "Unknown"
-                    logger.error("videoId exception %s" % e)
+                    logger.error("json_to_items videoId exception %s" % e)
                     continue
 
                 try:
@@ -380,8 +400,7 @@ class jAPI(Client):
                     try:
                         title = content[base]["title"]["runs"][0]["text"]
                     except Exception as e:
-                        # title = "Unknown"
-                        logger.error("title exception %s" % e)
+                        logger.error("json_to_items title exception %s" % e)
                         continue
 
                 try:
@@ -390,13 +409,16 @@ class jAPI(Client):
                         0
                     ]  # is the rest tracking stuff? Omit
                 except Exception as e:
-                    logger.error(f"thumbnail exception {e}")
+                    logger.error(f"json_to_items thumbnail exception {e}")
 
                 try:
                     channelTitle = content[base][byline]["runs"][0]["text"]
                 except Exception as e:
                     # channelTitle = "Unknown"
-                    logger.error("channelTitle exception %s, %s" % (e, title))
+                    logger.error(
+                        "json_to_items channelTitle exception %s, %s"
+                        % (e, title)
+                    )
                     continue
 
                 item = {
@@ -421,7 +443,6 @@ class jAPI(Client):
 
                 item.update({"contentDetails": {"duration": duration}})
 
-                # is channelId useful for anything?
                 try:
                     channelId = content[base][byline]["runs"][0][
                         "navigationEndpoint"
