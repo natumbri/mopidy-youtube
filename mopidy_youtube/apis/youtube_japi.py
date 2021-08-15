@@ -6,16 +6,64 @@ from mopidy_youtube import logger
 from mopidy_youtube.comms import Client
 from mopidy_youtube.youtube import Video
 
+
 def traverse(input_dict, keys):
     internal_dict_value = input_dict
     for key in keys:
-        internal_dict_value = internal_dict_value.get(key, None)
+        if isinstance(internal_dict_value, list):
+            internal_dict_value = internal_dict_value[key]
+        else:
+            internal_dict_value = internal_dict_value.get(key, None)
         if internal_dict_value is None:
-            raise Exception
-    logger.info(internal_dict_value)
+            raise KeyError
     return internal_dict_value
 
-sectionListRendererContentsPath = ["contents", "twoColumnSearchResultsRenderer", "primaryContents", "sectionListRenderer", "contents"]
+
+sectionListRendererContentsPath = [
+    "contents",
+    "twoColumnSearchResultsRenderer",
+    "primaryContents",
+    "sectionListRenderer",
+    "contents",
+]
+
+continuationItemsPath = [
+    "onResponseReceivedCommands",
+    0,
+    "appendContinuationItemsAction",
+    "continuationItems",
+]
+
+relatedVideosPath = [
+    "contents",
+    "twoColumnWatchNextResults",
+    "secondaryResults",
+    "secondaryResults",
+    "results",
+]
+
+playlistBasePath = [
+    "contents",
+    "twoColumnBrowseResultsRenderer",
+    "tabs",
+    0,
+    "tabRenderer",
+    "content",
+    "sectionListRenderer",
+    "contents",
+    0,
+    "itemSectionRenderer",
+    "contents",
+    0,
+]
+
+listPlaylistitemsPath = playlistBasePath + [
+    "playlistVideoListRenderer",
+    "contents",
+]
+
+listChannelPlaylistsPath = playlistBasePath + ["shelfRenderer", "content"]
+
 
 class jAPI(Client):
     """
@@ -36,16 +84,12 @@ class jAPI(Client):
 
     endpoint = "https://www.youtube.com/"
 
-
-
     @classmethod
     def search(cls, q):
         """
         search for videos and playlists
         """
-
         result = cls.run_search(q)
-
         return json.loads(
             json.dumps(
                 {
@@ -63,20 +107,16 @@ class jAPI(Client):
         """
         returns related videos for a given video_id
         """
-        items = []
         query = {"v": video_id, "app": "desktop", "persist_app": 1}
 
         logger.debug(
             f"jAPI 'list_related_videos' triggered session.get: {video_id}"
         )
-        result = cls.session.get(cls.endpoint + "watch", params=query)
 
+        result = cls.session.get(cls.endpoint + "watch", params=query)
         if result.status_code == 200:
             yt_data = cls._find_yt_data(cls, result.text)
-            extracted_json = yt_data["contents"]["twoColumnWatchNextResults"][
-                "secondaryResults"
-            ]["secondaryResults"]["results"]
-
+            extracted_json = traverse(yt_data, relatedVideosPath)
             items = cls.json_to_items(cls, extracted_json)
 
         return json.loads(
@@ -109,6 +149,7 @@ class jAPI(Client):
         for result in results:
             result.update({"id": result["id"]["videoId"]})
             items.extend([result])
+
         return json.loads(
             json.dumps({"items": items}, sort_keys=False, indent=1)
         )
@@ -156,24 +197,7 @@ class jAPI(Client):
         )
         if result.status_code == 200:
             yt_data = cls._find_yt_data(cls, result.text)
-            extracted_json = yt_data["contents"][
-                "twoColumnBrowseResultsRenderer"
-            ]["tabs"][0]["tabRenderer"]["content"]["sectionListRenderer"][
-                "contents"
-            ][
-                0
-            ][
-                "itemSectionRenderer"
-            ][
-                "contents"
-            ][
-                0
-            ][
-                "playlistVideoListRenderer"
-            ][
-                "contents"
-            ]
-
+            extracted_json = traverse(yt_data, listPlaylistitemsPath)
             items = cls.json_to_items(cls, extracted_json)
 
             return json.loads(
@@ -197,32 +221,14 @@ class jAPI(Client):
         result = cls.session.get(cls.endpoint + "channel/" + channel_id)
 
         yt_data = cls._find_yt_data(cls, result.text)
-        extracted_json = yt_data["contents"]["twoColumnBrowseResultsRenderer"][
-            "tabs"
-        ][0]["tabRenderer"]["content"]["sectionListRenderer"]["contents"][0][
-            "itemSectionRenderer"
-        ][
-            "contents"
-        ][
-            0
-        ][
-            "shelfRenderer"
-        ][
-            "content"
-        ]
+        extracted_json = traverse(yt_data, listChannelPlaylistsPath)
 
-        if "expandedShelfContentsRenderer" in extracted_json:
-            extracted_json = extracted_json["expandedShelfContentsRenderer"]
-
-        if "horizontalListRenderer" in extracted_json:
-            extracted_json = extracted_json["horizontalListRenderer"]
-
-        if "items" in extracted_json:
-            extracted_json = extracted_json["items"]
-        else:
-            logger.warn(
-                f"jAPI 'list_channelplaylists', no items found: {channel_id}"
-            )
+        renderers = ["expandedShelfContentsRenderer", "horizontalListRenderer"]
+        extracted_json = [
+            extracted_json[renderer]["items"]
+            for renderer in renderers
+            if renderer in extracted_json
+        ][0]
 
         try:
             items = cls.json_to_items(cls, extracted_json)
@@ -277,7 +283,7 @@ class jAPI(Client):
             if continuation:
                 data.update({"continuation": continuation})
 
-            logger.info(
+            logger.debug(
                 f"jAPI run_search triggered session.post: {search_query}"
             )
 
@@ -292,15 +298,11 @@ class jAPI(Client):
                 if yt_data:
                     # Initial result is handled by try block, continuations by except block
                     try:
-                        sections = traverse(yt_data, sectionListRendererContentsPath)
-                        # sections = yt_data["contents"][
-                        #     "twoColumnSearchResultsRenderer"
-                        # ]["primaryContents"]["sectionListRenderer"]["contents"]
-                    except Exception as e:  # KeyError:
-                        logger.info(e)
-                        sections = yt_data["onResponseReceivedCommands"][0][
-                            "appendContinuationItemsAction"
-                        ]["continuationItems"]
+                        sections = traverse(
+                            yt_data, sectionListRendererContentsPath
+                        )
+                    except KeyError as e:  # KeyError:
+                        sections = traverse(yt_data, continuationItemsPath)
 
                     extracted_json = None
                     continuation_renderer = None
@@ -343,19 +345,15 @@ class jAPI(Client):
 
     @classmethod
     def pl_run_search(cls, query):
-        logger.info(f"jAPI pl_run_search triggered session.get: {query}")
+        logger.debug(f"jAPI pl_run_search triggered session.get: {query}")
         result = cls.session.get(urljoin(cls.endpoint, "results"), params=query)
         if result.status_code == 200:
             yt_data = None
             yt_data = cls._find_yt_data(cls, result.text)
             if yt_data:
-                extracted_json = yt_data["contents"][
-                    "twoColumnSearchResultsRenderer"
-                ]["primaryContents"]["sectionListRenderer"]["contents"][0][
-                    "itemSectionRenderer"
-                ][
-                    "contents"
-                ]
+                extracted_json = traverse(
+                    yt_data, sectionListRendererContentsPath
+                )[0]["itemSectionRenderer"]["contents"]
                 results = cls.json_to_items(cls, extracted_json)
                 return results
 
@@ -368,43 +366,47 @@ class jAPI(Client):
         items = []
 
         for content in result_json:
-            if "videoRenderer" in content:
-                base = "videoRenderer"
-            elif "compactVideoRenderer" in content:
-                base = "compactVideoRenderer"
-            elif "playlistVideoRenderer" in content:
-                base = "playlistVideoRenderer"
-            else:
-                base = ""
 
-            if base in [
+            base = []
+
+            contentRenderers = [
                 "videoRenderer",
                 "compactVideoRenderer",
                 "playlistVideoRenderer",
-            ]:
-                if "longBylineText" in content[base]:
-                    byline = "longBylineText"
-                else:
-                    byline = "shortBylineText"
+            ]
+
+            base = [
+                renderer for renderer in contentRenderers if renderer in content
+            ]
+
+            if base:
+
+                video = content[base[0]]
+
+                byline = [
+                    bl
+                    for bl in ["longBylineText", "shortBylineText"]
+                    if bl in video
+                ][0]
 
                 try:
-                    videoId = content[base]["videoId"]
+                    videoId = video["videoId"]
                 except Exception as e:
                     # videoID = "Unknown"
                     logger.error("json_to_items videoId exception %s" % e)
                     continue
 
                 try:
-                    title = content[base]["title"]["simpleText"]
+                    title = video["title"]["simpleText"]
                 except Exception:
                     try:
-                        title = content[base]["title"]["runs"][0]["text"]
+                        title = video["title"]["runs"][0]["text"]
                     except Exception as e:
-                        logger.error("json_to_items title exception %s" % e)
+                        logger.error(f"json_to_items title exception {e}")
                         continue
 
                 try:
-                    thumbnails = content[base]["thumbnail"]["thumbnails"][-1]
+                    thumbnails = video["thumbnail"]["thumbnails"][-1]
                     thumbnails["url"] = thumbnails["url"].split("?", 1)[
                         0
                     ]  # is the rest tracking stuff? Omit
@@ -412,12 +414,11 @@ class jAPI(Client):
                     logger.error(f"json_to_items thumbnail exception {e}")
 
                 try:
-                    channelTitle = content[base][byline]["runs"][0]["text"]
+                    channelTitle = video[byline]["runs"][0]["text"]
                 except Exception as e:
                     # channelTitle = "Unknown"
                     logger.error(
-                        "json_to_items channelTitle exception %s, %s"
-                        % (e, title)
+                        f"json_to_items channelTitle exception {e}, {title}"
                     )
                     continue
 
@@ -432,25 +433,25 @@ class jAPI(Client):
                 }
 
                 try:
-                    duration_text = content[base]["lengthText"]["simpleText"]
+                    duration_text = video["lengthText"]["simpleText"]
                     duration = "PT" + cls.format_duration(
                         re.match(cls.time_regex, duration_text)
                     )
                     logger.debug("duration: ", duration)
                 except Exception as e:
-                    logger.warn("no video-time, possibly live: ", e)
+                    logger.warn(f"no video-time, possibly live: {e}")
                     duration = "PT0S"
 
                 item.update({"contentDetails": {"duration": duration}})
 
                 try:
-                    channelId = content[base][byline]["runs"][0][
-                        "navigationEndpoint"
-                    ]["browseEndpoint"]["browseId"]
+                    channelId = video[byline]["runs"][0]["navigationEndpoint"][
+                        "browseEndpoint"
+                    ]["browseId"]
                     logger.debug(channelId)
                     item["snippet"].update({"channelId": channelId})
                 except Exception as e:
-                    logger.error("channelId exception %s, %s" % (e, title))
+                    logger.error(f"channelId exception {e}, {title}")
 
                 items.append(item)
 
@@ -459,39 +460,33 @@ class jAPI(Client):
 
             elif "playlistRenderer" in content:
 
+                playlist = content["playlistRenderer"]
+
                 try:
-                    thumbnails = content["playlistRenderer"]["thumbnails"][0][
-                        "thumbnails"
-                    ][-1]
+                    thumbnails = playlist["thumbnails"][0]["thumbnails"][-1]
                     thumbnails["url"] = thumbnails["url"].split("?", 1)[
                         0
                     ]  # is the rest tracking stuff? Omit
                 except Exception as e:
                     logger.error(
-                        f"thumbnail exception {e}, {content['playlistRenderer']['playlistId']}"
+                        f"thumbnail exception {e}, {playlist['playlistId']}"
                     )
 
                 try:
-                    channelTitle = content["playlistRenderer"][
-                        "longBylineText"
-                    ]["runs"][0]["text"]
+                    channelTitle = playlist["longBylineText"]["runs"][0]["text"]
                 except Exception as e:
                     logger.error(
-                        f"channelTitle exception {e}, {content['playlistRenderer']['playlistId']}"
+                        f"channelTitle exception {e}, {playlist['playlistId']}"
                     )
 
                 item = {
                     "id": {
                         "kind": "youtube#playlist",
-                        "playlistId": content["playlistRenderer"]["playlistId"],
+                        "playlistId": playlist["playlistId"],
                     },
-                    "contentDetails": {
-                        "itemCount": content["playlistRenderer"]["videoCount"]
-                    },
+                    "contentDetails": {"itemCount": playlist["videoCount"]},
                     "snippet": {
-                        "title": content["playlistRenderer"]["title"][
-                            "simpleText"
-                        ],
+                        "title": playlist["title"]["simpleText"],
                         "thumbnails": {"default": thumbnails,},
                         "channelTitle": channelTitle,
                     },
@@ -499,40 +494,35 @@ class jAPI(Client):
                 items.append(item)
 
             elif "gridPlaylistRenderer" in content:
+
+                playlist = content["gridPlaylistRenderer"]
+
                 try:
-                    thumbnails = content["gridPlaylistRenderer"][
-                        "thumbnailRenderer"
-                    ]["playlistVideoThumbnailRenderer"]["thumbnail"][
-                        "thumbnails"
-                    ][
-                        -1
-                    ]
+                    thumbnails = playlist["thumbnailRenderer"][
+                        "playlistVideoThumbnailRenderer"
+                    ]["thumbnail"]["thumbnails"][-1]
                     thumbnails["url"] = thumbnails["url"].split("?", 1)[
                         0
                     ]  # is the rest tracking stuff? Omit
                 except Exception as e:
                     logger.error(
-                        f"thumbnail exception {e}, {content['gridPlaylistRenderer']['playlistId']}"
+                        f"thumbnail exception {e}, {playlist['playlistId']}"
                     )
 
                 item = {
                     "id": {
                         "kind": "youtube#playlist",
-                        "playlistId": content["gridPlaylistRenderer"][
-                            "playlistId"
-                        ],
+                        "playlistId": playlist["playlistId"],
                     },
                     "contentDetails": {
                         "itemCount": int(
-                            content["gridPlaylistRenderer"][
-                                "videoCountShortText"
-                            ]["simpleText"].replace(",", "")
+                            playlist["videoCountShortText"][
+                                "simpleText"
+                            ].replace(",", "")
                         )
                     },
                     "snippet": {
-                        "title": content["gridPlaylistRenderer"]["title"][
-                            "runs"
-                        ][0]["text"],
+                        "title": playlist["title"]["runs"][0]["text"],
                         "thumbnails": {"default": thumbnails,},
                         "channelTitle": "unknown",  # note: do better
                     },
