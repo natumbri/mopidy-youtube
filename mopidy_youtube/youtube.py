@@ -389,8 +389,6 @@ class Playlist(Entry):
         start loading video info in a separate thread.
         """
 
-        self._videos = pykka.ThreadingFuture()
-
         def load_items():
             data = {"items": []}
             page = ""
@@ -459,9 +457,11 @@ class Playlist(Entry):
                 [x for _, x in zip(range(self.playlist_max_videos), myvideos)]
             )
 
-        executor = ThreadPoolExecutor(max_workers=1)
-        executor.submit(load_items)
-        executor.shutdown(wait=False)
+        requiresVideos = self._add_futures([self], ["videos"])
+        if requiresVideos:
+            executor = ThreadPoolExecutor(max_workers=1)
+            executor.submit(load_items)
+            executor.shutdown(wait=False)
 
     @async_property
     def video_count(self):

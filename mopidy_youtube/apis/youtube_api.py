@@ -35,7 +35,7 @@ class API(Client):
     @classmethod
     def list_related_videos(cls, video_id):
         """
-        queries related videos to a given video_id using a single API call
+        queries related videos for a given video_id using a single API call
         https://developers.google.com/youtube/v3/docs/search
         """
 

@@ -301,7 +301,7 @@ class jAPI(Client):
                         sections = traverse(
                             yt_data, sectionListRendererContentsPath
                         )
-                    except KeyError as e:  # KeyError:
+                    except KeyError:
                         sections = traverse(yt_data, continuationItemsPath)
 
                     extracted_json = None
@@ -337,7 +337,7 @@ class jAPI(Client):
             try:
                 return json.loads(result.group(1))
             except Exception as e:
-                logger.warn(f"_find_yt_data exception {e}; probably ok")
+                logger.debug(f"_find_yt_data exception {e}; probably ok")
                 return json.loads(result.group(1)[: e.pos])
 
         logger.error("No data found on page")
@@ -509,18 +509,24 @@ class jAPI(Client):
                         f"thumbnail exception {e}, {playlist['playlistId']}"
                     )
 
+                try:
+                    itemCount = int(
+                        playlist["videoCountShortText"]["simpleText"].replace(
+                            ",", ""
+                        )
+                    )
+                except Exception as e:
+                    logger.error(
+                        f"itemCount exception {e}, {playlist['playlistId']}"
+                    )
+                    itemCount = 0
+
                 item = {
                     "id": {
                         "kind": "youtube#playlist",
                         "playlistId": playlist["playlistId"],
                     },
-                    "contentDetails": {
-                        "itemCount": int(
-                            playlist["videoCountShortText"][
-                                "simpleText"
-                            ].replace(",", "")
-                        )
-                    },
+                    "contentDetails": {"itemCount": itemCount,},
                     "snippet": {
                         "title": playlist["title"]["runs"][0]["text"],
                         "thumbnails": {"default": thumbnails,},

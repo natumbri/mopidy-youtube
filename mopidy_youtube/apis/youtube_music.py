@@ -3,12 +3,14 @@ import re
 from concurrent.futures import as_completed
 from concurrent.futures.thread import ThreadPoolExecutor
 
+import pykka
+
 from ytmusicapi import YTMusic
 
 from mopidy_youtube import logger
 from mopidy_youtube.apis import youtube_japi
 from mopidy_youtube.comms import Client
-from mopidy_youtube.youtube import Video
+from mopidy_youtube.youtube import Playlist, Video
 
 ytmusic = None
 own_channel_id = None
@@ -35,11 +37,16 @@ class Music(Client):
 
     @classmethod
     def search(cls, q):
+        """
+        search for both songs and albums
+        """
+
         result = []
+        futures = []
+
         search_functions = [cls.search_albums, cls.search_songs]
 
         with ThreadPoolExecutor() as executor:
-            futures = []
             for search_function in search_functions:
                 futures.append(executor.submit(search_function, q))
             for future in as_completed(futures):
@@ -52,17 +59,26 @@ class Music(Client):
         """
         returns related videos for a given video_id
         """
-        tracks = []
+
         related_videos = ytmusic.get_watch_playlist(video_id)
+
+        # hack to deal with ytmusic.get_watch_playlist returning 'thumbnail'
+        # instead of 'thumbnails' inside 'tracks'
+        [
+            related_video.update({"thumbnails": related_video["thumbnail"]})
+            for related_video in related_videos["tracks"]
+            if "thumbnail" in related_video
+        ]
+
         tracks = [
-            cls.ytplaylist_item_to_video(track)
+            cls.yt_item_to_video(track)
             for track in related_videos["tracks"]
+            if track["videoId"] is not None
         ]
 
         # sometimes, ytmusic.get_watch_playlist seems to return very few, or even
         # only one, related video, which may be the original video, itself.  If this
-        # happens, get related videos using the bs4API.
-
+        # happens, get related videos using the jAPI.
         if len(tracks) < 10:
             japi_related_videos = youtube_japi.jAPI.list_related_videos(
                 video_id
@@ -72,6 +88,117 @@ class Music(Client):
 
         return json.loads(
             json.dumps({"items": tracks}, sort_keys=False, indent=1)
+        )
+
+    @classmethod
+    def list_videos(cls, ids):
+        """
+        list videos - do we need this? When would it be called? Untested.
+        """
+        # what follows works, but it loads each item separately.
+        # So, if you have 50 items that's 50 trips to the endpoint.
+        results = []
+
+        logger.debug(
+            f"youtube_music list_videos triggered ytmusic.get_song x {len(ids)}: {ids}"
+        )
+
+        with ThreadPoolExecutor() as executor:
+            futures = executor.map(ytmusic.get_song, ids)
+            [results.append(value) for value in futures if value is not None]
+
+        # hack to deal with ytmusic.get_songs returning ['thumbnail']['thumbnails']
+        # instead of ['thumbnails']
+        [
+            video.update({"thumbnails": video["thumbnail"]["thumbnails"]})
+            for video in results
+            if "thumbnail" in video
+        ]
+
+        # these the playlists that are returned
+        items = [cls.yt_item_to_video(result) for result in results]
+
+        return json.loads(
+            json.dumps({"items": items}, sort_keys=False, indent=1)
+        )
+
+    @classmethod
+    def list_playlists(cls, ids):
+        """
+        list playlists
+        """
+
+        # what follows works, but it loads each playlist separately.
+        # So, if you have 50 playlists that's 50 trips to the endpoint.
+        # On the plus side, each call also takes care of videos in the
+        # playlist.
+        results = []
+
+        with ThreadPoolExecutor() as executor:
+            futures = executor.map(cls._get_playlist_or_album, ids)
+            [results.append(value) for value in futures if value is not None]
+
+        if len(results) == 0:
+            # why would this happen?
+            logger.debug(f"list_playlists for {ids} returned no results")
+            return None
+
+        # these the playlists that are returned
+        items = [cls.yt_listitem_to_playlist(result) for result in results]
+
+        # create the playlist objects and video objects for each track in
+        # the playlist, and add the videos to the playlist to avoid
+        # list_playlistitems calling ytmusic.get_playlist
+        cls._create_playlist_objects(items)
+
+        return json.loads(
+            json.dumps({"items": items}, sort_keys=False, indent=1)
+        )
+
+    @classmethod
+    def list_playlistitems(cls, id, page=None, max_results=None):
+
+        result = cls._get_playlist_or_album(id)
+        result["playlistId"] = id
+        result = cls.yt_listitem_to_playlist(result)
+
+        # just in case: create the Playlist object and set api data,
+        # to avoid list_playlist calling ytmusic.get_playlist if
+        # the Playlist object doesn't exist
+        pl = Playlist.get(result["id"]["playlistId"])
+        pl._set_api_data(
+            ["title", "video_count", "thumbnails", "channel"], result
+        )
+
+        items = [
+            track
+            for track in result["tracks"]
+            if track["id"]["videoId"] is not None
+        ]
+
+        # why do ytplaylist_item_to_video and ytalbum_item_to_video both include
+        # {"id": {"kind": "youtube#video", "videoId": item["videoId"],}} instead of
+        # {"id": item["videoId"]}?
+
+        # And, given that they do include the longer one, why isn't the following
+        # necessary for compatibility with the youtube API?
+
+        [
+            item.update({"id": item["id"]["videoId"]})
+            for item in items
+            if "videoId" in item["id"]
+        ]
+
+        # Because Playlist.videos gets the id from {"snippet": {"resourceId":
+        # {"videoId": item["videoId"]},}}. But it doesn't hurt to keep them consistent.
+
+        ajax = None
+        return json.loads(
+            json.dumps(
+                {"nextPageToken": ajax, "items": items},
+                sort_keys=False,
+                indent=1,
+            )
         )
 
     @classmethod
@@ -89,12 +216,13 @@ class Music(Client):
         if channel_id in (None, own_channel_id):
             try:
                 logger.debug(
-                    "ytmusic.get_library_playlists triggered: youtube-music list_channelplaylists"
+                    f"youtube_music list_channelplaylists triggered ytmusic.get_library_playlists: {channel_id}"
                 )
                 results = ytmusic.get_library_playlists()
+
                 if channel_id:
                     logger.debug(
-                        "ytmusic.get_user triggered: youtube-music list_channelplaylists"
+                        f"youtube_music list_channelplaylists triggered ytmusic.get_user: {channel_id}"
                     )
                     channelTitle = ytmusic.get_user(channel_id)["name"]
                 else:
@@ -104,7 +232,7 @@ class Music(Client):
                 logger.debug(f"list_channelplaylists exception {e}")
                 if channel_id:
                     logger.debug(
-                        "ytmusic.get_user triggered: youtube-music list_channelplaylists"
+                        f"youtube_music list_channelplaylists triggered ytmusic.get_user: {channel_id}"
                     )
                     user = ytmusic.get_user(channel_id)
                     results = user["playlists"]["results"]
@@ -112,7 +240,7 @@ class Music(Client):
 
         else:  # if channel_id is not None and not own_channel_id retrieve only public playlists:
             logger.debug(
-                "ytmusic.get_user triggered: youtube-music list_channelplaylists"
+                f"youtube_music list_channelplaylists triggered ytmusic.get_user: {channel_id}"
             )
             user = ytmusic.get_user(channel_id)
             results = user["playlists"]["results"]
@@ -140,80 +268,96 @@ class Music(Client):
 
     @classmethod
     def search_songs(cls, q):
-        logger.debug("ytmusic.search triggered: youtube-music search_songs")
+        logger.debug(
+            f"youtube_music search_songs triggered ytmusic.search: {q}"
+        )
         results = ytmusic.search(
             query=q, filter="songs", limit=Video.search_results
         )
 
         songs = [
-            {
-                "id": {"kind": "youtube#video", "videoId": item["videoId"],},
-                "contentDetails": {
-                    "duration": "PT"
-                    + cls.format_duration(
-                        re.match(cls.time_regex, item["duration"])
-                    )
-                },
-                "snippet": {
-                    "title": item["title"],
-                    "resourceId": {
-                        "kind": "youtube#video",
-                        "videoId": item["videoId"],
-                    },
-                    # TODO: full support for thumbnails
-                    "thumbnails": {"default": item["thumbnails"][0]},
-                    "channelTitle": item["artists"][0]["name"],
-                    "album": item["album"],
-                    "artists": item["artists"],
-                },
-            }
-            for item in results
+            cls.yt_item_to_video(track)
+            for track in results
+            if track["videoId"] is not None
         ]
+
         return songs
 
     @classmethod
-    def ytplaylist_item_to_video(cls, item, thumbnail=None):
-        video = {}
-        if "duration" in item:
-            duration = item["duration"]
-        else:
-            duration = item["length"]
+    def search_albums(cls, q):
+        albums = []
 
-        if "artists" in item:
-            channelTitle = item["artists"][0]["name"]
-        else:
-            channelTitle = item["byline"]
-
-        if thumbnail is None and "thumbnail" in item:
-            thumbnail = item["thumbnail"][-1]
-
-        video.update(
-            {
-                "id": {"kind": "youtube#video", "videoId": item["videoId"],},
-                "contentDetails": {
-                    "duration": "PT"
-                    + cls.format_duration(re.match(cls.time_regex, duration))
-                },
-                "snippet": {
-                    "title": item["title"],
-                    "resourceId": {
-                        "kind": "youtube#video",
-                        "videoId": item["videoId"],
-                    },
-                    # TODO: full support for thumbnails
-                    "thumbnails": {"default": thumbnail},
-                    "channelTitle": channelTitle,
-                },
-            }
+        logger.debug(
+            f"youtube_music search_albums triggered ytmusic.search: {q}"
         )
-        return video
+
+        results = ytmusic.search(
+            query=q, filter="albums", limit=Video.search_results
+        )
+
+        def job(result):
+            try:
+                logger.debug(
+                    f"youtube_music search_albums triggered ytmusic.get_album: {result['browseId']}"
+                )
+                # ytmusic.get_album is necessary to get the number of tracks
+                ytmusic_album = ytmusic.get_album(result["browseId"])
+                ytmusic_album.update({"playlistId": result["browseId"]})
+                album = cls.yt_listitem_to_playlist(ytmusic_album)
+                return album
+
+            except Exception as e:
+                logger.error(f"youtube_music search_albums get_album error {e}")
+
+        with ThreadPoolExecutor() as executor:
+            futures = executor.map(job, results)
+            [albums.append(value) for value in futures]
+
+        # given we're calling ytmusic.get_album, which returns tracks, we might
+        # as well create the playlist object and the related video objects.
+        cls._create_playlist_objects(albums)
+
+        return albums
 
     @classmethod
-    def ytalbum_item_to_video(cls, item, thumbnail):
+    def yt_listitem_to_playlist(cls, item):
+
+        playlist = {
+            "id": {
+                "kind": "youtube#playlist",
+                "playlistId": item["playlistId"],
+            },
+            "snippet": {
+                "title": item["title"],
+                "thumbnails": {"default": item["thumbnails"][0]},
+                "channelTitle": item["artists"][0]["name"],
+            },
+            "contentDetails": {"itemCount": item["trackCount"]},
+        }
+
+        if "tracks" in item:
+            fields = ["artists", "thumbnails"]
+            [
+                track.update({field: item[field]})
+                for field in fields
+                for track in item["tracks"]
+                if track[field] is None
+            ]
+            playlist["tracks"] = [
+                cls.yt_item_to_video(track)
+                for track in item["tracks"]
+                if track["videoId"] is not None
+            ]
+
+        return playlist
+
+    @classmethod
+    def yt_item_to_video(cls, item):
         def _convertMillis(milliseconds):
             try:
                 hours, miliseconds = divmod(int(milliseconds), 3600000)
-            except Exception:
+            except Exception as e:
+                logger.error(f"_convertMillis error: {e}, {milliseconds}")
                 return "00:00:00"
             minutes, miliseconds = divmod(miliseconds, 60000)
             seconds = int(miliseconds) / 1000
@@ -226,179 +370,82 @@ class Music(Client):
         elif "lengthMs" in item:
             duration = _convertMillis(item["lengthMs"])
         else:
-            duration = "0:00"
-            logger.info(f"duration missing: {item}")
+            duration = "00:00:00"
+            logger.warn(f"duration missing: {item}")
 
-        video = {}
-        video.update(
-            {
-                "id": {"kind": "youtube#video", "videoId": item["videoId"],},
-                "contentDetails": {
-                    "duration": "PT"
-                    + cls.format_duration(re.match(cls.time_regex, duration))
-                },
-                "snippet": {
-                    "title": item["title"],
-                    "resourceId": {
-                        "kind": "youtube#video",
-                        "videoId": item["videoId"],
-                    },
-                    # TODO: full support for thumbnails
-                    "thumbnails": {"default": thumbnail},
-                    "channelTitle": item["artists"],
-                },
-            }
+        duration = "PT" + cls.format_duration(
+            re.match(cls.time_regex, duration)
         )
+        if "artists" in item and item["artists"] is not None:
+            if isinstance(item["artists"], list):
+                channelTitle = item["artists"][0]["name"]
+            else:
+                channelTitle = item["artists"]
+        elif "byline" in item:
+            logger.debug(f'byline: {item["byline"]}')
+            channelTitle = item["byline"]
+        else:
+            channelTitle = "unknown"
+
+        # TODO: full support for thumbnails
+        thumbnail = item["thumbnails"][-1]
+
+        video = {
+            "id": {"kind": "youtube#video", "videoId": item["videoId"],},
+            "contentDetails": {"duration": duration,},
+            "snippet": {
+                "title": item["title"],
+                "resourceId": {
+                    "kind": "youtube#video",
+                    "videoId": item["videoId"],
+                },
+                "thumbnails": {"default": thumbnail},
+                "channelTitle": channelTitle,
+            },
+        }
+
         return video
 
-    @classmethod
-    def search_albums(cls, q):
-        albums = []
-        logger.debug("ytmusic.search triggered: youtube-music search_albums")
-        results = ytmusic.search(
-            query=q, filter="albums", limit=Video.search_results
-        )
-
-        def job(result):
-            try:
-                logger.debug(
-                    f"ytmusic.get_album({result['browseId']}) triggered: youtube-music search_albums"
-                )
-                ytmusic_album = ytmusic.get_album(result["browseId"])
-                album = {
-                    "id": {
-                        "kind": "youtube#playlist",
-                        "playlistId": result["browseId"],
-                    },
-                    "snippet": {
-                        "channelTitle": result["type"],
-                        "thumbnails": {"default": result["thumbnails"][0]},
-                        "title": result["title"],
-                    },
-                    "contentDetails": {
-                        "itemCount": ytmusic_album["trackCount"]
-                    },
-                    "tracks": ytmusic_album["tracks"],
-                }
-
-                return album
-
-            except Exception as e:
-                logger.error('youtube_music search_albums error "%s"', e)
-
-        with ThreadPoolExecutor() as executor:
-            futures = executor.map(job, results)
-            [albums.append(value) for value in futures]
-
-        return albums
-
-    @classmethod
-    def list_playlists(cls, ids):
-        """
-        list playlists
-        """
-
-        # what follows works, but it loads each playlist separately.
-        # So, if you have 50 playlists that's 50 trips to the endpoint.
-        results = []
-
-        def job(id):
-            try:
-                logger.debug(
-                    "ytmusic.get_album triggered: youtube-music list_playlists"
-                )
-                result = ytmusic.get_album(browseId=id)
-                return result
-            except Exception as e:
-                logger.debug(
-                    f"ytmusic.get_album failed with {e} for playlist {id}"
-                )
-
-        with ThreadPoolExecutor() as executor:
-            futures = executor.map(job, ids)
-            [results.append(value) for value in futures if value is not None]
-
-        if len(results) == 0:
-            # why would this happen?
-            logger.debug(f"list_playlists for {ids} returned no results")
-            return None
-
-        items = [
-            {
-                "id": result["playlistId"],
-                "snippet": {
-                    "title": result["title"],
-                    "thumbnails": {"default": result["thumbnails"][0]},
-                    # apparently, result["artist"] can be empty??
-                    "channelTitle": result["artist"][0]["name"],
-                },
-                "contentDetails": {"itemCount": result["trackCount"]},
-            }
-            for result in results
-        ]
-
-        # get the videos in the playlist and
-        # start loading video info in the background
-        # this isn't really part of the api - should it be removed? does it
-        # speed anything up?
-
-        # tracks = [cls.ytalbum_item_to_video(track, result["thumbnails"][0]) for result in results for track in result["tracks"]]
-        # Music.loadTracks(tracks)
-
-        return json.loads(
-            json.dumps({"items": items}, sort_keys=False, indent=1)
-        )
-
-    @classmethod
-    def loadTracks(cls, tracks):
-
-        videos = [Video.create_object(track) for track in tracks]
-
-        Video.load_info(videos)
-
-    @classmethod
-    def list_playlistitems(cls, id, page=None, max_results=None):
+    def _get_playlist_or_album(id):
         if id.startswith("PL"):
             logger.debug(
-                f"ytmusic.get_playlist({id}) triggered: youtube-music list_playlistitems"
+                f"youtube_music playlist_or_album triggered ytmusic.get_playlist: {id}"
             )
             result = ytmusic.get_playlist(id)
-            items = [
-                cls.ytplaylist_item_to_video(item, item["thumbnails"][0])
-                for item in result["tracks"]
-            ]
+            result["playlistId"] = result["id"]
+            result["artists"] = [{"name": result["author"]}]
         else:
             logger.debug(
-                f"ytmusic.get_album({id}) triggered: youtube-music list_playlistitems"
+                f"youtube_music playlist_or_album triggered ytmusic.get_album: {id}"
             )
             result = ytmusic.get_album(id)
+            if "artists" not in result:
+                result["artists"] = result["artist"]
+        return result
 
-            items = [
-                cls.ytalbum_item_to_video(item, result["thumbnails"][0])
-                for item in result["tracks"]
-            ]
-
-        # why do ytplaylist_item_to_video and ytalbum_item_to_video both include
-        # {"id": {"kind": "youtube#video", "videoId": item["videoId"],}} instead of
-        # {"id": item["videoId"]}?
-
-        # And, given that they do include the longer one, why isn't the following
-        # necessary for compatibility with the youtube API?
-
-        [
-            item.update({"id": item["id"]["videoId"]})
-            for item in items
-            if "videoId" in item["id"]
-        ]
-
-        # Because Playlist.videos gets the id from {"snippet": {"resourceId":
-        # {"videoId": item["videoId"]},}}. But it doesn't hurt to keep them consistent.
-
-        ajax = None
-        return json.loads(
-            json.dumps(
-                {"nextPageToken": ajax, "items": items},
-                sort_keys=False,
-                indent=1,
+    @classmethod
+    def _create_playlist_objects(cls, items):
+        for item in items:
+            plvideos = []
+            pl = Playlist.get(item["id"]["playlistId"])
+            pl._set_api_data(
+                ["title", "video_count", "thumbnails", "channel"], item
             )
-        )
+
+            pl._videos = pykka.ThreadingFuture()
+
+            for track in item["tracks"]:
+                video = Video.get(track["snippet"]["resourceId"]["videoId"])
+                video._set_api_data(
+                    ["title", "channel", "length", "thumbnails"], track
+                )
+                plvideos.append(video)
+
+            pl._videos.set(
+                [
+                    x
+                    for _, x in zip(
+                        range(Playlist.playlist_max_videos), plvideos
+                    )
+                ]
+            )
