@@ -16,8 +16,9 @@ ytmusic = None
 own_channel_id = None
 
 
-# Direct access to YouTube Music API
-#
+# Access to YouTube Music API through ytmusicapi package
+# https://github.com/sigma67/ytmusicapi
+
 class Music(Client):
     endpoint = None
 
@@ -95,7 +96,7 @@ class Music(Client):
         """
         list videos - do we need this? When would it be called? Untested.
         """
-        # what follows works, but it loads each item separately.
+        # what follows should work, but it loads each item separately.
         # So, if you have 50 items that's 50 trips to the endpoint.
         results = []
 
@@ -115,7 +116,7 @@ class Music(Client):
             if "thumbnail" in video
         ]
 
-        # these the playlists that are returned
+        # these the videos that are returned
         items = [cls.yt_item_to_video(result) for result in results]
 
         return json.loads(
@@ -314,14 +315,12 @@ class Music(Client):
             [albums.append(value) for value in futures]
 
         # given we're calling ytmusic.get_album, which returns tracks, we might
-        # as well create the playlist object and the related video objects.
+        # as well create the playlist objects and the related video objects.
         cls._create_playlist_objects(albums)
 
         return albums
 
-    @classmethod
-    def yt_listitem_to_playlist(cls, item):
-
+    def yt_listitem_to_playlist(item):
         playlist = {
             "id": {
                 "kind": "youtube#playlist",
@@ -344,15 +343,14 @@ class Music(Client):
                 if track[field] is None
             ]
             playlist["tracks"] = [
-                cls.yt_item_to_video(track)
+                Music.yt_item_to_video(track)
                 for track in item["tracks"]
                 if track["videoId"] is not None
             ]
 
         return playlist
 
-    @classmethod
-    def yt_item_to_video(cls, item):
+    def yt_item_to_video(item):
         def _convertMillis(milliseconds):
             try:
                 hours, miliseconds = divmod(int(milliseconds), 3600000)
@@ -373,9 +371,10 @@ class Music(Client):
             duration = "00:00:00"
             logger.warn(f"duration missing: {item}")
 
-        duration = "PT" + cls.format_duration(
-            re.match(cls.time_regex, duration)
+        duration = "PT" + Client.format_duration(
+            re.match(Client.time_regex, duration)
         )
+
         if "artists" in item and item["artists"] is not None:
             if isinstance(item["artists"], list):
                 channelTitle = item["artists"][0]["name"]
@@ -423,8 +422,7 @@ class Music(Client):
                 result["artists"] = result["artist"]
         return result
 
-    @classmethod
-    def _create_playlist_objects(cls, items):
+    def _create_playlist_objects(items):
         for item in items:
             plvideos = []
             pl = Playlist.get(item["id"]["playlistId"])

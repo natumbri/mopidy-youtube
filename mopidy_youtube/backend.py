@@ -35,39 +35,65 @@ def convert_video_to_track(
         adjustedLength = 0
 
     return Track(
+        uri=format_video_uri(video),
         name=video.title.get(),
-        comment=video.id,
-        length=adjustedLength,
         artists=[Artist(name=video.channel.get())],
         album=Album(name=album_name),
-        uri=format_video_uri(video),
+        length=adjustedLength,
+        comment=video.id,
         **kwargs,
     )
+
+# YouTube Music supports 'songs'; probably should take advantage and use
+#
+# def convert_ytmsong_to_track(
+#     video: youtube.Video, album_name: str, **kwargs
+# ) -> Track:
+#
+#     try:
+#         adjustedLength = video.length.get() * 1000
+#     except Exception:
+#         adjustedLength = 0
+#
+#     return Track(
+#         uri=format_video_uri(video),
+#         name=video.title.get(),
+#         artists=[Artist(name=video.channel.get())],
+#         album=Album(name=album_name),
+#         length=adjustedLength,
+#         comment=video.id,
+#         **kwargs,
+#     )
 
 
 def convert_playlist_to_album(playlist: youtube.Playlist) -> Album:
     return Album(
+        uri=format_playlist_uri(playlist),
         name=playlist.title.get(),
         artists=[
             Artist(
                 name=f"YouTube Playlist ({playlist.video_count.get()} videos)"
             )
         ],
-        uri=format_playlist_uri(playlist),
+        num_tracks=playlist.video_count.get()
     )
 
 
 # YouTube Music supports 'Albums'; probably should take advantage and use
 #
-# def convert_ytalbum_to_album(album: youtube.Album) -> Album:
+# def convert_ytmalbum_to_album(album: youtube.Album) -> Album:
 #     return Album(
-#         name=album.title.get(),
+#         uri=format_album_uri(album),
+#         name=f"{album.title.get()} (YouTube Music Album, {album.track_count.get()} tracks),
 #         artists=[
 #             Artist(
-#                 name=f"YouTube Music Album ({album.track_count.get()} tracks)"
+#                 # actual artists from the ytm album, including a name and uri
 #             )
 #         ],
-#         uri=format_album_uri(album),
+#         num_tracks=
+#         num_discs=
+#         date=
+#         musicbrainz_id=
 #     )
 
 

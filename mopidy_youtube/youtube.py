@@ -388,6 +388,7 @@ class Playlist(Entry):
         fetched videos. For every page fetched, Video.load_info is called to
         start loading video info in a separate thread.
         """
+        requiresVideos = self._add_futures([self], ["videos"])
 
         def load_items():
             data = {"items": []}
@@ -457,7 +458,6 @@ class Playlist(Entry):
                 [x for _, x in zip(range(self.playlist_max_videos), myvideos)]
             )
 
-        requiresVideos = self._add_futures([self], ["videos"])
         if requiresVideos:
             executor = ThreadPoolExecutor(max_workers=1)
             executor.submit(load_items)

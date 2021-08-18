@@ -64,6 +64,7 @@ listPlaylistitemsPath = playlistBasePath + [
 
 listChannelPlaylistsPath = playlistBasePath + ["shelfRenderer", "content"]
 
+textPath = ["runs", 0, "text"]
 
 class jAPI(Client):
     """
@@ -71,15 +72,9 @@ class jAPI(Client):
     using json where available
     """
 
-    time_regex = (
-        r"(?:(?:(?P<durationHours>[0-9]+)\:)?"
-        r"(?P<durationMinutes>[0-9]+)\:"
-        r"(?P<durationSeconds>[0-9]{2}))"
-    )
-
     ytdata_regex = (
         r'window\["ytInitialData"] = ({.*?});',
-        r"ytInitialData = ({.*});",
+        r"ytInitialData = ({.*?});",
     )
 
     endpoint = "https://www.youtube.com/"
@@ -93,9 +88,10 @@ class jAPI(Client):
         return json.loads(
             json.dumps(
                 {
-                    "items": [
-                        x for _, x in zip(range(Video.search_results), result)
-                    ]
+                    "items": result
+                    # [
+                    #     x for _, x in zip(range(Video.search_results), result)
+                    # ]
                 },
                 sort_keys=False,
                 indent=1,
@@ -115,9 +111,9 @@ class jAPI(Client):
 
         result = cls.session.get(cls.endpoint + "watch", params=query)
         if result.status_code == 200:
-            yt_data = cls._find_yt_data(cls, result.text)
+            yt_data = cls._find_yt_data(result.text)
             extracted_json = traverse(yt_data, relatedVideosPath)
-            items = cls.json_to_items(cls, extracted_json)
+            items = cls.json_to_items(extracted_json)
 
         return json.loads(
             json.dumps({"items": items}, sort_keys=False, indent=1)
@@ -196,9 +192,9 @@ class jAPI(Client):
             urljoin(cls.endpoint, "playlist"), params=query
         )
         if result.status_code == 200:
-            yt_data = cls._find_yt_data(cls, result.text)
+            yt_data = cls._find_yt_data(result.text)
             extracted_json = traverse(yt_data, listPlaylistitemsPath)
-            items = cls.json_to_items(cls, extracted_json)
+            items = cls.json_to_items(extracted_json)
 
             return json.loads(
                 json.dumps(
@@ -220,7 +216,7 @@ class jAPI(Client):
         )
         result = cls.session.get(cls.endpoint + "channel/" + channel_id)
 
-        yt_data = cls._find_yt_data(cls, result.text)
+        yt_data = cls._find_yt_data(result.text)
         extracted_json = traverse(yt_data, listChannelPlaylistsPath)
 
         renderers = ["expandedShelfContentsRenderer", "horizontalListRenderer"]
@@ -231,7 +227,7 @@ class jAPI(Client):
         ][0]
 
         try:
-            items = cls.json_to_items(cls, extracted_json)
+            items = cls.json_to_items(extracted_json)
             [
                 item.update({"id": item["id"]["playlistId"]})
                 for item in items
@@ -324,12 +320,28 @@ class jAPI(Client):
                         ]["continuationCommand"]["token"]
                     else:
                         continuation = None
-                    results.extend(cls.json_to_items(cls, extracted_json))
+                    results.extend(cls.json_to_items(extracted_json))
 
         return results
 
-    def _find_yt_data(cls, text):
-        for r in cls.ytdata_regex:
+    @classmethod
+    def pl_run_search(cls, query):
+        logger.debug(f"jAPI pl_run_search triggered session.get: {query}")
+        result = cls.session.get(urljoin(cls.endpoint, "results"), params=query)
+        if result.status_code == 200:
+            yt_data = None
+            yt_data = cls._find_yt_data(result.text)
+            if yt_data:
+                extracted_json = traverse(
+                    yt_data, sectionListRendererContentsPath
+                )[0]["itemSectionRenderer"]["contents"]
+                results = cls.json_to_items(extracted_json)
+                return results
+
+        return []
+
+    def _find_yt_data(text):
+        for r in jAPI.ytdata_regex:
             result = re.search(r, text)
             if not result:
                 continue
@@ -343,23 +355,7 @@ class jAPI(Client):
         logger.error("No data found on page")
         raise Exception("No data found on page")
 
-    @classmethod
-    def pl_run_search(cls, query):
-        logger.debug(f"jAPI pl_run_search triggered session.get: {query}")
-        result = cls.session.get(urljoin(cls.endpoint, "results"), params=query)
-        if result.status_code == 200:
-            yt_data = None
-            yt_data = cls._find_yt_data(cls, result.text)
-            if yt_data:
-                extracted_json = traverse(
-                    yt_data, sectionListRendererContentsPath
-                )[0]["itemSectionRenderer"]["contents"]
-                results = cls.json_to_items(cls, extracted_json)
-                return results
-
-        return []
-
-    def json_to_items(cls, result_json):
+    def json_to_items(result_json):
         if len(result_json) > 1 and "itemSectionRenderer" in result_json[1]:
             result_json = result_json[1]["itemSectionRenderer"]["contents"]
 
@@ -400,7 +396,7 @@ class jAPI(Client):
                     title = video["title"]["simpleText"]
                 except Exception:
                     try:
-                        title = video["title"]["runs"][0]["text"]
+                        title = traverse(video["title"], textPath)
                     except Exception as e:
                         logger.error(f"json_to_items title exception {e}")
                         continue
@@ -414,7 +410,7 @@ class jAPI(Client):
                     logger.error(f"json_to_items thumbnail exception {e}")
 
                 try:
-                    channelTitle = video[byline]["runs"][0]["text"]
+                    channelTitle = traverse(video[byline], textPath)
                 except Exception as e:
                     # channelTitle = "Unknown"
                     logger.error(
@@ -434,8 +430,8 @@ class jAPI(Client):
 
                 try:
                     duration_text = video["lengthText"]["simpleText"]
-                    duration = "PT" + cls.format_duration(
-                        re.match(cls.time_regex, duration_text)
+                    duration = "PT" + Client.format_duration(
+                        re.match(Client.time_regex, duration_text)
                     )
                     logger.debug("duration: ", duration)
                 except Exception as e:
@@ -473,7 +469,7 @@ class jAPI(Client):
                     )
 
                 try:
-                    channelTitle = playlist["longBylineText"]["runs"][0]["text"]
+                    channelTitle = traverse(playlist["longBylineText"], textPath)
                 except Exception as e:
                     logger.error(
                         f"channelTitle exception {e}, {playlist['playlistId']}"
@@ -528,7 +524,7 @@ class jAPI(Client):
                     },
                     "contentDetails": {"itemCount": itemCount,},
                     "snippet": {
-                        "title": playlist["title"]["runs"][0]["text"],
+                        "title": traverse(playlist["title"], textPath),
                         "thumbnails": {"default": thumbnails,},
                         "channelTitle": "unknown",  # note: do better
                     },
