@@ -24,7 +24,7 @@ class bs4API(Client):
 
     ytdata_regex = (
         r'window\["ytInitialData"] = ({.*?});',
-        r"ytInitialData = ({.*});",
+        r"ytInitialData = ({.*?});",
     )
 
     endpoint = "https://www.youtube.com/"
@@ -134,17 +134,11 @@ class bs4API(Client):
 
         return results
 
-    def _find_yt_data(cls, text):
-        for r in cls.ytdata_regex:
+    def _find_yt_data(text):
+        for r in bs4API.ytdata_regex:
             result = re.search(r, text)
-            if not result:
-                continue
-
-            try:
+            if result:
                 return json.loads(result.group(1))
-            except Exception as e:
-                logger.warn(f"_find_yt_data exception {e}; probably ok")
-                return json.loads(result.group(1)[: e.pos])
 
         logger.error("No data found on page")
         raise Exception("No data found on page")
@@ -158,7 +152,7 @@ class bs4API(Client):
             # make japi first option, since it seems to be most reliable
             logger.info("trying japi")
             yt_data = None
-            yt_data = cls._find_yt_data(cls, result.text)
+            yt_data = cls._find_yt_data(result.text)
             if yt_data:
                 extracted_json = yt_data["contents"][
                     "twoColumnSearchResultsRenderer"

@@ -200,7 +200,7 @@ class jAPI(scrAPI):
         result = cls.session.get(urljoin(cls.endpoint, "results"), params=query)
         if result.status_code == 200:
             yt_data = None
-            yt_data = cls._find_yt_data(cls, result.text)
+            yt_data = cls._find_yt_data(result.text)
             if yt_data:
                 extracted_json = yt_data["contents"][
                     "twoColumnSearchResultsRenderer"
