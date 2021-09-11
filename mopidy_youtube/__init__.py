@@ -2,6 +2,7 @@ import logging
 import pathlib
 
 import pkg_resources
+import tornado.web
 from mopidy import config, ext
 
 __version__ = pkg_resources.get_distribution("Mopidy-YouTube").version
@@ -41,3 +42,15 @@ class Extension(ext.Extension):
         registry.add("backend", YouTubeBackend)
         registry.add("frontend", YouTubeAutoplayer)
         registry.add("frontend", YouTubeCoreListener)
+        registry.add(
+            "http:app", {"name": self.ext_name, "factory": self.webapp}
+        )
+
+    def webapp(self, config, core):
+        return [
+            (
+                r"/(.+)",
+                tornado.web.StaticFileHandler,
+                {"path": Extension.get_cache_dir(config)},
+            ),
+        ]

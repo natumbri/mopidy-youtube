@@ -1,3 +1,4 @@
+import json
 import os
 import re
 from concurrent.futures.thread import ThreadPoolExecutor
@@ -5,9 +6,10 @@ from concurrent.futures.thread import ThreadPoolExecutor
 import pykka
 import youtube_dl
 from cachetools import TTLCache, cached
-from mopidy.models import Image
+from mopidy.models import Image, ModelJSONEncoder
 
 from mopidy_youtube import logger
+from mopidy_youtube.converters import convert_video_to_track
 
 api_enabled = False
 channel = None
@@ -209,7 +211,6 @@ class Video(Entry):
         loads title, length, channel of multiple videos using one API call for
         every 50 videos. API calls are split in separate threads.
         """
-
         fields = ["title", "length", "channel"]
         listOfVideos = cls._add_futures(listOfVideos, fields)
 
@@ -273,6 +274,7 @@ class Video(Entry):
     def thumbnails(self):
         # make it "async" for uniformity with Playlist.thumbnails
         requiresThumbnail = self._add_futures([self], ["thumbnails"])
+
         if requiresThumbnail:
             self._thumbnails.set(
                 [
@@ -304,7 +306,11 @@ class Video(Entry):
                 cached = [
                     cached_file
                     for cached_file in os.listdir(cache_location)
-                    if cached_file.split(".")[0] == self.id
+                    if cached_file
+                    in [
+                        f"{self.id}.{format}"
+                        for format in ["webm", "m4a", "mp3", "ogg"]
+                    ]
                 ]
                 if cached:
                     fileUri = (
@@ -332,7 +338,18 @@ class Video(Entry):
                             ["https://www.youtube.com/watch?v=%s" % self.id]
                         )
                         fileUri = f"file://{ydl.prepare_filename(info)}"
+
                         self._audio_url.set(fileUri)
+
+                        with open(
+                            os.path.join(cache_location, f"{self.id}.json"), "w"
+                        ) as outfile:
+                            json.dump(
+                                convert_video_to_track(self, "YouTube Video"),
+                                cls=ModelJSONEncoder,
+                                fp=outfile,
+                            )
+
                     else:
                         self._audio_url.set(info["url"])
             except Exception as e:

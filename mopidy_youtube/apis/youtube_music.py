@@ -4,7 +4,6 @@ from concurrent.futures import as_completed
 from concurrent.futures.thread import ThreadPoolExecutor
 
 import pykka
-
 from ytmusicapi import YTMusic
 
 from mopidy_youtube import logger
@@ -18,6 +17,7 @@ own_channel_id = None
 
 # Access to YouTube Music API through ytmusicapi package
 # https://github.com/sigma67/ytmusicapi
+
 
 class Music(Client):
     endpoint = None
@@ -100,7 +100,7 @@ class Music(Client):
         # So, if you have 50 items that's 50 trips to the endpoint.
         results = []
 
-        logger.debug(
+        logger.info(
             f"youtube_music list_videos triggered ytmusic.get_song x {len(ids)}: {ids}"
         )
 
@@ -269,9 +269,7 @@ class Music(Client):
 
     @classmethod
     def search_songs(cls, q):
-        logger.debug(
-            f"youtube_music search_songs triggered ytmusic.search: {q}"
-        )
+        logger.info(f"youtube_music search_songs triggered ytmusic.search: {q}")
         results = ytmusic.search(
             query=q, filter="songs", limit=Video.search_results
         )
@@ -298,7 +296,7 @@ class Music(Client):
 
         def job(result):
             try:
-                logger.debug(
+                logger.info(
                     f"youtube_music search_albums triggered ytmusic.get_album: {result['browseId']}"
                 )
                 # ytmusic.get_album is necessary to get the number of tracks

@@ -1,7 +1,5 @@
 import re
 
-from mopidy_youtube import youtube
-
 uri_video_regex = re.compile("^(?:youtube|yt):video:(?P<videoid>.+)$")
 uri_playlist_regex = re.compile("^(?:youtube|yt):playlist:(?P<playlistid>.+)$")
 uri_channel_regex = re.compile("^(?:youtube|yt):channel:(?P<channelid>.+)$")
@@ -17,11 +15,11 @@ old_uri_channel_regex = re.compile(
 )
 
 
-def format_video_uri(video: youtube.Video) -> str:
+def format_video_uri(video) -> str:
     return f"youtube:video:{video.id}"
 
 
-def format_playlist_uri(playlist: youtube.Playlist) -> str:
+def format_playlist_uri(playlist) -> str:
     return f"youtube:playlist:{playlist.id}"
 
 

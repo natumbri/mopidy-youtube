@@ -1,5 +1,7 @@
 import json
 import re
+from concurrent.futures import as_completed
+from concurrent.futures.thread import ThreadPoolExecutor
 from urllib.parse import urlencode, urljoin
 
 from mopidy_youtube import logger
@@ -34,6 +36,14 @@ continuationItemsPath = [
     "continuationItems",
 ]
 
+watchVideoPath = [
+    "contents",
+    "twoColumnWatchNextResults",
+    "results",
+    "results",
+    "contents",
+]
+
 relatedVideosPath = [
     "contents",
     "twoColumnWatchNextResults",
@@ -65,6 +75,7 @@ listPlaylistitemsPath = playlistBasePath + [
 listChannelPlaylistsPath = playlistBasePath + ["shelfRenderer", "content"]
 
 textPath = ["runs", 0, "text"]
+
 
 class jAPI(Client):
     """
@@ -122,32 +133,85 @@ class jAPI(Client):
     @classmethod
     def list_videos(cls, ids):
         """
-        list videos - EXPERIMENTAL, using exact search for ids
+        list videos - EXPERIMENTAL, using exact search for ids,
+        fall back to loading the watch page for the video
+        (which doesn't provide a duration).
         """
-
         items = []
 
-        rs = [
-            {
-                "search_query": '"' + id + '"',
-                "sp": "EgIQAQ%3D%3D",
-                "app": "desktop",
-                "persist_app": 1,
-            }
-            for id in ids
-        ]
-        results = [
-            result
-            for r in rs
-            for result in cls.pl_run_search(r)
-            if result["id"]["videoId"] in ids
-        ]
-        for result in results:
-            result.update({"id": result["id"]["videoId"]})
-            items.extend([result])
+        # for id in ids:
+        def job(id):
+
+            results = cls.pl_run_search(
+                {
+                    "search_query": '"' + id + '"',
+                    "sp": "EgIQAQ%3D%3D",
+                    "app": "desktop",
+                    "persist_app": 1,
+                }
+            )
+
+            for result in results:
+                result.update({"id": result["id"]["videoId"]})
+                if result["id"] in ids:
+                    items.append(result)
+
+            if results:
+                return results
+
+            else:
+
+                logger.info(f"jAPI 'list_videos' triggered session.get: {id}")
+                result = cls.session.get(cls.endpoint + "watch?v=" + id)
+                if result.status_code == 200:
+                    yt_data = cls._find_yt_data(result.text)
+                    if yt_data:
+                        extracted_json = traverse(yt_data, watchVideoPath)
+
+                        title = traverse(
+                            extracted_json[0]["videoPrimaryInfoRenderer"][
+                                "title"
+                            ],
+                            textPath,
+                        )
+                        channelTitle = traverse(
+                            extracted_json[1]["videoSecondaryInfoRenderer"][
+                                "owner"
+                            ]["videoOwnerRenderer"]["title"],
+                            textPath,
+                        )
+                        thumbnails = extracted_json[1][
+                            "videoSecondaryInfoRenderer"
+                        ]["owner"]["videoOwnerRenderer"]["thumbnail"][
+                            "thumbnails"
+                        ][
+                            -1
+                        ]
+
+                        item = {
+                            "id": id,
+                            "snippet": {
+                                "title": title,
+                                "resourceId": {"videoId": id},
+                                "thumbnails": {"default": thumbnails},
+                                "channelTitle": channelTitle,
+                            },
+                            "contentDetails": {
+                                "duration": "PT0S"
+                            },  # where to find this...?
+                        }
+                        return [item]
+
+        if len(ids) == 1:
+            items.extend(job(ids[0]))
+        else:
+            with ThreadPoolExecutor() as executor:
+                futures = [executor.submit(job, id) for id in ids]
+                for future in as_completed(futures):
+                    items.extend(future.result())
 
         return json.loads(
-            json.dumps({"items": items}, sort_keys=False, indent=1)
+            json.dumps({"items": items}, sort_keys=False, indent=1,)
         )
 
     @classmethod
@@ -469,7 +533,9 @@ class jAPI(Client):
                     )
 
                 try:
-                    channelTitle = traverse(playlist["longBylineText"], textPath)
+                    channelTitle = traverse(
+                        playlist["longBylineText"], textPath
+                    )
                 except Exception as e:
                     logger.error(
                         f"channelTitle exception {e}, {playlist['playlistId']}"

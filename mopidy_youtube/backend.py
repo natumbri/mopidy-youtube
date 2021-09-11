@@ -1,19 +1,18 @@
+import json
+import os
 import re
+import shutil
 from urllib.parse import parse_qs, urlparse
 
 import pykka
 from mopidy import backend, httpclient
 from mopidy.core import CoreListener
-from mopidy.models import Album, Artist, Ref, SearchResult, Track
+from mopidy.models import Image, Ref, SearchResult, Track, model_json_decoder
 
 from mopidy_youtube import Extension, logger, youtube
 from mopidy_youtube.apis import youtube_api, youtube_japi, youtube_music
-from mopidy_youtube.data import (  # extract_channel_id,
-    extract_playlist_id,
-    extract_video_id,
-    format_playlist_uri,
-    format_video_uri,
-)
+from mopidy_youtube.converters import convert_playlist_to_album, convert_video_to_track
+from mopidy_youtube.data import extract_playlist_id, extract_video_id
 
 """
 A typical interaction:
@@ -23,78 +22,6 @@ A typical interaction:
 step 1 requires only 2 API calls. Data for the next steps are loaded in the
 background, so steps 2/3 are usually instantaneous.
 """
-
-
-def convert_video_to_track(
-    video: youtube.Video, album_name: str, **kwargs
-) -> Track:
-
-    try:
-        adjustedLength = video.length.get() * 1000
-    except Exception:
-        adjustedLength = 0
-
-    return Track(
-        uri=format_video_uri(video),
-        name=video.title.get(),
-        artists=[Artist(name=video.channel.get())],
-        album=Album(name=album_name),
-        length=adjustedLength,
-        comment=video.id,
-        **kwargs,
-    )
-
-# YouTube Music supports 'songs'; probably should take advantage and use
-#
-# def convert_ytmsong_to_track(
-#     video: youtube.Video, album_name: str, **kwargs
-# ) -> Track:
-#
-#     try:
-#         adjustedLength = video.length.get() * 1000
-#     except Exception:
-#         adjustedLength = 0
-#
-#     return Track(
-#         uri=format_video_uri(video),
-#         name=video.title.get(),
-#         artists=[Artist(name=video.channel.get())],
-#         album=Album(name=album_name),
-#         length=adjustedLength,
-#         comment=video.id,
-#         **kwargs,
-#     )
-
-
-def convert_playlist_to_album(playlist: youtube.Playlist) -> Album:
-    return Album(
-        uri=format_playlist_uri(playlist),
-        name=playlist.title.get(),
-        artists=[
-            Artist(
-                name=f"YouTube Playlist ({playlist.video_count.get()} videos)"
-            )
-        ],
-        num_tracks=playlist.video_count.get()
-    )
-
-
-# YouTube Music supports 'Albums'; probably should take advantage and use
-#
-# def convert_ytmalbum_to_album(album: youtube.Album) -> Album:
-#     return Album(
-#         uri=format_album_uri(album),
-#         name=f"{album.title.get()} (YouTube Music Album, {album.track_count.get()} tracks),
-#         artists=[
-#             Artist(
-#                 # actual artists from the ytm album, including a name and uri
-#             )
-#         ],
-#         num_tracks=
-#         num_discs=
-#         date=
-#         musicbrainz_id=
-#     )
 
 
 class YouTubeCoreListener(pykka.ThreadingActor, CoreListener):
@@ -299,6 +226,19 @@ class YouTubeLibraryProvider(backend.LibraryProvider):
         )
 
     def lookup_video_track(self, video_id: str) -> Track:
+        if youtube.cache_location:
+            cached = [
+                cached_file
+                for cached_file in os.listdir(youtube.cache_location)
+                if cached_file == f"{video_id}.json"
+            ]
+            if cached:
+                with open(
+                    os.path.join(youtube.cache_location, cached[0]), "r"
+                ) as infile:
+                    track = json.load(infile, object_hook=model_json_decoder)
+                return track
+
         video = youtube.Video.get(video_id)
         video.title.get()
         return convert_video_to_track(video, "YouTube Video")
@@ -408,16 +348,45 @@ class YouTubeLibraryProvider(backend.LibraryProvider):
 
     def get_images(self, uris):
         images = {}
+
         if not isinstance(uris, list):
             uris = [uris]
+
         video_ids = [extract_video_id(uri) for uri in uris]
+
+        if youtube.cache_location:
+            for uri in uris:
+                video_id = extract_video_id(uri)
+                if video_id:
+                    imageFile = f"{video_id}.jpg"
+                    if imageFile not in os.listdir(youtube.cache_location):
+                        imageUri = (
+                            youtube.Video.get(video_id).thumbnails.get()[0].uri
+                        )
+                        response = youtube.Entry.api.session.get(
+                            imageUri, stream=True
+                        )
+                        if response.status_code == 200:
+                            with open(
+                                os.path.join(youtube.cache_location, imageFile),
+                                "wb",
+                            ) as out_file:
+                                shutil.copyfileobj(response.raw, out_file)
+                        del response
+
+                    if imageFile in os.listdir(youtube.cache_location):
+                        images.update(
+                            {uri: [Image(uri=f"/youtube/{imageFile}")]}
+                        )
+
         images.update(
             {
                 uri: youtube.Video.get(video_id).thumbnails.get()
                 for uri, video_id in zip(uris, video_ids)
-                if video_id
+                if video_id and video_id not in images
             }
         )
+
         playlist_ids = [extract_playlist_id(uri) for uri in uris]
         images.update(
             {
