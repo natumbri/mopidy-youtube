@@ -1,7 +1,6 @@
 import json
 import os
 import re
-import shutil
 from urllib.parse import parse_qs, urlparse
 
 import pykka
@@ -11,7 +10,10 @@ from mopidy.models import Image, Ref, SearchResult, Track, model_json_decoder
 
 from mopidy_youtube import Extension, logger, youtube
 from mopidy_youtube.apis import youtube_api, youtube_japi, youtube_music
-from mopidy_youtube.converters import convert_playlist_to_album, convert_video_to_track
+from mopidy_youtube.converters import (
+    convert_playlist_to_album,
+    convert_video_to_track,
+)
 from mopidy_youtube.data import extract_playlist_id, extract_video_id
 
 """
@@ -354,36 +356,27 @@ class YouTubeLibraryProvider(backend.LibraryProvider):
 
         video_ids = [extract_video_id(uri) for uri in uris]
 
-        if youtube.cache_location:
+        if youtube.cache_location and self.backend.config.get("http").get(
+            "enabled"
+        ):
             for uri in uris:
                 video_id = extract_video_id(uri)
                 if video_id:
                     imageFile = f"{video_id}.jpg"
-                    if imageFile not in os.listdir(youtube.cache_location):
-                        imageUri = (
-                            youtube.Video.get(video_id).thumbnails.get()[0].uri
-                        )
-                        response = youtube.Entry.api.session.get(
-                            imageUri, stream=True
-                        )
-                        if response.status_code == 200:
-                            with open(
-                                os.path.join(youtube.cache_location, imageFile),
-                                "wb",
-                            ) as out_file:
-                                shutil.copyfileobj(response.raw, out_file)
-                        del response
-
                     if imageFile in os.listdir(youtube.cache_location):
                         images.update(
                             {uri: [Image(uri=f"/youtube/{imageFile}")]}
                         )
 
+            logger.debug(
+                f"using cached images: {[extract_video_id(uri) for uri in images]}"
+            )
+
         images.update(
             {
                 uri: youtube.Video.get(video_id).thumbnails.get()
                 for uri, video_id in zip(uris, video_ids)
-                if video_id and video_id not in images
+                if video_id and uri not in images
             }
         )
 

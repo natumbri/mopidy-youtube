@@ -47,10 +47,11 @@ class Extension(ext.Extension):
         )
 
     def webapp(self, config, core):
+        from .web import ImageHandler, IndexHandler
+
+        cache_dir = self.get_cache_dir(config)
+
         return [
-            (
-                r"/(.+)",
-                tornado.web.StaticFileHandler,
-                {"path": Extension.get_cache_dir(config)},
-            ),
+            (r"/(index.html)?", IndexHandler, {"root": cache_dir}),
+            (r"/(.+)", ImageHandler, {"path": cache_dir}),
         ]

@@ -1,6 +1,7 @@
 import json
 import os
 import re
+import shutil
 from concurrent.futures.thread import ThreadPoolExecutor
 
 import pykka
@@ -334,13 +335,14 @@ class Video(Entry):
                         force_generic_extractor=False,
                     )
                     if cache_location:
+                        logger.debug(f"caching track {self.id}")
                         ydl.download(
                             ["https://www.youtube.com/watch?v=%s" % self.id]
                         )
                         fileUri = f"file://{ydl.prepare_filename(info)}"
 
-                        self._audio_url.set(fileUri)
-
+                        logger.debug(f"caching metadata {self.id}")
+                        
                         with open(
                             os.path.join(cache_location, f"{self.id}.json"), "w"
                         ) as outfile:
@@ -349,6 +351,23 @@ class Video(Entry):
                                 cls=ModelJSONEncoder,
                                 fp=outfile,
                             )
+
+                        imageFile = f"{self.id}.jpg"
+                        if imageFile not in os.listdir(cache_location):
+                            imageUri = self.thumbnails.get()[0].uri
+                            response = self.api.session.get(
+                                imageUri, stream=True
+                            )
+                            if response.status_code == 200:
+                                logger.debug(f"caching image {self.id}")
+                                with open(
+                                    os.path.join(cache_location, imageFile),
+                                    "wb",
+                                ) as out_file:
+                                    shutil.copyfileobj(response.raw, out_file)
+                            del response
+
+                        self._audio_url.set(fileUri)
 
                     else:
                         self._audio_url.set(info["url"])

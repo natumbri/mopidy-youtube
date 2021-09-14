@@ -1,0 +1,43 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Mopidy-YouTube</title>
+    <style>
+      html {
+          background: #f8f8f8;
+          color: #555;
+          font-family: Geneva, Tahoma, Verdana, sans-serif;
+          line-height: 1.4em;
+      }
+      body {
+          margin: 0 auto;
+          max-width: 600px;
+      }
+      h1 {
+          font-weight: 500;
+          line-height: 1.1em;
+      }
+      a {
+          color: #555;
+          text-decoration: none;
+      }
+      img {
+          border: 0;
+          height: 80px;
+          width: 80px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Mopidy-YouTube</h1>
+    <p>
+      This Web client is used to serve album art cached from remote
+      media files by the Mopidy-YouTube extension.
+    </p>
+    <div>
+      {% for image in images %}
+        <a href="{{image}}"><img src="{{image}}"></a>
+      {% end %}
+    </div>
+  </body>
+</html>
