@@ -342,7 +342,7 @@ class Video(Entry):
                         fileUri = f"file://{ydl.prepare_filename(info)}"
 
                         logger.debug(f"caching metadata {self.id}")
-                        
+
                         with open(
                             os.path.join(cache_location, f"{self.id}.json"), "w"
                         ) as outfile:

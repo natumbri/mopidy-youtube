@@ -10,10 +10,7 @@ from mopidy.models import Image, Ref, SearchResult, Track, model_json_decoder
 
 from mopidy_youtube import Extension, logger, youtube
 from mopidy_youtube.apis import youtube_api, youtube_japi, youtube_music
-from mopidy_youtube.converters import (
-    convert_playlist_to_album,
-    convert_video_to_track,
-)
+from mopidy_youtube.converters import convert_playlist_to_album, convert_video_to_track
 from mopidy_youtube.data import extract_playlist_id, extract_video_id
 
 """
