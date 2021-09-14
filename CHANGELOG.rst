@@ -2,6 +2,22 @@
 Changelog
 *********
 
+v3.4 (2021-04-11)
+========================================
+
+- youtube channel support
+- tidy up autoplay
+- fix some thumbnail stuff
+- deprecate scrAPI and bs4API in favour of jAPI
+- try to reduce trips to end points
+- add caching (and related web client)
+
+
+v3.3 (2021-04-11)
+========================================
+
+- revised backend and other fixes
+
 v3.2 (2020-12-22)
 ========================================
 

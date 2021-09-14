@@ -50,6 +50,11 @@ will be the one specified for cache_dir in mopidy [core] configuration::
 
     allow_cache = true
 
+Only tracks (and their related metadata and image) that are added to the
+mopidy track list will be cached.  Search results are not cached.
+If you want to use cached images, mopidy-HTTP must be enabled and configured
+correctly.  It is bundled with Mopidy and enabled by default.
+
 If you want modipy-youtube to use the YouTube API, before starting Mopidy, 
 you must add your Google API key to your Mopidy configuration file
 and set api_enabled = true::
@@ -76,7 +81,8 @@ mopidy library, you need to::
     - enable the music api and 
     - set a musicapi_cookie.  
 
-You can obtain the cookie by process mentioned in the `ytmusicapi readme <https://ytmusicapi.readthedocs.io/en/latest/setup.html#copy-authentication-headers>`_. You only have to look out for Cookie in the network tab, not all the headers, and include
+You can obtain the cookie by process mentioned in the `ytmusicapi readme <https://ytmusicapi.readthedocs.io/en/latest/setup.html#copy-authentication-headers>`_.
+You only have to look out for Cookie in the network tab, not all the headers, and include
 it in your config file as musicapi_cookie::
 
     musicapi_cookie = <cookie>  
