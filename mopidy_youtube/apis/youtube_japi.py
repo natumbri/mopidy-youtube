@@ -5,6 +5,15 @@ from concurrent.futures.thread import ThreadPoolExecutor
 from urllib.parse import urlencode, urljoin
 
 from mopidy_youtube import logger
+from mopidy_youtube.apis.json_paths import (
+    continuationItemsPath,
+    listChannelPlaylistsPath,
+    listPlaylistitemsPath,
+    relatedVideosPath,
+    sectionListRendererContentsPath,
+    textPath,
+    watchVideoPath,
+)
 from mopidy_youtube.comms import Client
 from mopidy_youtube.youtube import Video
 
@@ -19,62 +28,6 @@ def traverse(input_dict, keys):
         if internal_dict_value is None:
             raise KeyError
     return internal_dict_value
-
-
-sectionListRendererContentsPath = [
-    "contents",
-    "twoColumnSearchResultsRenderer",
-    "primaryContents",
-    "sectionListRenderer",
-    "contents",
-]
-
-continuationItemsPath = [
-    "onResponseReceivedCommands",
-    0,
-    "appendContinuationItemsAction",
-    "continuationItems",
-]
-
-watchVideoPath = [
-    "contents",
-    "twoColumnWatchNextResults",
-    "results",
-    "results",
-    "contents",
-]
-
-relatedVideosPath = [
-    "contents",
-    "twoColumnWatchNextResults",
-    "secondaryResults",
-    "secondaryResults",
-    "results",
-]
-
-playlistBasePath = [
-    "contents",
-    "twoColumnBrowseResultsRenderer",
-    "tabs",
-    0,
-    "tabRenderer",
-    "content",
-    "sectionListRenderer",
-    "contents",
-    0,
-    "itemSectionRenderer",
-    "contents",
-    0,
-]
-
-listPlaylistitemsPath = playlistBasePath + [
-    "playlistVideoListRenderer",
-    "contents",
-]
-
-listChannelPlaylistsPath = playlistBasePath + ["shelfRenderer", "content"]
-
-textPath = ["runs", 0, "text"]
 
 
 class jAPI(Client):
