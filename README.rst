@@ -7,11 +7,11 @@ Mopidy-YouTube
     :alt: Latest PyPI version
 
 .. image:: https://img.shields.io/circleci/build/gh/natumbri/mopidy-youtube
-    :target: https://circleci.com/gh/natumbri/mopidy-youtube
+    :target: https://circleci.com/gh/natumbri/mopidy-youtube/branch/fix/tests
     :alt: CircleCI build status
 
 .. image:: https://img.shields.io/codecov/c/gh/natumbri/mopidy-youtube
-    :target: https://codecov.io/gh/natumbri/mopidy-youtube
+    :target: https://codecov.io/gh/natumbri/mopidy-youtube/branch/fix/tests
     :alt: Test coverage
 
 Mopidy extension that plays sound from YouTube.
