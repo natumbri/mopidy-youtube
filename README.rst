@@ -10,7 +10,7 @@ Mopidy-YouTube
     :target: https://circleci.com/gh/natumbri/mopidy-youtube/tree/fix%2Ftests
     :alt: CircleCI build status
 
-.. image:: https://img.shields.io/codecov/c/gh/natumbri/mopidy-youtube
+.. image:: https://img.shields.io/codecov/c/gh/natumbri/mopidy-youtube/branch/fix%2Ftests
     :target: https://codecov.io/gh/natumbri/mopidy-youtube/branch/fix%2Ftests
     :alt: Test coverage
 
