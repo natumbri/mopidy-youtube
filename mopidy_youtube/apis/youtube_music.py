@@ -206,13 +206,15 @@ class Music(Client):
         if channel_id in (None, own_channel_id):
             try:
                 logger.debug(
-                    f"youtube_music list_channelplaylists triggered ytmusic.get_library_playlists: {channel_id}"
+                    f"youtube_music list_channelplaylists triggered "
+                    f"ytmusic.get_library_playlists: {channel_id}"
                 )
                 results = ytmusic.get_library_playlists()
 
                 if channel_id:
                     logger.debug(
-                        f"youtube_music list_channelplaylists triggered ytmusic.get_user: {channel_id}"
+                        f"youtube_music list_channelplaylists triggered "
+                        f"ytmusic.get_user: {channel_id}"
                     )
                     channelTitle = ytmusic.get_user(channel_id)["name"]
                 else:
@@ -222,15 +224,19 @@ class Music(Client):
                 logger.debug(f"list_channelplaylists exception {e}")
                 if channel_id:
                     logger.debug(
-                        f"youtube_music list_channelplaylists triggered ytmusic.get_user: {channel_id}"
+                        f"youtube_music list_channelplaylists triggered "
+                        f"ytmusic.get_user: {channel_id}"
                     )
                     user = ytmusic.get_user(channel_id)
                     results = user["playlists"]["results"]
                     channelTitle = user["name"]
 
-        else:  # if channel_id is not None and not own_channel_id retrieve only public playlists:
+        else:
+            # if channel_id is not None and not own_channel_id
+            # retrieve only public playlists:
             logger.debug(
-                f"youtube_music list_channelplaylists triggered ytmusic.get_user: {channel_id}"
+                f"youtube_music list_channelplaylists triggered "
+                f"ytmusic.get_user: {channel_id}"
             )
             user = ytmusic.get_user(channel_id)
             results = user["playlists"]["results"]

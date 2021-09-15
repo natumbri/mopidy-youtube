@@ -116,7 +116,8 @@ class YouTubeAutoplayer(pykka.ThreadingActor, listener.CoreListener):
 
             if len(related_videos) == 0:
                 logger.warn(
-                    f"could not get videos related to {current_track.title.get()}: ending autoplay"
+                    f"could not get videos related to"
+                    f"{current_track.title.get()}: ending autoplay"
                 )
                 return None
             else:
