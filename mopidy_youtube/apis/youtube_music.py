@@ -201,7 +201,8 @@ class Music(Client):
 
         results = []
         channelTitle = None
-        # if channel_id is None or own_channel_id then try to retrieve public and private playlists
+        # if channel_id is None or own_channel_id then try to retrieve
+        # public and private playlists
         if channel_id in (None, own_channel_id):
             try:
                 logger.debug(
@@ -277,7 +278,8 @@ class Music(Client):
         def job(result):
             try:
                 logger.info(
-                    f"youtube_music search_albums triggered ytmusic.get_album: {result['browseId']}"
+                    f"youtube_music search_albums triggered "
+                    f"ytmusic.get_album: {result['browseId']}"
                 )
                 # ytmusic.get_album is necessary to get the number of tracks
                 ytmusic_album = ytmusic.get_album(result["browseId"])

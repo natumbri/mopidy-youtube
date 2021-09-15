@@ -132,8 +132,14 @@ def test_lookup(config):
         "youtube:https://youtu.be/nvlTJrNJ5lA",
         "yt:https://youtu.be/nvlTJrNJ5lA",
         # "youtube:https://www.youtube.com/watch?v=1lWJXDG2i0A",
-        "youtube:video/Tom Petty And The Heartbreakers - I Won't Back Down (Official Music Video).nvlTJrNJ5lA",
-        "yt:video/Tom Petty And The Heartbreakers - I Won't Back Down (Official Music Video).nvlTJrNJ5lA",
+        (
+            "youtube:video/Tom Petty And The Heartbreakers - "
+            "I Won't Back Down (Official Music Video).nvlTJrNJ5lA"
+        ),
+        (
+            "yt:video/Tom Petty And The Heartbreakers - "
+            "I Won't Back Down (Official Music Video).nvlTJrNJ5lA"
+        ),
         "youtube:video:nvlTJrNJ5lA",
         "yt:video:nvlTJrNJ5lA",
     ]
@@ -142,12 +148,22 @@ def test_lookup(config):
         assert len(video) == 1
 
     playlist_uris = [
-        "youtube:https://www.youtube.com/watch?v=SIhb-kNvL6M&list=PLo4c-riVwz2miWOT3Y2VWzg2bmV4FmC8J",
-        "yt:https://www.youtube.com/watch?v=SIhb-kNvL6M&list=PLo4c-riVwz2miWOT3Y2VWzg2bmV4FmC8J",
-        # "youtube:https://www.youtube.com/watch?v=lis8WGZQ9tw&list=PLW3M-yio9tLtQLihn1wrJYzuV7AUPMq63",
-        # "yt:https://www.youtube.com/watch?v=lis8WGZQ9tw&list=PLW3M-yio9tLtQLihn1wrJYzuV7AUPMq63",
-        "youtube:playlist/Tom Petty's greatest hits album.PLo4c-riVwz2miWOT3Y2VWzg2bmV4FmC8J",
-        "yt:playlist/Tom Petty's greatest hits album.PLo4c-riVwz2miWOT3Y2VWzg2bmV4FmC8J",
+        (
+            "youtube:https://www.youtube.com/watch?v=SIhb-kNvL6M&"
+            "list=PLo4c-riVwz2miWOT3Y2VWzg2bmV4FmC8J"
+        ),
+        (
+            "yt:https://www.youtube.com/watch?v=SIhb-kNvL6M&"
+            "list=PLo4c-riVwz2miWOT3Y2VWzg2bmV4FmC8J"
+        ),
+        (
+            "youtube:playlist/Tom Petty's greatest hits album."
+            "PLo4c-riVwz2miWOT3Y2VWzg2bmV4FmC8J"
+        ),
+        (
+            "yt:playlist/Tom Petty's greatest hits album."
+            "PLo4c-riVwz2miWOT3Y2VWzg2bmV4FmC8J"
+        ),
         "youtube:playlist:PLo4c-riVwz2miWOT3Y2VWzg2bmV4FmC8J",
         "yt:playlist:PLo4c-riVwz2miWOT3Y2VWzg2bmV4FmC8J",
     ]
