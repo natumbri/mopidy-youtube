@@ -194,9 +194,7 @@ class Entry:
                 )
             elif k == "thumbnails":
                 val = [
-                    Image(
-                        uri=val["url"], width=val["width"], height=val["height"]
-                    )
+                    Image(uri=val["url"], width=val["width"], height=val["height"])
                     for (key, val) in item["snippet"]["thumbnails"].items()
                     if key in ["default", "medium", "high"]
                 ] or None  # is this "or None" necessary?
@@ -230,10 +228,7 @@ class Video(Entry):
             # make sure order is deterministic so that HTTP requests are replayable in tests
             executor.map(
                 job,
-                [
-                    listOfVideos[i : i + 50]
-                    for i in range(0, len(listOfVideos), 50)
-                ],
+                [listOfVideos[i : i + 50] for i in range(0, len(listOfVideos), 50)],
             )
 
     @async_property
@@ -314,9 +309,7 @@ class Video(Entry):
                     ]
                 ]
                 if cached:
-                    fileUri = (
-                        f"file://{(os.path.join(cache_location, cached[0]))}"
-                    )
+                    fileUri = f"file://{(os.path.join(cache_location, cached[0]))}"
                     self._audio_url.set(fileUri)
                     return
                 else:
@@ -336,9 +329,7 @@ class Video(Entry):
                     )
                     if cache_location:
                         logger.debug(f"caching track {self.id}")
-                        ydl.download(
-                            ["https://www.youtube.com/watch?v=%s" % self.id]
-                        )
+                        ydl.download(["https://www.youtube.com/watch?v=%s" % self.id])
                         fileUri = f"file://{ydl.prepare_filename(info)}"
 
                         logger.debug(f"caching metadata {self.id}")
@@ -355,9 +346,7 @@ class Video(Entry):
                         imageFile = f"{self.id}.jpg"
                         if imageFile not in os.listdir(cache_location):
                             imageUri = self.thumbnails.get()[0].uri
-                            response = self.api.session.get(
-                                imageUri, stream=True
-                            )
+                            response = self.api.session.get(imageUri, stream=True)
                             if response.status_code == 200:
                                 logger.debug(f"caching image {self.id}")
                                 with open(
@@ -429,21 +418,14 @@ class Playlist(Entry):
         def load_items():
             data = {"items": []}
             page = ""
-            while (
-                page is not None
-                and len(data["items"]) < self.playlist_max_videos
-            ):
+            while page is not None and len(data["items"]) < self.playlist_max_videos:
                 try:
                     max_results = min(
                         int(self.playlist_max_videos) - len(data["items"]), 50
                     )
-                    result = self.api.list_playlistitems(
-                        self.id, page, max_results
-                    )
+                    result = self.api.list_playlistitems(self.id, page, max_results)
                 except Exception as e:
-                    logger.error(
-                        'Playlist.videos list_playlistitems error "%s"', e
-                    )
+                    logger.error('Playlist.videos list_playlistitems error "%s"', e)
                     break
                 if "error" in result:
                     logger.error(
@@ -458,8 +440,7 @@ class Playlist(Entry):
                     item
                     for item in result["items"]
                     if not (
-                        item["snippet"]["title"]
-                        in ["Deleted video", "Private video"]
+                        item["snippet"]["title"] in ["Deleted video", "Private video"]
                     )
                 ]
 
@@ -526,9 +507,7 @@ class Channel(Entry):
             if "error" in data:
                 raise Exception(data["error"])
         except Exception as e:
-            logger.error(
-                'Channel.playlists list_channelplaylists error "%s"', e
-            )
+            logger.error('Channel.playlists list_channelplaylists error "%s"', e)
             return None
         try:
             channel_playlists = []

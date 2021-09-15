@@ -15,3 +15,4 @@ include mopidy_*/ext.conf
 recursive-include tests *.py
 recursive-include tests *.yaml
 recursive-include tests/data *
+recursive-include mopidy_youtube *.html

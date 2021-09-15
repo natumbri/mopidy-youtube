@@ -10,7 +10,10 @@ from mopidy.models import Image, Ref, SearchResult, Track, model_json_decoder
 
 from mopidy_youtube import Extension, logger, youtube
 from mopidy_youtube.apis import youtube_api, youtube_japi, youtube_music
-from mopidy_youtube.converters import convert_playlist_to_album, convert_video_to_track
+from mopidy_youtube.converters import (
+    convert_playlist_to_album,
+    convert_video_to_track,
+)
 from mopidy_youtube.data import extract_playlist_id, extract_video_id
 
 """
@@ -59,14 +62,10 @@ class YouTubeBackend(pykka.ThreadingActor, backend.Backend):
         self.config = config
         self.library = YouTubeLibraryProvider(backend=self)
         self.playback = YouTubePlaybackProvider(audio=audio, backend=self)
-        youtube_api.youtube_api_key = (
-            config["youtube"]["youtube_api_key"] or None
-        )
+        youtube_api.youtube_api_key = config["youtube"]["youtube_api_key"] or None
         youtube.channel = config["youtube"]["channel_id"]
         youtube.Video.search_results = config["youtube"]["search_results"]
-        youtube.Playlist.playlist_max_videos = config["youtube"][
-            "playlist_max_videos"
-        ]
+        youtube.Playlist.playlist_max_videos = config["youtube"]["playlist_max_videos"]
         youtube.api_enabled = config["youtube"]["api_enabled"]
         youtube.musicapi_enabled = config["youtube"]["musicapi_enabled"]
         youtube.musicapi_cookie = config["youtube"].get("musicapi_cookie", None)
@@ -97,9 +96,7 @@ class YouTubeBackend(pykka.ThreadingActor, backend.Backend):
             else:
                 youtube.Entry.api = youtube_api.API(proxy, headers)
                 if youtube.Entry.search(q="test") is None:
-                    logger.error(
-                        "Failed to verify YouTube API key, disabling API"
-                    )
+                    logger.error("Failed to verify YouTube API key, disabling API")
                     youtube.api_enabled = False
                 else:
                     logger.info("YouTube API key verified")
@@ -121,9 +118,7 @@ class YouTubeBackend(pykka.ThreadingActor, backend.Backend):
             )
             music = youtube_music.Music(proxy, headers)
             youtube.Entry.api.search = music.search
-            youtube.Entry.api.list_channelplaylists = (
-                music.list_channelplaylists
-            )
+            youtube.Entry.api.list_channelplaylists = music.list_channelplaylists
             youtube.Entry.api.list_playlistitems = music.list_playlistitems
             youtube.Entry.api.list_related_videos = music.list_related_videos
             if youtube.api_enabled is False:
@@ -132,9 +127,7 @@ class YouTubeBackend(pykka.ThreadingActor, backend.Backend):
 
 class YouTubeLibraryProvider(backend.LibraryProvider):
 
-    root_directory = Ref.directory(
-        uri="youtube:channel", name="My Youtube playlists"
-    )
+    root_directory = Ref.directory(uri="youtube:channel", name="My Youtube playlists")
 
     """
     Called when root_directory is set to the URI of the youtube channel ID in the mopidy.conf
@@ -159,9 +152,7 @@ class YouTubeLibraryProvider(backend.LibraryProvider):
                     pl.videos
                     albums.append(convert_playlist_to_album(pl))
                 for album in albums:
-                    playlistrefs.append(
-                        Ref.playlist(uri=album.uri, name=album.name)
-                    )
+                    playlistrefs.append(Ref.playlist(uri=album.uri, name=album.name))
             return playlistrefs
 
     """
@@ -249,13 +240,15 @@ class YouTubeLibraryProvider(backend.LibraryProvider):
 
         # ignore videos for which no info was found (removed, etc)
         videos = [
-            video
-            for video in playlist.videos.get()
-            if video.length.get() is not None
+            video for video in playlist.videos.get() if video.length.get() is not None
         ]
 
         tracks = [
-            convert_video_to_track(video, playlist.title.get(), track_no=count,)
+            convert_video_to_track(
+                video,
+                playlist.title.get(),
+                track_no=count,
+            )
             for count, video in enumerate(videos, 1)
         ]
         return tracks
@@ -353,17 +346,13 @@ class YouTubeLibraryProvider(backend.LibraryProvider):
 
         video_ids = [extract_video_id(uri) for uri in uris]
 
-        if youtube.cache_location and self.backend.config.get("http").get(
-            "enabled"
-        ):
+        if youtube.cache_location and self.backend.config.get("http").get("enabled"):
             for uri in uris:
                 video_id = extract_video_id(uri)
                 if video_id:
                     imageFile = f"{video_id}.jpg"
                     if imageFile in os.listdir(youtube.cache_location):
-                        images.update(
-                            {uri: [Image(uri=f"/youtube/{imageFile}")]}
-                        )
+                        images.update({uri: [Image(uri=f"/youtube/{imageFile}")]})
 
             logger.debug(
                 f"using cached images: {[extract_video_id(uri) for uri in images]}"

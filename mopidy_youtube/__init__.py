@@ -41,9 +41,7 @@ class Extension(ext.Extension):
         registry.add("backend", YouTubeBackend)
         registry.add("frontend", YouTubeAutoplayer)
         registry.add("frontend", YouTubeCoreListener)
-        registry.add(
-            "http:app", {"name": self.ext_name, "factory": self.webapp}
-        )
+        registry.add("http:app", {"name": self.ext_name, "factory": self.webapp})
 
     def webapp(self, config, core):
         from .web import ImageHandler, IndexHandler

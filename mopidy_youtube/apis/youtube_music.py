@@ -81,15 +81,11 @@ class Music(Client):
         # only one, related video, which may be the original video, itself.  If this
         # happens, get related videos using the jAPI.
         if len(tracks) < 10:
-            japi_related_videos = youtube_japi.jAPI.list_related_videos(
-                video_id
-            )
+            japi_related_videos = youtube_japi.jAPI.list_related_videos(video_id)
             japi_related_videos["items"].extend(tracks)
             return japi_related_videos
 
-        return json.loads(
-            json.dumps({"items": tracks}, sort_keys=False, indent=1)
-        )
+        return json.loads(json.dumps({"items": tracks}, sort_keys=False, indent=1))
 
     @classmethod
     def list_videos(cls, ids):
@@ -119,9 +115,7 @@ class Music(Client):
         # these the videos that are returned
         items = [cls.yt_item_to_video(result) for result in results]
 
-        return json.loads(
-            json.dumps({"items": items}, sort_keys=False, indent=1)
-        )
+        return json.loads(json.dumps({"items": items}, sort_keys=False, indent=1))
 
     @classmethod
     def list_playlists(cls, ids):
@@ -152,9 +146,7 @@ class Music(Client):
         # list_playlistitems calling ytmusic.get_playlist
         cls._create_playlist_objects(items)
 
-        return json.loads(
-            json.dumps({"items": items}, sort_keys=False, indent=1)
-        )
+        return json.loads(json.dumps({"items": items}, sort_keys=False, indent=1))
 
     @classmethod
     def list_playlistitems(cls, id, page=None, max_results=None):
@@ -167,14 +159,10 @@ class Music(Client):
         # to avoid list_playlist calling ytmusic.get_playlist if
         # the Playlist object doesn't exist
         pl = Playlist.get(result["id"]["playlistId"])
-        pl._set_api_data(
-            ["title", "video_count", "thumbnails", "channel"], result
-        )
+        pl._set_api_data(["title", "video_count", "thumbnails", "channel"], result)
 
         items = [
-            track
-            for track in result["tracks"]
-            if track["id"]["videoId"] is not None
+            track for track in result["tracks"] if track["id"]["videoId"] is not None
         ]
 
         # why do ytplaylist_item_to_video and ytalbum_item_to_video both include
@@ -263,16 +251,12 @@ class Music(Client):
             }
             for item in results
         ]
-        return json.loads(
-            json.dumps({"items": items}, sort_keys=False, indent=1)
-        )
+        return json.loads(json.dumps({"items": items}, sort_keys=False, indent=1))
 
     @classmethod
     def search_songs(cls, q):
         logger.info(f"youtube_music search_songs triggered ytmusic.search: {q}")
-        results = ytmusic.search(
-            query=q, filter="songs", limit=Video.search_results
-        )
+        results = ytmusic.search(query=q, filter="songs", limit=Video.search_results)
 
         songs = [
             cls.yt_item_to_video(track)
@@ -286,13 +270,9 @@ class Music(Client):
     def search_albums(cls, q):
         albums = []
 
-        logger.debug(
-            f"youtube_music search_albums triggered ytmusic.search: {q}"
-        )
+        logger.debug(f"youtube_music search_albums triggered ytmusic.search: {q}")
 
-        results = ytmusic.search(
-            query=q, filter="albums", limit=Video.search_results
-        )
+        results = ytmusic.search(query=q, filter="albums", limit=Video.search_results)
 
         def job(result):
             try:
@@ -320,10 +300,7 @@ class Music(Client):
 
     def yt_listitem_to_playlist(item):
         playlist = {
-            "id": {
-                "kind": "youtube#playlist",
-                "playlistId": item["playlistId"],
-            },
+            "id": {"kind": "youtube#playlist", "playlistId": item["playlistId"]},
             "snippet": {
                 "title": item["title"],
                 "thumbnails": {"default": item["thumbnails"][0]},
@@ -369,9 +346,7 @@ class Music(Client):
             duration = "00:00:00"
             logger.warn(f"duration missing: {item}")
 
-        duration = "PT" + Client.format_duration(
-            re.match(Client.time_regex, duration)
-        )
+        duration = "PT" + Client.format_duration(re.match(Client.time_regex, duration))
 
         if "artists" in item and item["artists"] is not None:
             if isinstance(item["artists"], list):
@@ -388,14 +363,11 @@ class Music(Client):
         thumbnail = item["thumbnails"][-1]
 
         video = {
-            "id": {"kind": "youtube#video", "videoId": item["videoId"],},
-            "contentDetails": {"duration": duration,},
+            "id": {"kind": "youtube#video", "videoId": item["videoId"]},
+            "contentDetails": {"duration": duration},
             "snippet": {
                 "title": item["title"],
-                "resourceId": {
-                    "kind": "youtube#video",
-                    "videoId": item["videoId"],
-                },
+                "resourceId": {"kind": "youtube#video", "videoId": item["videoId"]},
                 "thumbnails": {"default": thumbnail},
                 "channelTitle": channelTitle,
             },
@@ -424,24 +396,15 @@ class Music(Client):
         for item in items:
             plvideos = []
             pl = Playlist.get(item["id"]["playlistId"])
-            pl._set_api_data(
-                ["title", "video_count", "thumbnails", "channel"], item
-            )
+            pl._set_api_data(["title", "video_count", "thumbnails", "channel"], item)
 
             pl._videos = pykka.ThreadingFuture()
 
             for track in item["tracks"]:
                 video = Video.get(track["snippet"]["resourceId"]["videoId"])
-                video._set_api_data(
-                    ["title", "channel", "length", "thumbnails"], track
-                )
+                video._set_api_data(["title", "channel", "length", "thumbnails"], track)
                 plvideos.append(video)
 
             pl._videos.set(
-                [
-                    x
-                    for _, x in zip(
-                        range(Playlist.playlist_max_videos), plvideos
-                    )
-                ]
+                [x for _, x in zip(range(Playlist.playlist_max_videos), plvideos)]
             )

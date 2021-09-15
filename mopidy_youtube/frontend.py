@@ -20,9 +20,7 @@ class YouTubeAutoplayer(pykka.ThreadingActor, listener.CoreListener):
         self.core = core
         self.autoplay_enabled = config["youtube"]["autoplay_enabled"]
         self.strict_autoplay = config["youtube"]["strict_autoplay"]
-        self.max_degrees_of_separation = config["youtube"][
-            "max_degrees_of_separation"
-        ]
+        self.max_degrees_of_separation = config["youtube"]["max_degrees_of_separation"]
         self.max_autoplay_length = config["youtube"]["max_autoplay_length"]
         self.base_track_id = ""
         self.degrees_of_separation = 0
@@ -45,17 +43,13 @@ class YouTubeAutoplayer(pykka.ThreadingActor, listener.CoreListener):
 
         [tlTrackId, track] = tl_track
 
-        if not track.uri.startswith("youtube:") and not track.uri.startswith(
-            "yt:"
-        ):
+        if not track.uri.startswith("youtube:") and not track.uri.startswith("yt:"):
             return None
         try:
             tl = self.core.tracklist
 
             if tl.get_repeat().get() is True:
-                logger.warn(
-                    "Autoplayer: will not add tracks when repeat is enabled."
-                )
+                logger.warn("Autoplayer: will not add tracks when repeat is enabled.")
                 return None
 
             if tl.get_random().get() is True:
@@ -67,9 +61,7 @@ class YouTubeAutoplayer(pykka.ThreadingActor, listener.CoreListener):
                 tlTracks = tl.get_tl_tracks().get()
                 if len(tlTracks) != 0:
                     if tlTrackId is not tlTracks[-1].tlid:
-                        logger.debug(
-                            "Autoplayer: called not at end of track list."
-                        )
+                        logger.debug("Autoplayer: called not at end of track list.")
                         return None
                     elif tl.get_consume().get() is True:
                         logger.warning(

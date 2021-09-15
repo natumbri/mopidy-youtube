@@ -4,9 +4,7 @@ uri_video_regex = re.compile("^(?:youtube|yt):video:(?P<videoid>.+)$")
 uri_playlist_regex = re.compile("^(?:youtube|yt):playlist:(?P<playlistid>.+)$")
 uri_channel_regex = re.compile("^(?:youtube|yt):channel:(?P<channelid>.+)$")
 
-old_uri_video_regex = re.compile(
-    r"^(?:youtube|yt):video/(?:.+)\.(?P<videoid>.+)$"
-)
+old_uri_video_regex = re.compile(r"^(?:youtube|yt):video/(?:.+)\.(?P<videoid>.+)$")
 old_uri_playlist_regex = re.compile(
     r"^(?:youtube|yt):playlist/(?:.+)\.(?P<playlistid>.+)$"
 )

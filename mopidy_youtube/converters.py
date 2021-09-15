@@ -50,9 +50,7 @@ def convert_playlist_to_album(playlist) -> Album:
         uri=format_playlist_uri(playlist),
         name=playlist.title.get(),
         artists=[
-            Artist(
-                name=f"YouTube Playlist ({playlist.video_count.get()} videos)"
-            )
+            Artist(name=f"YouTube Playlist ({playlist.video_count.get()} videos)")
         ],
         num_tracks=playlist.video_count.get(),
     )

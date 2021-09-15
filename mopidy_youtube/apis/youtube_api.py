@@ -84,9 +84,7 @@ class API(Client):
             "id": ",".join(ids),
             "key": youtube_api_key,
         }
-        logger.debug(
-            f"youtube_api 'list_playlists' triggered session.get: {ids}"
-        )
+        logger.debug(f"youtube_api 'list_playlists' triggered session.get: {ids}")
         result = cls.session.get(API.endpoint + "playlists", params=query)
         return result.json()
 
@@ -106,9 +104,7 @@ class API(Client):
             "key": youtube_api_key,
             "pageToken": page,
         }
-        logger.debug(
-            f"youtube_api 'list_playlistitems' triggered session.get: {id}"
-        )
+        logger.debug(f"youtube_api 'list_playlistitems' triggered session.get: {id}")
         result = cls.session.get(API.endpoint + "playlistItems", params=query)
         return result.json()
 
