@@ -2,8 +2,6 @@ from mopidy_youtube import logger
 from mopidy_youtube.comms import Client
 from mopidy_youtube.youtube import Video
 
-youtube_api_key = None
-
 
 class API(Client):
     """
@@ -11,6 +9,7 @@ class API(Client):
     see https://developers.google.com/youtube/v3/docs/
     """
 
+    youtube_api_key = None
     endpoint = "https://www.googleapis.com/youtube/v3/"
 
     @classmethod
@@ -26,7 +25,7 @@ class API(Client):
             "maxResults": Video.search_results,
             "type": "video,playlist",
             "q": q,
-            "key": youtube_api_key,
+            "key": cls.youtube_api_key,
         }
         logger.debug(f"youtube_api 'search' triggered session.get: {q}")
         result = cls.session.get(API.endpoint + "search", params=query)
@@ -44,7 +43,7 @@ class API(Client):
             "part": "snippet",
             "maxResults": 20,
             "type": "video",
-            "key": youtube_api_key,
+            "key": cls.youtube_api_key,
         }
         logger.debug(
             f"youtube_api 'list_related_videos' triggered session.get: {video_id}"
@@ -64,7 +63,7 @@ class API(Client):
             "fields": "items(id,snippet(title,channelTitle),"
             + "contentDetails(duration))",
             "id": ",".join(ids),
-            "key": youtube_api_key,
+            "key": cls.youtube_api_key,
         }
         logger.debug(f"youtube_api 'list_videos' triggered session.get: {ids}")
         result = cls.session.get(API.endpoint + "videos", params=query)
@@ -82,7 +81,7 @@ class API(Client):
             "fields": "items(id,snippet(title,thumbnails,channelTitle),"
             + "contentDetails(itemCount))",
             "id": ",".join(ids),
-            "key": youtube_api_key,
+            "key": cls.youtube_api_key,
         }
         logger.debug(f"youtube_api 'list_playlists' triggered session.get: {ids}")
         result = cls.session.get(API.endpoint + "playlists", params=query)
@@ -101,7 +100,7 @@ class API(Client):
             + "items(snippet(title, resourceId(videoId), videoOwnerChannelTitle))",
             "maxResults": max_results,
             "playlistId": id,
-            "key": youtube_api_key,
+            "key": cls.youtube_api_key,
             "pageToken": page,
         }
         logger.debug(f"youtube_api 'list_playlistitems' triggered session.get: {id}")
@@ -120,7 +119,7 @@ class API(Client):
             "fields": "items(id,snippet(title)," + "contentDetails(itemCount))",
             "maxResults": 50,
             "channelId": channel_id,
-            "key": youtube_api_key,
+            "key": cls.youtube_api_key,
         }
         logger.debug(
             f"youtube_api 'list_channelplaylists' triggered session.get: {channel_id}"

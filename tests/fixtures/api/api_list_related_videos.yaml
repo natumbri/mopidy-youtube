@@ -1,0 +1,554 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept-Language:
+      - en;q=0.8
+      Cookie:
+      - PREF=hl=en;
+      user-agent:
+      - Mopidy-YouTube/3.4 Mopidy/3.2.0 CPython/3.8.10
+    method: GET
+    uri: https://www.googleapis.com/youtube/v3/search?maxResults=20&part=snippet&relatedToVideoId=h_uyq8oGDvU&type=video
+  response:
+    body:
+      string: "{\n  \"kind\": \"youtube#searchListResponse\",\n  \"etag\": \"XbfFssVEfJlpop-DeBvUzWFsLww\",\n
+        \ \"nextPageToken\": \"CBQQAA\",\n  \"regionCode\": \"AU\",\n  \"pageInfo\":
+        {\n    \"totalResults\": 78,\n    \"resultsPerPage\": 20\n  },\n  \"items\":
+        [\n    {\n      \"kind\": \"youtube#searchResult\",\n      \"etag\": \"xplFcXL-Lr8nJbzw-KbQahTM67w\",\n
+        \     \"id\": {\n        \"kind\": \"youtube#video\",\n        \"videoId\":
+        \"vOCZDeB-JuU\"\n      },\n      \"snippet\": {\n        \"publishedAt\":
+        \"2021-02-09T18:42:38Z\",\n        \"channelId\": \"UC8gbK8uoqKhlACSeenUPkFQ\",\n
+        \       \"title\": \"Neil Young and Crazy Horse - Don't Cry No Tears (Official
+        Music Video)\",\n        \"description\": \"Don't Cry No Tears  -  Neil Young
+        and Crazy Horse - Way Down In The Rust Bucket\\n\\nRecorded Nov 13, 1990 at
+        the Catalyst in Santa Cruz, CA\\n\\nLive album releases on 2/26/21!\\n\\nPreviously
+        unreleased album.  Hear it in high-res at NeilYoungArchives.com!\\n\\nThis
+        live recording includes:\\n * Country Home\\n * Cinnamon Girl\\n * F*!#In'
+        Up\\n * T-Bone\\n * Homegrown\\nAnd more!\\n\\nVisit the store at https://NeilYoungArchives.com
+        to reserve yours now.\\n\\nExperience all of Neil Young's music at Neil Young
+        Archives!\",\n        \"thumbnails\": {\n          \"default\": {\n            \"url\":
+        \"https://i.ytimg.com/vi/vOCZDeB-JuU/default.jpg\",\n            \"width\":
+        120,\n            \"height\": 90\n          },\n          \"medium\": {\n
+        \           \"url\": \"https://i.ytimg.com/vi/vOCZDeB-JuU/mqdefault.jpg\",\n
+        \           \"width\": 320,\n            \"height\": 180\n          },\n          \"high\":
+        {\n            \"url\": \"https://i.ytimg.com/vi/vOCZDeB-JuU/hqdefault.jpg\",\n
+        \           \"width\": 480,\n            \"height\": 360\n          }\n        },\n
+        \       \"channelTitle\": \"neilyoungchannel\",\n        \"liveBroadcastContent\":
+        \"none\",\n        \"publishTime\": \"2021-02-09T18:42:38Z\"\n      }\n    },\n
+        \   {\n      \"kind\": \"youtube#searchResult\",\n      \"etag\": \"2J5gZZfjcrItmh2L4iMy9ye6Fu4\",\n
+        \     \"id\": {\n        \"kind\": \"youtube#video\",\n        \"videoId\":
+        \"k6TOvpxesxY\"\n      },\n      \"snippet\": {\n        \"publishedAt\":
+        \"2020-10-06T09:26:39Z\",\n        \"channelId\": \"UCXynnXkWjVqGgZo02vCfl9g\",\n
+        \       \"title\": \"N\u0332eil Yo\u0332ung\u0332 - H\u0332arve\u0332st (Full
+        Album) 1972\",\n        \"description\": \"For  suggestions & support, you
+        can send your message at: \\nloveclassicrock26@gmail.com\\nThank you very
+        much !\",\n        \"thumbnails\": {\n          \"default\": {\n            \"url\":
+        \"https://i.ytimg.com/vi/k6TOvpxesxY/default.jpg\",\n            \"width\":
+        120,\n            \"height\": 90\n          },\n          \"medium\": {\n
+        \           \"url\": \"https://i.ytimg.com/vi/k6TOvpxesxY/mqdefault.jpg\",\n
+        \           \"width\": 320,\n            \"height\": 180\n          },\n          \"high\":
+        {\n            \"url\": \"https://i.ytimg.com/vi/k6TOvpxesxY/hqdefault.jpg\",\n
+        \           \"width\": 480,\n            \"height\": 360\n          },\n          \"standard\":
+        {\n            \"url\": \"https://i.ytimg.com/vi/k6TOvpxesxY/sddefault.jpg\",\n
+        \           \"width\": 640,\n            \"height\": 480\n          },\n          \"maxres\":
+        {\n            \"url\": \"https://i.ytimg.com/vi/k6TOvpxesxY/maxresdefault.jpg\",\n
+        \           \"width\": 1280,\n            \"height\": 720\n          }\n        },\n
+        \       \"channelTitle\": \"Classic Rock\",\n        \"liveBroadcastContent\":
+        \"none\",\n        \"publishTime\": \"2020-10-06T09:26:39Z\"\n      }\n    },\n
+        \   {\n      \"kind\": \"youtube#searchResult\",\n      \"etag\": \"I3uZ_WdTCub5G_PYc4XjkAEtDzs\",\n
+        \     \"id\": {\n        \"kind\": \"youtube#video\",\n        \"videoId\":
+        \"Gi3ztzFr8pU\"\n      },\n      \"snippet\": {\n        \"publishedAt\":
+        \"2021-03-23T19:13:08Z\",\n        \"channelId\": \"UCW2KrwIiSf1sybM31lmUbdw\",\n
+        \       \"title\": \"Neil Young & The Crazy Horse - Zuma 1975 (Full Vinyl
+        2016)\",\n        \"description\": \"A1 Don't Cry No Tears \\nA2 Danger Bird
+        \\nA3 Pardon My Heart \\nA4 Looking for a Love \\nA5 Barstool Blues \\nB1
+        Stupid Girl ----------19:32-\\nB2 Drive Back \\nB3 Cortez The Killer --26:18-\\nB4
+        Through My Sails\",\n        \"thumbnails\": {\n          \"default\": {\n
+        \           \"url\": \"https://i.ytimg.com/vi/Gi3ztzFr8pU/default.jpg\",\n
+        \           \"width\": 120,\n            \"height\": 90\n          },\n          \"medium\":
+        {\n            \"url\": \"https://i.ytimg.com/vi/Gi3ztzFr8pU/mqdefault.jpg\",\n
+        \           \"width\": 320,\n            \"height\": 180\n          },\n          \"high\":
+        {\n            \"url\": \"https://i.ytimg.com/vi/Gi3ztzFr8pU/hqdefault.jpg\",\n
+        \           \"width\": 480,\n            \"height\": 360\n          },\n          \"standard\":
+        {\n            \"url\": \"https://i.ytimg.com/vi/Gi3ztzFr8pU/sddefault.jpg\",\n
+        \           \"width\": 640,\n            \"height\": 480\n          },\n          \"maxres\":
+        {\n            \"url\": \"https://i.ytimg.com/vi/Gi3ztzFr8pU/maxresdefault.jpg\",\n
+        \           \"width\": 1280,\n            \"height\": 720\n          }\n        },\n
+        \       \"channelTitle\": \"German L Gonz\xE1lez A\",\n        \"liveBroadcastContent\":
+        \"none\",\n        \"publishTime\": \"2021-03-23T19:13:08Z\"\n      }\n    },\n
+        \   {\n      \"kind\": \"youtube#searchResult\",\n      \"etag\": \"haEN5fwTAjlGXRGDdE4NSaT3NlU\",\n
+        \     \"id\": {\n        \"kind\": \"youtube#video\",\n        \"videoId\":
+        \"gQEBgbLWWec\"\n      },\n      \"snippet\": {\n        \"publishedAt\":
+        \"2017-05-22T19:40:17Z\",\n        \"channelId\": \"UC_qfoBVQZOmF_6pjiWEx07Q\",\n
+        \       \"title\": \"Vietnam War Music Mix\",\n        \"description\": \"\",\n
+        \       \"thumbnails\": {\n          \"default\": {\n            \"url\":
+        \"https://i.ytimg.com/vi/gQEBgbLWWec/default.jpg\",\n            \"width\":
+        120,\n            \"height\": 90\n          },\n          \"medium\": {\n
+        \           \"url\": \"https://i.ytimg.com/vi/gQEBgbLWWec/mqdefault.jpg\",\n
+        \           \"width\": 320,\n            \"height\": 180\n          },\n          \"high\":
+        {\n            \"url\": \"https://i.ytimg.com/vi/gQEBgbLWWec/hqdefault.jpg\",\n
+        \           \"width\": 480,\n            \"height\": 360\n          },\n          \"standard\":
+        {\n            \"url\": \"https://i.ytimg.com/vi/gQEBgbLWWec/sddefault.jpg\",\n
+        \           \"width\": 640,\n            \"height\": 480\n          },\n          \"maxres\":
+        {\n            \"url\": \"https://i.ytimg.com/vi/gQEBgbLWWec/maxresdefault.jpg\",\n
+        \           \"width\": 1280,\n            \"height\": 720\n          }\n        },\n
+        \       \"channelTitle\": \"ProroK38\",\n        \"liveBroadcastContent\":
+        \"none\",\n        \"publishTime\": \"2017-05-22T19:40:17Z\"\n      }\n    },\n
+        \   {\n      \"kind\": \"youtube#searchResult\",\n      \"etag\": \"bnx5_1hpN0mb0q43h9TpUzrV0D4\",\n
+        \     \"id\": {\n        \"kind\": \"youtube#video\",\n        \"videoId\":
+        \"UuQYM9PNnII\"\n      },\n      \"snippet\": {\n        \"publishedAt\":
+        \"2021-02-26T07:54:41Z\",\n        \"channelId\": \"UCkYBx2KmIjFKFvA2Ye8UhAg\",\n
+        \       \"title\": \"Neil Young Greatest Hits Full Album - Best Songs Of Neil
+        Young Playlist 2021\",\n        \"description\": \"Neil Young Greatest Hits
+        Full Album - Best Songs Of Neil Young Playlist 2021\",\n        \"thumbnails\":
+        {\n          \"default\": {\n            \"url\": \"https://i.ytimg.com/vi/UuQYM9PNnII/default.jpg\",\n
+        \           \"width\": 120,\n            \"height\": 90\n          },\n          \"medium\":
+        {\n            \"url\": \"https://i.ytimg.com/vi/UuQYM9PNnII/mqdefault.jpg\",\n
+        \           \"width\": 320,\n            \"height\": 180\n          },\n          \"high\":
+        {\n            \"url\": \"https://i.ytimg.com/vi/UuQYM9PNnII/hqdefault.jpg\",\n
+        \           \"width\": 480,\n            \"height\": 360\n          },\n          \"standard\":
+        {\n            \"url\": \"https://i.ytimg.com/vi/UuQYM9PNnII/sddefault.jpg\",\n
+        \           \"width\": 640,\n            \"height\": 480\n          },\n          \"maxres\":
+        {\n            \"url\": \"https://i.ytimg.com/vi/UuQYM9PNnII/maxresdefault.jpg\",\n
+        \           \"width\": 1280,\n            \"height\": 720\n          }\n        },\n
+        \       \"channelTitle\": \"SLOW ROCK MUSIC\",\n        \"liveBroadcastContent\":
+        \"none\",\n        \"publishTime\": \"2021-02-26T07:54:41Z\"\n      }\n    },\n
+        \   {\n      \"kind\": \"youtube#searchResult\",\n      \"etag\": \"XAevYko0Q8pbOeQpGeX62Otw-EA\",\n
+        \     \"id\": {\n        \"kind\": \"youtube#video\",\n        \"videoId\":
+        \"Gbay4CptzDQ\"\n      },\n      \"snippet\": {\n        \"publishedAt\":
+        \"2014-04-26T18:08:42Z\",\n        \"channelId\": \"UCn_aeJgfUbXfkBLPCxeptvg\",\n
+        \       \"title\": \"Neil Young with Booker T & the MG's 7/03/1993 Torhout,
+        Belgium\",\n        \"description\": \"Neil Young & Booker T & the MG's \\n07/03/1993\\nTorhout
+        Festival, \\nTorhout, Belgium\\n\\n***Under Law of Fair Use. For educational
+        purposes only. No copyrights infringements intended***\\nNever Buy Or Sell
+        Live Music Recordings/Videos! \\n\\nUnknown Pro-Shot video w sbd audio\\n\\nSet
+        \\nMr Soul\\nThe Loner\\nSouthern Man\\nHelpless (w/false start)\\nLike a
+        Hurricane\\nTake a Chance on Love\\nSeparate Ways\\nPowder Finger\\nOnly Love
+        Can Break Your Heart\\nHarvest Moon\\nThe Needle and the Damage Done\\nLive
+        to Ride\\nDown by the River\\nAll Along the Watchtower\\n\\n1993 European
+        Tour with Booker T and The MGs\\nBand:\\nBooker T. & The MGs\\nNeil Young
+        - vocals, guitar, harmonica, piano\\nBooker T. Jones - organ, synthesizer,
+        vocals\\nSteve Cropper - guitar\\nDonald 'Duck' Dunn - bass\\nJim Keltner
+        - drums\\nAstrid Young - backup vocals\\nAnnie Stocking - backup vocals\\n\\n\\nNotes-
+        \\nInfo file says, \\\"This footage was apparently shot by a Metallica roadie
+        who wanted to try out the equipment before using it for a Metallica show.
+        The soundboard of the show has been dubbed in perfectly. Sound is strong and
+        clear. Single camera, likely on a tripod or mixing desk, over the crowd, about
+        75 feet from stage. Camera is primarily framing center stage, highlighting
+        Neil with Steve and Duck, sometimes panning back to full stage or actual location.\\\"\",\n
+        \       \"thumbnails\": {\n          \"default\": {\n            \"url\":
+        \"https://i.ytimg.com/vi/Gbay4CptzDQ/default.jpg\",\n            \"width\":
+        120,\n            \"height\": 90\n          },\n          \"medium\": {\n
+        \           \"url\": \"https://i.ytimg.com/vi/Gbay4CptzDQ/mqdefault.jpg\",\n
+        \           \"width\": 320,\n            \"height\": 180\n          },\n          \"high\":
+        {\n            \"url\": \"https://i.ytimg.com/vi/Gbay4CptzDQ/hqdefault.jpg\",\n
+        \           \"width\": 480,\n            \"height\": 360\n          },\n          \"standard\":
+        {\n            \"url\": \"https://i.ytimg.com/vi/Gbay4CptzDQ/sddefault.jpg\",\n
+        \           \"width\": 640,\n            \"height\": 480\n          }\n        },\n
+        \       \"channelTitle\": \"BurningShoreProphet . OG\",\n        \"liveBroadcastContent\":
+        \"none\",\n        \"publishTime\": \"2014-04-26T18:08:42Z\"\n      }\n    },\n
+        \   {\n      \"kind\": \"youtube#searchResult\",\n      \"etag\": \"d0S33-s0ANJq9h4FHHxm0GYkAFU\",\n
+        \     \"id\": {\n        \"kind\": \"youtube#video\",\n        \"videoId\":
+        \"RDEfIxWEID0\"\n      },\n      \"snippet\": {\n        \"publishedAt\":
+        \"2014-10-29T08:12:02Z\",\n        \"channelId\": \"UCLkFpBMFPCUp5XcYxc2Ku_Q\",\n
+        \       \"title\": \"Norah Jones with Neil Young 'Down By The River' - Mountain
+        View, CA - 25 October 2014\",\n        \"description\": \"Norah Jones with
+        Puss n' Boots is joined by Neil Young for 'Down By The River' at the Bridge
+        School Benefit #28, on 25 October 2014\\n\\nAudio: Core-Sound HE Binaurals
+        to Sony PCM-M10;\\nVideo: Canon G15; \\nSound editing: Audacity; \\nAudio-video
+        synchronization and editing: iMovie\",\n        \"thumbnails\": {\n          \"default\":
+        {\n            \"url\": \"https://i.ytimg.com/vi/RDEfIxWEID0/default.jpg\",\n
+        \           \"width\": 120,\n            \"height\": 90\n          },\n          \"medium\":
+        {\n            \"url\": \"https://i.ytimg.com/vi/RDEfIxWEID0/mqdefault.jpg\",\n
+        \           \"width\": 320,\n            \"height\": 180\n          },\n          \"high\":
+        {\n            \"url\": \"https://i.ytimg.com/vi/RDEfIxWEID0/hqdefault.jpg\",\n
+        \           \"width\": 480,\n            \"height\": 360\n          },\n          \"standard\":
+        {\n            \"url\": \"https://i.ytimg.com/vi/RDEfIxWEID0/sddefault.jpg\",\n
+        \           \"width\": 640,\n            \"height\": 480\n          },\n          \"maxres\":
+        {\n            \"url\": \"https://i.ytimg.com/vi/RDEfIxWEID0/maxresdefault.jpg\",\n
+        \           \"width\": 1280,\n            \"height\": 720\n          }\n        },\n
+        \       \"channelTitle\": \"EverMore Studios\",\n        \"liveBroadcastContent\":
+        \"none\",\n        \"publishTime\": \"2014-10-29T08:12:02Z\"\n      }\n    },\n
+        \   {\n      \"kind\": \"youtube#searchResult\",\n      \"etag\": \"NRlc48AGJYN053onE3qWABaGAeA\",\n
+        \     \"id\": {\n        \"kind\": \"youtube#video\",\n        \"videoId\":
+        \"RRb9l0udUg0\"\n      },\n      \"snippet\": {\n        \"publishedAt\":
+        \"2018-09-26T02:14:08Z\",\n        \"channelId\": \"UC-ANuMuxJujX0HKnZXY5B5Q\",\n
+        \       \"title\": \"Helvetia - Demos & Unreleased Songs (Full compilation)\",\n
+        \       \"description\": \"Compilation of demos and unreleased tracks under
+        Eiafuawn. Shared by Clay on stereobird.\\n\\n00:00 - Incestuous Future Made
+        It\\n06:06 - One Way Jesus\\n11:01 - Fiction\\n15:56 - Giving It All Up\\n19:43
+        - San Jose Winter\\n22:34 - Harbored\\n26:24 - Sixes\\n30:24 - Couch Rock\\n33:24
+        - Headless Machine of the Heart\\n38:43 - 000\\n45:00 - Blood Behind the Walls\\n50:35
+        - Lost In Space\\n56:32 - Westering Wearily\\n1:01:52 - Crisis Feeder\\n1:03:06
+        - Maybe You Don't Know\\n1:05:03 - In Every Hour\\n1:11:16 - Without a Smile\\n1:14:53
+        - Heimatsliebe\\n1:16:52 - Jude\\n1:20:58 - Panic Tower\\n1:24:34 - The Acrobats\",\n
+        \       \"thumbnails\": {\n          \"default\": {\n            \"url\":
+        \"https://i.ytimg.com/vi/RRb9l0udUg0/default.jpg\",\n            \"width\":
+        120,\n            \"height\": 90\n          },\n          \"medium\": {\n
+        \           \"url\": \"https://i.ytimg.com/vi/RRb9l0udUg0/mqdefault.jpg\",\n
+        \           \"width\": 320,\n            \"height\": 180\n          },\n          \"high\":
+        {\n            \"url\": \"https://i.ytimg.com/vi/RRb9l0udUg0/hqdefault.jpg\",\n
+        \           \"width\": 480,\n            \"height\": 360\n          },\n          \"standard\":
+        {\n            \"url\": \"https://i.ytimg.com/vi/RRb9l0udUg0/sddefault.jpg\",\n
+        \           \"width\": 640,\n            \"height\": 480\n          },\n          \"maxres\":
+        {\n            \"url\": \"https://i.ytimg.com/vi/RRb9l0udUg0/maxresdefault.jpg\",\n
+        \           \"width\": 1280,\n            \"height\": 720\n          }\n        },\n
+        \       \"channelTitle\": \"esacrewol\",\n        \"liveBroadcastContent\":
+        \"none\",\n        \"publishTime\": \"2018-09-26T02:14:08Z\"\n      }\n    },\n
+        \   {\n      \"kind\": \"youtube#searchResult\",\n      \"etag\": \"R_5KmvobK0LxWCLdUe1kwjBkFXM\",\n
+        \     \"id\": {\n        \"kind\": \"youtube#video\",\n        \"videoId\":
+        \"o3td3Q5Jr6A\"\n      },\n      \"snippet\": {\n        \"publishedAt\":
+        \"2016-09-18T06:33:39Z\",\n        \"channelId\": \"UCZvysOTYDHMewYyIX_at8mw\",\n
+        \       \"title\": \"Neil Young + Promise of the Real - Powderfinger (Live
+        at Farm Aid 2016)\",\n        \"description\": \"Neil Young + Promise of the
+        Real performs \\\"Powderfinger\\\" at Farm Aid 2016 at Jiffy Lube Live in
+        Bristow, Virginia, on September 17. \\n\\nFarm Aid was started by Willie Nelson,
+        Neil Young and John Mellencamp in 1985 to keep family farmers on the land
+        and has worked since then to make sure everyone has access to good food from
+        family farmers. Dave Matthews joined Farm Aid's board of directors in 2001.\\n\\nFor
+        more information about Farm Aid, visit: http://farmaid.org/youtube\\n\\nFarm
+        Aid's performances are donated by the artists in order to raise funds and
+        raise awareness for family farmers. They've raised their voices to help \u2014
+        what can you do?\",\n        \"thumbnails\": {\n          \"default\": {\n
+        \           \"url\": \"https://i.ytimg.com/vi/o3td3Q5Jr6A/default.jpg\",\n
+        \           \"width\": 120,\n            \"height\": 90\n          },\n          \"medium\":
+        {\n            \"url\": \"https://i.ytimg.com/vi/o3td3Q5Jr6A/mqdefault.jpg\",\n
+        \           \"width\": 320,\n            \"height\": 180\n          },\n          \"high\":
+        {\n            \"url\": \"https://i.ytimg.com/vi/o3td3Q5Jr6A/hqdefault.jpg\",\n
+        \           \"width\": 480,\n            \"height\": 360\n          },\n          \"standard\":
+        {\n            \"url\": \"https://i.ytimg.com/vi/o3td3Q5Jr6A/sddefault.jpg\",\n
+        \           \"width\": 640,\n            \"height\": 480\n          },\n          \"maxres\":
+        {\n            \"url\": \"https://i.ytimg.com/vi/o3td3Q5Jr6A/maxresdefault.jpg\",\n
+        \           \"width\": 1280,\n            \"height\": 720\n          }\n        },\n
+        \       \"channelTitle\": \"Farm Aid\",\n        \"liveBroadcastContent\":
+        \"none\",\n        \"publishTime\": \"2016-09-18T06:33:39Z\"\n      }\n    },\n
+        \   {\n      \"kind\": \"youtube#searchResult\",\n      \"etag\": \"ulGznymMzo3mexCYCRrvYz3VIcM\",\n
+        \     \"id\": {\n        \"kind\": \"youtube#video\",\n        \"videoId\":
+        \"ox_K1FY_r6E\"\n      },\n      \"snippet\": {\n        \"publishedAt\":
+        \"2011-08-27T15:19:34Z\",\n        \"channelId\": \"UCcNBpCEqJjgkQQT59cF485A\",\n
+        \       \"title\": \"don't cry no tears Neil Young (guit. part)\",\n        \"description\":
+        \"great song from 1975 Zuma album\",\n        \"thumbnails\": {\n          \"default\":
+        {\n            \"url\": \"https://i.ytimg.com/vi/ox_K1FY_r6E/default.jpg\",\n
+        \           \"width\": 120,\n            \"height\": 90\n          },\n          \"medium\":
+        {\n            \"url\": \"https://i.ytimg.com/vi/ox_K1FY_r6E/mqdefault.jpg\",\n
+        \           \"width\": 320,\n            \"height\": 180\n          },\n          \"high\":
+        {\n            \"url\": \"https://i.ytimg.com/vi/ox_K1FY_r6E/hqdefault.jpg\",\n
+        \           \"width\": 480,\n            \"height\": 360\n          },\n          \"standard\":
+        {\n            \"url\": \"https://i.ytimg.com/vi/ox_K1FY_r6E/sddefault.jpg\",\n
+        \           \"width\": 640,\n            \"height\": 480\n          }\n        },\n
+        \       \"channelTitle\": \"M Ferrucci\",\n        \"liveBroadcastContent\":
+        \"none\",\n        \"publishTime\": \"2011-08-27T15:19:34Z\"\n      }\n    },\n
+        \   {\n      \"kind\": \"youtube#searchResult\",\n      \"etag\": \"p-bCvZU3pqNGjyf_7g9G_2_xYig\",\n
+        \     \"id\": {\n        \"kind\": \"youtube#video\",\n        \"videoId\":
+        \"E3BVteW_rnE\"\n      },\n      \"snippet\": {\n        \"publishedAt\":
+        \"2020-10-12T11:28:36Z\",\n        \"channelId\": \"UCj8w59xU6Kg-3o_IjyBre8A\",\n
+        \       \"title\": \"Bob Dylan   1976   Desire\",\n        \"description\":
+        \"DATING, LOVE & RELATIONSHIP\\n(Please click the links below for info)\\n\\nHis
+        Secret Obsession\\nhttps://www.digistore24.com/redir/302188/RockersMASTERPIECE/\\nRelationship
+        Rewrite Method\\nhttps://www.digistore24.com/redir/384216/RockersMASTERPIECE/\\nLove
+        and Money in the couple relationship\\nhttps://www.digistore24.com/redir/341524/RockersMASTERPIECE/\\nDating
+        Coach Certification\\nhttps://www.digistore24.com/redir/308240/RockersMASTERPIECE/\\nLove
+        Notes\\nhttps://www.digistore24.com/redir/332396/RockersMASTERPIECE/\\n\\nF
+        ITNESS & HEALTH\\n(Please click the links below for info)\\n\\nOkinawa Flat
+        Belly Tonic \\nhttps://b7c977zclyekfy0bldzgr3dk0a.hop.clickbank.net/\\nBiofit
+        \\nhttps://3ebfa829nvfqbx85x8l7zezc19.hop.clickbank.net/\\nThe Smoothie Diet:
+        21 Day Rapid Weight Loss Program\\nhttps://a93e01zah59ram6hngujlzybws.hop.clickbank.net/\\nLean
+        Belly 3x \\nhttps://2fe8f9x9kvel6ya5hr3airae45.hop.clickbank.net/\\nRelaxing
+        Music - Meditation Music\\nhttps://www.digistore24.com/redir/193071/RockersMASTERPIECE/\\nThe
+        Lose Your First 10 Lbs Workshop\\nhttps://www.digistore24.com/redir/388124/RockersMASTERPIECE/\\nThe
+        Keto Snacks Cookbook (Physical)\\nhttps://www.digistore24.com/redir/400534/RockersMASTERPIECE/\\nOnline
+        Fitness Coach Trainer Subscription!\\nhttps://www.digistore24.com/redir/312672/RockersMASTERPIECE/\\n7
+        Days to Drink Less Online Alcohol Reduction Program\\nhttps://www.digistore24.com/redir/382296/RockersMASTERPIECE/\\nQuit
+        Smoking in 10 Days\\nhttps://www.digistore24.com/redir/376664/RockersMASTERPIECE/\\n\\nSPIRITUALITY
+        & ESOTERICS\\n(Please click the links below for info)\\n\\n365 Manifestation
+        Power\\nhttps://www.digistore24.com/redir/378465/RockersMASTERPIECE/\\nCall
+        of Destiny\\nhttps://www.digistore24.com/redir/370248/RockersMASTERPIECE/\\nMindful
+        Meditation\\nhttps://www.digistore24.com/redir/396714/RockersMASTERPIECE/\\nPower
+        of Visualization\\nhttps://www.digistore24.com/redir/396013/RockersMASTERPIECE/\\nThe
+        Winning Mindset Improve Your Mindset Achieve Anything!!!\\nhttps://www.digistore24.com/redir/356715/RockersMASTERPIECE/\\n\\nFor
+        any concern, comments / suggestions & \\nsupport, you can send your message
+        at: \\nrockers.masterpiece@gmail.com\\nThank you very much\\n\\nSide one\\n1.
+        \\\"Hurricane\\\" \\n2. \\\"Isis\\\" \\n3. \\\"Mozambique\\\" \\n4. \\\"One
+        More Cup of Coffee\\\" \\n5. \\\"Oh, Sister\\\" \\n\\nSide two\\n1. \\\"Joey\\\"
+        \\n2. \\\"Romance in Durango\\\" \\n3. \\\"Black Diamond Bay\\\" \\n4. \\\"Sara\\\"
+        \\n\\nDesire is the seventeenth studio album by American singer-songwriter
+        Bob Dylan, released on January 5, 1976 by Columbia Records.\\nIt is one of
+        Dylan's most collaborative efforts, featuring the same caravan of musicians
+        as the acclaimed Rolling Thunder Revue tours the previous year (later documented
+        on The Bootleg Series Vol. 5). Many of the songs also featured backing vocals
+        by Emmylou Harris and Ronee Blakley. Most of the album was co-written by Jacques
+        Levy, and is composed of lengthy story-songs, two of which quickly generated
+        controversy: the 11-minute-long \\\"Joey\\\", which is seen as glorifying
+        the violent gangster \\\"Crazy Joey\\\" Gallo, and \\\"Hurricane\\\", the
+        opening track that tells a passionate account of the murder case against boxer
+        Rubin Carter, whom the song asserts was framed. Carter was released in 1985,
+        after a judge overturned his conviction on appeal.\\n\\nA well-received follow-up
+        to Blood on the Tracks, Desire reached No.?1 on the Billboard Pop Albums chart
+        for five weeks, becoming one of Dylan's bestselling studio albums, and was
+        certified double Platinum; the album reached No.?3 in the UK. It claimed the
+        No.?1 slot on NME Album of the Year. Rolling Stone named Desire No.?174 on
+        its list of The 500 Greatest Albums of All Time. It was voted number 761 in
+        the third edition of Colin Larkin's All Time Top 1000 Albums (2000)\\n\\nPersonnel\\nBob
+        Dylan \u2013 vocals, rhythm guitar, harmonica, piano on \\\"Isis\\\"\\nScarlet
+        Rivera \u2013 violin\\nEmmylou Harris \u2013 background vocals\\nRob Stoner
+        \u2013 bass guitar, background vocals\\nHoward Wyeth \u2013 drums, piano\\nDominic
+        Cortese \u2013 accordion, mandolin\\nVinnie Bell \u2013 bouzouki\\nLuther
+        Rix \u2013 congas on \\\"Hurricane\\\"\\nRonee Blakley \u2013 background vocals
+        on \\\"Hurricane\\\"\\nSteven Soles \u2013 background vocals on \\\"Hurricane\\\"\\nEric
+        Clapton \u2013 guitar on \\\"Romance In Durango\\\"\",\n        \"thumbnails\":
+        {\n          \"default\": {\n            \"url\": \"https://i.ytimg.com/vi/E3BVteW_rnE/default.jpg\",\n
+        \           \"width\": 120,\n            \"height\": 90\n          },\n          \"medium\":
+        {\n            \"url\": \"https://i.ytimg.com/vi/E3BVteW_rnE/mqdefault.jpg\",\n
+        \           \"width\": 320,\n            \"height\": 180\n          },\n          \"high\":
+        {\n            \"url\": \"https://i.ytimg.com/vi/E3BVteW_rnE/hqdefault.jpg\",\n
+        \           \"width\": 480,\n            \"height\": 360\n          }\n        },\n
+        \       \"channelTitle\": \"Rockers MASTERPIECE\",\n        \"liveBroadcastContent\":
+        \"none\",\n        \"publishTime\": \"2020-10-12T11:28:36Z\"\n      }\n    },\n
+        \   {\n      \"kind\": \"youtube#searchResult\",\n      \"etag\": \"lf_cmhxpta-TnK7cnqV8lbIpg8U\",\n
+        \     \"id\": {\n        \"kind\": \"youtube#video\",\n        \"videoId\":
+        \"rJf-Z2LQUcA\"\n      },\n      \"snippet\": {\n        \"publishedAt\":
+        \"2016-05-04T17:34:08Z\",\n        \"channelId\": \"UC9wq3nz4fDt_JpxtLWjIWEA\",\n
+        \       \"title\": \"36 minute DOWN BY THE RIVER Neil Young + promise of the
+        real 4 29 16 memphis\",\n        \"description\": \"got to film one of my
+        heros, Neil Young.  he absolutely crushed this DBTR....go neil!  and enjoy!\\nshot
+        by runme69 (JFI Productions) and helped immensely by the blests, ash, chris,
+        and chappell\",\n        \"thumbnails\": {\n          \"default\": {\n            \"url\":
+        \"https://i.ytimg.com/vi/rJf-Z2LQUcA/default.jpg\",\n            \"width\":
+        120,\n            \"height\": 90\n          },\n          \"medium\": {\n
+        \           \"url\": \"https://i.ytimg.com/vi/rJf-Z2LQUcA/mqdefault.jpg\",\n
+        \           \"width\": 320,\n            \"height\": 180\n          },\n          \"high\":
+        {\n            \"url\": \"https://i.ytimg.com/vi/rJf-Z2LQUcA/hqdefault.jpg\",\n
+        \           \"width\": 480,\n            \"height\": 360\n          },\n          \"standard\":
+        {\n            \"url\": \"https://i.ytimg.com/vi/rJf-Z2LQUcA/sddefault.jpg\",\n
+        \           \"width\": 640,\n            \"height\": 480\n          },\n          \"maxres\":
+        {\n            \"url\": \"https://i.ytimg.com/vi/rJf-Z2LQUcA/maxresdefault.jpg\",\n
+        \           \"width\": 1280,\n            \"height\": 720\n          }\n        },\n
+        \       \"channelTitle\": \"runme69\",\n        \"liveBroadcastContent\":
+        \"none\",\n        \"publishTime\": \"2016-05-04T17:34:08Z\"\n      }\n    },\n
+        \   {\n      \"kind\": \"youtube#searchResult\",\n      \"etag\": \"3vD8uo3ItsbJXkIO18qSCIsbojY\",\n
+        \     \"id\": {\n        \"kind\": \"youtube#video\",\n        \"videoId\":
+        \"KjtemEUoZ_M\"\n      },\n      \"snippet\": {\n        \"publishedAt\":
+        \"2017-05-02T16:38:41Z\",\n        \"channelId\": \"UCWfjaViDsYGf7xVknnAuLZQ\",\n
+        \       \"title\": \"Mac Demarco - This Old Dog (full album) 2017\",\n        \"description\":
+        \"No copyright intended, I do not own this music and I give full credit to
+        Mac Demarco/Captured Tracks. I do not and never will make money off of this.
+        This is purely for listening purposes.\\nBe sure to support the artist //
+        BUY THE ALBUM: https://www.omnianmusicgroup.com/products/this-old-dog\\n\\n01.
+        My Old Man 0:00\\n02. This Old Dog 3:40\\n03. Baby You're Out 6:06\\n04. For
+        The First Time 8:42\\n05. One Another 11:42\\n06. Still Beating 14:26\\n07.
+        Sister 17:25\\n08. Dreams From Yesterday 18:42\\n09. A Wolf Who Wears Sheeps
+        Clothes 22:06\\n10. One More Love Song 24:51\\n11. On The Level 28:49\\n12.
+        Moonlight On The River 32:31\\n13. Watching Him Fade Away 39:29 \\n\\nSi en
+        algun momento se siente ofendido/a por estar subiendo un material que no me
+        pertenece, me da igual, no estoy ganando nada con esto y nadie le obliga a
+        entrar en este tipo de v\xEDdeos. Si tanto le interesa ayudar al artista,
+        compre el disco hooooooooooombre\",\n        \"thumbnails\": {\n          \"default\":
+        {\n            \"url\": \"https://i.ytimg.com/vi/KjtemEUoZ_M/default.jpg\",\n
+        \           \"width\": 120,\n            \"height\": 90\n          },\n          \"medium\":
+        {\n            \"url\": \"https://i.ytimg.com/vi/KjtemEUoZ_M/mqdefault.jpg\",\n
+        \           \"width\": 320,\n            \"height\": 180\n          },\n          \"high\":
+        {\n            \"url\": \"https://i.ytimg.com/vi/KjtemEUoZ_M/hqdefault.jpg\",\n
+        \           \"width\": 480,\n            \"height\": 360\n          },\n          \"standard\":
+        {\n            \"url\": \"https://i.ytimg.com/vi/KjtemEUoZ_M/sddefault.jpg\",\n
+        \           \"width\": 640,\n            \"height\": 480\n          },\n          \"maxres\":
+        {\n            \"url\": \"https://i.ytimg.com/vi/KjtemEUoZ_M/maxresdefault.jpg\",\n
+        \           \"width\": 1280,\n            \"height\": 720\n          }\n        },\n
+        \       \"channelTitle\": \"playa.player \u30B7\",\n        \"liveBroadcastContent\":
+        \"none\",\n        \"publishTime\": \"2017-05-02T16:38:41Z\"\n      }\n    },\n
+        \   {\n      \"kind\": \"youtube#searchResult\",\n      \"etag\": \"4a7grBpVTE6rotBIf4FWFa3GzCI\",\n
+        \     \"id\": {\n        \"kind\": \"youtube#video\",\n        \"videoId\":
+        \"pX4kiBkYzos\"\n      },\n      \"snippet\": {\n        \"publishedAt\":
+        \"2018-04-30T04:18:58Z\",\n        \"channelId\": \"UCF-Fsf7VQ03WBnJQBV50qZA\",\n
+        \       \"title\": \"Neil Young , Rock In Rio, Madrid, 2008\",\n        \"description\":
+        \"Neil Young, live from Rock in Rio, Madrid, in 2008.\\n\\nHelp us caption
+        & translate this video!  #NeilYoung\\n\\nhttps://amara.org/v/C18QV/ #NeilYoung\",\n
+        \       \"thumbnails\": {\n          \"default\": {\n            \"url\":
+        \"https://i.ytimg.com/vi/pX4kiBkYzos/default.jpg\",\n            \"width\":
+        120,\n            \"height\": 90\n          },\n          \"medium\": {\n
+        \           \"url\": \"https://i.ytimg.com/vi/pX4kiBkYzos/mqdefault.jpg\",\n
+        \           \"width\": 320,\n            \"height\": 180\n          },\n          \"high\":
+        {\n            \"url\": \"https://i.ytimg.com/vi/pX4kiBkYzos/hqdefault.jpg\",\n
+        \           \"width\": 480,\n            \"height\": 360\n          },\n          \"standard\":
+        {\n            \"url\": \"https://i.ytimg.com/vi/pX4kiBkYzos/sddefault.jpg\",\n
+        \           \"width\": 640,\n            \"height\": 480\n          },\n          \"maxres\":
+        {\n            \"url\": \"https://i.ytimg.com/vi/pX4kiBkYzos/maxresdefault.jpg\",\n
+        \           \"width\": 1280,\n            \"height\": 720\n          }\n        },\n
+        \       \"channelTitle\": \"Feature Tube\",\n        \"liveBroadcastContent\":
+        \"none\",\n        \"publishTime\": \"2018-04-30T04:18:58Z\"\n      }\n    },\n
+        \   {\n      \"kind\": \"youtube#searchResult\",\n      \"etag\": \"69_hJcsjP1Nrbpvk1KdUGTEdRKU\",\n
+        \     \"id\": {\n        \"kind\": \"youtube#video\",\n        \"videoId\":
+        \"dswdLNlu__0\"\n      },\n      \"snippet\": {\n        \"publishedAt\":
+        \"2014-08-13T14:05:22Z\",\n        \"channelId\": \"UCOWkCfTRYAvkR13xSeo2gyA\",\n
+        \       \"title\": \"Neil Young - Full Concert - 11/26/89 - Cow Palace (OFFICIAL)\",\n
+        \       \"description\": \"Neil Young - Full Concert\\nRecorded Live: 11/26/1989
+        - Cow Palace (San Francisco, CA)\\n\\nMore Neil Young at Music Vault: http://www.musicvault.com\\nSubscribe
+        to Music Vault: http://goo.gl/DUzpUF\\n\\nSetlist:\\n0:00:00 - Introduction
+        by Bill Graham\\n0:00:13 - My My, Hey Hey (Out of the Blue)\\n0:03:37 - Banter\\n0:04:19
+        - Rockin' in the Free World\\n0:09:29 - Crowd\\n0:09:37 - Guest Introduction\\n0:09:55
+        - Stage Adjustments\\n0:10:15 - Comes A Time\\n0:14:40 - Song Introduction\\n0:14:48
+        - Homegrown\\n0:16:35 - Crowd\\n0:17:17 - Heart of Gold\\n0:20:30 - Instrument
+        Change\\n0:21:26 - Crime in the City (Sixty to Zero, Pt. 1)\\n0:28:12 - Stage
+        Announcements\\n0:29:42 - Stage Adjustments\",\n        \"thumbnails\": {\n
+        \         \"default\": {\n            \"url\": \"https://i.ytimg.com/vi/dswdLNlu__0/default.jpg\",\n
+        \           \"width\": 120,\n            \"height\": 90\n          },\n          \"medium\":
+        {\n            \"url\": \"https://i.ytimg.com/vi/dswdLNlu__0/mqdefault.jpg\",\n
+        \           \"width\": 320,\n            \"height\": 180\n          },\n          \"high\":
+        {\n            \"url\": \"https://i.ytimg.com/vi/dswdLNlu__0/hqdefault.jpg\",\n
+        \           \"width\": 480,\n            \"height\": 360\n          },\n          \"standard\":
+        {\n            \"url\": \"https://i.ytimg.com/vi/dswdLNlu__0/sddefault.jpg\",\n
+        \           \"width\": 640,\n            \"height\": 480\n          }\n        },\n
+        \       \"channelTitle\": \"Neil Young on MV\",\n        \"liveBroadcastContent\":
+        \"none\",\n        \"publishTime\": \"2014-08-13T14:05:22Z\"\n      }\n    },\n
+        \   {\n      \"kind\": \"youtube#searchResult\",\n      \"etag\": \"GWtTZ-N1IDIPuONB0Pai8XET8E8\",\n
+        \     \"id\": {\n        \"kind\": \"youtube#video\",\n        \"videoId\":
+        \"ukgraQ-xkp4\"\n      },\n      \"snippet\": {\n        \"publishedAt\":
+        \"2020-12-15T09:54:19Z\",\n        \"channelId\": \"UCBxEf1UWDjbIEoh2MAQR7zQ\",\n
+        \       \"title\": \"King Crimson - The Court Of The Crimson King\",\n        \"description\":
+        \"THE COURT OF THE CRIMSON KING \\nincluding THE RETURN OF THE FIRE WITCH
+        and THE DANCE OF THE PUPPETS  \\n(McDonald, Sinfield)\\n\\nThe rusted chains
+        of prison moons \\nAre shattered by the sun. \\nI walk a road, horizons change
+        \\nThe tournament's begun. \\nThe purple piper plays his tune, \\nThe choir
+        softly sing; \\nThree lullabies in an ancient tongue, \\nFor the court of
+        the crimson king. \\n\\nThe keeper of the city keys \\nPut shutters on the
+        dreams. \\nI wait outside the pilgrim's door \\nWith insufficient schemes.
+        \\nThe black queen chants \\nthe funeral march, \\nThe cracked brass bells
+        will ring; \\nTo summon back the fire witch \\nTo the court of the crimson
+        king. \\n\\nThe gardener plants an evergreen \\nWhilst trampling on a flower.
+        \\nI chase the wind of a prism ship \\nTo taste the sweet and sour. \\nThe
+        pattern juggler lifts his hand; \\nThe orchestra begin. \\nAs slowly turns
+        the grinding wheel \\nIn the court of the crimson king. \\n\\nOn soft grey
+        mornings widows cry \\nThe wise men share a joke; \\nI run to grasp divining
+        signs \\nTo satisfy the hoax. \\nThe yellow jester does not play \\nBut gently
+        pulls the strings \\nAnd smiles as the puppets dance \\nIn the court of the
+        crimson king.\\n\\n- - - - - - - - - - - - - - - - - - - - - - - - - - - -
+        - - - - - -\\nRobert Fripp\u2013guitar\\nIan McDonald\u2013reeds, woodwind,
+        vibes, keyboards, mellotron, vocals\\nGreg Lake\u2013bass guitar, lead vocals\\nMichael
+        Giles\u2013drums, percussion, vocals\\nPeter Sinfield\u2013words and illumination\\n\\nCover
+        by Barry Godber\\nEquipment by Vick and Dik\\nRecorded at Wessex Sound Studios,
+        London  \\nEngineer: Robin Thompson\\nAssistant Engineer: Tony Page\\nProduced
+        by King Crimson for EG Productions, \u2018David & John\u2019\\n\\n#InTheCourtOfTheCrimsonKing\\n#KingCrimson\\n#RobertFripp\",\n
+        \       \"thumbnails\": {\n          \"default\": {\n            \"url\":
+        \"https://i.ytimg.com/vi/ukgraQ-xkp4/default.jpg\",\n            \"width\":
+        120,\n            \"height\": 90\n          },\n          \"medium\": {\n
+        \           \"url\": \"https://i.ytimg.com/vi/ukgraQ-xkp4/mqdefault.jpg\",\n
+        \           \"width\": 320,\n            \"height\": 180\n          },\n          \"high\":
+        {\n            \"url\": \"https://i.ytimg.com/vi/ukgraQ-xkp4/hqdefault.jpg\",\n
+        \           \"width\": 480,\n            \"height\": 360\n          },\n          \"standard\":
+        {\n            \"url\": \"https://i.ytimg.com/vi/ukgraQ-xkp4/sddefault.jpg\",\n
+        \           \"width\": 640,\n            \"height\": 480\n          },\n          \"maxres\":
+        {\n            \"url\": \"https://i.ytimg.com/vi/ukgraQ-xkp4/maxresdefault.jpg\",\n
+        \           \"width\": 1280,\n            \"height\": 720\n          }\n        },\n
+        \       \"channelTitle\": \"King Crimson\",\n        \"liveBroadcastContent\":
+        \"none\",\n        \"publishTime\": \"2020-12-15T09:54:19Z\"\n      }\n    },\n
+        \   {\n      \"kind\": \"youtube#searchResult\",\n      \"etag\": \"V9PKvu6Owu8GdF_RycXFbG1dpaM\",\n
+        \     \"id\": {\n        \"kind\": \"youtube#video\",\n        \"videoId\":
+        \"SNhMIHSH_f8\"\n      },\n      \"snippet\": {\n        \"publishedAt\":
+        \"2016-02-23T04:01:19Z\",\n        \"channelId\": \"UCoPllWEnoGa1mmgN8QoS7kg\",\n
+        \       \"title\": \"Neil Young and Crazy Horse 8-8-2014 Colmar, France complete\",\n
+        \       \"description\": \"NEIL YOUNG with CRAZY HORSE\\n8/8/2014\\nFoire
+        aux Vins d'Alsace, \\nTh\xE9atre de Plein Air, \\nCOLMAR, FRANCE\\n\\n***Under
+        Law of Fair Use. For educational purposes only. No copyrights infringements
+        intended***\\nNever Buy Or Sell Live Music Recordings/Videos! \\n\\nThanks
+        to OLLIE FABECK, and the other filmers and to \\\"Wonderful\\\".\\n\\nSetlist:\\nLove
+        and Only Love\\nBe the Rain\\nStanding in the Light of Love\\nDays that Used
+        to Be\\nLike a Hurricane\\nLiving with War\\nBlowin' in the Wind\\nHeart of
+        Gold\\nPowderfinger\\nDown by the River\\nName of LOve\\nRockin' in the Free
+        World\\n----------------------------------\\nWho's Gonna Stand Up and Save
+        the Earth?\\n\\n\\nBAND\\nNeil Young - vocals, electric guitar, acoustic guitar,
+        harmonica\\nFrank Sampedro - electric guitar, keyboards, vocals\\nRalph Molina
+        - drums, vocals\\nRick Rosas - bass\\nDorene Carter - vocals\\nYaDonna West
+        - vocals\\n\\n\\nSOURCE:\\nLineage: \\nVideo: OLLIE FABECK, and the other
+        filmers and to Wonderful\\nAudio: Dime Member \\\"Wonderful\\\" Recording\\n--Adobe
+        Premiere 7 to sync and edit--TMPGEnc Works 4 for authoring\\n\\n\\nNOTES\\nComplete
+        Show, without cuts, some songs multicam\\nLast show of 2014 World Tour with
+        Crazy Horse\",\n        \"thumbnails\": {\n          \"default\": {\n            \"url\":
+        \"https://i.ytimg.com/vi/SNhMIHSH_f8/default.jpg\",\n            \"width\":
+        120,\n            \"height\": 90\n          },\n          \"medium\": {\n
+        \           \"url\": \"https://i.ytimg.com/vi/SNhMIHSH_f8/mqdefault.jpg\",\n
+        \           \"width\": 320,\n            \"height\": 180\n          },\n          \"high\":
+        {\n            \"url\": \"https://i.ytimg.com/vi/SNhMIHSH_f8/hqdefault.jpg\",\n
+        \           \"width\": 480,\n            \"height\": 360\n          }\n        },\n
+        \       \"channelTitle\": \"BurningShoreProphet3\",\n        \"liveBroadcastContent\":
+        \"none\",\n        \"publishTime\": \"2016-02-23T04:01:19Z\"\n      }\n    },\n
+        \   {\n      \"kind\": \"youtube#searchResult\",\n      \"etag\": \"ssX-l4iBs5Nx5sOAEQjcMamfXZo\",\n
+        \     \"id\": {\n        \"kind\": \"youtube#video\",\n        \"videoId\":
+        \"RditJqOsO-g\"\n      },\n      \"snippet\": {\n        \"publishedAt\":
+        \"2020-08-21T16:41:06Z\",\n        \"channelId\": \"UCfYWv5FbXFOW9sjWKrm8YKA\",\n
+        \       \"title\": \"Allison Moorer : Don't Cry No Tears (from Show)\",\n
+        \       \"description\": \"The  long deleted live version of the Neil Young
+        song. Rights neither claimed nor sought.\",\n        \"thumbnails\": {\n          \"default\":
+        {\n            \"url\": \"https://i.ytimg.com/vi/RditJqOsO-g/default.jpg\",\n
+        \           \"width\": 120,\n            \"height\": 90\n          },\n          \"medium\":
+        {\n            \"url\": \"https://i.ytimg.com/vi/RditJqOsO-g/mqdefault.jpg\",\n
+        \           \"width\": 320,\n            \"height\": 180\n          },\n          \"high\":
+        {\n            \"url\": \"https://i.ytimg.com/vi/RditJqOsO-g/hqdefault.jpg\",\n
+        \           \"width\": 480,\n            \"height\": 360\n          },\n          \"standard\":
+        {\n            \"url\": \"https://i.ytimg.com/vi/RditJqOsO-g/sddefault.jpg\",\n
+        \           \"width\": 640,\n            \"height\": 480\n          },\n          \"maxres\":
+        {\n            \"url\": \"https://i.ytimg.com/vi/RditJqOsO-g/maxresdefault.jpg\",\n
+        \           \"width\": 1280,\n            \"height\": 720\n          }\n        },\n
+        \       \"channelTitle\": \"Seuras Og\",\n        \"liveBroadcastContent\":
+        \"none\",\n        \"publishTime\": \"2020-08-21T16:41:06Z\"\n      }\n    },\n
+        \   {\n      \"kind\": \"youtube#searchResult\",\n      \"etag\": \"m0--cn6sfWvagr9eG2_Sj_zrSzk\",\n
+        \     \"id\": {\n        \"kind\": \"youtube#video\",\n        \"videoId\":
+        \"kv2x4LelccE\"\n      },\n      \"snippet\": {\n        \"publishedAt\":
+        \"2011-02-22T17:16:33Z\",\n        \"channelId\": \"UCsax_1f31EFHaEl3lWvFTvg\",\n
+        \       \"title\": \"like a hurricane - neil young (decade)\",\n        \"description\":
+        \"like a hurricane - neil young (decade)\",\n        \"thumbnails\": {\n          \"default\":
+        {\n            \"url\": \"https://i.ytimg.com/vi/kv2x4LelccE/default.jpg\",\n
+        \           \"width\": 120,\n            \"height\": 90\n          },\n          \"medium\":
+        {\n            \"url\": \"https://i.ytimg.com/vi/kv2x4LelccE/mqdefault.jpg\",\n
+        \           \"width\": 320,\n            \"height\": 180\n          },\n          \"high\":
+        {\n            \"url\": \"https://i.ytimg.com/vi/kv2x4LelccE/hqdefault.jpg\",\n
+        \           \"width\": 480,\n            \"height\": 360\n          }\n        },\n
+        \       \"channelTitle\": \"colle9117\",\n        \"liveBroadcastContent\":
+        \"none\",\n        \"publishTime\": \"2011-02-22T17:16:33Z\"\n      }\n    },\n
+        \   {\n      \"kind\": \"youtube#searchResult\",\n      \"etag\": \"Aw-Jn7GIL5Cdcd-dzW7qdYMQa8k\",\n
+        \     \"id\": {\n        \"kind\": \"youtube#video\",\n        \"videoId\":
+        \"QZ9_UJ7n1pE\"\n      },\n      \"snippet\": {\n        \"publishedAt\":
+        \"2020-11-09T15:31:59Z\",\n        \"channelId\": \"UCXynnXkWjVqGgZo02vCfl9g\",\n
+        \       \"title\": \"N\u0332eil Yo\u0332ung\u0332  -  F\u0332reedom (Full
+        Album) 1989\",\n        \"description\": \"For  suggestions & support, you
+        can send your message at: \\nloveclassicrock26@gmail.com\\nThank you very
+        much !\",\n        \"thumbnails\": {\n          \"default\": {\n            \"url\":
+        \"https://i.ytimg.com/vi/QZ9_UJ7n1pE/default.jpg\",\n            \"width\":
+        120,\n            \"height\": 90\n          },\n          \"medium\": {\n
+        \           \"url\": \"https://i.ytimg.com/vi/QZ9_UJ7n1pE/mqdefault.jpg\",\n
+        \           \"width\": 320,\n            \"height\": 180\n          },\n          \"high\":
+        {\n            \"url\": \"https://i.ytimg.com/vi/QZ9_UJ7n1pE/hqdefault.jpg\",\n
+        \           \"width\": 480,\n            \"height\": 360\n          }\n        },\n
+        \       \"channelTitle\": \"Classic Rock\",\n        \"liveBroadcastContent\":
+        \"none\",\n        \"publishTime\": \"2020-11-09T15:31:59Z\"\n      }\n    }\n
+        \ ]\n}\n"
+    headers:
+      Accept-Ranges:
+      - none
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000,h3-T051=":443"; ma=2592000,h3-Q050=":443";
+        ma=2592000,h3-Q046=":443"; ma=2592000,h3-Q043=":443"; ma=2592000,quic=":443";
+        ma=2592000; v="46,43"
+      Cache-Control:
+      - private
+      Content-Type:
+      - application/json; charset=UTF-8
+      Date:
+      - Fri, 17 Sep 2021 12:58:17 GMT
+      Server:
+      - scaffolding on HTTPServer2
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - X-Origin
+      - Referer
+      - Origin,Accept-Encoding
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-XSS-Protection:
+      - '0'
+    status:
+      code: 200
+      message: OK
+version: 1

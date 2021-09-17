@@ -1,6 +1,5 @@
 import json
 import re
-from concurrent.futures import as_completed
 from concurrent.futures.thread import ThreadPoolExecutor
 from urllib.parse import urlencode, urljoin
 
@@ -8,7 +7,7 @@ from mopidy_youtube import logger
 from mopidy_youtube.apis.json_paths import (
     continuationItemsPath,
     listChannelPlaylistsPath,
-    listPlaylistitemsPath,
+    listPlaylistItemsPath,
     relatedVideosPath,
     sectionListRendererContentsPath,
     textPath,
@@ -51,12 +50,7 @@ class jAPI(Client):
         result = cls.run_search(q)
         return json.loads(
             json.dumps(
-                {
-                    "items": result
-                    # [
-                    #     x for _, x in zip(range(Video.search_results), result)
-                    # ]
-                },
+                {"items": result},
                 sort_keys=False,
                 indent=1,
             )
@@ -88,7 +82,6 @@ class jAPI(Client):
         """
         items = []
 
-        # for id in ids:
         def job(id):
 
             results = cls.pl_run_search(
@@ -102,8 +95,8 @@ class jAPI(Client):
 
             for result in results:
                 result.update({"id": result["id"]["videoId"]})
-                if result["id"] in ids:
-                    items.append(result)
+
+            results = [result for result in results if result["id"] in ids]
 
             if results:
                 return results
@@ -149,9 +142,10 @@ class jAPI(Client):
             items.extend(job(ids[0]))
         else:
             with ThreadPoolExecutor() as executor:
-                futures = [executor.submit(job, id) for id in ids]
-                for future in as_completed(futures):
-                    items.extend(future.result())
+                # make sure order is deterministic so that HTTP requests
+                # are replayable in tests
+                for id in executor.map(job, ids):
+                    items.extend(id)
 
         return json.loads(
             json.dumps(
@@ -200,9 +194,9 @@ class jAPI(Client):
         result = cls.session.get(urljoin(cls.endpoint, "playlist"), params=query)
         if result.status_code == 200:
             yt_data = cls._find_yt_data(result.text)
-            extracted_json = traverse(yt_data, listPlaylistitemsPath)
+            extracted_json = traverse(yt_data, listPlaylistItemsPath)
             items = cls.json_to_items(extracted_json)
-
+            items = items[:max_results]
             return json.loads(
                 json.dumps(
                     {"nextPageToken": None, "items": items},

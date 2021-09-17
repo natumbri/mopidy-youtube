@@ -58,8 +58,10 @@ class Entry:
     cache_max_len = 4000
     cache_ttl = 21600
 
+    cache = TTLCache(maxsize=cache_max_len, ttl=cache_ttl)
+
     @classmethod
-    @cached(cache=TTLCache(maxsize=cache_max_len, ttl=cache_ttl))
+    @cached(cache=cache)
     def get(cls, id):
         """
         Use Video.get(id), Playlist.get(id), instead of Video(id), Playlist(id),
@@ -476,9 +478,10 @@ class Playlist(Entry):
             )
 
         if requiresVideos:
-            executor = ThreadPoolExecutor(max_workers=1)
-            executor.submit(load_items)
-            executor.shutdown(wait=False)
+            # executor = ThreadPoolExecutor(max_workers=1)
+            # executor.submit(load_items)
+            # executor.shutdown(wait=False)
+            load_items()
 
     @async_property
     def video_count(self):

@@ -44,7 +44,7 @@ playlistBasePath = [
     0,
 ]
 
-listPlaylistitemsPath = playlistBasePath + [
+listPlaylistItemsPath = playlistBasePath + [
     "playlistVideoListRenderer",
     "contents",
 ]

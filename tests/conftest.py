@@ -1,4 +1,21 @@
+from unittest import mock
+
 import pytest
+import youtube_dl
+from mopidy import httpclient
+
+from mopidy_youtube import Extension, youtube
+
+user_agent = "{}/{}".format(Extension.dist_name, Extension.version)
+
+
+@pytest.fixture
+def headers():
+    return {
+        "user-agent": httpclient.format_user_agent(user_agent),
+        "Cookie": "PREF=hl=en;",
+        "Accept-Language": "en;q=0.8",
+    }
 
 
 @pytest.fixture
@@ -25,3 +42,23 @@ def config(tmp_path):
         },
         "proxy": {},
     }
+
+
+@pytest.fixture
+def youtube_dl_mock():
+    patcher = mock.patch.object(youtube, "youtube_dl", spec=youtube_dl)
+    yield patcher.start()
+    patcher.stop()
+
+
+@pytest.fixture
+def youtube_dl_mock_with_video(youtube_dl_mock):
+    video_mock = youtube_dl_mock.YoutubeDL.return_value
+    video_mock.bigthumb = "big thumb"
+    video_mock.bigthumbhd = "big thumb in hd"
+    video_mock.getbestaudio.return_value.url = "http://example.com/"
+    video_mock.extract_info.return_value.url = "http://example.com/"
+    video_mock.length = 2000
+    video_mock.title = "a title"
+    video_mock.videoid = "a video id"
+    return youtube_dl_mock

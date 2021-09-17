@@ -10,10 +10,7 @@ from mopidy.models import Image, Ref, SearchResult, Track, model_json_decoder
 
 from mopidy_youtube import Extension, logger, youtube
 from mopidy_youtube.apis import youtube_api, youtube_japi, youtube_music
-from mopidy_youtube.converters import (
-    convert_playlist_to_album,
-    convert_video_to_track,
-)
+from mopidy_youtube.converters import convert_playlist_to_album, convert_video_to_track
 from mopidy_youtube.data import extract_playlist_id, extract_video_id
 
 """
@@ -62,7 +59,7 @@ class YouTubeBackend(pykka.ThreadingActor, backend.Backend):
         self.config = config
         self.library = YouTubeLibraryProvider(backend=self)
         self.playback = YouTubePlaybackProvider(audio=audio, backend=self)
-        youtube_api.youtube_api_key = config["youtube"]["youtube_api_key"] or None
+        youtube_api.API.youtube_api_key = config["youtube"]["youtube_api_key"] or None
         youtube.channel = config["youtube"]["channel_id"]
         youtube.Video.search_results = config["youtube"]["search_results"]
         youtube.Playlist.playlist_max_videos = config["youtube"]["playlist_max_videos"]
@@ -90,7 +87,7 @@ class YouTubeBackend(pykka.ThreadingActor, backend.Backend):
             logger.info("file caching not enabled")
 
         if youtube.api_enabled is True:
-            if youtube_api.youtube_api_key is None:
+            if youtube_api.API.youtube_api_key is None:
                 logger.error("No YouTube API key provided, disabling API")
                 youtube.api_enabled = False
             else:
