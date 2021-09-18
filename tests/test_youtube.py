@@ -9,10 +9,7 @@ from tests.test_api import setup_entry_api
 @pytest.mark.parametrize("api", apis)
 def test_youtube_search(api, config, headers):
 
-    with my_vcr.use_cassette(
-        f"tests/fixtures/{api['name']}/youtube_search.yaml",
-        filter_query_parameters=["key"],
-    ):
+    with my_vcr.use_cassette(f"tests/fixtures/{api['name']}/youtube_search.yaml"):
         setup_entry_api(api, config, headers)
         search_results = youtube.Entry.search("test")
 
@@ -22,10 +19,7 @@ def test_youtube_search(api, config, headers):
 @pytest.mark.parametrize("api", apis)
 def test_youtube_get_video(api, config, headers):
 
-    with my_vcr.use_cassette(
-        f"tests/fixtures/{api['name']}/youtube_get_video.yaml",
-        filter_query_parameters=["key"],
-    ):
+    with my_vcr.use_cassette(f"tests/fixtures/{api['name']}/youtube_get_video.yaml"):
         setup_entry_api(api, config, headers)
 
         video = youtube.Video.get("e1YqueG2gtQ")
@@ -69,10 +63,7 @@ def test_audio_url_fail(api, config, headers, youtube_dl_mock):
 @pytest.mark.parametrize("api", apis)
 def test_youtube_get_playlist(api, config, headers):
 
-    with my_vcr.use_cassette(
-        f"tests/fixtures/{api['name']}/youtube_get_playlist.yaml",
-        filter_query_parameters=["key"],
-    ):
+    with my_vcr.use_cassette(f"tests/fixtures/{api['name']}/youtube_get_playlist.yaml"):
         setup_entry_api(api, config, headers)
         youtube.Playlist.playlist_max_videos = config["youtube"]["playlist_max_videos"]
         pl = youtube.Playlist.get("PLJD13y84Bd032qVrq7CHBLEfKZZtp-u1j")
@@ -111,8 +102,7 @@ def test_youtube_get_playlist(api, config, headers):
 def test_youtube_channel_playlists(api, config, headers):
 
     with my_vcr.use_cassette(
-        f"tests/fixtures/{api['name']}/youtube_channel_playlists.yaml",
-        filter_query_parameters=["key"],
+        f"tests/fixtures/{api['name']}/youtube_channel_playlists.yaml"
     ):
         setup_entry_api(api, config, headers)
         channel_playlists = youtube.Channel.playlists("UCZtGOj7FTHPd2txgnbJS2kQ")

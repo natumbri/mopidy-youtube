@@ -3,16 +3,15 @@ from pathlib import Path
 import vcr
 
 from mopidy_youtube import backend
-from mopidy_youtube.apis import youtube_api, youtube_japi
+from mopidy_youtube.apis import youtube_api, youtube_japi, youtube_music
 
-my_vcr = vcr.VCR(
-    record_mode="new_episodes",
-)
+my_vcr = vcr.VCR(record_mode="new_episodes", filter_query_parameters=["key"])
 
 try:
     youtube_api_key = Path("/tmp/secretkey.txt").read_text().replace("\n", "")
 except Exception:
     youtube_api_key = "fake_key"
+
 
 apis = [
     {
@@ -30,11 +29,17 @@ apis = [
             }
         },
     },
-    # {
-    #     "name": "music",
-    #     "class": youtube_music.Music,
-    #     "config": {"youtube": {"api_enabled": False, "youtube_api_key": None}},
-    # },
+    {
+        "name": "music",
+        "class": youtube_music.Music,
+        "config": {
+            "youtube": {
+                "api_enabled": False,
+                "youtube_api_key": None,
+                "musicapi_enabled": True,
+            }
+        },
+    },
 ]
 
 video_uris = [

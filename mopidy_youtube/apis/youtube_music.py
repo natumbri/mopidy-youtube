@@ -115,6 +115,12 @@ class Music(Client):
         # these the videos that are returned
         items = [cls.yt_item_to_video(result) for result in results]
 
+        [
+            item.update({"id": item["id"]["videoId"]})
+            for item in items
+            if "videoId" in item["id"]
+        ]
+
         return json.loads(json.dumps({"items": items}, sort_keys=False, indent=1))
 
     @classmethod
@@ -180,7 +186,7 @@ class Music(Client):
 
         # Because Playlist.videos gets the id from {"snippet": {"resourceId":
         # {"videoId": item["videoId"]},}}. But it doesn't hurt to keep them consistent.
-
+        items = items[:max_results]
         ajax = None
         return json.loads(
             json.dumps(
@@ -334,6 +340,10 @@ class Music(Client):
         return playlist
 
     def yt_item_to_video(item):
+
+        if "videoDetails" in item:
+            item = item["videoDetails"]
+
         def _convertMillis(milliseconds):
             try:
                 hours, miliseconds = divmod(int(milliseconds), 3600000)
@@ -350,6 +360,8 @@ class Music(Client):
             duration = item["length"]
         elif "lengthMs" in item:
             duration = _convertMillis(item["lengthMs"])
+        elif "lengthSeconds" in item:
+            duration = _convertMillis(int(item["lengthSeconds"]) * 1000)
         else:
             duration = "00:00:00"
             logger.warn(f"duration missing: {item}")
@@ -368,7 +380,10 @@ class Music(Client):
             channelTitle = "unknown"
 
         # TODO: full support for thumbnails
-        thumbnail = item["thumbnails"][-1]
+        try:
+            thumbnail = item["thumbnails"][-1]
+        except Exception:
+            thumbnail = item["thumbnail"]["thumbnails"][-1]
 
         video = {
             "id": {"kind": "youtube#video", "videoId": item["videoId"]},

@@ -44,10 +44,7 @@ def test_init_sets_up_the_providers(config):
 @pytest.mark.parametrize("video_uri", video_uris)
 def test_backend_lookup_video(api, config, headers, video_uri):
 
-    with my_vcr.use_cassette(
-        f"tests/fixtures/{api['name']}/backend_lookup_video.yaml",
-        filter_query_parameters=["key"],
-    ):
+    with my_vcr.use_cassette(f"tests/fixtures/{api['name']}/backend_lookup_video.yaml"):
 
         setup_entry_api(api, config, headers)
 
@@ -62,8 +59,7 @@ def test_backend_lookup_video(api, config, headers, video_uri):
 def test_backend_lookup_playlist(api, config, headers, pl_uri):
 
     with my_vcr.use_cassette(
-        f"tests/fixtures/{api['name']}/backend_lookup_playlist.yaml",
-        filter_query_parameters=["key"],
+        f"tests/fixtures/{api['name']}/backend_lookup_playlist.yaml"
     ):
 
         setup_entry_api(api, config, headers)
