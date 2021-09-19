@@ -11,7 +11,11 @@ from mopidy.models import Image, Ref, SearchResult, Track, model_json_decoder
 from mopidy_youtube import Extension, logger, youtube
 from mopidy_youtube.apis import youtube_api, youtube_japi, youtube_music
 from mopidy_youtube.converters import convert_playlist_to_album, convert_video_to_track
-from mopidy_youtube.data import extract_playlist_id, extract_video_id
+from mopidy_youtube.data import (
+    extract_channel_id,
+    extract_playlist_id,
+    extract_video_id,
+)
 
 """
 A typical interaction:
@@ -124,7 +128,9 @@ class YouTubeBackend(pykka.ThreadingActor, backend.Backend):
 
 class YouTubeLibraryProvider(backend.LibraryProvider):
 
-    root_directory = Ref.directory(uri="youtube:channel", name="My Youtube playlists")
+    root_directory = Ref.directory(
+        uri="youtube:channel:root", name="My Youtube playlists"
+    )
 
     """
     Called when root_directory is set to the URI of the youtube channel ID in the mopidy.conf
@@ -133,17 +139,17 @@ class YouTubeLibraryProvider(backend.LibraryProvider):
     """
 
     def browse(self, uri):
-        if uri.startswith("youtube:playlist"):
+        if extract_playlist_id(uri):
             trackrefs = []
             tracks = self.lookup(uri)
             for track in tracks:
                 trackrefs.append(Ref.track(uri=track.uri, name=track.name))
             return trackrefs
-        elif uri.startswith("youtube:channel"):
-            logger.debug(f"browse channel / library {uri}")
+        elif extract_channel_id(uri):
+            logger.info(f"browse channel / library {uri}")
             playlistrefs = []
             albums = []
-            playlists = youtube.Channel.playlists()
+            playlists = youtube.Channel.playlists(extract_channel_id(uri))
             if playlists:
                 for pl in playlists:
                     pl.videos
@@ -208,9 +214,11 @@ class YouTubeLibraryProvider(backend.LibraryProvider):
             albums.append(convert_playlist_to_album(pl))
             pl.videos  # start loading
 
-        return SearchResult(
+        search_result = SearchResult(
             uri="youtube:search", tracks=tracks, artists=artists, albums=albums
         )
+
+        return search_result
 
     def lookup_video_track(self, video_id: str) -> Track:
         if youtube.cache_location:

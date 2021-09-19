@@ -1,4 +1,5 @@
 import re
+from urllib.parse import parse_qs, urlparse
 
 uri_video_regex = re.compile("^(?:youtube|yt):video:(?P<videoid>.+)$")
 uri_playlist_regex = re.compile("^(?:youtube|yt):playlist:(?P<playlistid>.+)$")
@@ -34,6 +35,12 @@ def extract_video_id(uri) -> str:
 
 
 def extract_playlist_id(uri) -> str:
+    if "youtube.com" in uri:
+        url = urlparse(uri.replace("yt:", "").replace("youtube:", ""))
+        req = parse_qs(url.query)
+        if "list" in req:
+            playlist_id = req.get("list")[0]
+            return playlist_id
     for regex in (uri_playlist_regex, old_uri_playlist_regex):
         match = regex.match(uri)
         if match:

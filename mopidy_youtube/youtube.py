@@ -504,7 +504,7 @@ class Channel(Entry):
         """
         set_api_data = ["title", "video_count"]
         try:
-            if channel_id is None:
+            if channel_id == "root":
                 channel_id = channel
             data = cls.api.list_channelplaylists(channel_id)
             if "error" in data:

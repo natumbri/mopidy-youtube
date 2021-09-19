@@ -48,6 +48,7 @@ class Music(Client):
         search_functions = [cls.search_albums, cls.search_songs]
 
         with ThreadPoolExecutor() as executor:
+            # is this the best way to make this deterministic (map + lambda)?
             futures = executor.map(lambda x, y: x(y), search_functions, repeat(q))
             [result.extend(value[: int(Video.search_results)]) for value in futures]
 

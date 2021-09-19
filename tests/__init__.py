@@ -42,6 +42,11 @@ apis = [
     },
 ]
 
+channel_uris = [
+    "youtube:channel:UCZtGOj7FTHPd2txgnbJS2kQ",
+    "yt:channel:UCZtGOj7FTHPd2txgnbJS2kQ",
+]
+
 video_uris = [
     "youtube:https://www.youtube.com/watch?v=nvlTJrNJ5lA",
     "yt:https://www.youtube.com/watch?v=nvlTJrNJ5lA",

@@ -1,6 +1,7 @@
 import json
 import re
 from concurrent.futures.thread import ThreadPoolExecutor
+from itertools import repeat
 from urllib.parse import urlencode, urljoin
 
 from mopidy_youtube import logger
@@ -47,7 +48,13 @@ class jAPI(Client):
         """
         search for videos and playlists
         """
-        result = cls.run_search(q)
+        result = []
+        params = ["EgIQAQ%3D%3D", "EgIQAw%3D%3D"]
+
+        with ThreadPoolExecutor() as executor:
+            futures = executor.map(cls.run_search, repeat(q), params)
+            [result.extend(value[: int(Video.search_results)]) for value in futures]
+
         return json.loads(
             json.dumps(
                 {"items": result},
@@ -163,24 +170,93 @@ class jAPI(Client):
 
         items = []
 
-        rs = [
-            {
-                "search_query": '"' + id + '"',
-                "sp": "EgIQAw%3D%3D",
-                "app": "desktop",
-                "persist_app": 1,
-            }
-            for id in ids
-        ]
-        results = [
-            result
-            for r in rs
-            for result in cls.pl_run_search(r)
-            if result["id"]["playlistId"] in ids
-        ]
-        for result in results:
-            result.update({"id": result["id"]["playlistId"]})
-            items.extend([result])
+        def job(id):
+
+            results = cls.pl_run_search(
+                {
+                    "search_query": '"' + id + '"',
+                    "sp": "EgIQAw%3D%3D",
+                    "app": "desktop",
+                    "persist_app": 1,
+                }
+            )
+
+            for result in results:
+                result.update({"id": result["id"]["playlistId"]})
+
+            results = [result for result in results if result["id"] in ids]
+
+            if results:
+                return results
+
+            else:
+
+                logger.info(f"jAPI 'list_playlists' triggered session.get: {id}")
+                result = cls.session.get(cls.endpoint + "playlist?list=" + id)
+                if result.status_code == 200:
+                    yt_data = cls._find_yt_data(result.text)
+
+                    if yt_data:
+
+                        extracted_json = yt_data["sidebar"]["playlistSidebarRenderer"][
+                            "items"
+                        ]
+
+                        title = traverse(
+                            extracted_json[0]["playlistSidebarPrimaryInfoRenderer"][
+                                "title"
+                            ],
+                            textPath,
+                        )
+
+                        channelTitle = traverse(
+                            extracted_json[1]["playlistSidebarSecondaryInfoRenderer"][
+                                "videoOwner"
+                            ]["videoOwnerRenderer"]["title"],
+                            textPath,
+                        )
+
+                        thumbnails = extracted_json[1][
+                            "playlistSidebarSecondaryInfoRenderer"
+                        ]["videoOwner"]["videoOwnerRenderer"]["thumbnail"][
+                            "thumbnails"
+                        ][
+                            -1
+                        ]
+
+                        itemCount = int(
+                            traverse(
+                                extracted_json[0]["playlistSidebarPrimaryInfoRenderer"][
+                                    "stats"
+                                ][0],
+                                textPath,
+                            )
+                            .split(" ", 1)[0]
+                            .replace(",", "")
+                        )
+
+                        item = {
+                            "contentDetails": {"itemCount": itemCount},
+                            "id": id,
+                            "snippet": {
+                                "channelTitle": channelTitle,
+                                "thumbnails": {"default": thumbnails},
+                                "title": title,
+                            },
+                        }
+
+                        return [item]
+
+            return []
+
+        if len(ids) == 1:
+            items.extend(job(ids[0]))
+        else:
+            with ThreadPoolExecutor() as executor:
+                # make sure order is deterministic so that HTTP requests
+                # are replayable in tests
+                for id in executor.map(job, ids):
+                    items.extend(id)
 
         return json.loads(json.dumps({"items": items}, sort_keys=False, indent=1))
 
@@ -241,7 +317,7 @@ class jAPI(Client):
         return json.loads(json.dumps({"items": items}, sort_keys=False, indent=1))
 
     @classmethod
-    def run_search(cls, search_query):
+    def run_search(cls, search_query, sp):
         # with thanks (or perhaps apologies) to pytube:
         # https://pytube.io/en/stable/api.html#pytube.contrib.search.Search.fetch_and_parse
 
@@ -262,6 +338,7 @@ class jAPI(Client):
         query = {
             "query": search_query,
             "key": "AIzaSyAO_FJ2SlqU8Q4STEHLGCilw_Y9_11qcW8",
+            "params": sp,
             "contentCheckOk": True,
             "racyCheckOk": True,
         }
@@ -283,6 +360,7 @@ class jAPI(Client):
 
             if result.status_code == 200:
                 yt_data = json.loads(result.text)
+
                 if yt_data:
                     # Initial result is handled by try block, continuations by except block
                     try:
@@ -363,17 +441,6 @@ class jAPI(Client):
 
                 video = content[base[0]]
 
-                byline = [
-                    bl for bl in ["longBylineText", "shortBylineText"] if bl in video
-                ][0]
-
-                try:
-                    videoId = video["videoId"]
-                except Exception as e:
-                    # videoID = "Unknown"
-                    logger.error("json_to_items videoId exception %s" % e)
-                    continue
-
                 try:
                     title = video["title"]["simpleText"]
                 except Exception:
@@ -382,6 +449,25 @@ class jAPI(Client):
                     except Exception as e:
                         logger.error(f"json_to_items title exception {e}")
                         continue
+
+                if title in ["[Private video]", "[Deleted video]"]:
+                    continue
+
+                try:
+                    byline = [
+                        bl
+                        for bl in ["longBylineText", "shortBylineText"]
+                        if bl in video
+                    ][0]
+                except Exception:
+                    byline = "unknown"
+
+                try:
+                    videoId = video["videoId"]
+                except Exception as e:
+                    # videoID = "Unknown"
+                    logger.error("json_to_items videoId exception %s" % e)
+                    continue
 
                 try:
                     thumbnails = video["thumbnail"]["thumbnails"][-1]
@@ -458,7 +544,7 @@ class jAPI(Client):
                         "kind": "youtube#playlist",
                         "playlistId": playlist["playlistId"],
                     },
-                    "contentDetails": {"itemCount": playlist["videoCount"]},
+                    "contentDetails": {"itemCount": int(playlist["videoCount"])},
                     "snippet": {
                         "title": playlist["title"]["simpleText"],
                         "thumbnails": {"default": thumbnails},
