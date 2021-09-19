@@ -1,7 +1,7 @@
 import json
 import re
-from concurrent.futures import as_completed
 from concurrent.futures.thread import ThreadPoolExecutor
+from itertools import repeat
 
 import pykka
 from ytmusicapi import YTMusic
@@ -48,10 +48,8 @@ class Music(Client):
         search_functions = [cls.search_albums, cls.search_songs]
 
         with ThreadPoolExecutor() as executor:
-            for search_function in search_functions:
-                futures.append(executor.submit(search_function, q))
-            for future in as_completed(futures):
-                result.extend(future.result()[: int(Video.search_results)])
+            futures = executor.map(lambda x, y: x(y), search_functions, repeat(q))
+            [result.extend(value[: int(Video.search_results)]) for value in futures]
 
         return json.loads(json.dumps({"items": result}))
 
