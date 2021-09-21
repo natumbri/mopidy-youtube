@@ -123,7 +123,7 @@ class YouTubeAutoplayer(pykka.ThreadingActor, listener.CoreListener):
             else:
                 next_video = random.choice(related_videos)
                 autoplayed.append(next_video.id)
-                uri = [format_video_uri(next_video)]
+                uri = [format_video_uri(next_video.id)]
                 tl.add(uris=uri).get()
                 return None
         except Exception as e:

@@ -210,14 +210,14 @@ class Music(Client):
         # public and private playlists
         if channel_id in (None, own_channel_id):
             try:
-                logger.debug(
+                logger.info(
                     f"youtube_music list_channelplaylists triggered "
                     f"ytmusic.get_library_playlists: {channel_id}"
                 )
                 results = ytmusic.get_library_playlists()
 
                 if channel_id:
-                    logger.debug(
+                    logger.info(
                         f"youtube_music list_channelplaylists triggered "
                         f"ytmusic.get_user: {channel_id}"
                     )
@@ -226,9 +226,9 @@ class Music(Client):
                     channelTitle = "unknown"
 
             except Exception as e:
-                logger.debug(f"list_channelplaylists exception {e}")
+                logger.info(f"list_channelplaylists exception {e}")
                 if channel_id:
-                    logger.debug(
+                    logger.info(
                         f"youtube_music list_channelplaylists triggered "
                         f"ytmusic.get_user: {channel_id}"
                     )
@@ -239,7 +239,7 @@ class Music(Client):
         else:
             # if channel_id is not None and not own_channel_id
             # retrieve only public playlists:
-            logger.debug(
+            logger.info(
                 f"youtube_music list_channelplaylists triggered "
                 f"ytmusic.get_user: {channel_id}"
             )

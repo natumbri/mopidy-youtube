@@ -6,6 +6,9 @@ from mopidy import httpclient
 
 from mopidy_youtube import Extension, youtube
 
+from tests import playlist_uris as playlist_uris_list
+from tests import video_uris as video_uris_list
+
 user_agent = "{}/{}".format(Extension.dist_name, Extension.version)
 
 
@@ -62,3 +65,13 @@ def youtube_dl_mock_with_video(youtube_dl_mock):
     video_mock.title = "a title"
     video_mock.videoid = "a video id"
     return youtube_dl_mock
+
+
+@pytest.fixture
+def video_uris():
+    return video_uris_list
+
+
+@pytest.fixture
+def playlist_uris():
+    return playlist_uris_list

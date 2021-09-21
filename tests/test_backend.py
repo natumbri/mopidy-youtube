@@ -1,9 +1,9 @@
 import pytest
 from mopidy import backend as backend_api
 from mopidy.core import CoreListener as CoreListener_api
-from mopidy.models import Album, Ref, SearchResult, Track
+from mopidy.models import Album, Image, Ref, SearchResult, Track
 
-from mopidy_youtube import backend
+from mopidy_youtube import backend, youtube  # , data, youtube
 from mopidy_youtube.backend import (
     YouTubeCoreListener,
     YouTubeLibraryProvider,
@@ -130,3 +130,76 @@ def test_backend_lookup_playlist(api, config, headers, pl_uri):
 
         pl = backend_inst.library.lookup(pl_uri)
         assert pl  # len(pl) == 16
+
+
+@pytest.mark.parametrize("api", apis)
+@pytest.mark.parametrize("video_uri", video_uris)
+def test_backend_get_video_image(api, config, headers, video_uri):
+
+    with my_vcr.use_cassette(
+        f"tests/fixtures/{api['name']}/backend_get_video_image.yaml"
+    ):
+
+        setup_entry_api(api, config, headers)
+        backend_inst = get_backend(config=config, api_config=api["config"])
+        images = backend_inst.library.get_images(video_uri)
+        assert isinstance(images, dict)
+        assert isinstance(images[video_uri], list)
+        assert isinstance(images[video_uri][0], Image)
+
+
+@pytest.mark.parametrize("api", apis)
+def test_backend_get_video_images(api, config, headers, video_uris):
+
+    with my_vcr.use_cassette(
+        f"tests/fixtures/{api['name']}/backend_get_video_images.yaml"
+    ):
+
+        setup_entry_api(api, config, headers)
+
+        backend_inst = get_backend(config=config, api_config=api["config"])
+        setup_entry_api(api, config, headers)
+        images = backend_inst.library.get_images(video_uris)
+        assert isinstance(images, dict)
+        assert isinstance(images[video_uris[0]], list)
+        assert isinstance(images[video_uris[0]][0], Image)
+        for video_uri in video_uris:
+            for video_Image in images[video_uri]:
+                assert isinstance(video_Image, Image)
+
+        assert len(images) == 8
+
+
+@pytest.mark.parametrize("api", apis)
+@pytest.mark.parametrize("playlist_uri", playlist_uris)
+def test_backend_get_playlist_image(api, config, headers, playlist_uri):
+
+    with my_vcr.use_cassette(
+        f"tests/fixtures/{api['name']}/backend_get_playlist_image.yaml"
+    ):
+
+        setup_entry_api(api, config, headers)
+        backend_inst = get_backend(config=config, api_config=api["config"])
+        images = backend_inst.library.get_images(playlist_uri)
+        assert isinstance(images, dict)
+        assert isinstance(images[playlist_uri], list)
+        for playlist_Image in images[playlist_uri]:
+            assert isinstance(playlist_Image, Image)
+
+
+@pytest.mark.parametrize("api", apis)
+@pytest.mark.parametrize("video_uri", video_uris)
+def test_backend_playback_translate_uri(
+    api, config, headers, video_uri, youtube_dl_mock_with_video
+):
+
+    with my_vcr.use_cassette(
+        f"tests/fixtures/{api['name']}/backend_playback_translate_uri.yaml"
+    ):
+
+        setup_entry_api(api, config, headers)
+        backend_inst = get_backend(config=config, api_config=api["config"])
+        youtube.Video.proxy = None
+        audio_url = backend_inst.playback.translate_uri(video_uri)
+        # How to test this?
+        assert audio_url

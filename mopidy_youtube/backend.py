@@ -1,7 +1,5 @@
 import json
 import os
-import re
-from urllib.parse import parse_qs, urlparse
 
 import pykka
 from mopidy import backend, httpclient
@@ -293,32 +291,6 @@ class YouTubeLibraryProvider(backend.LibraryProvider):
 
         logger.debug('youtube LibraryProvider.lookup "%s"', uri)
 
-        if "youtube.com" in uri:
-            url = urlparse(uri.replace("yt:", "").replace("youtube:", ""))
-            req = parse_qs(url.query)
-            if "list" in req:
-                playlist_id = req.get("list")[0]
-                if playlist_id:
-                    return self.lookup_playlist_tracks(playlist_id)
-            elif "v" in req:
-                video_id = req.get("v")[0]
-                if video_id:
-                    return [self.lookup_video_track(video_id)]
-            else:
-                return []
-
-        elif "youtu.be" in uri:
-            url = uri.replace("yt:", "").replace("youtube:", "")
-            if not re.match("^(?:http|https)://", url):
-                url = "https://" + url
-            video_id = urlparse(url).path
-            if video_id[0] == "/":
-                video_id = video_id[1:]
-            if video_id:
-                return [self.lookup_video_track(video_id)]
-            else:
-                return []
-
         video_id = extract_video_id(uri)
         if video_id:
             return [self.lookup_video_track(video_id)]
@@ -326,11 +298,11 @@ class YouTubeLibraryProvider(backend.LibraryProvider):
         playlist_id = extract_playlist_id(uri)
         if playlist_id:
             playlist_tracks = self.lookup_playlist_tracks(playlist_id)
-            if playlist_tracks is None:
-                logger.error('Cannot load "%s"', uri)
-                return []
-            else:
+            if playlist_tracks:
                 return playlist_tracks
+
+        logger.error('Cannot load "%s"', uri)
+        return []
 
         # channel_id = extract_channel_id(uri)
         # if channel_id:
@@ -367,7 +339,8 @@ class YouTubeLibraryProvider(backend.LibraryProvider):
             {
                 uri: youtube.Video.get(video_id).thumbnails.get()
                 for uri, video_id in zip(uris, video_ids)
-                if video_id and uri not in images
+                if video_id
+                if uri not in images
             }
         )
 

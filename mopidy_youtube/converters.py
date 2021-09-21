@@ -11,7 +11,7 @@ def convert_video_to_track(video, album_name: str, **kwargs) -> Track:
         adjustedLength = 0
 
     track = Track(
-        uri=format_video_uri(video),
+        uri=format_video_uri(video.id),
         name=video.title.get(),
         artists=[Artist(name=video.channel.get())],
         album=Album(name=album_name),
@@ -35,7 +35,7 @@ def convert_video_to_track(video, album_name: str, **kwargs) -> Track:
 #         adjustedLength = 0
 #
 #     return Track(
-#         uri=format_video_uri(video),
+#         uri=format_video_uri(video.id),
 #         name=video.title.get(),
 #         artists=[Artist(name=video.channel.get())],
 #         album=Album(name=album_name),
@@ -47,7 +47,7 @@ def convert_video_to_track(video, album_name: str, **kwargs) -> Track:
 
 def convert_playlist_to_album(playlist) -> Album:
     return Album(
-        uri=format_playlist_uri(playlist),
+        uri=format_playlist_uri(playlist.id),
         name=playlist.title.get(),
         artists=[
             Artist(name=f"YouTube Playlist ({playlist.video_count.get()} videos)")
@@ -60,7 +60,7 @@ def convert_playlist_to_album(playlist) -> Album:
 #
 # def convert_ytmalbum_to_album(album: youtube.Album) -> Album:
 #     return Album(
-#         uri=format_album_uri(album),
+#         uri=format_album_uri(album.id),
 #         name=f"{album.title.get()} (YouTube Music Album, {album.track_count.get()} tracks),
 #         artists=[
 #             Artist(
