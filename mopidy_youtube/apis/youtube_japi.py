@@ -442,15 +442,26 @@ class jAPI(Client):
                 video = content[base[0]]
 
                 try:
+                    videoId = video["videoId"]
+                except Exception as e:
+                    logger.error(
+                        f"json_to_items: no videoId detected, unable to process; ({e})"
+                    )
+                    continue
+
+                try:
                     title = video["title"]["simpleText"]
                 except Exception:
                     try:
                         title = traverse(video["title"], textPath)
                     except Exception as e:
-                        logger.error(f"json_to_items title exception {e}")
-                        continue
+                        logger.error(
+                            f"json_to_items: no title detected for {videoId}; ({e})"
+                        )
+                        title = "unknown"
 
                 if title in ["[Private video]", "[Deleted video]"]:
+                    logger.info(f"skipping video {videoId}: {title}")
                     continue
 
                 try:
@@ -459,15 +470,11 @@ class jAPI(Client):
                         for bl in ["longBylineText", "shortBylineText"]
                         if bl in video
                     ][0]
-                except Exception:
-                    byline = "unknown"
-
-                try:
-                    videoId = video["videoId"]
                 except Exception as e:
-                    # videoID = "Unknown"
-                    logger.error("json_to_items videoId exception %s" % e)
-                    continue
+                    logger.error(
+                        f"json_to_items: no byline detected for {videoId}; ({e})"
+                    )
+                    byline = "unknown"
 
                 try:
                     thumbnails = video["thumbnail"]["thumbnails"][-1]
@@ -475,14 +482,20 @@ class jAPI(Client):
                         0
                     ]  # is the rest tracking stuff? Omit
                 except Exception as e:
-                    logger.error(f"json_to_items thumbnail exception {e}")
+                    logger.error(
+                        f"json_to_items: no thumbnails detected for {videoId}; ({e})"
+                    )
+                    thumbnails = {
+                        "url": f"https://i.ytimg.com/vi/{videoId}/default.jpg"
+                    }
 
                 try:
                     channelTitle = traverse(video[byline], textPath)
                 except Exception as e:
-                    # channelTitle = "Unknown"
-                    logger.error(f"json_to_items channelTitle exception {e}, {title}")
-                    continue
+                    logger.error(
+                        f"json_to_items: no channelTitle detected for {videoId}; ({e})"
+                    )
+                    channelTitle = "unknown"
 
                 item = {
                     "id": {"kind": "youtube#video", "videoId": videoId},
@@ -499,9 +512,9 @@ class jAPI(Client):
                     duration = "PT" + Client.format_duration(
                         re.match(Client.time_regex, duration_text)
                     )
-                    logger.debug("duration: ", duration)
+                    logger.debug(f"video {videoId} duration: {duration}")
                 except Exception as e:
-                    logger.warn(f"no video-time, possibly live: {e}")
+                    logger.warn(f"video {videoId} no video-time, possibly live: {e}")
                     duration = "PT0S"
 
                 item.update({"contentDetails": {"duration": duration}})
@@ -510,10 +523,10 @@ class jAPI(Client):
                     channelId = video[byline]["runs"][0]["navigationEndpoint"][
                         "browseEndpoint"
                     ]["browseId"]
-                    logger.debug(channelId)
+                    logger.debug(f"video {videoId} channelId: {channelId}")
                     item["snippet"].update({"channelId": channelId})
                 except Exception as e:
-                    logger.error(f"channelId exception {e}, {title}")
+                    logger.error(f"video {videoId}, no channelId detected; ({e})")
 
                 items.append(item)
 

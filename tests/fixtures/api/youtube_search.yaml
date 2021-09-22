@@ -9,99 +9,100 @@ interactions:
       user-agent:
       - Mopidy-YouTube/3.4 Mopidy/3.2.0 CPython/3.8.10
     method: GET
-    uri: https://www.googleapis.com/youtube/v3/search?fields=items%28id%2C+snippet%28title%2C+thumbnails%28default%29%2C+channelTitle%29%29&maxResults=15&part=id%2C+snippet&q=test&type=video%2Cplaylist
+    uri: https://www.googleapis.com/youtube/v3/search?fields=items%28id%2C+snippet%28title%2C+thumbnails%28default%29%2C+channelTitle%29%29&maxResults=15&part=id%2C+snippet&q=test+playlist&type=video%2Cplaylist
   response:
     body:
       string: "{\n  \"items\": [\n    {\n      \"id\": {\n        \"kind\": \"youtube#video\",\n
-        \       \"videoId\": \"-KGnRe1f2DA\"\n      },\n      \"snippet\": {\n        \"title\":
-        \"What&#39;s Your True Spirit Animal? Personality Test\",\n        \"thumbnails\":
-        {\n          \"default\": {\n            \"url\": \"https://i.ytimg.com/vi/-KGnRe1f2DA/default.jpg\",\n
+        \       \"videoId\": \"IJzq9ZdQAEc\"\n      },\n      \"snippet\": {\n        \"title\":
+        \"chill songs to listen to when studying for exams (lofi playlist mix)\",\n
+        \       \"thumbnails\": {\n          \"default\": {\n            \"url\":
+        \"https://i.ytimg.com/vi/IJzq9ZdQAEc/default.jpg\",\n            \"width\":
+        120,\n            \"height\": 90\n          }\n        },\n        \"channelTitle\":
+        \"paletteism\"\n      }\n    },\n    {\n      \"id\": {\n        \"kind\":
+        \"youtube#video\",\n        \"videoId\": \"EIGsQQjyOB4\"\n      },\n      \"snippet\":
+        {\n        \"title\": \"a playlist of songs that make studying suck less\",\n
+        \       \"thumbnails\": {\n          \"default\": {\n            \"url\":
+        \"https://i.ytimg.com/vi/EIGsQQjyOB4/default.jpg\",\n            \"width\":
+        120,\n            \"height\": 90\n          }\n        },\n        \"channelTitle\":
+        \"UselessClout\"\n      }\n    },\n    {\n      \"id\": {\n        \"kind\":
+        \"youtube#playlist\",\n        \"playlistId\": \"PL7bbiJ1WK8wRUJjxx5OfTpS9BKc2Fg0ky\"\n
+        \     },\n      \"snippet\": {\n        \"title\": \"Bass Test\",\n        \"thumbnails\":
+        {\n          \"default\": {\n            \"url\": \"https://i.ytimg.com/vi/s80dJPMEsh0/default.jpg\",\n
         \           \"width\": 120,\n            \"height\": 90\n          }\n        },\n
-        \       \"channelTitle\": \"BRIGHT SIDE\"\n      }\n    },\n    {\n      \"id\":
-        {\n        \"kind\": \"youtube#video\",\n        \"videoId\": \"BMRlr2DE0Dg\"\n
-        \     },\n      \"snippet\": {\n        \"title\": \"What&#39;s Your Hidden
-        Superpower? | Personality Test\",\n        \"thumbnails\": {\n          \"default\":
-        {\n            \"url\": \"https://i.ytimg.com/vi/BMRlr2DE0Dg/default.jpg\",\n
+        \       \"channelTitle\": \"Bass Boost Everything\"\n      }\n    },\n    {\n
+        \     \"id\": {\n        \"kind\": \"youtube#video\",\n        \"videoId\":
+        \"mYWI1jBBumU\"\n      },\n      \"snippet\": {\n        \"title\": \"songs
+        to fail your drivers license test to *my current playlist*\",\n        \"thumbnails\":
+        {\n          \"default\": {\n            \"url\": \"https://i.ytimg.com/vi/mYWI1jBBumU/default.jpg\",\n
         \           \"width\": 120,\n            \"height\": 90\n          }\n        },\n
-        \       \"channelTitle\": \"BRIGHT SIDE\"\n      }\n    },\n    {\n      \"id\":
-        {\n        \"kind\": \"youtube#video\",\n        \"videoId\": \"shWxuujJ_qk\"\n
-        \     },\n      \"snippet\": {\n        \"title\": \"\u03A0\u03B1\u03C4\u03B5\u03C1\u03B1\u03C2
-        \u03B1\u03C1\u03BD\u03B7\u03C4\u03AE\u03C2 self test\",\n        \"thumbnails\":
-        {\n          \"default\": {\n            \"url\": \"https://i.ytimg.com/vi/shWxuujJ_qk/default.jpg\",\n
+        \       \"channelTitle\": \"Taylor Laios\"\n      }\n    },\n    {\n      \"id\":
+        {\n        \"kind\": \"youtube#video\",\n        \"videoId\": \"OnSGk5-GgwY\"\n
+        \     },\n      \"snippet\": {\n        \"title\": \"Music for Exams- Relaxing
+        Music for Exams- Exam Music Motivation- Exam Study Music\",\n        \"thumbnails\":
+        {\n          \"default\": {\n            \"url\": \"https://i.ytimg.com/vi/OnSGk5-GgwY/default.jpg\",\n
         \           \"width\": 120,\n            \"height\": 90\n          }\n        },\n
-        \       \"channelTitle\": \"Voria gr\"\n      }\n    },\n    {\n      \"id\":
-        {\n        \"kind\": \"youtube#video\",\n        \"videoId\": \"dFDQy2AXlio\"\n
-        \     },\n      \"snippet\": {\n        \"title\": \"CAN YOU BE A PSYCHOPATH?
-        Personality Test Quiz - 1 Million Tests\",\n        \"thumbnails\": {\n          \"default\":
-        {\n            \"url\": \"https://i.ytimg.com/vi/dFDQy2AXlio/default_live.jpg\",\n
+        \       \"channelTitle\": \"STUDY MUSIC\"\n      }\n    },\n    {\n      \"id\":
+        {\n        \"kind\": \"youtube#playlist\",\n        \"playlistId\": \"PLcHm6k52xQK0BLh3AJfj0sJ6Y_buqGL66\"\n
+        \     },\n      \"snippet\": {\n        \"title\": \"The Test: A New Era For
+        Australia&#39;s Team\",\n        \"thumbnails\": {\n          \"default\":
+        {\n            \"url\": \"https://i.ytimg.com/vi/Dtkb02QcCG4/default.jpg\",\n
         \           \"width\": 120,\n            \"height\": 90\n          }\n        },\n
-        \       \"channelTitle\": \"1 Million Tests\"\n      }\n    },\n    {\n      \"id\":
-        {\n        \"kind\": \"youtube#video\",\n        \"videoId\": \"TkwK2APCqkg\"\n
-        \     },\n      \"snippet\": {\n        \"title\": \"En B\xFCy\xFCk Korkunuzu
-        Ortaya \xC7\u0131karacak Basit Bir Test\",\n        \"thumbnails\": {\n          \"default\":
-        {\n            \"url\": \"https://i.ytimg.com/vi/TkwK2APCqkg/default.jpg\",\n
+        \       \"channelTitle\": \"Amazon Prime Video Sport\"\n      }\n    },\n
+        \   {\n      \"id\": {\n        \"kind\": \"youtube#playlist\",\n        \"playlistId\":
+        \"PLjzSBgd8kSOV_ZQf-_AreAqYzwyU4-vfp\"\n      },\n      \"snippet\": {\n        \"title\":
+        \"FUNNIEST KID TEST ANSWERS\",\n        \"thumbnails\": {\n          \"default\":
+        {\n            \"url\": \"https://i.ytimg.com/vi/tEzJYNTnhyc/default.jpg\",\n
         \           \"width\": 120,\n            \"height\": 90\n          }\n        },\n
-        \       \"channelTitle\": \"OLUMLU BAK\"\n      }\n    },\n    {\n      \"id\":
-        {\n        \"kind\": \"youtube#video\",\n        \"videoId\": \"523zm1VjVY4\"\n
-        \     },\n      \"snippet\": {\n        \"title\": \"Test &quot; Fo Sho &quot;
-        (Official Video)\",\n        \"thumbnails\": {\n          \"default\": {\n
-        \           \"url\": \"https://i.ytimg.com/vi/523zm1VjVY4/default.jpg\",\n
+        \       \"channelTitle\": \"SSSniperWolf\"\n      }\n    },\n    {\n      \"id\":
+        {\n        \"kind\": \"youtube#playlist\",\n        \"playlistId\": \"PLfRh37c5lviseRGetUB1IDZ6rPS3LcSDZ\"\n
+        \     },\n      \"snippet\": {\n        \"title\": \"Electronic Beats TV -
+        Blind Test // 90s House Playlist\",\n        \"thumbnails\": {\n          \"default\":
+        {\n            \"url\": \"https://i.ytimg.com/vi/Yn1kM0HcBsU/default.jpg\",\n
         \           \"width\": 120,\n            \"height\": 90\n          }\n        },\n
-        \       \"channelTitle\": \"Test410\"\n      }\n    },\n    {\n      \"id\":
-        {\n        \"kind\": \"youtube#video\",\n        \"videoId\": \"OaDr1lsZ7GU\"\n
-        \     },\n      \"snippet\": {\n        \"title\": \"Quel Est Ton Animal Totem
-        ? Un Test de Personnalit\xE9\",\n        \"thumbnails\": {\n          \"default\":
-        {\n            \"url\": \"https://i.ytimg.com/vi/OaDr1lsZ7GU/default.jpg\",\n
+        \       \"channelTitle\": \"Telekom Electronic Beats\"\n      }\n    },\n
+        \   {\n      \"id\": {\n        \"kind\": \"youtube#playlist\",\n        \"playlistId\":
+        \"PLFoAuQjNPg1Kk5F1DtaUXZwaChhWlzMaz\"\n      },\n      \"snippet\": {\n        \"title\":
+        \"Duolingo English Test\",\n        \"thumbnails\": {\n          \"default\":
+        {\n            \"url\": \"https://i.ytimg.com/vi/OJmklJGQprQ/default.jpg\",\n
         \           \"width\": 120,\n            \"height\": 90\n          }\n        },\n
-        \       \"channelTitle\": \"SYMPA\"\n      }\n    },\n    {\n      \"id\":
-        {\n        \"kind\": \"youtube#video\",\n        \"videoId\": \"QneHtXsX1Ls\"\n
-        \     },\n      \"snippet\": {\n        \"title\": \"Qual \xC8 Il Tuo Superpotere
-        Nascosto? | Test Della Personalit\xE0\",\n        \"thumbnails\": {\n          \"default\":
-        {\n            \"url\": \"https://i.ytimg.com/vi/QneHtXsX1Ls/default.jpg\",\n
+        \       \"channelTitle\": \"English Teacher Luke - Duolingo English Test\"\n
+        \     }\n    },\n    {\n      \"id\": {\n        \"kind\": \"youtube#playlist\",\n
+        \       \"playlistId\": \"PLKtIunYVkv_Rb8nBO5KoeZl2S-I2VvYYL\"\n      },\n
+        \     \"snippet\": {\n        \"title\": \"From the Test Kitchen\",\n        \"thumbnails\":
+        {\n          \"default\": {\n            \"url\": \"https://i.ytimg.com/vi/uVwPO7GY8MY/default.jpg\",\n
         \           \"width\": 120,\n            \"height\": 90\n          }\n        },\n
-        \       \"channelTitle\": \"IL LATO POSITIVO\"\n      }\n    },\n    {\n      \"id\":
-        {\n        \"kind\": \"youtube#video\",\n        \"videoId\": \"Kt8RupLIkBQ\"\n
-        \     },\n      \"snippet\": {\n        \"title\": \"10 Hardest Choices Ever
-        (Personality Test)\",\n        \"thumbnails\": {\n          \"default\": {\n
-        \           \"url\": \"https://i.ytimg.com/vi/Kt8RupLIkBQ/default.jpg\",\n
+        \       \"channelTitle\": \"Bon App\xE9tit\"\n      }\n    },\n    {\n      \"id\":
+        {\n        \"kind\": \"youtube#video\",\n        \"videoId\": \"9H7YX0cBodc\"\n
+        \     },\n      \"snippet\": {\n        \"title\": \"Hi-Res Audio Choice Playlist
+        - High End Sound Test Demo - Natural Beat Records\",\n        \"thumbnails\":
+        {\n          \"default\": {\n            \"url\": \"https://i.ytimg.com/vi/9H7YX0cBodc/default.jpg\",\n
         \           \"width\": 120,\n            \"height\": 90\n          }\n        },\n
-        \       \"channelTitle\": \"BRIGHT SIDE\"\n      }\n    },\n    {\n      \"id\":
-        {\n        \"kind\": \"youtube#video\",\n        \"videoId\": \"ugRc5jx80yg\"\n
-        \     },\n      \"snippet\": {\n        \"title\": \"Testing if Sharks Can
-        Smell a Drop of Blood\",\n        \"thumbnails\": {\n          \"default\":
-        {\n            \"url\": \"https://i.ytimg.com/vi/ugRc5jx80yg/default.jpg\",\n
+        \       \"channelTitle\": \"Natural Beat Records\"\n      }\n    },\n    {\n
+        \     \"id\": {\n        \"kind\": \"youtube#playlist\",\n        \"playlistId\":
+        \"PLb8PuWqgNQu_Qj_NbyhLziLpjclJH2gin\"\n      },\n      \"snippet\": {\n        \"title\":
+        \"Missy Elliott - This Is Not A Test! Official Album Playlist\",\n        \"thumbnails\":
+        {\n          \"default\": {\n            \"url\": \"https://i.ytimg.com/vi/tJimpH32w2I/default.jpg\",\n
         \           \"width\": 120,\n            \"height\": 90\n          }\n        },\n
-        \       \"channelTitle\": \"Mark Rober\"\n      }\n    },\n    {\n      \"id\":
-        {\n        \"kind\": \"youtube#video\",\n        \"videoId\": \"pyKmVy2TC2E\"\n
-        \     },\n      \"snippet\": {\n        \"title\": \"A Simple Test Will Reveal
-        Your Deepest Fear\",\n        \"thumbnails\": {\n          \"default\": {\n
-        \           \"url\": \"https://i.ytimg.com/vi/pyKmVy2TC2E/default.jpg\",\n
+        \       \"channelTitle\": \"Missy Elliott\"\n      }\n    },\n    {\n      \"id\":
+        {\n        \"kind\": \"youtube#playlist\",\n        \"playlistId\": \"PLM9OY0jASMM2oQegpDbt2F66h1yI_XN0x\"\n
+        \     },\n      \"snippet\": {\n        \"title\": \"Cloze Test By Rani Mam\",\n
+        \       \"thumbnails\": {\n          \"default\": {\n            \"url\":
+        \"https://i.ytimg.com/vi/GkIdiS9Ynbs/default.jpg\",\n            \"width\":
+        120,\n            \"height\": 90\n          }\n        },\n        \"channelTitle\":
+        \"English With Rani Mam\"\n      }\n    },\n    {\n      \"id\": {\n        \"kind\":
+        \"youtube#playlist\",\n        \"playlistId\": \"PL65MVQhz00kZwC30G7Bm5h3QFuOryf3yq\"\n
+        \     },\n      \"snippet\": {\n        \"title\": \"Funniest Kid Test Answers!\",\n
+        \       \"thumbnails\": {\n          \"default\": {\n            \"url\":
+        \"https://i.ytimg.com/vi/pJMimo3gaJ8/default.jpg\",\n            \"width\":
+        120,\n            \"height\": 90\n          }\n        },\n        \"channelTitle\":
+        \"Dang Matt Smith\"\n      }\n    },\n    {\n      \"id\": {\n        \"kind\":
+        \"youtube#playlist\",\n        \"playlistId\": \"PLU6aMsIxfhG3V2R9m_Lh42PfeFOumadq4\"\n
+        \     },\n      \"snippet\": {\n        \"title\": \"English Mock Test | Important
+        Questions  | Most Repeated PYQs | AIRFORCE | NAVY | NDA | COAST GUARD | DEFENCE
+        EXAMS | Sanjay Sir | R.S SIR\",\n        \"thumbnails\": {\n          \"default\":
+        {\n            \"url\": \"https://i.ytimg.com/vi/vodBhwSNW8o/default.jpg\",\n
         \           \"width\": 120,\n            \"height\": 90\n          }\n        },\n
-        \       \"channelTitle\": \"BRIGHT SIDE\"\n      }\n    },\n    {\n      \"id\":
-        {\n        \"kind\": \"youtube#video\",\n        \"videoId\": \"YAxLueEKqmU\"\n
-        \     },\n      \"snippet\": {\n        \"title\": \"How Good Are Your Eyes?
-        Cool and Quick Test\",\n        \"thumbnails\": {\n          \"default\":
-        {\n            \"url\": \"https://i.ytimg.com/vi/YAxLueEKqmU/default.jpg\",\n
-        \           \"width\": 120,\n            \"height\": 90\n          }\n        },\n
-        \       \"channelTitle\": \"BRIGHT SIDE\"\n      }\n    },\n    {\n      \"id\":
-        {\n        \"kind\": \"youtube#video\",\n        \"videoId\": \"LxI30P64Sfk\"\n
-        \     },\n      \"snippet\": {\n        \"title\": \"If You Can Pass This
-        Test, You Have Unique Eyesight. Can You?\",\n        \"thumbnails\": {\n          \"default\":
-        {\n            \"url\": \"https://i.ytimg.com/vi/LxI30P64Sfk/default.jpg\",\n
-        \           \"width\": 120,\n            \"height\": 90\n          }\n        },\n
-        \       \"channelTitle\": \"BRIGHT SIDE\"\n      }\n    },\n    {\n      \"id\":
-        {\n        \"kind\": \"youtube#video\",\n        \"videoId\": \"uhiBAQmkdb0\"\n
-        \     },\n      \"snippet\": {\n        \"title\": \"IQ Test For Genius Only
-        - How Smart Are You ?\",\n        \"thumbnails\": {\n          \"default\":
-        {\n            \"url\": \"https://i.ytimg.com/vi/uhiBAQmkdb0/default.jpg\",\n
-        \           \"width\": 120,\n            \"height\": 90\n          }\n        },\n
-        \       \"channelTitle\": \"Genius Test\"\n      }\n    },\n    {\n      \"id\":
-        {\n        \"kind\": \"youtube#video\",\n        \"videoId\": \"yhS9LnDoo_w\"\n
-        \     },\n      \"snippet\": {\n        \"title\": \"The Chemical Brothers
-        - The Test (Official Music Video)\",\n        \"thumbnails\": {\n          \"default\":
-        {\n            \"url\": \"https://i.ytimg.com/vi/yhS9LnDoo_w/default.jpg\",\n
-        \           \"width\": 120,\n            \"height\": 90\n          }\n        },\n
-        \       \"channelTitle\": \"ChemicalBrothersVEVO\"\n      }\n    }\n  ]\n}\n"
+        \       \"channelTitle\": \"R.S SIR\"\n      }\n    }\n  ]\n}\n"
     headers:
       Accept-Ranges:
       - none
@@ -114,7 +115,7 @@ interactions:
       Content-Type:
       - application/json; charset=UTF-8
       Date:
-      - Tue, 21 Sep 2021 12:17:49 GMT
+      - Wed, 22 Sep 2021 12:21:48 GMT
       Server:
       - scaffolding on HTTPServer2
       Transfer-Encoding:

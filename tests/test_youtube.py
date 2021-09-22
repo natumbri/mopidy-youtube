@@ -11,9 +11,38 @@ def test_youtube_search(api, config, headers):
 
     with my_vcr.use_cassette(f"tests/fixtures/{api['name']}/youtube_search.yaml"):
         setup_entry_api(api, config, headers)
-        search_results = youtube.Entry.search("test")
+        youtube.Video.search_results = config["youtube"]["search_results"]
+        youtube.Playlist.playlist_max_videos = config["youtube"]["playlist_max_videos"]
+        search_results = youtube.Entry.search(
+            "test playlist"
+        )  # search needs to generate at least 1 playlist
 
         assert isinstance(search_results, list)
+
+        playlists = [
+            search_result
+            for search_result in search_results
+            if isinstance(search_result, youtube.Playlist)
+        ]
+        videos = [
+            search_result
+            for search_result in search_results
+            if isinstance(search_result, youtube.Video)
+        ]
+
+        assert len(playlists) + len(videos) == len(search_results)
+
+        assert videos[0]._title
+        assert videos[0]._thumbnails
+        assert videos[0]._channel
+        if api["name"] in ["japi", "music"]:
+            assert videos[0]._length
+
+        assert playlists[0]._title
+        assert playlists[0]._thumbnails
+        assert playlists[0]._channel
+        if api["name"] in ["japi", "music"]:
+            assert playlists[0]._video_count
 
 
 @pytest.mark.parametrize("api", apis)

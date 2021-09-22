@@ -42,6 +42,17 @@ def test_init_sets_up_the_providers(config):
 
 
 @pytest.mark.parametrize("api", apis)
+def test_on_start_configures_the_api(api, config, headers):
+    backend_inst = get_backend(config=config, api_config=api["config"])
+    backend_inst.on_start()
+    if api["name"] in [
+        "api",
+        "japi",
+    ]:  # fails because music.Music isn't a proper API yet
+        assert isinstance(youtube.Entry.api, api["class"])
+
+
+@pytest.mark.parametrize("api", apis)
 @pytest.mark.parametrize("playlist_uri", playlist_uris)
 def test_backend_browse_playlist(api, config, headers, playlist_uri):
 
@@ -167,7 +178,7 @@ def test_backend_get_video_images(api, config, headers, video_uris):
             for video_Image in images[video_uri]:
                 assert isinstance(video_Image, Image)
 
-        assert len(images) == 8
+        assert len(images) == 9
 
 
 @pytest.mark.parametrize("api", apis)

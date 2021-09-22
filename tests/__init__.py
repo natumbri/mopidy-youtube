@@ -62,6 +62,7 @@ video_uris = [
     ),
     "youtube:video:nvlTJrNJ5lA",
     "yt:video:nvlTJrNJ5lA",
+    "youtube:video:LvXoB1S45j0",
 ]
 
 playlist_uris = [
