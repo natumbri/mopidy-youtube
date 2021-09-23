@@ -15,7 +15,9 @@ def setup_entry_api(api, config, headers):
 @pytest.mark.parametrize("api", apis)
 def test_api_search(api, config, headers):
 
-    with my_vcr.use_cassette(f"tests/fixtures/{api['name']}/api_search.yaml"):
+    with my_vcr.use_cassette(
+        f"tests/fixtures/{api['name']}/api_search.yaml", decode_compressed_response=True
+    ):
 
         setup_entry_api(api, config, headers)
 
