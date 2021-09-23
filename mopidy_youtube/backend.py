@@ -106,15 +106,20 @@ class YouTubeBackend(pykka.ThreadingActor, backend.Backend):
 
         if youtube.musicapi_enabled is True:
             logger.info("Using YouTube Music API")
+
+            if youtube.musicapi_cookie:
+                headers.update({"Cookie": youtube.musicapi_cookie})
+
             headers.update(
                 {
                     "Accept": "*/*",
                     "Content-Type": "application/json",
                     "origin": "https://music.youtube.com",
-                    "Cookie": youtube.musicapi_cookie
-                    or "PREF=hl=en; CONSENT=YES+20210329;",
                 }
             )
+            with open("/tmp/data.txt", "w") as outfile:
+                json.dump(headers, outfile)
+
             music = youtube_music.Music(proxy, headers)
             youtube.Entry.api.search = music.search
             youtube.Entry.api.list_channelplaylists = music.list_channelplaylists

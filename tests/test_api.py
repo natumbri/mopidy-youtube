@@ -20,6 +20,7 @@ def test_api_search(api, config, headers):
         setup_entry_api(api, config, headers)
 
         backend_inst = get_backend(config=config, api_config=api["config"])
+        youtube.musicapi_cookie = None
         assert isinstance(youtube.Entry.api, api["class"])
 
         search_result = backend_inst.library.search(query={"omit-any": ["chvrches"]})
@@ -32,7 +33,7 @@ def test_api_search(api, config, headers):
             for video in youtube.Entry.search("chvrches")
             if isinstance(video, youtube.Video)
         ]
-        # assert len(videos) == 18
+        assert len(videos) > 0
         assert videos[0]._title  # should be ready
         assert videos[0]._channel  # should be ready
         assert videos[0]._length  # should be ready

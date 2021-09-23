@@ -9,7 +9,7 @@ interactions:
       user-agent:
       - Mopidy-YouTube/3.4 Mopidy/3.2.0 CPython/3.8.10
     method: GET
-    uri: https://www.googleapis.com/youtube/v3/playlists?fields=items%28id%2Csnippet%28title%2Cthumbnails%2CchannelTitle%29%2CcontentDetails%28itemCount%29%29&id=PLJD13y84Bd032qVrq7CHBLEfKZZtp-u1j&part=id%2Csnippet%2CcontentDetails
+    uri: https://www.googleapis.com/youtube/v3/playlists?fields=items%28id%2Csnippet%28title%2Cthumbnails%2CchannelTitle%29%2CcontentDetails%28itemCount%29%29&id=PLJD13y84Bd032qVrq7CHBLEfKZZtp-u1j&key=fake_key&part=id%2Csnippet%2CcontentDetails
   response:
     body:
       string: "{\n  \"items\": [\n    {\n      \"id\": \"PLJD13y84Bd032qVrq7CHBLEfKZZtp-u1j\",\n
@@ -36,7 +36,7 @@ interactions:
       Content-Type:
       - application/json; charset=UTF-8
       Date:
-      - Wed, 22 Sep 2021 12:22:11 GMT
+      - Thu, 23 Sep 2021 01:26:30 GMT
       Server:
       - scaffolding on HTTPServer2
       Transfer-Encoding:
@@ -64,7 +64,7 @@ interactions:
       user-agent:
       - Mopidy-YouTube/3.4 Mopidy/3.2.0 CPython/3.8.10
     method: GET
-    uri: https://www.googleapis.com/youtube/v3/playlistItems?fields=nextPageToken%2Citems%28snippet%28title%2C+resourceId%28videoId%29%2C+videoOwnerChannelTitle%29%29&maxResults=20&part=id%2Csnippet&playlistId=PLJD13y84Bd032qVrq7CHBLEfKZZtp-u1j
+    uri: https://www.googleapis.com/youtube/v3/playlistItems?fields=nextPageToken%2Citems%28snippet%28title%2C+resourceId%28videoId%29%2C+videoOwnerChannelTitle%29%29&key=fake_key&maxResults=20&part=id%2Csnippet&playlistId=PLJD13y84Bd032qVrq7CHBLEfKZZtp-u1j
   response:
     body:
       string: "{\n  \"nextPageToken\": \"EAAaBlBUOkNCUQ\",\n  \"items\": [\n    {\n
@@ -140,7 +140,7 @@ interactions:
       Content-Type:
       - application/json; charset=UTF-8
       Date:
-      - Wed, 22 Sep 2021 12:22:11 GMT
+      - Thu, 23 Sep 2021 01:26:31 GMT
       Server:
       - scaffolding on HTTPServer2
       Transfer-Encoding:
@@ -168,7 +168,7 @@ interactions:
       user-agent:
       - Mopidy-YouTube/3.4 Mopidy/3.2.0 CPython/3.8.10
     method: GET
-    uri: https://www.googleapis.com/youtube/v3/playlistItems?fields=nextPageToken%2Citems%28snippet%28title%2C+resourceId%28videoId%29%2C+videoOwnerChannelTitle%29%29&maxResults=2&pageToken=EAAaBlBUOkNCUQ&part=id%2Csnippet&playlistId=PLJD13y84Bd032qVrq7CHBLEfKZZtp-u1j
+    uri: https://www.googleapis.com/youtube/v3/playlistItems?fields=nextPageToken%2Citems%28snippet%28title%2C+resourceId%28videoId%29%2C+videoOwnerChannelTitle%29%29&key=fake_key&maxResults=2&pageToken=EAAaBlBUOkNCUQ&part=id%2Csnippet&playlistId=PLJD13y84Bd032qVrq7CHBLEfKZZtp-u1j
   response:
     body:
       string: "{\n  \"nextPageToken\": \"EAAaBlBUOkNCWQ\",\n  \"items\": [\n    {\n
@@ -190,7 +190,7 @@ interactions:
       Content-Type:
       - application/json; charset=UTF-8
       Date:
-      - Wed, 22 Sep 2021 12:22:11 GMT
+      - Thu, 23 Sep 2021 01:26:31 GMT
       Server:
       - scaffolding on HTTPServer2
       Transfer-Encoding:
@@ -218,7 +218,7 @@ interactions:
       user-agent:
       - Mopidy-YouTube/3.4 Mopidy/3.2.0 CPython/3.8.10
     method: GET
-    uri: https://www.googleapis.com/youtube/v3/videos?fields=items%28id%2Csnippet%28title%2CchannelTitle%29%2CcontentDetails%28duration%29%29&id=MzFLCi9nOHQ%2CH2Hh2JVjshg%2C13MG9tNMoT4%2C6zYRBCQqY6s%2CfP5kHRdN-KE%2CIZTtlLNW5mw%2CtbQ8GTDWEz8%2CFfUzs4NDa64%2Ciuj8zEEUkS0%2CzZqA_NqWe6k%2Chm3ayVkGv1M%2CNr45MugvRNM%2CjjBd5x10L_0%2Cbx_iwtAQBz4%2CMqJ4ZH7pEqs%2CwZPgHRBdGOo%2CkIvWnIiIWPs%2CDW3PgQKSI8c%2ChTGJfRPLe08%2C89C_PQ_kuUk&part=id%2Csnippet%2CcontentDetails
+    uri: https://www.googleapis.com/youtube/v3/videos?fields=items%28id%2Csnippet%28title%2CchannelTitle%29%2CcontentDetails%28duration%29%29&id=MzFLCi9nOHQ%2CH2Hh2JVjshg%2C13MG9tNMoT4%2C6zYRBCQqY6s%2CfP5kHRdN-KE%2CIZTtlLNW5mw%2CtbQ8GTDWEz8%2CFfUzs4NDa64%2Ciuj8zEEUkS0%2CzZqA_NqWe6k%2Chm3ayVkGv1M%2CNr45MugvRNM%2CjjBd5x10L_0%2Cbx_iwtAQBz4%2CMqJ4ZH7pEqs%2CwZPgHRBdGOo%2CkIvWnIiIWPs%2CDW3PgQKSI8c%2ChTGJfRPLe08%2C89C_PQ_kuUk&key=fake_key&part=id%2Csnippet%2CcontentDetails
   response:
     body:
       string: "{\n  \"items\": [\n    {\n      \"id\": \"MzFLCi9nOHQ\",\n      \"snippet\":
@@ -298,7 +298,7 @@ interactions:
       Content-Type:
       - application/json; charset=UTF-8
       Date:
-      - Wed, 22 Sep 2021 12:22:11 GMT
+      - Thu, 23 Sep 2021 01:26:32 GMT
       Server:
       - scaffolding on HTTPServer2
       Transfer-Encoding:

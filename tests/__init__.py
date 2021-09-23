@@ -5,7 +5,11 @@ import vcr
 from mopidy_youtube import backend
 from mopidy_youtube.apis import youtube_api, youtube_japi, youtube_music
 
-my_vcr = vcr.VCR(record_mode="new_episodes", filter_query_parameters=["key"])
+my_vcr = vcr.VCR(
+    record_mode="new_episodes",
+    filter_query_parameters=[("key", "fake_key")],
+    filter_post_data_parameters=["key"],
+)
 
 try:
     youtube_api_key = Path("/tmp/secretkey.txt").read_text().replace("\n", "")

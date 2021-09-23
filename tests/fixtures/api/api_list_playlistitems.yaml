@@ -9,7 +9,7 @@ interactions:
       user-agent:
       - Mopidy-YouTube/3.4 Mopidy/3.2.0 CPython/3.8.10
     method: GET
-    uri: https://www.googleapis.com/youtube/v3/playlistItems?fields=nextPageToken%2Citems%28snippet%28title%2C+resourceId%28videoId%29%2C+videoOwnerChannelTitle%29%29&maxResults=20&part=id%2Csnippet&playlistId=PLJD13y84Bd032qVrq7CHBLEfKZZtp-u1j
+    uri: https://www.googleapis.com/youtube/v3/playlistItems?fields=nextPageToken%2Citems%28snippet%28title%2C+resourceId%28videoId%29%2C+videoOwnerChannelTitle%29%29&key=fake_key&maxResults=20&part=id%2Csnippet&playlistId=PLJD13y84Bd032qVrq7CHBLEfKZZtp-u1j
   response:
     body:
       string: "{\n  \"nextPageToken\": \"EAAaBlBUOkNCUQ\",\n  \"items\": [\n    {\n
@@ -85,7 +85,7 @@ interactions:
       Content-Type:
       - application/json; charset=UTF-8
       Date:
-      - Wed, 22 Sep 2021 12:19:45 GMT
+      - Thu, 23 Sep 2021 01:24:40 GMT
       Server:
       - scaffolding on HTTPServer2
       Transfer-Encoding:

@@ -5,11 +5,11 @@ interactions:
       Accept-Language:
       - en;q=0.8
       Cookie:
-      - PREF=hl=en;
+      - PREF=hl=en; CONSENT=YES+20210329;
       user-agent:
       - Mopidy-YouTube/3.4 Mopidy/3.2.0 CPython/3.8.10
     method: GET
-    uri: https://www.googleapis.com/youtube/v3/videos?fields=items%28id%2Csnippet%28title%2CchannelTitle%29%2CcontentDetails%28duration%29%29&id=SIhb-kNvL6M&part=id%2Csnippet%2CcontentDetails
+    uri: https://www.googleapis.com/youtube/v3/videos?fields=items%28id%2Csnippet%28title%2CchannelTitle%29%2CcontentDetails%28duration%29%29&id=SIhb-kNvL6M&key=fake_key&part=id%2Csnippet%2CcontentDetails
   response:
     body:
       string: "{\n  \"items\": [\n    {\n      \"id\": \"SIhb-kNvL6M\",\n      \"snippet\":
@@ -28,7 +28,7 @@ interactions:
       Content-Type:
       - application/json; charset=UTF-8
       Date:
-      - Wed, 22 Sep 2021 12:19:54 GMT
+      - Thu, 23 Sep 2021 01:44:41 GMT
       Server:
       - scaffolding on HTTPServer2
       Transfer-Encoding:
@@ -52,11 +52,58 @@ interactions:
       Accept-Language:
       - en;q=0.8
       Cookie:
-      - PREF=hl=en;
+      - PREF=hl=en; CONSENT=YES+20210329;
       user-agent:
       - Mopidy-YouTube/3.4 Mopidy/3.2.0 CPython/3.8.10
     method: GET
-    uri: https://www.googleapis.com/youtube/v3/playlistItems?fields=nextPageToken%2Citems%28snippet%28title%2C+resourceId%28videoId%29%2C+videoOwnerChannelTitle%29%29&maxResults=20&part=id%2Csnippet&playlistId=PLo4c-riVwz2miWOT3Y2VWzg2bmV4FmC8J
+    uri: https://www.googleapis.com/youtube/v3/videos?fields=items%28id%2Csnippet%28title%2CchannelTitle%29%2CcontentDetails%28duration%29%29&id=SIhb-kNvL6M&key=fake_key&part=id%2Csnippet%2CcontentDetails
+  response:
+    body:
+      string: "{\n  \"items\": [\n    {\n      \"id\": \"SIhb-kNvL6M\",\n      \"snippet\":
+        {\n        \"title\": \"American Girl\",\n        \"channelTitle\": \"Tom
+        Petty - Topic\"\n      },\n      \"contentDetails\": {\n        \"duration\":
+        \"PT3M35S\"\n      }\n    }\n  ]\n}\n"
+    headers:
+      Accept-Ranges:
+      - none
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000,h3-T051=":443"; ma=2592000,h3-Q050=":443";
+        ma=2592000,h3-Q046=":443"; ma=2592000,h3-Q043=":443"; ma=2592000,quic=":443";
+        ma=2592000; v="46,43"
+      Cache-Control:
+      - private
+      Content-Type:
+      - application/json; charset=UTF-8
+      Date:
+      - Thu, 23 Sep 2021 01:44:45 GMT
+      Server:
+      - scaffolding on HTTPServer2
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - X-Origin
+      - Referer
+      - Origin,Accept-Encoding
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-XSS-Protection:
+      - '0'
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept-Language:
+      - en;q=0.8
+      Cookie:
+      - PREF=hl=en; CONSENT=YES+20210329;
+      user-agent:
+      - Mopidy-YouTube/3.4 Mopidy/3.2.0 CPython/3.8.10
+    method: GET
+    uri: https://www.googleapis.com/youtube/v3/playlistItems?fields=nextPageToken%2Citems%28snippet%28title%2C+resourceId%28videoId%29%2C+videoOwnerChannelTitle%29%29&key=fake_key&maxResults=20&part=id%2Csnippet&playlistId=PLo4c-riVwz2miWOT3Y2VWzg2bmV4FmC8J
   response:
     body:
       string: "{\n  \"items\": [\n    {\n      \"snippet\": {\n        \"title\":
@@ -127,7 +174,7 @@ interactions:
       Content-Type:
       - application/json; charset=UTF-8
       Date:
-      - Wed, 22 Sep 2021 12:19:58 GMT
+      - Thu, 23 Sep 2021 01:44:55 GMT
       Server:
       - scaffolding on HTTPServer2
       Transfer-Encoding:
@@ -151,11 +198,11 @@ interactions:
       Accept-Language:
       - en;q=0.8
       Cookie:
-      - PREF=hl=en;
+      - PREF=hl=en; CONSENT=YES+20210329;
       user-agent:
       - Mopidy-YouTube/3.4 Mopidy/3.2.0 CPython/3.8.10
     method: GET
-    uri: https://www.googleapis.com/youtube/v3/videos?fields=items%28id%2Csnippet%28title%2CchannelTitle%29%2CcontentDetails%28duration%29%29&id=SIhb-kNvL6M%2Cdqxns-JTTqA%2CVy6cMrXH09U%2CfFnOfpIJL0M%2Cn4nPa35CZPI%2CuMyCa35_mOg%2Ch0JvF9vpqx8%2CnvlTJrNJ5lA%2CY1D3a5eDJIs%2C1lWJXDG2i0A%2CxqmFxgEGKH0%2CaowSGxim_O8%2Cb9q5zaY4IQ8%2C4EHK9rmUP-g%2CPMivT7MJ41M%2CQ6rj82AqzKM%2CUKc271fj2ok&part=id%2Csnippet%2CcontentDetails
+    uri: https://www.googleapis.com/youtube/v3/videos?fields=items%28id%2Csnippet%28title%2CchannelTitle%29%2CcontentDetails%28duration%29%29&id=SIhb-kNvL6M%2Cdqxns-JTTqA%2CVy6cMrXH09U%2CfFnOfpIJL0M%2Cn4nPa35CZPI%2CuMyCa35_mOg%2Ch0JvF9vpqx8%2CnvlTJrNJ5lA%2CY1D3a5eDJIs%2C1lWJXDG2i0A%2CxqmFxgEGKH0%2CaowSGxim_O8%2Cb9q5zaY4IQ8%2C4EHK9rmUP-g%2CPMivT7MJ41M%2CQ6rj82AqzKM%2CUKc271fj2ok&key=fake_key&part=id%2Csnippet%2CcontentDetails
   response:
     body:
       string: "{\n  \"items\": [\n    {\n      \"id\": \"SIhb-kNvL6M\",\n      \"snippet\":
@@ -229,7 +276,7 @@ interactions:
       Content-Type:
       - application/json; charset=UTF-8
       Date:
-      - Wed, 22 Sep 2021 12:19:59 GMT
+      - Thu, 23 Sep 2021 01:44:56 GMT
       Server:
       - scaffolding on HTTPServer2
       Transfer-Encoding:
@@ -253,11 +300,11 @@ interactions:
       Accept-Language:
       - en;q=0.8
       Cookie:
-      - PREF=hl=en;
+      - PREF=hl=en; CONSENT=YES+20210329;
       user-agent:
       - Mopidy-YouTube/3.4 Mopidy/3.2.0 CPython/3.8.10
     method: GET
-    uri: https://www.googleapis.com/youtube/v3/playlists?fields=items%28id%2Csnippet%28title%2Cthumbnails%2CchannelTitle%29%2CcontentDetails%28itemCount%29%29&id=PLo4c-riVwz2miWOT3Y2VWzg2bmV4FmC8J&part=id%2Csnippet%2CcontentDetails
+    uri: https://www.googleapis.com/youtube/v3/playlists?fields=items%28id%2Csnippet%28title%2Cthumbnails%2CchannelTitle%29%2CcontentDetails%28itemCount%29%29&id=PLo4c-riVwz2miWOT3Y2VWzg2bmV4FmC8J&key=fake_key&part=id%2Csnippet%2CcontentDetails
   response:
     body:
       string: "{\n  \"items\": [\n    {\n      \"id\": \"PLo4c-riVwz2miWOT3Y2VWzg2bmV4FmC8J\",\n
@@ -287,7 +334,784 @@ interactions:
       Content-Type:
       - application/json; charset=UTF-8
       Date:
-      - Wed, 22 Sep 2021 12:19:59 GMT
+      - Thu, 23 Sep 2021 01:44:56 GMT
+      Server:
+      - scaffolding on HTTPServer2
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - X-Origin
+      - Referer
+      - Origin,Accept-Encoding
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-XSS-Protection:
+      - '0'
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept-Language:
+      - en;q=0.8
+      Cookie:
+      - PREF=hl=en; CONSENT=YES+20210329;
+      user-agent:
+      - Mopidy-YouTube/3.4 Mopidy/3.2.0 CPython/3.8.10
+    method: GET
+    uri: https://www.googleapis.com/youtube/v3/playlistItems?fields=nextPageToken%2Citems%28snippet%28title%2C+resourceId%28videoId%29%2C+videoOwnerChannelTitle%29%29&key=fake_key&maxResults=20&part=id%2Csnippet&playlistId=PLo4c-riVwz2miWOT3Y2VWzg2bmV4FmC8J
+  response:
+    body:
+      string: "{\n  \"items\": [\n    {\n      \"snippet\": {\n        \"title\":
+        \"American Girl\",\n        \"resourceId\": {\n          \"videoId\": \"SIhb-kNvL6M\"\n
+        \       },\n        \"videoOwnerChannelTitle\": \"Tom Petty - Topic\"\n      }\n
+        \   },\n    {\n      \"snippet\": {\n        \"title\": \"Breakdown\",\n        \"resourceId\":
+        {\n          \"videoId\": \"dqxns-JTTqA\"\n        },\n        \"videoOwnerChannelTitle\":
+        \"Tom Petty - Topic\"\n      }\n    },\n    {\n      \"snippet\": {\n        \"title\":
+        \"Anything That's Rock 'n' Roll\",\n        \"resourceId\": {\n          \"videoId\":
+        \"Vy6cMrXH09U\"\n        },\n        \"videoOwnerChannelTitle\": \"Tom Petty
+        - Topic\"\n      }\n    },\n    {\n      \"snippet\": {\n        \"title\":
+        \"Tom Petty And The Heartbreakers - Refugee (Official Music Video)\",\n        \"resourceId\":
+        {\n          \"videoId\": \"fFnOfpIJL0M\"\n        },\n        \"videoOwnerChannelTitle\":
+        \"TomPettyVEVO\"\n      }\n    },\n    {\n      \"snippet\": {\n        \"title\":
+        \"Private video\",\n        \"resourceId\": {\n          \"videoId\": \"4MMcyE5aQSE\"\n
+        \       }\n      }\n    },\n    {\n      \"snippet\": {\n        \"title\":
+        \"Tom Petty And The Heartbreakers - Here Comes My Girl (Official Music Video)\",\n
+        \       \"resourceId\": {\n          \"videoId\": \"n4nPa35CZPI\"\n        },\n
+        \       \"videoOwnerChannelTitle\": \"TomPettyVEVO\"\n      }\n    },\n    {\n
+        \     \"snippet\": {\n        \"title\": \"Tom Petty And The Heartbreakers
+        - The Waiting (Official Music Video)\",\n        \"resourceId\": {\n          \"videoId\":
+        \"uMyCa35_mOg\"\n        },\n        \"videoOwnerChannelTitle\": \"TomPettyVEVO\"\n
+        \     }\n    },\n    {\n      \"snippet\": {\n        \"title\": \"Tom Petty
+        And The Heartbreakers - Don't Come Around Here No More (Official Music Video)\",\n
+        \       \"resourceId\": {\n          \"videoId\": \"h0JvF9vpqx8\"\n        },\n
+        \       \"videoOwnerChannelTitle\": \"TomPettyVEVO\"\n      }\n    },\n    {\n
+        \     \"snippet\": {\n        \"title\": \"Tom Petty And The Heartbreakers
+        - I Won't Back Down (Official Music Video)\",\n        \"resourceId\": {\n
+        \         \"videoId\": \"nvlTJrNJ5lA\"\n        },\n        \"videoOwnerChannelTitle\":
+        \"TomPettyVEVO\"\n      }\n    },\n    {\n      \"snippet\": {\n        \"title\":
+        \"Tom Petty And The Heartbreakers - Runnin' Down A Dream (Official Music Video)\",\n
+        \       \"resourceId\": {\n          \"videoId\": \"Y1D3a5eDJIs\"\n        },\n
+        \       \"videoOwnerChannelTitle\": \"TomPettyVEVO\"\n      }\n    },\n    {\n
+        \     \"snippet\": {\n        \"title\": \"Tom Petty - Free Fallin'\",\n        \"resourceId\":
+        {\n          \"videoId\": \"1lWJXDG2i0A\"\n        },\n        \"videoOwnerChannelTitle\":
+        \"TomPettyVEVO\"\n      }\n    },\n    {\n      \"snippet\": {\n        \"title\":
+        \"Tom Petty And The Heartbreakers - Into The Great Wide Open (Official Music
+        Video)\",\n        \"resourceId\": {\n          \"videoId\": \"xqmFxgEGKH0\"\n
+        \       },\n        \"videoOwnerChannelTitle\": \"TomPettyVEVO\"\n      }\n
+        \   },\n    {\n      \"snippet\": {\n        \"title\": \"Tom Petty And The
+        Heartbreakers - Mary Jane's Last Dance (Official Music Video)\",\n        \"resourceId\":
+        {\n          \"videoId\": \"aowSGxim_O8\"\n        },\n        \"videoOwnerChannelTitle\":
+        \"TomPettyVEVO\"\n      }\n    },\n    {\n      \"snippet\": {\n        \"title\":
+        \"How to grow & harvest sunflowers\",\n        \"resourceId\": {\n          \"videoId\":
+        \"b9q5zaY4IQ8\"\n        },\n        \"videoOwnerChannelTitle\": \"B&Q\"\n
+        \     }\n    },\n    {\n      \"snippet\": {\n        \"title\": \"Here Comes
+        My Girl\",\n        \"resourceId\": {\n          \"videoId\": \"4EHK9rmUP-g\"\n
+        \       },\n        \"videoOwnerChannelTitle\": \"Tom Petty - Topic\"\n      }\n
+        \   },\n    {\n      \"snippet\": {\n        \"title\": \"Bruno Mars - That\u2019s
+        What I Like (Official Music Video)\",\n        \"resourceId\": {\n          \"videoId\":
+        \"PMivT7MJ41M\"\n        },\n        \"videoOwnerChannelTitle\": \"Bruno Mars\"\n
+        \     }\n    },\n    {\n      \"snippet\": {\n        \"title\": \"Dog tells
+        on another dog\",\n        \"resourceId\": {\n          \"videoId\": \"Q6rj82AqzKM\"\n
+        \       },\n        \"videoOwnerChannelTitle\": \"marshall smith\"\n      }\n
+        \   },\n    {\n      \"snippet\": {\n        \"title\": \"16 FAMOUS LOGOS
+        WITH A HIDDEN MEANING (That We Never Even Noticed)\",\n        \"resourceId\":
+        {\n          \"videoId\": \"UKc271fj2ok\"\n        },\n        \"videoOwnerChannelTitle\":
+        \"BRIGHT SIDE\"\n      }\n    }\n  ]\n}\n"
+    headers:
+      Accept-Ranges:
+      - none
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000,h3-T051=":443"; ma=2592000,h3-Q050=":443";
+        ma=2592000,h3-Q046=":443"; ma=2592000,h3-Q043=":443"; ma=2592000,quic=":443";
+        ma=2592000; v="46,43"
+      Cache-Control:
+      - private
+      Content-Type:
+      - application/json; charset=UTF-8
+      Date:
+      - Thu, 23 Sep 2021 01:44:59 GMT
+      Server:
+      - scaffolding on HTTPServer2
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - X-Origin
+      - Referer
+      - Origin,Accept-Encoding
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-XSS-Protection:
+      - '0'
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept-Language:
+      - en;q=0.8
+      Cookie:
+      - PREF=hl=en; CONSENT=YES+20210329;
+      user-agent:
+      - Mopidy-YouTube/3.4 Mopidy/3.2.0 CPython/3.8.10
+    method: GET
+    uri: https://www.googleapis.com/youtube/v3/videos?fields=items%28id%2Csnippet%28title%2CchannelTitle%29%2CcontentDetails%28duration%29%29&id=SIhb-kNvL6M%2Cdqxns-JTTqA%2CVy6cMrXH09U%2CfFnOfpIJL0M%2Cn4nPa35CZPI%2CuMyCa35_mOg%2Ch0JvF9vpqx8%2CnvlTJrNJ5lA%2CY1D3a5eDJIs%2C1lWJXDG2i0A%2CxqmFxgEGKH0%2CaowSGxim_O8%2Cb9q5zaY4IQ8%2C4EHK9rmUP-g%2CPMivT7MJ41M%2CQ6rj82AqzKM%2CUKc271fj2ok&key=fake_key&part=id%2Csnippet%2CcontentDetails
+  response:
+    body:
+      string: "{\n  \"items\": [\n    {\n      \"id\": \"SIhb-kNvL6M\",\n      \"snippet\":
+        {\n        \"title\": \"American Girl\",\n        \"channelTitle\": \"Tom
+        Petty - Topic\"\n      },\n      \"contentDetails\": {\n        \"duration\":
+        \"PT3M35S\"\n      }\n    },\n    {\n      \"id\": \"dqxns-JTTqA\",\n      \"snippet\":
+        {\n        \"title\": \"Breakdown\",\n        \"channelTitle\": \"Tom Petty
+        - Topic\"\n      },\n      \"contentDetails\": {\n        \"duration\": \"PT2M44S\"\n
+        \     }\n    },\n    {\n      \"id\": \"Vy6cMrXH09U\",\n      \"snippet\":
+        {\n        \"title\": \"Anything That's Rock 'n' Roll\",\n        \"channelTitle\":
+        \"Tom Petty - Topic\"\n      },\n      \"contentDetails\": {\n        \"duration\":
+        \"PT2M25S\"\n      }\n    },\n    {\n      \"id\": \"fFnOfpIJL0M\",\n      \"snippet\":
+        {\n        \"title\": \"Tom Petty And The Heartbreakers - Refugee (Official
+        Music Video)\",\n        \"channelTitle\": \"TomPettyVEVO\"\n      },\n      \"contentDetails\":
+        {\n        \"duration\": \"PT3M20S\"\n      }\n    },\n    {\n      \"id\":
+        \"n4nPa35CZPI\",\n      \"snippet\": {\n        \"title\": \"Tom Petty And
+        The Heartbreakers - Here Comes My Girl (Official Music Video)\",\n        \"channelTitle\":
+        \"TomPettyVEVO\"\n      },\n      \"contentDetails\": {\n        \"duration\":
+        \"PT3M56S\"\n      }\n    },\n    {\n      \"id\": \"uMyCa35_mOg\",\n      \"snippet\":
+        {\n        \"title\": \"Tom Petty And The Heartbreakers - The Waiting (Official
+        Music Video)\",\n        \"channelTitle\": \"TomPettyVEVO\"\n      },\n      \"contentDetails\":
+        {\n        \"duration\": \"PT4M4S\"\n      }\n    },\n    {\n      \"id\":
+        \"h0JvF9vpqx8\",\n      \"snippet\": {\n        \"title\": \"Tom Petty And
+        The Heartbreakers - Don't Come Around Here No More (Official Music Video)\",\n
+        \       \"channelTitle\": \"TomPettyVEVO\"\n      },\n      \"contentDetails\":
+        {\n        \"duration\": \"PT4M36S\"\n      }\n    },\n    {\n      \"id\":
+        \"nvlTJrNJ5lA\",\n      \"snippet\": {\n        \"title\": \"Tom Petty And
+        The Heartbreakers - I Won't Back Down (Official Music Video)\",\n        \"channelTitle\":
+        \"TomPettyVEVO\"\n      },\n      \"contentDetails\": {\n        \"duration\":
+        \"PT3M2S\"\n      }\n    },\n    {\n      \"id\": \"Y1D3a5eDJIs\",\n      \"snippet\":
+        {\n        \"title\": \"Tom Petty And The Heartbreakers - Runnin' Down A Dream
+        (Official Music Video)\",\n        \"channelTitle\": \"TomPettyVEVO\"\n      },\n
+        \     \"contentDetails\": {\n        \"duration\": \"PT4M40S\"\n      }\n
+        \   },\n    {\n      \"id\": \"1lWJXDG2i0A\",\n      \"snippet\": {\n        \"title\":
+        \"Tom Petty - Free Fallin'\",\n        \"channelTitle\": \"TomPettyVEVO\"\n
+        \     },\n      \"contentDetails\": {\n        \"duration\": \"PT4M15S\"\n
+        \     }\n    },\n    {\n      \"id\": \"xqmFxgEGKH0\",\n      \"snippet\":
+        {\n        \"title\": \"Tom Petty And The Heartbreakers - Into The Great Wide
+        Open (Official Music Video)\",\n        \"channelTitle\": \"TomPettyVEVO\"\n
+        \     },\n      \"contentDetails\": {\n        \"duration\": \"PT6M34S\"\n
+        \     }\n    },\n    {\n      \"id\": \"aowSGxim_O8\",\n      \"snippet\":
+        {\n        \"title\": \"Tom Petty And The Heartbreakers - Mary Jane's Last
+        Dance (Official Music Video)\",\n        \"channelTitle\": \"TomPettyVEVO\"\n
+        \     },\n      \"contentDetails\": {\n        \"duration\": \"PT4M41S\"\n
+        \     }\n    },\n    {\n      \"id\": \"b9q5zaY4IQ8\",\n      \"snippet\":
+        {\n        \"title\": \"How to grow & harvest sunflowers\",\n        \"channelTitle\":
+        \"B&Q\"\n      },\n      \"contentDetails\": {\n        \"duration\": \"PT3M29S\"\n
+        \     }\n    },\n    {\n      \"id\": \"4EHK9rmUP-g\",\n      \"snippet\":
+        {\n        \"title\": \"Here Comes My Girl\",\n        \"channelTitle\": \"Tom
+        Petty - Topic\"\n      },\n      \"contentDetails\": {\n        \"duration\":
+        \"PT4M27S\"\n      }\n    },\n    {\n      \"id\": \"PMivT7MJ41M\",\n      \"snippet\":
+        {\n        \"title\": \"Bruno Mars - That\u2019s What I Like (Official Music
+        Video)\",\n        \"channelTitle\": \"Bruno Mars\"\n      },\n      \"contentDetails\":
+        {\n        \"duration\": \"PT3M31S\"\n      }\n    },\n    {\n      \"id\":
+        \"Q6rj82AqzKM\",\n      \"snippet\": {\n        \"title\": \"Dog tells on
+        another dog\",\n        \"channelTitle\": \"marshall smith\"\n      },\n      \"contentDetails\":
+        {\n        \"duration\": \"PT41S\"\n      }\n    },\n    {\n      \"id\":
+        \"UKc271fj2ok\",\n      \"snippet\": {\n        \"title\": \"16 FAMOUS LOGOS
+        WITH A HIDDEN MEANING (That We Never Even Noticed)\",\n        \"channelTitle\":
+        \"BRIGHT SIDE\"\n      },\n      \"contentDetails\": {\n        \"duration\":
+        \"PT6M33S\"\n      }\n    }\n  ]\n}\n"
+    headers:
+      Accept-Ranges:
+      - none
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000,h3-T051=":443"; ma=2592000,h3-Q050=":443";
+        ma=2592000,h3-Q046=":443"; ma=2592000,h3-Q043=":443"; ma=2592000,quic=":443";
+        ma=2592000; v="46,43"
+      Cache-Control:
+      - private
+      Content-Type:
+      - application/json; charset=UTF-8
+      Date:
+      - Thu, 23 Sep 2021 01:45:00 GMT
+      Server:
+      - scaffolding on HTTPServer2
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - X-Origin
+      - Referer
+      - Origin,Accept-Encoding
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-XSS-Protection:
+      - '0'
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept-Language:
+      - en;q=0.8
+      Cookie:
+      - PREF=hl=en; CONSENT=YES+20210329;
+      user-agent:
+      - Mopidy-YouTube/3.4 Mopidy/3.2.0 CPython/3.8.10
+    method: GET
+    uri: https://www.googleapis.com/youtube/v3/playlists?fields=items%28id%2Csnippet%28title%2Cthumbnails%2CchannelTitle%29%2CcontentDetails%28itemCount%29%29&id=PLo4c-riVwz2miWOT3Y2VWzg2bmV4FmC8J&key=fake_key&part=id%2Csnippet%2CcontentDetails
+  response:
+    body:
+      string: "{\n  \"items\": [\n    {\n      \"id\": \"PLo4c-riVwz2miWOT3Y2VWzg2bmV4FmC8J\",\n
+        \     \"snippet\": {\n        \"title\": \"Tom Petty's greatest hits album\",\n
+        \       \"thumbnails\": {\n          \"default\": {\n            \"url\":
+        \"https://i.ytimg.com/vi/SIhb-kNvL6M/default.jpg\",\n            \"width\":
+        120,\n            \"height\": 90\n          },\n          \"medium\": {\n
+        \           \"url\": \"https://i.ytimg.com/vi/SIhb-kNvL6M/mqdefault.jpg\",\n
+        \           \"width\": 320,\n            \"height\": 180\n          },\n          \"high\":
+        {\n            \"url\": \"https://i.ytimg.com/vi/SIhb-kNvL6M/hqdefault.jpg\",\n
+        \           \"width\": 480,\n            \"height\": 360\n          },\n          \"standard\":
+        {\n            \"url\": \"https://i.ytimg.com/vi/SIhb-kNvL6M/sddefault.jpg\",\n
+        \           \"width\": 640,\n            \"height\": 480\n          },\n          \"maxres\":
+        {\n            \"url\": \"https://i.ytimg.com/vi/SIhb-kNvL6M/maxresdefault.jpg\",\n
+        \           \"width\": 1280,\n            \"height\": 720\n          }\n        },\n
+        \       \"channelTitle\": \"Sheri Donhamgreene\"\n      },\n      \"contentDetails\":
+        {\n        \"itemCount\": 18\n      }\n    }\n  ]\n}\n"
+    headers:
+      Accept-Ranges:
+      - none
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000,h3-T051=":443"; ma=2592000,h3-Q050=":443";
+        ma=2592000,h3-Q046=":443"; ma=2592000,h3-Q043=":443"; ma=2592000,quic=":443";
+        ma=2592000; v="46,43"
+      Cache-Control:
+      - private
+      Content-Type:
+      - application/json; charset=UTF-8
+      Date:
+      - Thu, 23 Sep 2021 01:45:00 GMT
+      Server:
+      - scaffolding on HTTPServer2
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - X-Origin
+      - Referer
+      - Origin,Accept-Encoding
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-XSS-Protection:
+      - '0'
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept-Language:
+      - en;q=0.8
+      Cookie:
+      - PREF=hl=en; CONSENT=YES+20210329;
+      user-agent:
+      - Mopidy-YouTube/3.4 Mopidy/3.2.0 CPython/3.8.10
+    method: GET
+    uri: https://www.googleapis.com/youtube/v3/playlistItems?fields=nextPageToken%2Citems%28snippet%28title%2C+resourceId%28videoId%29%2C+videoOwnerChannelTitle%29%29&key=fake_key&maxResults=20&part=id%2Csnippet&playlistId=PLo4c-riVwz2miWOT3Y2VWzg2bmV4FmC8J
+  response:
+    body:
+      string: "{\n  \"items\": [\n    {\n      \"snippet\": {\n        \"title\":
+        \"American Girl\",\n        \"resourceId\": {\n          \"videoId\": \"SIhb-kNvL6M\"\n
+        \       },\n        \"videoOwnerChannelTitle\": \"Tom Petty - Topic\"\n      }\n
+        \   },\n    {\n      \"snippet\": {\n        \"title\": \"Breakdown\",\n        \"resourceId\":
+        {\n          \"videoId\": \"dqxns-JTTqA\"\n        },\n        \"videoOwnerChannelTitle\":
+        \"Tom Petty - Topic\"\n      }\n    },\n    {\n      \"snippet\": {\n        \"title\":
+        \"Anything That's Rock 'n' Roll\",\n        \"resourceId\": {\n          \"videoId\":
+        \"Vy6cMrXH09U\"\n        },\n        \"videoOwnerChannelTitle\": \"Tom Petty
+        - Topic\"\n      }\n    },\n    {\n      \"snippet\": {\n        \"title\":
+        \"Tom Petty And The Heartbreakers - Refugee (Official Music Video)\",\n        \"resourceId\":
+        {\n          \"videoId\": \"fFnOfpIJL0M\"\n        },\n        \"videoOwnerChannelTitle\":
+        \"TomPettyVEVO\"\n      }\n    },\n    {\n      \"snippet\": {\n        \"title\":
+        \"Private video\",\n        \"resourceId\": {\n          \"videoId\": \"4MMcyE5aQSE\"\n
+        \       }\n      }\n    },\n    {\n      \"snippet\": {\n        \"title\":
+        \"Tom Petty And The Heartbreakers - Here Comes My Girl (Official Music Video)\",\n
+        \       \"resourceId\": {\n          \"videoId\": \"n4nPa35CZPI\"\n        },\n
+        \       \"videoOwnerChannelTitle\": \"TomPettyVEVO\"\n      }\n    },\n    {\n
+        \     \"snippet\": {\n        \"title\": \"Tom Petty And The Heartbreakers
+        - The Waiting (Official Music Video)\",\n        \"resourceId\": {\n          \"videoId\":
+        \"uMyCa35_mOg\"\n        },\n        \"videoOwnerChannelTitle\": \"TomPettyVEVO\"\n
+        \     }\n    },\n    {\n      \"snippet\": {\n        \"title\": \"Tom Petty
+        And The Heartbreakers - Don't Come Around Here No More (Official Music Video)\",\n
+        \       \"resourceId\": {\n          \"videoId\": \"h0JvF9vpqx8\"\n        },\n
+        \       \"videoOwnerChannelTitle\": \"TomPettyVEVO\"\n      }\n    },\n    {\n
+        \     \"snippet\": {\n        \"title\": \"Tom Petty And The Heartbreakers
+        - I Won't Back Down (Official Music Video)\",\n        \"resourceId\": {\n
+        \         \"videoId\": \"nvlTJrNJ5lA\"\n        },\n        \"videoOwnerChannelTitle\":
+        \"TomPettyVEVO\"\n      }\n    },\n    {\n      \"snippet\": {\n        \"title\":
+        \"Tom Petty And The Heartbreakers - Runnin' Down A Dream (Official Music Video)\",\n
+        \       \"resourceId\": {\n          \"videoId\": \"Y1D3a5eDJIs\"\n        },\n
+        \       \"videoOwnerChannelTitle\": \"TomPettyVEVO\"\n      }\n    },\n    {\n
+        \     \"snippet\": {\n        \"title\": \"Tom Petty - Free Fallin'\",\n        \"resourceId\":
+        {\n          \"videoId\": \"1lWJXDG2i0A\"\n        },\n        \"videoOwnerChannelTitle\":
+        \"TomPettyVEVO\"\n      }\n    },\n    {\n      \"snippet\": {\n        \"title\":
+        \"Tom Petty And The Heartbreakers - Into The Great Wide Open (Official Music
+        Video)\",\n        \"resourceId\": {\n          \"videoId\": \"xqmFxgEGKH0\"\n
+        \       },\n        \"videoOwnerChannelTitle\": \"TomPettyVEVO\"\n      }\n
+        \   },\n    {\n      \"snippet\": {\n        \"title\": \"Tom Petty And The
+        Heartbreakers - Mary Jane's Last Dance (Official Music Video)\",\n        \"resourceId\":
+        {\n          \"videoId\": \"aowSGxim_O8\"\n        },\n        \"videoOwnerChannelTitle\":
+        \"TomPettyVEVO\"\n      }\n    },\n    {\n      \"snippet\": {\n        \"title\":
+        \"How to grow & harvest sunflowers\",\n        \"resourceId\": {\n          \"videoId\":
+        \"b9q5zaY4IQ8\"\n        },\n        \"videoOwnerChannelTitle\": \"B&Q\"\n
+        \     }\n    },\n    {\n      \"snippet\": {\n        \"title\": \"Here Comes
+        My Girl\",\n        \"resourceId\": {\n          \"videoId\": \"4EHK9rmUP-g\"\n
+        \       },\n        \"videoOwnerChannelTitle\": \"Tom Petty - Topic\"\n      }\n
+        \   },\n    {\n      \"snippet\": {\n        \"title\": \"Bruno Mars - That\u2019s
+        What I Like (Official Music Video)\",\n        \"resourceId\": {\n          \"videoId\":
+        \"PMivT7MJ41M\"\n        },\n        \"videoOwnerChannelTitle\": \"Bruno Mars\"\n
+        \     }\n    },\n    {\n      \"snippet\": {\n        \"title\": \"Dog tells
+        on another dog\",\n        \"resourceId\": {\n          \"videoId\": \"Q6rj82AqzKM\"\n
+        \       },\n        \"videoOwnerChannelTitle\": \"marshall smith\"\n      }\n
+        \   },\n    {\n      \"snippet\": {\n        \"title\": \"16 FAMOUS LOGOS
+        WITH A HIDDEN MEANING (That We Never Even Noticed)\",\n        \"resourceId\":
+        {\n          \"videoId\": \"UKc271fj2ok\"\n        },\n        \"videoOwnerChannelTitle\":
+        \"BRIGHT SIDE\"\n      }\n    }\n  ]\n}\n"
+    headers:
+      Accept-Ranges:
+      - none
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000,h3-T051=":443"; ma=2592000,h3-Q050=":443";
+        ma=2592000,h3-Q046=":443"; ma=2592000,h3-Q043=":443"; ma=2592000,quic=":443";
+        ma=2592000; v="46,43"
+      Cache-Control:
+      - private
+      Content-Type:
+      - application/json; charset=UTF-8
+      Date:
+      - Thu, 23 Sep 2021 01:45:03 GMT
+      Server:
+      - scaffolding on HTTPServer2
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - X-Origin
+      - Referer
+      - Origin,Accept-Encoding
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-XSS-Protection:
+      - '0'
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept-Language:
+      - en;q=0.8
+      Cookie:
+      - PREF=hl=en; CONSENT=YES+20210329;
+      user-agent:
+      - Mopidy-YouTube/3.4 Mopidy/3.2.0 CPython/3.8.10
+    method: GET
+    uri: https://www.googleapis.com/youtube/v3/videos?fields=items%28id%2Csnippet%28title%2CchannelTitle%29%2CcontentDetails%28duration%29%29&id=SIhb-kNvL6M%2Cdqxns-JTTqA%2CVy6cMrXH09U%2CfFnOfpIJL0M%2Cn4nPa35CZPI%2CuMyCa35_mOg%2Ch0JvF9vpqx8%2CnvlTJrNJ5lA%2CY1D3a5eDJIs%2C1lWJXDG2i0A%2CxqmFxgEGKH0%2CaowSGxim_O8%2Cb9q5zaY4IQ8%2C4EHK9rmUP-g%2CPMivT7MJ41M%2CQ6rj82AqzKM%2CUKc271fj2ok&key=fake_key&part=id%2Csnippet%2CcontentDetails
+  response:
+    body:
+      string: "{\n  \"items\": [\n    {\n      \"id\": \"SIhb-kNvL6M\",\n      \"snippet\":
+        {\n        \"title\": \"American Girl\",\n        \"channelTitle\": \"Tom
+        Petty - Topic\"\n      },\n      \"contentDetails\": {\n        \"duration\":
+        \"PT3M35S\"\n      }\n    },\n    {\n      \"id\": \"dqxns-JTTqA\",\n      \"snippet\":
+        {\n        \"title\": \"Breakdown\",\n        \"channelTitle\": \"Tom Petty
+        - Topic\"\n      },\n      \"contentDetails\": {\n        \"duration\": \"PT2M44S\"\n
+        \     }\n    },\n    {\n      \"id\": \"Vy6cMrXH09U\",\n      \"snippet\":
+        {\n        \"title\": \"Anything That's Rock 'n' Roll\",\n        \"channelTitle\":
+        \"Tom Petty - Topic\"\n      },\n      \"contentDetails\": {\n        \"duration\":
+        \"PT2M25S\"\n      }\n    },\n    {\n      \"id\": \"fFnOfpIJL0M\",\n      \"snippet\":
+        {\n        \"title\": \"Tom Petty And The Heartbreakers - Refugee (Official
+        Music Video)\",\n        \"channelTitle\": \"TomPettyVEVO\"\n      },\n      \"contentDetails\":
+        {\n        \"duration\": \"PT3M20S\"\n      }\n    },\n    {\n      \"id\":
+        \"n4nPa35CZPI\",\n      \"snippet\": {\n        \"title\": \"Tom Petty And
+        The Heartbreakers - Here Comes My Girl (Official Music Video)\",\n        \"channelTitle\":
+        \"TomPettyVEVO\"\n      },\n      \"contentDetails\": {\n        \"duration\":
+        \"PT3M56S\"\n      }\n    },\n    {\n      \"id\": \"uMyCa35_mOg\",\n      \"snippet\":
+        {\n        \"title\": \"Tom Petty And The Heartbreakers - The Waiting (Official
+        Music Video)\",\n        \"channelTitle\": \"TomPettyVEVO\"\n      },\n      \"contentDetails\":
+        {\n        \"duration\": \"PT4M4S\"\n      }\n    },\n    {\n      \"id\":
+        \"h0JvF9vpqx8\",\n      \"snippet\": {\n        \"title\": \"Tom Petty And
+        The Heartbreakers - Don't Come Around Here No More (Official Music Video)\",\n
+        \       \"channelTitle\": \"TomPettyVEVO\"\n      },\n      \"contentDetails\":
+        {\n        \"duration\": \"PT4M36S\"\n      }\n    },\n    {\n      \"id\":
+        \"nvlTJrNJ5lA\",\n      \"snippet\": {\n        \"title\": \"Tom Petty And
+        The Heartbreakers - I Won't Back Down (Official Music Video)\",\n        \"channelTitle\":
+        \"TomPettyVEVO\"\n      },\n      \"contentDetails\": {\n        \"duration\":
+        \"PT3M2S\"\n      }\n    },\n    {\n      \"id\": \"Y1D3a5eDJIs\",\n      \"snippet\":
+        {\n        \"title\": \"Tom Petty And The Heartbreakers - Runnin' Down A Dream
+        (Official Music Video)\",\n        \"channelTitle\": \"TomPettyVEVO\"\n      },\n
+        \     \"contentDetails\": {\n        \"duration\": \"PT4M40S\"\n      }\n
+        \   },\n    {\n      \"id\": \"1lWJXDG2i0A\",\n      \"snippet\": {\n        \"title\":
+        \"Tom Petty - Free Fallin'\",\n        \"channelTitle\": \"TomPettyVEVO\"\n
+        \     },\n      \"contentDetails\": {\n        \"duration\": \"PT4M15S\"\n
+        \     }\n    },\n    {\n      \"id\": \"xqmFxgEGKH0\",\n      \"snippet\":
+        {\n        \"title\": \"Tom Petty And The Heartbreakers - Into The Great Wide
+        Open (Official Music Video)\",\n        \"channelTitle\": \"TomPettyVEVO\"\n
+        \     },\n      \"contentDetails\": {\n        \"duration\": \"PT6M34S\"\n
+        \     }\n    },\n    {\n      \"id\": \"aowSGxim_O8\",\n      \"snippet\":
+        {\n        \"title\": \"Tom Petty And The Heartbreakers - Mary Jane's Last
+        Dance (Official Music Video)\",\n        \"channelTitle\": \"TomPettyVEVO\"\n
+        \     },\n      \"contentDetails\": {\n        \"duration\": \"PT4M41S\"\n
+        \     }\n    },\n    {\n      \"id\": \"b9q5zaY4IQ8\",\n      \"snippet\":
+        {\n        \"title\": \"How to grow & harvest sunflowers\",\n        \"channelTitle\":
+        \"B&Q\"\n      },\n      \"contentDetails\": {\n        \"duration\": \"PT3M29S\"\n
+        \     }\n    },\n    {\n      \"id\": \"4EHK9rmUP-g\",\n      \"snippet\":
+        {\n        \"title\": \"Here Comes My Girl\",\n        \"channelTitle\": \"Tom
+        Petty - Topic\"\n      },\n      \"contentDetails\": {\n        \"duration\":
+        \"PT4M27S\"\n      }\n    },\n    {\n      \"id\": \"PMivT7MJ41M\",\n      \"snippet\":
+        {\n        \"title\": \"Bruno Mars - That\u2019s What I Like (Official Music
+        Video)\",\n        \"channelTitle\": \"Bruno Mars\"\n      },\n      \"contentDetails\":
+        {\n        \"duration\": \"PT3M31S\"\n      }\n    },\n    {\n      \"id\":
+        \"Q6rj82AqzKM\",\n      \"snippet\": {\n        \"title\": \"Dog tells on
+        another dog\",\n        \"channelTitle\": \"marshall smith\"\n      },\n      \"contentDetails\":
+        {\n        \"duration\": \"PT41S\"\n      }\n    },\n    {\n      \"id\":
+        \"UKc271fj2ok\",\n      \"snippet\": {\n        \"title\": \"16 FAMOUS LOGOS
+        WITH A HIDDEN MEANING (That We Never Even Noticed)\",\n        \"channelTitle\":
+        \"BRIGHT SIDE\"\n      },\n      \"contentDetails\": {\n        \"duration\":
+        \"PT6M33S\"\n      }\n    }\n  ]\n}\n"
+    headers:
+      Accept-Ranges:
+      - none
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000,h3-T051=":443"; ma=2592000,h3-Q050=":443";
+        ma=2592000,h3-Q046=":443"; ma=2592000,h3-Q043=":443"; ma=2592000,quic=":443";
+        ma=2592000; v="46,43"
+      Cache-Control:
+      - private
+      Content-Type:
+      - application/json; charset=UTF-8
+      Date:
+      - Thu, 23 Sep 2021 01:45:04 GMT
+      Server:
+      - scaffolding on HTTPServer2
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - X-Origin
+      - Referer
+      - Origin,Accept-Encoding
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-XSS-Protection:
+      - '0'
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept-Language:
+      - en;q=0.8
+      Cookie:
+      - PREF=hl=en; CONSENT=YES+20210329;
+      user-agent:
+      - Mopidy-YouTube/3.4 Mopidy/3.2.0 CPython/3.8.10
+    method: GET
+    uri: https://www.googleapis.com/youtube/v3/playlists?fields=items%28id%2Csnippet%28title%2Cthumbnails%2CchannelTitle%29%2CcontentDetails%28itemCount%29%29&id=PLo4c-riVwz2miWOT3Y2VWzg2bmV4FmC8J&key=fake_key&part=id%2Csnippet%2CcontentDetails
+  response:
+    body:
+      string: "{\n  \"items\": [\n    {\n      \"id\": \"PLo4c-riVwz2miWOT3Y2VWzg2bmV4FmC8J\",\n
+        \     \"snippet\": {\n        \"title\": \"Tom Petty's greatest hits album\",\n
+        \       \"thumbnails\": {\n          \"default\": {\n            \"url\":
+        \"https://i.ytimg.com/vi/SIhb-kNvL6M/default.jpg\",\n            \"width\":
+        120,\n            \"height\": 90\n          },\n          \"medium\": {\n
+        \           \"url\": \"https://i.ytimg.com/vi/SIhb-kNvL6M/mqdefault.jpg\",\n
+        \           \"width\": 320,\n            \"height\": 180\n          },\n          \"high\":
+        {\n            \"url\": \"https://i.ytimg.com/vi/SIhb-kNvL6M/hqdefault.jpg\",\n
+        \           \"width\": 480,\n            \"height\": 360\n          },\n          \"standard\":
+        {\n            \"url\": \"https://i.ytimg.com/vi/SIhb-kNvL6M/sddefault.jpg\",\n
+        \           \"width\": 640,\n            \"height\": 480\n          },\n          \"maxres\":
+        {\n            \"url\": \"https://i.ytimg.com/vi/SIhb-kNvL6M/maxresdefault.jpg\",\n
+        \           \"width\": 1280,\n            \"height\": 720\n          }\n        },\n
+        \       \"channelTitle\": \"Sheri Donhamgreene\"\n      },\n      \"contentDetails\":
+        {\n        \"itemCount\": 18\n      }\n    }\n  ]\n}\n"
+    headers:
+      Accept-Ranges:
+      - none
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000,h3-T051=":443"; ma=2592000,h3-Q050=":443";
+        ma=2592000,h3-Q046=":443"; ma=2592000,h3-Q043=":443"; ma=2592000,quic=":443";
+        ma=2592000; v="46,43"
+      Cache-Control:
+      - private
+      Content-Type:
+      - application/json; charset=UTF-8
+      Date:
+      - Thu, 23 Sep 2021 01:45:04 GMT
+      Server:
+      - scaffolding on HTTPServer2
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - X-Origin
+      - Referer
+      - Origin,Accept-Encoding
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-XSS-Protection:
+      - '0'
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept-Language:
+      - en;q=0.8
+      Cookie:
+      - PREF=hl=en; CONSENT=YES+20210329;
+      user-agent:
+      - Mopidy-YouTube/3.4 Mopidy/3.2.0 CPython/3.8.10
+    method: GET
+    uri: https://www.googleapis.com/youtube/v3/playlistItems?fields=nextPageToken%2Citems%28snippet%28title%2C+resourceId%28videoId%29%2C+videoOwnerChannelTitle%29%29&key=fake_key&maxResults=20&part=id%2Csnippet&playlistId=PLo4c-riVwz2miWOT3Y2VWzg2bmV4FmC8J
+  response:
+    body:
+      string: "{\n  \"items\": [\n    {\n      \"snippet\": {\n        \"title\":
+        \"American Girl\",\n        \"resourceId\": {\n          \"videoId\": \"SIhb-kNvL6M\"\n
+        \       },\n        \"videoOwnerChannelTitle\": \"Tom Petty - Topic\"\n      }\n
+        \   },\n    {\n      \"snippet\": {\n        \"title\": \"Breakdown\",\n        \"resourceId\":
+        {\n          \"videoId\": \"dqxns-JTTqA\"\n        },\n        \"videoOwnerChannelTitle\":
+        \"Tom Petty - Topic\"\n      }\n    },\n    {\n      \"snippet\": {\n        \"title\":
+        \"Anything That's Rock 'n' Roll\",\n        \"resourceId\": {\n          \"videoId\":
+        \"Vy6cMrXH09U\"\n        },\n        \"videoOwnerChannelTitle\": \"Tom Petty
+        - Topic\"\n      }\n    },\n    {\n      \"snippet\": {\n        \"title\":
+        \"Tom Petty And The Heartbreakers - Refugee (Official Music Video)\",\n        \"resourceId\":
+        {\n          \"videoId\": \"fFnOfpIJL0M\"\n        },\n        \"videoOwnerChannelTitle\":
+        \"TomPettyVEVO\"\n      }\n    },\n    {\n      \"snippet\": {\n        \"title\":
+        \"Private video\",\n        \"resourceId\": {\n          \"videoId\": \"4MMcyE5aQSE\"\n
+        \       }\n      }\n    },\n    {\n      \"snippet\": {\n        \"title\":
+        \"Tom Petty And The Heartbreakers - Here Comes My Girl (Official Music Video)\",\n
+        \       \"resourceId\": {\n          \"videoId\": \"n4nPa35CZPI\"\n        },\n
+        \       \"videoOwnerChannelTitle\": \"TomPettyVEVO\"\n      }\n    },\n    {\n
+        \     \"snippet\": {\n        \"title\": \"Tom Petty And The Heartbreakers
+        - The Waiting (Official Music Video)\",\n        \"resourceId\": {\n          \"videoId\":
+        \"uMyCa35_mOg\"\n        },\n        \"videoOwnerChannelTitle\": \"TomPettyVEVO\"\n
+        \     }\n    },\n    {\n      \"snippet\": {\n        \"title\": \"Tom Petty
+        And The Heartbreakers - Don't Come Around Here No More (Official Music Video)\",\n
+        \       \"resourceId\": {\n          \"videoId\": \"h0JvF9vpqx8\"\n        },\n
+        \       \"videoOwnerChannelTitle\": \"TomPettyVEVO\"\n      }\n    },\n    {\n
+        \     \"snippet\": {\n        \"title\": \"Tom Petty And The Heartbreakers
+        - I Won't Back Down (Official Music Video)\",\n        \"resourceId\": {\n
+        \         \"videoId\": \"nvlTJrNJ5lA\"\n        },\n        \"videoOwnerChannelTitle\":
+        \"TomPettyVEVO\"\n      }\n    },\n    {\n      \"snippet\": {\n        \"title\":
+        \"Tom Petty And The Heartbreakers - Runnin' Down A Dream (Official Music Video)\",\n
+        \       \"resourceId\": {\n          \"videoId\": \"Y1D3a5eDJIs\"\n        },\n
+        \       \"videoOwnerChannelTitle\": \"TomPettyVEVO\"\n      }\n    },\n    {\n
+        \     \"snippet\": {\n        \"title\": \"Tom Petty - Free Fallin'\",\n        \"resourceId\":
+        {\n          \"videoId\": \"1lWJXDG2i0A\"\n        },\n        \"videoOwnerChannelTitle\":
+        \"TomPettyVEVO\"\n      }\n    },\n    {\n      \"snippet\": {\n        \"title\":
+        \"Tom Petty And The Heartbreakers - Into The Great Wide Open (Official Music
+        Video)\",\n        \"resourceId\": {\n          \"videoId\": \"xqmFxgEGKH0\"\n
+        \       },\n        \"videoOwnerChannelTitle\": \"TomPettyVEVO\"\n      }\n
+        \   },\n    {\n      \"snippet\": {\n        \"title\": \"Tom Petty And The
+        Heartbreakers - Mary Jane's Last Dance (Official Music Video)\",\n        \"resourceId\":
+        {\n          \"videoId\": \"aowSGxim_O8\"\n        },\n        \"videoOwnerChannelTitle\":
+        \"TomPettyVEVO\"\n      }\n    },\n    {\n      \"snippet\": {\n        \"title\":
+        \"How to grow & harvest sunflowers\",\n        \"resourceId\": {\n          \"videoId\":
+        \"b9q5zaY4IQ8\"\n        },\n        \"videoOwnerChannelTitle\": \"B&Q\"\n
+        \     }\n    },\n    {\n      \"snippet\": {\n        \"title\": \"Here Comes
+        My Girl\",\n        \"resourceId\": {\n          \"videoId\": \"4EHK9rmUP-g\"\n
+        \       },\n        \"videoOwnerChannelTitle\": \"Tom Petty - Topic\"\n      }\n
+        \   },\n    {\n      \"snippet\": {\n        \"title\": \"Bruno Mars - That\u2019s
+        What I Like (Official Music Video)\",\n        \"resourceId\": {\n          \"videoId\":
+        \"PMivT7MJ41M\"\n        },\n        \"videoOwnerChannelTitle\": \"Bruno Mars\"\n
+        \     }\n    },\n    {\n      \"snippet\": {\n        \"title\": \"Dog tells
+        on another dog\",\n        \"resourceId\": {\n          \"videoId\": \"Q6rj82AqzKM\"\n
+        \       },\n        \"videoOwnerChannelTitle\": \"marshall smith\"\n      }\n
+        \   },\n    {\n      \"snippet\": {\n        \"title\": \"16 FAMOUS LOGOS
+        WITH A HIDDEN MEANING (That We Never Even Noticed)\",\n        \"resourceId\":
+        {\n          \"videoId\": \"UKc271fj2ok\"\n        },\n        \"videoOwnerChannelTitle\":
+        \"BRIGHT SIDE\"\n      }\n    }\n  ]\n}\n"
+    headers:
+      Accept-Ranges:
+      - none
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000,h3-T051=":443"; ma=2592000,h3-Q050=":443";
+        ma=2592000,h3-Q046=":443"; ma=2592000,h3-Q043=":443"; ma=2592000,quic=":443";
+        ma=2592000; v="46,43"
+      Cache-Control:
+      - private
+      Content-Type:
+      - application/json; charset=UTF-8
+      Date:
+      - Thu, 23 Sep 2021 01:45:07 GMT
+      Server:
+      - scaffolding on HTTPServer2
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - X-Origin
+      - Referer
+      - Origin,Accept-Encoding
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-XSS-Protection:
+      - '0'
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept-Language:
+      - en;q=0.8
+      Cookie:
+      - PREF=hl=en; CONSENT=YES+20210329;
+      user-agent:
+      - Mopidy-YouTube/3.4 Mopidy/3.2.0 CPython/3.8.10
+    method: GET
+    uri: https://www.googleapis.com/youtube/v3/videos?fields=items%28id%2Csnippet%28title%2CchannelTitle%29%2CcontentDetails%28duration%29%29&id=SIhb-kNvL6M%2Cdqxns-JTTqA%2CVy6cMrXH09U%2CfFnOfpIJL0M%2Cn4nPa35CZPI%2CuMyCa35_mOg%2Ch0JvF9vpqx8%2CnvlTJrNJ5lA%2CY1D3a5eDJIs%2C1lWJXDG2i0A%2CxqmFxgEGKH0%2CaowSGxim_O8%2Cb9q5zaY4IQ8%2C4EHK9rmUP-g%2CPMivT7MJ41M%2CQ6rj82AqzKM%2CUKc271fj2ok&key=fake_key&part=id%2Csnippet%2CcontentDetails
+  response:
+    body:
+      string: "{\n  \"items\": [\n    {\n      \"id\": \"SIhb-kNvL6M\",\n      \"snippet\":
+        {\n        \"title\": \"American Girl\",\n        \"channelTitle\": \"Tom
+        Petty - Topic\"\n      },\n      \"contentDetails\": {\n        \"duration\":
+        \"PT3M35S\"\n      }\n    },\n    {\n      \"id\": \"dqxns-JTTqA\",\n      \"snippet\":
+        {\n        \"title\": \"Breakdown\",\n        \"channelTitle\": \"Tom Petty
+        - Topic\"\n      },\n      \"contentDetails\": {\n        \"duration\": \"PT2M44S\"\n
+        \     }\n    },\n    {\n      \"id\": \"Vy6cMrXH09U\",\n      \"snippet\":
+        {\n        \"title\": \"Anything That's Rock 'n' Roll\",\n        \"channelTitle\":
+        \"Tom Petty - Topic\"\n      },\n      \"contentDetails\": {\n        \"duration\":
+        \"PT2M25S\"\n      }\n    },\n    {\n      \"id\": \"fFnOfpIJL0M\",\n      \"snippet\":
+        {\n        \"title\": \"Tom Petty And The Heartbreakers - Refugee (Official
+        Music Video)\",\n        \"channelTitle\": \"TomPettyVEVO\"\n      },\n      \"contentDetails\":
+        {\n        \"duration\": \"PT3M20S\"\n      }\n    },\n    {\n      \"id\":
+        \"n4nPa35CZPI\",\n      \"snippet\": {\n        \"title\": \"Tom Petty And
+        The Heartbreakers - Here Comes My Girl (Official Music Video)\",\n        \"channelTitle\":
+        \"TomPettyVEVO\"\n      },\n      \"contentDetails\": {\n        \"duration\":
+        \"PT3M56S\"\n      }\n    },\n    {\n      \"id\": \"uMyCa35_mOg\",\n      \"snippet\":
+        {\n        \"title\": \"Tom Petty And The Heartbreakers - The Waiting (Official
+        Music Video)\",\n        \"channelTitle\": \"TomPettyVEVO\"\n      },\n      \"contentDetails\":
+        {\n        \"duration\": \"PT4M4S\"\n      }\n    },\n    {\n      \"id\":
+        \"h0JvF9vpqx8\",\n      \"snippet\": {\n        \"title\": \"Tom Petty And
+        The Heartbreakers - Don't Come Around Here No More (Official Music Video)\",\n
+        \       \"channelTitle\": \"TomPettyVEVO\"\n      },\n      \"contentDetails\":
+        {\n        \"duration\": \"PT4M36S\"\n      }\n    },\n    {\n      \"id\":
+        \"nvlTJrNJ5lA\",\n      \"snippet\": {\n        \"title\": \"Tom Petty And
+        The Heartbreakers - I Won't Back Down (Official Music Video)\",\n        \"channelTitle\":
+        \"TomPettyVEVO\"\n      },\n      \"contentDetails\": {\n        \"duration\":
+        \"PT3M2S\"\n      }\n    },\n    {\n      \"id\": \"Y1D3a5eDJIs\",\n      \"snippet\":
+        {\n        \"title\": \"Tom Petty And The Heartbreakers - Runnin' Down A Dream
+        (Official Music Video)\",\n        \"channelTitle\": \"TomPettyVEVO\"\n      },\n
+        \     \"contentDetails\": {\n        \"duration\": \"PT4M40S\"\n      }\n
+        \   },\n    {\n      \"id\": \"1lWJXDG2i0A\",\n      \"snippet\": {\n        \"title\":
+        \"Tom Petty - Free Fallin'\",\n        \"channelTitle\": \"TomPettyVEVO\"\n
+        \     },\n      \"contentDetails\": {\n        \"duration\": \"PT4M15S\"\n
+        \     }\n    },\n    {\n      \"id\": \"xqmFxgEGKH0\",\n      \"snippet\":
+        {\n        \"title\": \"Tom Petty And The Heartbreakers - Into The Great Wide
+        Open (Official Music Video)\",\n        \"channelTitle\": \"TomPettyVEVO\"\n
+        \     },\n      \"contentDetails\": {\n        \"duration\": \"PT6M34S\"\n
+        \     }\n    },\n    {\n      \"id\": \"aowSGxim_O8\",\n      \"snippet\":
+        {\n        \"title\": \"Tom Petty And The Heartbreakers - Mary Jane's Last
+        Dance (Official Music Video)\",\n        \"channelTitle\": \"TomPettyVEVO\"\n
+        \     },\n      \"contentDetails\": {\n        \"duration\": \"PT4M41S\"\n
+        \     }\n    },\n    {\n      \"id\": \"b9q5zaY4IQ8\",\n      \"snippet\":
+        {\n        \"title\": \"How to grow & harvest sunflowers\",\n        \"channelTitle\":
+        \"B&Q\"\n      },\n      \"contentDetails\": {\n        \"duration\": \"PT3M29S\"\n
+        \     }\n    },\n    {\n      \"id\": \"4EHK9rmUP-g\",\n      \"snippet\":
+        {\n        \"title\": \"Here Comes My Girl\",\n        \"channelTitle\": \"Tom
+        Petty - Topic\"\n      },\n      \"contentDetails\": {\n        \"duration\":
+        \"PT4M27S\"\n      }\n    },\n    {\n      \"id\": \"PMivT7MJ41M\",\n      \"snippet\":
+        {\n        \"title\": \"Bruno Mars - That\u2019s What I Like (Official Music
+        Video)\",\n        \"channelTitle\": \"Bruno Mars\"\n      },\n      \"contentDetails\":
+        {\n        \"duration\": \"PT3M31S\"\n      }\n    },\n    {\n      \"id\":
+        \"Q6rj82AqzKM\",\n      \"snippet\": {\n        \"title\": \"Dog tells on
+        another dog\",\n        \"channelTitle\": \"marshall smith\"\n      },\n      \"contentDetails\":
+        {\n        \"duration\": \"PT41S\"\n      }\n    },\n    {\n      \"id\":
+        \"UKc271fj2ok\",\n      \"snippet\": {\n        \"title\": \"16 FAMOUS LOGOS
+        WITH A HIDDEN MEANING (That We Never Even Noticed)\",\n        \"channelTitle\":
+        \"BRIGHT SIDE\"\n      },\n      \"contentDetails\": {\n        \"duration\":
+        \"PT6M33S\"\n      }\n    }\n  ]\n}\n"
+    headers:
+      Accept-Ranges:
+      - none
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000,h3-T051=":443"; ma=2592000,h3-Q050=":443";
+        ma=2592000,h3-Q046=":443"; ma=2592000,h3-Q043=":443"; ma=2592000,quic=":443";
+        ma=2592000; v="46,43"
+      Cache-Control:
+      - private
+      Content-Type:
+      - application/json; charset=UTF-8
+      Date:
+      - Thu, 23 Sep 2021 01:45:08 GMT
+      Server:
+      - scaffolding on HTTPServer2
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - X-Origin
+      - Referer
+      - Origin,Accept-Encoding
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-XSS-Protection:
+      - '0'
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept-Language:
+      - en;q=0.8
+      Cookie:
+      - PREF=hl=en; CONSENT=YES+20210329;
+      user-agent:
+      - Mopidy-YouTube/3.4 Mopidy/3.2.0 CPython/3.8.10
+    method: GET
+    uri: https://www.googleapis.com/youtube/v3/playlists?fields=items%28id%2Csnippet%28title%2Cthumbnails%2CchannelTitle%29%2CcontentDetails%28itemCount%29%29&id=PLo4c-riVwz2miWOT3Y2VWzg2bmV4FmC8J&key=fake_key&part=id%2Csnippet%2CcontentDetails
+  response:
+    body:
+      string: "{\n  \"items\": [\n    {\n      \"id\": \"PLo4c-riVwz2miWOT3Y2VWzg2bmV4FmC8J\",\n
+        \     \"snippet\": {\n        \"title\": \"Tom Petty's greatest hits album\",\n
+        \       \"thumbnails\": {\n          \"default\": {\n            \"url\":
+        \"https://i.ytimg.com/vi/SIhb-kNvL6M/default.jpg\",\n            \"width\":
+        120,\n            \"height\": 90\n          },\n          \"medium\": {\n
+        \           \"url\": \"https://i.ytimg.com/vi/SIhb-kNvL6M/mqdefault.jpg\",\n
+        \           \"width\": 320,\n            \"height\": 180\n          },\n          \"high\":
+        {\n            \"url\": \"https://i.ytimg.com/vi/SIhb-kNvL6M/hqdefault.jpg\",\n
+        \           \"width\": 480,\n            \"height\": 360\n          },\n          \"standard\":
+        {\n            \"url\": \"https://i.ytimg.com/vi/SIhb-kNvL6M/sddefault.jpg\",\n
+        \           \"width\": 640,\n            \"height\": 480\n          },\n          \"maxres\":
+        {\n            \"url\": \"https://i.ytimg.com/vi/SIhb-kNvL6M/maxresdefault.jpg\",\n
+        \           \"width\": 1280,\n            \"height\": 720\n          }\n        },\n
+        \       \"channelTitle\": \"Sheri Donhamgreene\"\n      },\n      \"contentDetails\":
+        {\n        \"itemCount\": 18\n      }\n    }\n  ]\n}\n"
+    headers:
+      Accept-Ranges:
+      - none
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000,h3-T051=":443"; ma=2592000,h3-Q050=":443";
+        ma=2592000,h3-Q046=":443"; ma=2592000,h3-Q043=":443"; ma=2592000,quic=":443";
+        ma=2592000; v="46,43"
+      Cache-Control:
+      - private
+      Content-Type:
+      - application/json; charset=UTF-8
+      Date:
+      - Thu, 23 Sep 2021 01:45:08 GMT
       Server:
       - scaffolding on HTTPServer2
       Transfer-Encoding:

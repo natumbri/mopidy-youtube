@@ -9,7 +9,7 @@ interactions:
       user-agent:
       - Mopidy-YouTube/3.4 Mopidy/3.2.0 CPython/3.8.10
     method: GET
-    uri: https://www.googleapis.com/youtube/v3/videos?fields=items%28id%2Csnippet%28title%2CchannelTitle%29%2CcontentDetails%28duration%29%29&id=_mTRvJ9fugM%2Ch_uyq8oGDvU%2CLvXoB1S45j0&part=id%2Csnippet%2CcontentDetails
+    uri: https://www.googleapis.com/youtube/v3/videos?fields=items%28id%2Csnippet%28title%2CchannelTitle%29%2CcontentDetails%28duration%29%29&id=_mTRvJ9fugM%2Ch_uyq8oGDvU%2CLvXoB1S45j0&key=fake_key&part=id%2Csnippet%2CcontentDetails
   response:
     body:
       string: "{\n  \"items\": [\n    {\n      \"id\": \"_mTRvJ9fugM\",\n      \"snippet\":
@@ -34,7 +34,7 @@ interactions:
       Content-Type:
       - application/json; charset=UTF-8
       Date:
-      - Wed, 22 Sep 2021 12:19:38 GMT
+      - Thu, 23 Sep 2021 01:24:33 GMT
       Server:
       - scaffolding on HTTPServer2
       Transfer-Encoding:

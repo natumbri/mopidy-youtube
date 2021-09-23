@@ -9,12 +9,12 @@ interactions:
       user-agent:
       - Mopidy-YouTube/3.4 Mopidy/3.2.0 CPython/3.8.10
     method: GET
-    uri: https://www.googleapis.com/youtube/v3/search?maxResults=20&part=snippet&relatedToVideoId=h_uyq8oGDvU&type=video
+    uri: https://www.googleapis.com/youtube/v3/search?key=fake_key&maxResults=20&part=snippet&relatedToVideoId=h_uyq8oGDvU&type=video
   response:
     body:
-      string: "{\n  \"kind\": \"youtube#searchListResponse\",\n  \"etag\": \"uK1xk007TgbUhulMqs9yRleFls8\",\n
+      string: "{\n  \"kind\": \"youtube#searchListResponse\",\n  \"etag\": \"twLmsrYMOIBu6A7YNwbBVP48JEk\",\n
         \ \"nextPageToken\": \"CBQQAA\",\n  \"regionCode\": \"AU\",\n  \"pageInfo\":
-        {\n    \"totalResults\": 85,\n    \"resultsPerPage\": 20\n  },\n  \"items\":
+        {\n    \"totalResults\": 79,\n    \"resultsPerPage\": 20\n  },\n  \"items\":
         [\n    {\n      \"kind\": \"youtube#searchResult\",\n      \"etag\": \"wGgM8-zYu0-H-mSLtm7lNoSPZuE\",\n
         \     \"id\": {\n        \"kind\": \"youtube#video\",\n        \"videoId\":
         \"vOCZDeB-JuU\"\n      },\n      \"snippet\": {\n        \"publishedAt\":
@@ -36,21 +36,6 @@ interactions:
         \           \"width\": 480,\n            \"height\": 360\n          }\n        },\n
         \       \"channelTitle\": \"neilyoungchannel\",\n        \"liveBroadcastContent\":
         \"none\",\n        \"publishTime\": \"2021-02-09T18:42:38Z\"\n      }\n    },\n
-        \   {\n      \"kind\": \"youtube#searchResult\",\n      \"etag\": \"-qrcAC9NjETvfXEGORiUrNYP77g\",\n
-        \     \"id\": {\n        \"kind\": \"youtube#video\",\n        \"videoId\":
-        \"p6xNft9MutQ\"\n      },\n      \"snippet\": {\n        \"publishedAt\":
-        \"2009-04-01T15:11:47Z\",\n        \"channelId\": \"UCNAYBFrEyZhGnS8mvHv15pA\",\n
-        \       \"title\": \"Neil Young - Powderfinger\",\n        \"description\":
-        \"I know there are plenty of clips of this song on Youtube, still it's one
-        of his best songs.\\nFrom from 2002.\",\n        \"thumbnails\": {\n          \"default\":
-        {\n            \"url\": \"https://i.ytimg.com/vi/p6xNft9MutQ/default.jpg\",\n
-        \           \"width\": 120,\n            \"height\": 90\n          },\n          \"medium\":
-        {\n            \"url\": \"https://i.ytimg.com/vi/p6xNft9MutQ/mqdefault.jpg\",\n
-        \           \"width\": 320,\n            \"height\": 180\n          },\n          \"high\":
-        {\n            \"url\": \"https://i.ytimg.com/vi/p6xNft9MutQ/hqdefault.jpg\",\n
-        \           \"width\": 480,\n            \"height\": 360\n          }\n        },\n
-        \       \"channelTitle\": \"Ze18613\",\n        \"liveBroadcastContent\":
-        \"none\",\n        \"publishTime\": \"2009-04-01T15:11:47Z\"\n      }\n    },\n
         \   {\n      \"kind\": \"youtube#searchResult\",\n      \"etag\": \"2J5gZZfjcrItmh2L4iMy9ye6Fu4\",\n
         \     \"id\": {\n        \"kind\": \"youtube#video\",\n        \"videoId\":
         \"k6TOvpxesxY\"\n      },\n      \"snippet\": {\n        \"publishedAt\":
@@ -89,6 +74,40 @@ interactions:
         \           \"width\": 1280,\n            \"height\": 720\n          }\n        },\n
         \       \"channelTitle\": \"ProroK38\",\n        \"liveBroadcastContent\":
         \"none\",\n        \"publishTime\": \"2017-05-22T19:40:17Z\"\n      }\n    },\n
+        \   {\n      \"kind\": \"youtube#searchResult\",\n      \"etag\": \"-qrcAC9NjETvfXEGORiUrNYP77g\",\n
+        \     \"id\": {\n        \"kind\": \"youtube#video\",\n        \"videoId\":
+        \"p6xNft9MutQ\"\n      },\n      \"snippet\": {\n        \"publishedAt\":
+        \"2009-04-01T15:11:47Z\",\n        \"channelId\": \"UCNAYBFrEyZhGnS8mvHv15pA\",\n
+        \       \"title\": \"Neil Young - Powderfinger\",\n        \"description\":
+        \"I know there are plenty of clips of this song on Youtube, still it's one
+        of his best songs.\\nFrom from 2002.\",\n        \"thumbnails\": {\n          \"default\":
+        {\n            \"url\": \"https://i.ytimg.com/vi/p6xNft9MutQ/default.jpg\",\n
+        \           \"width\": 120,\n            \"height\": 90\n          },\n          \"medium\":
+        {\n            \"url\": \"https://i.ytimg.com/vi/p6xNft9MutQ/mqdefault.jpg\",\n
+        \           \"width\": 320,\n            \"height\": 180\n          },\n          \"high\":
+        {\n            \"url\": \"https://i.ytimg.com/vi/p6xNft9MutQ/hqdefault.jpg\",\n
+        \           \"width\": 480,\n            \"height\": 360\n          }\n        },\n
+        \       \"channelTitle\": \"Ze18613\",\n        \"liveBroadcastContent\":
+        \"none\",\n        \"publishTime\": \"2009-04-01T15:11:47Z\"\n      }\n    },\n
+        \   {\n      \"kind\": \"youtube#searchResult\",\n      \"etag\": \"bnx5_1hpN0mb0q43h9TpUzrV0D4\",\n
+        \     \"id\": {\n        \"kind\": \"youtube#video\",\n        \"videoId\":
+        \"UuQYM9PNnII\"\n      },\n      \"snippet\": {\n        \"publishedAt\":
+        \"2021-02-26T07:54:41Z\",\n        \"channelId\": \"UCkYBx2KmIjFKFvA2Ye8UhAg\",\n
+        \       \"title\": \"Neil Young Greatest Hits Full Album - Best Songs Of Neil
+        Young Playlist 2021\",\n        \"description\": \"Neil Young Greatest Hits
+        Full Album - Best Songs Of Neil Young Playlist 2021\",\n        \"thumbnails\":
+        {\n          \"default\": {\n            \"url\": \"https://i.ytimg.com/vi/UuQYM9PNnII/default.jpg\",\n
+        \           \"width\": 120,\n            \"height\": 90\n          },\n          \"medium\":
+        {\n            \"url\": \"https://i.ytimg.com/vi/UuQYM9PNnII/mqdefault.jpg\",\n
+        \           \"width\": 320,\n            \"height\": 180\n          },\n          \"high\":
+        {\n            \"url\": \"https://i.ytimg.com/vi/UuQYM9PNnII/hqdefault.jpg\",\n
+        \           \"width\": 480,\n            \"height\": 360\n          },\n          \"standard\":
+        {\n            \"url\": \"https://i.ytimg.com/vi/UuQYM9PNnII/sddefault.jpg\",\n
+        \           \"width\": 640,\n            \"height\": 480\n          },\n          \"maxres\":
+        {\n            \"url\": \"https://i.ytimg.com/vi/UuQYM9PNnII/maxresdefault.jpg\",\n
+        \           \"width\": 1280,\n            \"height\": 720\n          }\n        },\n
+        \       \"channelTitle\": \"SLOW ROCK MUSIC\",\n        \"liveBroadcastContent\":
+        \"none\",\n        \"publishTime\": \"2021-02-26T07:54:41Z\"\n      }\n    },\n
         \   {\n      \"kind\": \"youtube#searchResult\",\n      \"etag\": \"I3uZ_WdTCub5G_PYc4XjkAEtDzs\",\n
         \     \"id\": {\n        \"kind\": \"youtube#video\",\n        \"videoId\":
         \"Gi3ztzFr8pU\"\n      },\n      \"snippet\": {\n        \"publishedAt\":
@@ -110,52 +129,6 @@ interactions:
         \           \"width\": 1280,\n            \"height\": 720\n          }\n        },\n
         \       \"channelTitle\": \"German L Gonz\xE1lez A\",\n        \"liveBroadcastContent\":
         \"none\",\n        \"publishTime\": \"2021-03-23T19:13:08Z\"\n      }\n    },\n
-        \   {\n      \"kind\": \"youtube#searchResult\",\n      \"etag\": \"YbfYZt-NTaPVc5mEEjqMYhm05BA\",\n
-        \     \"id\": {\n        \"kind\": \"youtube#video\",\n        \"videoId\":
-        \"o3td3Q5Jr6A\"\n      },\n      \"snippet\": {\n        \"publishedAt\":
-        \"2016-09-18T06:33:39Z\",\n        \"channelId\": \"UCZvysOTYDHMewYyIX_at8mw\",\n
-        \       \"title\": \"Neil Young + Promise of the Real - Powderfinger (Live
-        at Farm Aid 2016)\",\n        \"description\": \"Neil Young + Promise of the
-        Real performs \\\"Powderfinger\\\" at Farm Aid 2016 at Jiffy Lube Live in
-        Bristow, Virginia, on September 17. \\n\\nFarm Aid was started by Willie Nelson,
-        Neil Young and John Mellencamp in 1985 to keep family farmers on the land
-        and has worked since then to make sure everyone has access to good food from
-        family farmers. Dave Matthews joined Farm Aid's board of directors in 2001.\\n\\nFor
-        more information about Farm Aid, visit: http://farmaid.org/youtube\\n\\nFarm
-        Aid's performances are donated by the artists in order to raise funds and
-        raise awareness for family farmers. They've raised their voices to help \u2014
-        what can you do?\",\n        \"thumbnails\": {\n          \"default\": {\n
-        \           \"url\": \"https://i.ytimg.com/vi/o3td3Q5Jr6A/default.jpg\",\n
-        \           \"width\": 120,\n            \"height\": 90\n          },\n          \"medium\":
-        {\n            \"url\": \"https://i.ytimg.com/vi/o3td3Q5Jr6A/mqdefault.jpg\",\n
-        \           \"width\": 320,\n            \"height\": 180\n          },\n          \"high\":
-        {\n            \"url\": \"https://i.ytimg.com/vi/o3td3Q5Jr6A/hqdefault.jpg\",\n
-        \           \"width\": 480,\n            \"height\": 360\n          },\n          \"standard\":
-        {\n            \"url\": \"https://i.ytimg.com/vi/o3td3Q5Jr6A/sddefault.jpg\",\n
-        \           \"width\": 640,\n            \"height\": 480\n          },\n          \"maxres\":
-        {\n            \"url\": \"https://i.ytimg.com/vi/o3td3Q5Jr6A/maxresdefault.jpg\",\n
-        \           \"width\": 1280,\n            \"height\": 720\n          }\n        },\n
-        \       \"channelTitle\": \"Farm Aid\",\n        \"liveBroadcastContent\":
-        \"none\",\n        \"publishTime\": \"2016-09-18T06:33:39Z\"\n      }\n    },\n
-        \   {\n      \"kind\": \"youtube#searchResult\",\n      \"etag\": \"bnx5_1hpN0mb0q43h9TpUzrV0D4\",\n
-        \     \"id\": {\n        \"kind\": \"youtube#video\",\n        \"videoId\":
-        \"UuQYM9PNnII\"\n      },\n      \"snippet\": {\n        \"publishedAt\":
-        \"2021-02-26T07:54:41Z\",\n        \"channelId\": \"UCkYBx2KmIjFKFvA2Ye8UhAg\",\n
-        \       \"title\": \"Neil Young Greatest Hits Full Album - Best Songs Of Neil
-        Young Playlist 2021\",\n        \"description\": \"Neil Young Greatest Hits
-        Full Album - Best Songs Of Neil Young Playlist 2021\",\n        \"thumbnails\":
-        {\n          \"default\": {\n            \"url\": \"https://i.ytimg.com/vi/UuQYM9PNnII/default.jpg\",\n
-        \           \"width\": 120,\n            \"height\": 90\n          },\n          \"medium\":
-        {\n            \"url\": \"https://i.ytimg.com/vi/UuQYM9PNnII/mqdefault.jpg\",\n
-        \           \"width\": 320,\n            \"height\": 180\n          },\n          \"high\":
-        {\n            \"url\": \"https://i.ytimg.com/vi/UuQYM9PNnII/hqdefault.jpg\",\n
-        \           \"width\": 480,\n            \"height\": 360\n          },\n          \"standard\":
-        {\n            \"url\": \"https://i.ytimg.com/vi/UuQYM9PNnII/sddefault.jpg\",\n
-        \           \"width\": 640,\n            \"height\": 480\n          },\n          \"maxres\":
-        {\n            \"url\": \"https://i.ytimg.com/vi/UuQYM9PNnII/maxresdefault.jpg\",\n
-        \           \"width\": 1280,\n            \"height\": 720\n          }\n        },\n
-        \       \"channelTitle\": \"SLOW ROCK MUSIC\",\n        \"liveBroadcastContent\":
-        \"none\",\n        \"publishTime\": \"2021-02-26T07:54:41Z\"\n      }\n    },\n
         \   {\n      \"kind\": \"youtube#searchResult\",\n      \"etag\": \"NRlc48AGJYN053onE3qWABaGAeA\",\n
         \     \"id\": {\n        \"kind\": \"youtube#video\",\n        \"videoId\":
         \"RRb9l0udUg0\"\n      },\n      \"snippet\": {\n        \"publishedAt\":
@@ -202,78 +175,6 @@ interactions:
         \           \"width\": 480,\n            \"height\": 360\n          }\n        },\n
         \       \"channelTitle\": \"Neil Young on MV\",\n        \"liveBroadcastContent\":
         \"none\",\n        \"publishTime\": \"2014-08-13T14:05:24Z\"\n      }\n    },\n
-        \   {\n      \"kind\": \"youtube#searchResult\",\n      \"etag\": \"aVhI7zpWb00rMYMP24BhpglHjls\",\n
-        \     \"id\": {\n        \"kind\": \"youtube#video\",\n        \"videoId\":
-        \"qqQtPWfjPQc\"\n      },\n      \"snippet\": {\n        \"publishedAt\":
-        \"2012-07-22T14:14:02Z\",\n        \"channelId\": \"UC94pU8QWjGOdM6bsBlHLfIg\",\n
-        \       \"title\": \"Neil Young - Shots (Live Acoustic, The Boarding House,
-        SF 05-27-1978 Late Show).wmv\",\n        \"description\": \"Great acoustic
-        version played during his solo shows at The Boarding House, San Francisco
-        between May 24-28 1978\",\n        \"thumbnails\": {\n          \"default\":
-        {\n            \"url\": \"https://i.ytimg.com/vi/qqQtPWfjPQc/default.jpg\",\n
-        \           \"width\": 120,\n            \"height\": 90\n          },\n          \"medium\":
-        {\n            \"url\": \"https://i.ytimg.com/vi/qqQtPWfjPQc/mqdefault.jpg\",\n
-        \           \"width\": 320,\n            \"height\": 180\n          },\n          \"high\":
-        {\n            \"url\": \"https://i.ytimg.com/vi/qqQtPWfjPQc/hqdefault.jpg\",\n
-        \           \"width\": 480,\n            \"height\": 360\n          },\n          \"standard\":
-        {\n            \"url\": \"https://i.ytimg.com/vi/qqQtPWfjPQc/sddefault.jpg\",\n
-        \           \"width\": 640,\n            \"height\": 480\n          },\n          \"maxres\":
-        {\n            \"url\": \"https://i.ytimg.com/vi/qqQtPWfjPQc/maxresdefault.jpg\",\n
-        \           \"width\": 1280,\n            \"height\": 720\n          }\n        },\n
-        \       \"channelTitle\": \"MajorAMinor\",\n        \"liveBroadcastContent\":
-        \"none\",\n        \"publishTime\": \"2012-07-22T14:14:02Z\"\n      }\n    },\n
-        \   {\n      \"kind\": \"youtube#searchResult\",\n      \"etag\": \"h71aRrcXsvkaqpoT8C9aCJdU8mk\",\n
-        \     \"id\": {\n        \"kind\": \"youtube#video\",\n        \"videoId\":
-        \"ox_K1FY_r6E\"\n      },\n      \"snippet\": {\n        \"publishedAt\":
-        \"2011-08-27T15:19:34Z\",\n        \"channelId\": \"UCcNBpCEqJjgkQQT59cF485A\",\n
-        \       \"title\": \"don't cry no tears Neil Young (guit. part)\",\n        \"description\":
-        \"great song from 1975 Zuma album\",\n        \"thumbnails\": {\n          \"default\":
-        {\n            \"url\": \"https://i.ytimg.com/vi/ox_K1FY_r6E/default.jpg\",\n
-        \           \"width\": 120,\n            \"height\": 90\n          },\n          \"medium\":
-        {\n            \"url\": \"https://i.ytimg.com/vi/ox_K1FY_r6E/mqdefault.jpg\",\n
-        \           \"width\": 320,\n            \"height\": 180\n          },\n          \"high\":
-        {\n            \"url\": \"https://i.ytimg.com/vi/ox_K1FY_r6E/hqdefault.jpg\",\n
-        \           \"width\": 480,\n            \"height\": 360\n          },\n          \"standard\":
-        {\n            \"url\": \"https://i.ytimg.com/vi/ox_K1FY_r6E/sddefault.jpg\",\n
-        \           \"width\": 640,\n            \"height\": 480\n          }\n        },\n
-        \       \"channelTitle\": \"M Ferrucci\",\n        \"liveBroadcastContent\":
-        \"none\",\n        \"publishTime\": \"2011-08-27T15:19:34Z\"\n      }\n    },\n
-        \   {\n      \"kind\": \"youtube#searchResult\",\n      \"etag\": \"4a7grBpVTE6rotBIf4FWFa3GzCI\",\n
-        \     \"id\": {\n        \"kind\": \"youtube#video\",\n        \"videoId\":
-        \"pX4kiBkYzos\"\n      },\n      \"snippet\": {\n        \"publishedAt\":
-        \"2018-04-30T04:18:58Z\",\n        \"channelId\": \"UCF-Fsf7VQ03WBnJQBV50qZA\",\n
-        \       \"title\": \"Neil Young , Rock In Rio, Madrid, 2008\",\n        \"description\":
-        \"Neil Young, live from Rock in Rio, Madrid, in 2008.\\n\\nHelp us caption
-        & translate this video!  #NeilYoung\\n\\nhttps://amara.org/v/C18QV/ #NeilYoung\",\n
-        \       \"thumbnails\": {\n          \"default\": {\n            \"url\":
-        \"https://i.ytimg.com/vi/pX4kiBkYzos/default.jpg\",\n            \"width\":
-        120,\n            \"height\": 90\n          },\n          \"medium\": {\n
-        \           \"url\": \"https://i.ytimg.com/vi/pX4kiBkYzos/mqdefault.jpg\",\n
-        \           \"width\": 320,\n            \"height\": 180\n          },\n          \"high\":
-        {\n            \"url\": \"https://i.ytimg.com/vi/pX4kiBkYzos/hqdefault.jpg\",\n
-        \           \"width\": 480,\n            \"height\": 360\n          },\n          \"standard\":
-        {\n            \"url\": \"https://i.ytimg.com/vi/pX4kiBkYzos/sddefault.jpg\",\n
-        \           \"width\": 640,\n            \"height\": 480\n          },\n          \"maxres\":
-        {\n            \"url\": \"https://i.ytimg.com/vi/pX4kiBkYzos/maxresdefault.jpg\",\n
-        \           \"width\": 1280,\n            \"height\": 720\n          }\n        },\n
-        \       \"channelTitle\": \"Feature Tube\",\n        \"liveBroadcastContent\":
-        \"none\",\n        \"publishTime\": \"2018-04-30T04:18:58Z\"\n      }\n    },\n
-        \   {\n      \"kind\": \"youtube#searchResult\",\n      \"etag\": \"RTYMJFRkA_0gD_LomvBqUoT0LhE\",\n
-        \     \"id\": {\n        \"kind\": \"youtube#video\",\n        \"videoId\":
-        \"D4KQae9oMWs\"\n      },\n      \"snippet\": {\n        \"publishedAt\":
-        \"2021-02-27T06:34:16Z\",\n        \"channelId\": \"UCa_gW1pgRjq7JiKEn4RyiUA\",\n
-        \       \"title\": \"Pink Floyd - Animals (Full Album) 1977\",\n        \"description\":
-        \"\",\n        \"thumbnails\": {\n          \"default\": {\n            \"url\":
-        \"https://i.ytimg.com/vi/D4KQae9oMWs/default.jpg\",\n            \"width\":
-        120,\n            \"height\": 90\n          },\n          \"medium\": {\n
-        \           \"url\": \"https://i.ytimg.com/vi/D4KQae9oMWs/mqdefault.jpg\",\n
-        \           \"width\": 320,\n            \"height\": 180\n          },\n          \"high\":
-        {\n            \"url\": \"https://i.ytimg.com/vi/D4KQae9oMWs/hqdefault.jpg\",\n
-        \           \"width\": 480,\n            \"height\": 360\n          },\n          \"standard\":
-        {\n            \"url\": \"https://i.ytimg.com/vi/D4KQae9oMWs/sddefault.jpg\",\n
-        \           \"width\": 640,\n            \"height\": 480\n          }\n        },\n
-        \       \"channelTitle\": \"Play Music\",\n        \"liveBroadcastContent\":
-        \"none\",\n        \"publishTime\": \"2021-02-27T06:34:16Z\"\n      }\n    },\n
         \   {\n      \"kind\": \"youtube#searchResult\",\n      \"etag\": \"XAevYko0Q8pbOeQpGeX62Otw-EA\",\n
         \     \"id\": {\n        \"kind\": \"youtube#video\",\n        \"videoId\":
         \"Gbay4CptzDQ\"\n      },\n      \"snippet\": {\n        \"publishedAt\":
@@ -308,23 +209,103 @@ interactions:
         \           \"width\": 640,\n            \"height\": 480\n          }\n        },\n
         \       \"channelTitle\": \"BurningShoreProphet . OG\",\n        \"liveBroadcastContent\":
         \"none\",\n        \"publishTime\": \"2014-04-26T18:08:42Z\"\n      }\n    },\n
-        \   {\n      \"kind\": \"youtube#searchResult\",\n      \"etag\": \"UM7gasvSkF_wyRvIbzZDS3zrfDE\",\n
+        \   {\n      \"kind\": \"youtube#searchResult\",\n      \"etag\": \"ssX-l4iBs5Nx5sOAEQjcMamfXZo\",\n
         \     \"id\": {\n        \"kind\": \"youtube#video\",\n        \"videoId\":
-        \"npGfJGy6vs0\"\n      },\n      \"snippet\": {\n        \"publishedAt\":
-        \"2016-02-01T00:16:26Z\",\n        \"channelId\": \"UCfJdt0TU0vZApmsy8CVa1Bg\",\n
-        \       \"title\": \"X - Don't Cry No Tears (live)\",\n        \"description\":
-        \"Legendary Australian punk rock band X playing live at The Forum in Melbourne
-        on 14 January 2009.\",\n        \"thumbnails\": {\n          \"default\":
-        {\n            \"url\": \"https://i.ytimg.com/vi/npGfJGy6vs0/default.jpg\",\n
+        \"RditJqOsO-g\"\n      },\n      \"snippet\": {\n        \"publishedAt\":
+        \"2020-08-21T16:41:06Z\",\n        \"channelId\": \"UCfYWv5FbXFOW9sjWKrm8YKA\",\n
+        \       \"title\": \"Allison Moorer : Don't Cry No Tears (from Show)\",\n
+        \       \"description\": \"The  long deleted live version of the Neil Young
+        song. Rights neither claimed nor sought.\",\n        \"thumbnails\": {\n          \"default\":
+        {\n            \"url\": \"https://i.ytimg.com/vi/RditJqOsO-g/default.jpg\",\n
         \           \"width\": 120,\n            \"height\": 90\n          },\n          \"medium\":
-        {\n            \"url\": \"https://i.ytimg.com/vi/npGfJGy6vs0/mqdefault.jpg\",\n
+        {\n            \"url\": \"https://i.ytimg.com/vi/RditJqOsO-g/mqdefault.jpg\",\n
         \           \"width\": 320,\n            \"height\": 180\n          },\n          \"high\":
-        {\n            \"url\": \"https://i.ytimg.com/vi/npGfJGy6vs0/hqdefault.jpg\",\n
+        {\n            \"url\": \"https://i.ytimg.com/vi/RditJqOsO-g/hqdefault.jpg\",\n
         \           \"width\": 480,\n            \"height\": 360\n          },\n          \"standard\":
-        {\n            \"url\": \"https://i.ytimg.com/vi/npGfJGy6vs0/sddefault.jpg\",\n
+        {\n            \"url\": \"https://i.ytimg.com/vi/RditJqOsO-g/sddefault.jpg\",\n
+        \           \"width\": 640,\n            \"height\": 480\n          },\n          \"maxres\":
+        {\n            \"url\": \"https://i.ytimg.com/vi/RditJqOsO-g/maxresdefault.jpg\",\n
+        \           \"width\": 1280,\n            \"height\": 720\n          }\n        },\n
+        \       \"channelTitle\": \"Seuras Og\",\n        \"liveBroadcastContent\":
+        \"none\",\n        \"publishTime\": \"2020-08-21T16:41:06Z\"\n      }\n    },\n
+        \   {\n      \"kind\": \"youtube#searchResult\",\n      \"etag\": \"IQg3NzzpwoLlXZ54yqeG-RhpNcU\",\n
+        \     \"id\": {\n        \"kind\": \"youtube#video\",\n        \"videoId\":
+        \"Fva-E9yoO-I\"\n      },\n      \"snippet\": {\n        \"publishedAt\":
+        \"2016-07-10T04:12:27Z\",\n        \"channelId\": \"UCCGv8gUKMUQ4wL4oQiSSzmQ\",\n
+        \       \"title\": \"Words (between the lines of age) -  NEIL YOUNG + POTR
+        live@Ziggodome 9-7-2016\",\n        \"description\": \"Classic Neil song from
+        HARVEST\",\n        \"thumbnails\": {\n          \"default\": {\n            \"url\":
+        \"https://i.ytimg.com/vi/Fva-E9yoO-I/default.jpg\",\n            \"width\":
+        120,\n            \"height\": 90\n          },\n          \"medium\": {\n
+        \           \"url\": \"https://i.ytimg.com/vi/Fva-E9yoO-I/mqdefault.jpg\",\n
+        \           \"width\": 320,\n            \"height\": 180\n          },\n          \"high\":
+        {\n            \"url\": \"https://i.ytimg.com/vi/Fva-E9yoO-I/hqdefault.jpg\",\n
+        \           \"width\": 480,\n            \"height\": 360\n          },\n          \"standard\":
+        {\n            \"url\": \"https://i.ytimg.com/vi/Fva-E9yoO-I/sddefault.jpg\",\n
+        \           \"width\": 640,\n            \"height\": 480\n          },\n          \"maxres\":
+        {\n            \"url\": \"https://i.ytimg.com/vi/Fva-E9yoO-I/maxresdefault.jpg\",\n
+        \           \"width\": 1280,\n            \"height\": 720\n          }\n        },\n
+        \       \"channelTitle\": \"rialto1961\",\n        \"liveBroadcastContent\":
+        \"none\",\n        \"publishTime\": \"2016-07-10T04:12:27Z\"\n      }\n    },\n
+        \   {\n      \"kind\": \"youtube#searchResult\",\n      \"etag\": \"6v8M12Z-RR2HGOQngGVFDhgMAYE\",\n
+        \     \"id\": {\n        \"kind\": \"youtube#video\",\n        \"videoId\":
+        \"W80XEPxDDQM\"\n      },\n      \"snippet\": {\n        \"publishedAt\":
+        \"2014-10-14T18:56:12Z\",\n        \"channelId\": \"UCOWkCfTRYAvkR13xSeo2gyA\",\n
+        \       \"title\": \"Crosby, Stills, Nash & Young - Full Concert - 12/04/88
+        - Oakland Coliseum Arena (OFFICIAL)\",\n        \"description\": \"Crosby,
+        Stills, Nash & Young - Full Concert\\nRecorded Live: 12/4/1988 - Oakland Coliseum
+        Arena (Oakland, CA)\\n\\nMore Crosby, Stills, Nash & Young at Music Vault:
+        http://www.musicvault.com\\nSubscribe to Music Vault: http://goo.gl/DUzpUF\\n\\nSetlist:\\n0:00:00
+        - Helplessly Hoping\\n0:03:29 - Love The One You're With\\n0:07:14 - This
+        Old House\\n0:12:19 - Southern Man\\n0:17:10 - Don't Say Goodbye\\n0:20:53
+        - Compass\\n0:25:08 - Long Time Gone\\n0:30:18 - Southern Cross\\n0:34:38
+        - Teach Your Children\",\n        \"thumbnails\": {\n          \"default\":
+        {\n            \"url\": \"https://i.ytimg.com/vi/W80XEPxDDQM/default.jpg\",\n
+        \           \"width\": 120,\n            \"height\": 90\n          },\n          \"medium\":
+        {\n            \"url\": \"https://i.ytimg.com/vi/W80XEPxDDQM/mqdefault.jpg\",\n
+        \           \"width\": 320,\n            \"height\": 180\n          },\n          \"high\":
+        {\n            \"url\": \"https://i.ytimg.com/vi/W80XEPxDDQM/hqdefault.jpg\",\n
+        \           \"width\": 480,\n            \"height\": 360\n          },\n          \"standard\":
+        {\n            \"url\": \"https://i.ytimg.com/vi/W80XEPxDDQM/sddefault.jpg\",\n
         \           \"width\": 640,\n            \"height\": 480\n          }\n        },\n
-        \       \"channelTitle\": \"Laneway Music\",\n        \"liveBroadcastContent\":
-        \"none\",\n        \"publishTime\": \"2016-02-01T00:16:26Z\"\n      }\n    },\n
+        \       \"channelTitle\": \"Neil Young on MV\",\n        \"liveBroadcastContent\":
+        \"none\",\n        \"publishTime\": \"2014-10-14T18:56:12Z\"\n      }\n    },\n
+        \   {\n      \"kind\": \"youtube#searchResult\",\n      \"etag\": \"RTYMJFRkA_0gD_LomvBqUoT0LhE\",\n
+        \     \"id\": {\n        \"kind\": \"youtube#video\",\n        \"videoId\":
+        \"D4KQae9oMWs\"\n      },\n      \"snippet\": {\n        \"publishedAt\":
+        \"2021-02-27T06:34:16Z\",\n        \"channelId\": \"UCa_gW1pgRjq7JiKEn4RyiUA\",\n
+        \       \"title\": \"Pink Floyd - Animals (Full Album) 1977\",\n        \"description\":
+        \"\",\n        \"thumbnails\": {\n          \"default\": {\n            \"url\":
+        \"https://i.ytimg.com/vi/D4KQae9oMWs/default.jpg\",\n            \"width\":
+        120,\n            \"height\": 90\n          },\n          \"medium\": {\n
+        \           \"url\": \"https://i.ytimg.com/vi/D4KQae9oMWs/mqdefault.jpg\",\n
+        \           \"width\": 320,\n            \"height\": 180\n          },\n          \"high\":
+        {\n            \"url\": \"https://i.ytimg.com/vi/D4KQae9oMWs/hqdefault.jpg\",\n
+        \           \"width\": 480,\n            \"height\": 360\n          },\n          \"standard\":
+        {\n            \"url\": \"https://i.ytimg.com/vi/D4KQae9oMWs/sddefault.jpg\",\n
+        \           \"width\": 640,\n            \"height\": 480\n          }\n        },\n
+        \       \"channelTitle\": \"Play Music\",\n        \"liveBroadcastContent\":
+        \"none\",\n        \"publishTime\": \"2021-02-27T06:34:16Z\"\n      }\n    },\n
+        \   {\n      \"kind\": \"youtube#searchResult\",\n      \"etag\": \"4a7grBpVTE6rotBIf4FWFa3GzCI\",\n
+        \     \"id\": {\n        \"kind\": \"youtube#video\",\n        \"videoId\":
+        \"pX4kiBkYzos\"\n      },\n      \"snippet\": {\n        \"publishedAt\":
+        \"2018-04-30T04:18:58Z\",\n        \"channelId\": \"UCF-Fsf7VQ03WBnJQBV50qZA\",\n
+        \       \"title\": \"Neil Young , Rock In Rio, Madrid, 2008\",\n        \"description\":
+        \"Neil Young, live from Rock in Rio, Madrid, in 2008.\\n\\nHelp us caption
+        & translate this video!  #NeilYoung\\n\\nhttps://amara.org/v/C18QV/ #NeilYoung\",\n
+        \       \"thumbnails\": {\n          \"default\": {\n            \"url\":
+        \"https://i.ytimg.com/vi/pX4kiBkYzos/default.jpg\",\n            \"width\":
+        120,\n            \"height\": 90\n          },\n          \"medium\": {\n
+        \           \"url\": \"https://i.ytimg.com/vi/pX4kiBkYzos/mqdefault.jpg\",\n
+        \           \"width\": 320,\n            \"height\": 180\n          },\n          \"high\":
+        {\n            \"url\": \"https://i.ytimg.com/vi/pX4kiBkYzos/hqdefault.jpg\",\n
+        \           \"width\": 480,\n            \"height\": 360\n          },\n          \"standard\":
+        {\n            \"url\": \"https://i.ytimg.com/vi/pX4kiBkYzos/sddefault.jpg\",\n
+        \           \"width\": 640,\n            \"height\": 480\n          },\n          \"maxres\":
+        {\n            \"url\": \"https://i.ytimg.com/vi/pX4kiBkYzos/maxresdefault.jpg\",\n
+        \           \"width\": 1280,\n            \"height\": 720\n          }\n        },\n
+        \       \"channelTitle\": \"Feature Tube\",\n        \"liveBroadcastContent\":
+        \"none\",\n        \"publishTime\": \"2018-04-30T04:18:58Z\"\n      }\n    },\n
         \   {\n      \"kind\": \"youtube#searchResult\",\n      \"etag\": \"3vD8uo3ItsbJXkIO18qSCIsbojY\",\n
         \     \"id\": {\n        \"kind\": \"youtube#video\",\n        \"videoId\":
         \"KjtemEUoZ_M\"\n      },\n      \"snippet\": {\n        \"publishedAt\":
@@ -355,48 +336,6 @@ interactions:
         \           \"width\": 1280,\n            \"height\": 720\n          }\n        },\n
         \       \"channelTitle\": \"playa.player \u30B7\",\n        \"liveBroadcastContent\":
         \"none\",\n        \"publishTime\": \"2017-05-02T16:38:41Z\"\n      }\n    },\n
-        \   {\n      \"kind\": \"youtube#searchResult\",\n      \"etag\": \"6v8M12Z-RR2HGOQngGVFDhgMAYE\",\n
-        \     \"id\": {\n        \"kind\": \"youtube#video\",\n        \"videoId\":
-        \"W80XEPxDDQM\"\n      },\n      \"snippet\": {\n        \"publishedAt\":
-        \"2014-10-14T18:56:12Z\",\n        \"channelId\": \"UCOWkCfTRYAvkR13xSeo2gyA\",\n
-        \       \"title\": \"Crosby, Stills, Nash & Young - Full Concert - 12/04/88
-        - Oakland Coliseum Arena (OFFICIAL)\",\n        \"description\": \"Crosby,
-        Stills, Nash & Young - Full Concert\\nRecorded Live: 12/4/1988 - Oakland Coliseum
-        Arena (Oakland, CA)\\n\\nMore Crosby, Stills, Nash & Young at Music Vault:
-        http://www.musicvault.com\\nSubscribe to Music Vault: http://goo.gl/DUzpUF\\n\\nSetlist:\\n0:00:00
-        - Helplessly Hoping\\n0:03:29 - Love The One You're With\\n0:07:14 - This
-        Old House\\n0:12:19 - Southern Man\\n0:17:10 - Don't Say Goodbye\\n0:20:53
-        - Compass\\n0:25:08 - Long Time Gone\\n0:30:18 - Southern Cross\\n0:34:38
-        - Teach Your Children\",\n        \"thumbnails\": {\n          \"default\":
-        {\n            \"url\": \"https://i.ytimg.com/vi/W80XEPxDDQM/default.jpg\",\n
-        \           \"width\": 120,\n            \"height\": 90\n          },\n          \"medium\":
-        {\n            \"url\": \"https://i.ytimg.com/vi/W80XEPxDDQM/mqdefault.jpg\",\n
-        \           \"width\": 320,\n            \"height\": 180\n          },\n          \"high\":
-        {\n            \"url\": \"https://i.ytimg.com/vi/W80XEPxDDQM/hqdefault.jpg\",\n
-        \           \"width\": 480,\n            \"height\": 360\n          },\n          \"standard\":
-        {\n            \"url\": \"https://i.ytimg.com/vi/W80XEPxDDQM/sddefault.jpg\",\n
-        \           \"width\": 640,\n            \"height\": 480\n          }\n        },\n
-        \       \"channelTitle\": \"Neil Young on MV\",\n        \"liveBroadcastContent\":
-        \"none\",\n        \"publishTime\": \"2014-10-14T18:56:12Z\"\n      }\n    },\n
-        \   {\n      \"kind\": \"youtube#searchResult\",\n      \"etag\": \"ssX-l4iBs5Nx5sOAEQjcMamfXZo\",\n
-        \     \"id\": {\n        \"kind\": \"youtube#video\",\n        \"videoId\":
-        \"RditJqOsO-g\"\n      },\n      \"snippet\": {\n        \"publishedAt\":
-        \"2020-08-21T16:41:06Z\",\n        \"channelId\": \"UCfYWv5FbXFOW9sjWKrm8YKA\",\n
-        \       \"title\": \"Allison Moorer : Don't Cry No Tears (from Show)\",\n
-        \       \"description\": \"The  long deleted live version of the Neil Young
-        song. Rights neither claimed nor sought.\",\n        \"thumbnails\": {\n          \"default\":
-        {\n            \"url\": \"https://i.ytimg.com/vi/RditJqOsO-g/default.jpg\",\n
-        \           \"width\": 120,\n            \"height\": 90\n          },\n          \"medium\":
-        {\n            \"url\": \"https://i.ytimg.com/vi/RditJqOsO-g/mqdefault.jpg\",\n
-        \           \"width\": 320,\n            \"height\": 180\n          },\n          \"high\":
-        {\n            \"url\": \"https://i.ytimg.com/vi/RditJqOsO-g/hqdefault.jpg\",\n
-        \           \"width\": 480,\n            \"height\": 360\n          },\n          \"standard\":
-        {\n            \"url\": \"https://i.ytimg.com/vi/RditJqOsO-g/sddefault.jpg\",\n
-        \           \"width\": 640,\n            \"height\": 480\n          },\n          \"maxres\":
-        {\n            \"url\": \"https://i.ytimg.com/vi/RditJqOsO-g/maxresdefault.jpg\",\n
-        \           \"width\": 1280,\n            \"height\": 720\n          }\n        },\n
-        \       \"channelTitle\": \"Seuras Og\",\n        \"liveBroadcastContent\":
-        \"none\",\n        \"publishTime\": \"2020-08-21T16:41:06Z\"\n      }\n    },\n
         \   {\n      \"kind\": \"youtube#searchResult\",\n      \"etag\": \"MsSXdjktEz0yk-zzO3O_8jzFMBA\",\n
         \     \"id\": {\n        \"kind\": \"youtube#video\",\n        \"videoId\":
         \"iAZwaxI6i3Q\"\n      },\n      \"snippet\": {\n        \"publishedAt\":
@@ -432,6 +371,36 @@ interactions:
         \           \"width\": 1280,\n            \"height\": 720\n          }\n        },\n
         \       \"channelTitle\": \"billenplum\",\n        \"liveBroadcastContent\":
         \"none\",\n        \"publishTime\": \"2015-11-10T13:01:03Z\"\n      }\n    },\n
+        \   {\n      \"kind\": \"youtube#searchResult\",\n      \"etag\": \"V9PKvu6Owu8GdF_RycXFbG1dpaM\",\n
+        \     \"id\": {\n        \"kind\": \"youtube#video\",\n        \"videoId\":
+        \"SNhMIHSH_f8\"\n      },\n      \"snippet\": {\n        \"publishedAt\":
+        \"2016-02-23T04:01:19Z\",\n        \"channelId\": \"UCoPllWEnoGa1mmgN8QoS7kg\",\n
+        \       \"title\": \"Neil Young and Crazy Horse 8-8-2014 Colmar, France complete\",\n
+        \       \"description\": \"NEIL YOUNG with CRAZY HORSE\\n8/8/2014\\nFoire
+        aux Vins d'Alsace, \\nTh\xE9atre de Plein Air, \\nCOLMAR, FRANCE\\n\\n***Under
+        Law of Fair Use. For educational purposes only. No copyrights infringements
+        intended***\\nNever Buy Or Sell Live Music Recordings/Videos! \\n\\nThanks
+        to OLLIE FABECK, and the other filmers and to \\\"Wonderful\\\".\\n\\nSetlist:\\nLove
+        and Only Love\\nBe the Rain\\nStanding in the Light of Love\\nDays that Used
+        to Be\\nLike a Hurricane\\nLiving with War\\nBlowin' in the Wind\\nHeart of
+        Gold\\nPowderfinger\\nDown by the River\\nName of LOve\\nRockin' in the Free
+        World\\n----------------------------------\\nWho's Gonna Stand Up and Save
+        the Earth?\\n\\n\\nBAND\\nNeil Young - vocals, electric guitar, acoustic guitar,
+        harmonica\\nFrank Sampedro - electric guitar, keyboards, vocals\\nRalph Molina
+        - drums, vocals\\nRick Rosas - bass\\nDorene Carter - vocals\\nYaDonna West
+        - vocals\\n\\n\\nSOURCE:\\nLineage: \\nVideo: OLLIE FABECK, and the other
+        filmers and to Wonderful\\nAudio: Dime Member \\\"Wonderful\\\" Recording\\n--Adobe
+        Premiere 7 to sync and edit--TMPGEnc Works 4 for authoring\\n\\n\\nNOTES\\nComplete
+        Show, without cuts, some songs multicam\\nLast show of 2014 World Tour with
+        Crazy Horse\",\n        \"thumbnails\": {\n          \"default\": {\n            \"url\":
+        \"https://i.ytimg.com/vi/SNhMIHSH_f8/default.jpg\",\n            \"width\":
+        120,\n            \"height\": 90\n          },\n          \"medium\": {\n
+        \           \"url\": \"https://i.ytimg.com/vi/SNhMIHSH_f8/mqdefault.jpg\",\n
+        \           \"width\": 320,\n            \"height\": 180\n          },\n          \"high\":
+        {\n            \"url\": \"https://i.ytimg.com/vi/SNhMIHSH_f8/hqdefault.jpg\",\n
+        \           \"width\": 480,\n            \"height\": 360\n          }\n        },\n
+        \       \"channelTitle\": \"BurningShoreProphet3\",\n        \"liveBroadcastContent\":
+        \"none\",\n        \"publishTime\": \"2016-02-23T04:01:19Z\"\n      }\n    },\n
         \   {\n      \"kind\": \"youtube#searchResult\",\n      \"etag\": \"TnJZW0RXYmDSolM8AlMwK6Pgl-I\",\n
         \     \"id\": {\n        \"kind\": \"youtube#video\",\n        \"videoId\":
         \"9kRf0DpWUP0\"\n      },\n      \"snippet\": {\n        \"publishedAt\":
@@ -449,7 +418,44 @@ interactions:
         {\n            \"url\": \"https://i.ytimg.com/vi/9kRf0DpWUP0/maxresdefault.jpg\",\n
         \           \"width\": 1280,\n            \"height\": 720\n          }\n        },\n
         \       \"channelTitle\": \"Warmer Music Videos\",\n        \"liveBroadcastContent\":
-        \"none\",\n        \"publishTime\": \"2017-08-08T08:32:16Z\"\n      }\n    }\n
+        \"none\",\n        \"publishTime\": \"2017-08-08T08:32:16Z\"\n      }\n    },\n
+        \   {\n      \"kind\": \"youtube#searchResult\",\n      \"etag\": \"J0JfV0FNpttkvGeiAbh6Gdvb8sM\",\n
+        \     \"id\": {\n        \"kind\": \"youtube#video\",\n        \"videoId\":
+        \"BPDvY6-mU0M\"\n      },\n      \"snippet\": {\n        \"publishedAt\":
+        \"2018-04-24T19:33:00Z\",\n        \"channelId\": \"UCitGBaz2xmFN7gRnITzpqjg\",\n
+        \       \"title\": \"Neil Young - Tired Eyes\",\n        \"description\":
+        \"\\\"Roxy Live\\\"\",\n        \"thumbnails\": {\n          \"default\":
+        {\n            \"url\": \"https://i.ytimg.com/vi/BPDvY6-mU0M/default.jpg\",\n
+        \           \"width\": 120,\n            \"height\": 90\n          },\n          \"medium\":
+        {\n            \"url\": \"https://i.ytimg.com/vi/BPDvY6-mU0M/mqdefault.jpg\",\n
+        \           \"width\": 320,\n            \"height\": 180\n          },\n          \"high\":
+        {\n            \"url\": \"https://i.ytimg.com/vi/BPDvY6-mU0M/hqdefault.jpg\",\n
+        \           \"width\": 480,\n            \"height\": 360\n          },\n          \"standard\":
+        {\n            \"url\": \"https://i.ytimg.com/vi/BPDvY6-mU0M/sddefault.jpg\",\n
+        \           \"width\": 640,\n            \"height\": 480\n          },\n          \"maxres\":
+        {\n            \"url\": \"https://i.ytimg.com/vi/BPDvY6-mU0M/maxresdefault.jpg\",\n
+        \           \"width\": 1280,\n            \"height\": 720\n          }\n        },\n
+        \       \"channelTitle\": \"AeroCrespo\",\n        \"liveBroadcastContent\":
+        \"none\",\n        \"publishTime\": \"2018-04-24T19:33:00Z\"\n      }\n    },\n
+        \   {\n      \"kind\": \"youtube#searchResult\",\n      \"etag\": \"34ITcNv9zBN8SQVfYT3YuKk3ON0\",\n
+        \     \"id\": {\n        \"kind\": \"youtube#video\",\n        \"videoId\":
+        \"C0KD7n68BZg\"\n      },\n      \"snippet\": {\n        \"publishedAt\":
+        \"2020-05-25T03:58:43Z\",\n        \"channelId\": \"UCpuiOZng1XKLusazzDBdBWw\",\n
+        \       \"title\": \"Best Songs Of Pink Floyd | Pink Floyd Greatest Hits  of
+        All Time\",\n        \"description\": \"Best Songs Of Pink Floyd | Pink Floyd
+        Greatest Hits  of All Time\\nThanks For Watching!\",\n        \"thumbnails\":
+        {\n          \"default\": {\n            \"url\": \"https://i.ytimg.com/vi/C0KD7n68BZg/default.jpg\",\n
+        \           \"width\": 120,\n            \"height\": 90\n          },\n          \"medium\":
+        {\n            \"url\": \"https://i.ytimg.com/vi/C0KD7n68BZg/mqdefault.jpg\",\n
+        \           \"width\": 320,\n            \"height\": 180\n          },\n          \"high\":
+        {\n            \"url\": \"https://i.ytimg.com/vi/C0KD7n68BZg/hqdefault.jpg\",\n
+        \           \"width\": 480,\n            \"height\": 360\n          },\n          \"standard\":
+        {\n            \"url\": \"https://i.ytimg.com/vi/C0KD7n68BZg/sddefault.jpg\",\n
+        \           \"width\": 640,\n            \"height\": 480\n          },\n          \"maxres\":
+        {\n            \"url\": \"https://i.ytimg.com/vi/C0KD7n68BZg/maxresdefault.jpg\",\n
+        \           \"width\": 1280,\n            \"height\": 720\n          }\n        },\n
+        \       \"channelTitle\": \"Rocks Ballads\",\n        \"liveBroadcastContent\":
+        \"none\",\n        \"publishTime\": \"2020-05-25T03:58:43Z\"\n      }\n    }\n
         \ ]\n}\n"
     headers:
       Accept-Ranges:
@@ -463,7 +469,7 @@ interactions:
       Content-Type:
       - application/json; charset=UTF-8
       Date:
-      - Wed, 22 Sep 2021 12:19:33 GMT
+      - Thu, 23 Sep 2021 01:24:28 GMT
       Server:
       - scaffolding on HTTPServer2
       Transfer-Encoding:

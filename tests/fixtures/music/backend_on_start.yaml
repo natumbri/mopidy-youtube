@@ -1,0 +1,91 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Accept-Language:
+      - en;q=0.8
+      Connection:
+      - keep-alive
+      Content-Type:
+      - application/json
+      Cookie:
+      - __Secure-3PAPISID=None;
+      origin:
+      - https://music.youtube.com
+      user-agent:
+      - Mopidy-YouTube/3.4 Mopidy/3.2.0 CPython/3.8.10
+    method: GET
+    uri: https://music.youtube.com/
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAC/6xV247bNhD9lan6kBawLr6s4ZUl9SEtgqJIdpHuS54WtDiS2JVIgaQsqYv9944u
+        9q6TTYuggWFCHA555nZmoh9+vXl79+n2NyhsVSbRsELJZB47KB3gQsdOabVDJ8h4EllhS0w+qUbD
+        QavWoAZhgGOtMWUWuQe3JTKD0NS5Zhy9yJ+uRBVaBpJVGDtHgW2ttHUgVdKitLHTCm6LmONRpOiO
+        mwUIKaxgpWtSVmK89IIFVKwTVVO9FDVkw7hnBxJJ5fhJVAr5AIXGLHYKa2sT+n5GSMbLlcrJvloY
+        L1WVnxrzS8YqUfbxR3VQVoVXQeCAxjJ2jO1LNAUimSmVTMnum8Pdxw+3gn1I35vNzR931e9Zf9ee
+        AcdrglxyPsOuGiNSr1eNbQ44AmfsOCh6tDhgxN9oYme57ZZbB2xfE5SoWI5+547Pffv7ospPGPfr
+        lVfL/AyzXnXr1SXMcPz/MDa7C4zNrtvsvjfG9fYC43rbXW+/N8Zys7kAoX1H/9dgxvr4j8pIDor3
+        8MiFqUvWh5CV2O2hQJEXNoRlEByLPYzVPu3aPbBS5NIVFisTQkrcQL2HvxpjRda7M12eDyqmcyFD
+        CPZwYOlDrlUjOamVSofw43I9/PagjqizUrUhFIJzlHsY2OBOlR/Cm6n23yyAaeLbAgyTxiVaiezJ
+        myG/cGJYXWoPmFqhyALCbCr5uv1PXqlyBY8nT7dB3ZGwQmMonvBIrHbns00wnMFBdS6lQMg8pG/N
+        ieIk2kPNOB+F61XdwWoz6I6+DPmil3eDgAoA3VOQV6uzTjuLiON7sNhZdzT2OZpz3HR+YD+trq4W
+        8LwE3u5nMjm1zG01q2vqe59H5GtJGm99of1teX4luVmWXfq++RdHOaZKsylTVLI4i62mTGdKVyH1
+        a/Ippc59DsO5fE6hXG8HhErIU7J2uylXY36o24uGfBnjfc5TMCXpKfJHviSRP82RgRhJxMUR0pIZ
+        YtrsMhGL+HgSDmVDXNRp7HyNuURaCqsdnLgf1O850w+eORKHWUmDxblAmUvOSf5UWvcLoEF2R6/B
+        ++HtYZJJZUHVVlQUU07R1NC/mHUevC0wfRjlTc1p4BmgT6t7eDdOFjrXqhqmHoFe+vdcOWQSeyF+
+        2aGoQbVtO4+paUSND/pCcuy8YTo7yTu0M07ks2SGmtcprv44zP8BAAD//wMAfSOuZtwHAAA=
+    headers:
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000,h3-T051=":443"; ma=2592000,h3-Q050=":443";
+        ma=2592000,h3-Q046=":443"; ma=2592000,h3-Q043=":443"; ma=2592000,quic=":443";
+        ma=2592000; v="46,43"
+      Cache-Control:
+      - no-cache, no-store, max-age=0, must-revalidate
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - text/html; charset=utf-8
+      Cross-Origin-Opener-Policy-Report-Only:
+      - same-origin; report-to="AZM8iraoZLEJeWxM7iSnxPGTW5cHaHw9jdCtnVj8SUQdag"
+      Date:
+      - Thu, 23 Sep 2021 02:01:08 GMT
+      Expires:
+      - Mon, 01 Jan 1990 00:00:00 GMT
+      P3P:
+      - CP="This is not a P3P policy! See http://support.google.com/accounts/answer/151657?hl=en
+        for more info."
+      Pragma:
+      - no-cache
+      Report-To:
+      - '{"group":"AZM8iraoZLEJeWxM7iSnxPGTW5cHaHw9jdCtnVj8SUQdag","max_age":2592000,"endpoints":[{"url":"https://csp.withgoogle.com/csp/report-to/encsid_AZM8iraoZLEJeWxM7iSnxPGTW5cHaHw9jdCtnVj8SUQdag"}]}'
+      Server:
+      - ESF
+      Set-Cookie:
+      - YSC=M4mtoEnR4UE; Domain=.youtube.com; Path=/; Secure; HttpOnly; SameSite=none
+      - VISITOR_INFO1_LIVE=jloLx9fAJ6g; Domain=.youtube.com; Expires=Tue, 22-Mar-2022
+        02:01:08 GMT; Path=/; Secure; HttpOnly; SameSite=none
+      Strict-Transport-Security:
+      - max-age=31536000
+      Transfer-Encoding:
+      - chunked
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-XSS-Protection:
+      - '0'
+      accept-ch:
+      - Sec-CH-UA-Arch, Sec-CH-UA-Full-Version, Sec-CH-UA-Model, Sec-CH-UA-Platform,
+        Sec-CH-UA-Platform-Version
+      permissions-policy:
+      - ch-ua-full-version=*, ch-ua-platform=*, ch-ua-platform-version=*, ch-ua-arch=*,
+        ch-ua-model=*
+    status:
+      code: 200
+      message: OK
+version: 1

@@ -9,7 +9,7 @@ interactions:
       user-agent:
       - Mopidy-YouTube/3.4 Mopidy/3.2.0 CPython/3.8.10
     method: GET
-    uri: https://www.googleapis.com/youtube/v3/playlists?channelId=UCZtGOj7FTHPd2txgnbJS2kQ&fields=items%28id%2Csnippet%28title%29%2CcontentDetails%28itemCount%29%29&maxResults=50&part=id%2Csnippet%2CcontentDetails
+    uri: https://www.googleapis.com/youtube/v3/playlists?channelId=UCZtGOj7FTHPd2txgnbJS2kQ&fields=items%28id%2Csnippet%28title%29%2CcontentDetails%28itemCount%29%29&key=fake_key&maxResults=50&part=id%2Csnippet%2CcontentDetails
   response:
     body:
       string: "{\n  \"items\": [\n    {\n      \"id\": \"PLJD13y84Bd029ENixIHEpDqeWcjiogsFi\",\n
@@ -32,11 +32,9 @@ interactions:
       Content-Type:
       - application/json; charset=UTF-8
       Date:
-      - Wed, 22 Sep 2021 12:22:19 GMT
+      - Thu, 23 Sep 2021 01:26:36 GMT
       Server:
       - scaffolding on HTTPServer2
-      Transfer-Encoding:
-      - chunked
       Vary:
       - X-Origin
       - Referer
@@ -60,7 +58,7 @@ interactions:
       user-agent:
       - Mopidy-YouTube/3.4 Mopidy/3.2.0 CPython/3.8.10
     method: GET
-    uri: https://www.googleapis.com/youtube/v3/playlists?fields=items%28id%2Csnippet%28title%2Cthumbnails%2CchannelTitle%29%2CcontentDetails%28itemCount%29%29&id=PLJD13y84Bd029ENixIHEpDqeWcjiogsFi&part=id%2Csnippet%2CcontentDetails
+    uri: https://www.googleapis.com/youtube/v3/playlists?fields=items%28id%2Csnippet%28title%2Cthumbnails%2CchannelTitle%29%2CcontentDetails%28itemCount%29%29&id=PLJD13y84Bd029ENixIHEpDqeWcjiogsFi&key=fake_key&part=id%2Csnippet%2CcontentDetails
   response:
     body:
       string: "{\n  \"items\": [\n    {\n      \"id\": \"PLJD13y84Bd029ENixIHEpDqeWcjiogsFi\",\n
@@ -89,7 +87,99 @@ interactions:
       Content-Type:
       - application/json; charset=UTF-8
       Date:
-      - Wed, 22 Sep 2021 12:22:20 GMT
+      - Thu, 23 Sep 2021 01:26:36 GMT
+      Server:
+      - scaffolding on HTTPServer2
+      Vary:
+      - X-Origin
+      - Referer
+      - Origin,Accept-Encoding
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-XSS-Protection:
+      - '0'
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept-Language:
+      - en;q=0.8
+      Cookie:
+      - PREF=hl=en;
+      user-agent:
+      - Mopidy-YouTube/3.4 Mopidy/3.2.0 CPython/3.8.10
+    method: GET
+    uri: https://www.googleapis.com/youtube/v3/playlists?fields=items%28id%2Csnippet%28title%2Cthumbnails%2CchannelTitle%29%2CcontentDetails%28itemCount%29%29&id=PLJD13y84Bd01Q8b8ONfwNMLD3pVBcqwMq&key=fake_key&part=id%2Csnippet%2CcontentDetails
+  response:
+    body:
+      string: "{\n  \"error\": {\n    \"code\": 400,\n    \"message\": \"API key not
+        valid. Please pass a valid API key.\",\n    \"errors\": [\n      {\n        \"message\":
+        \"API key not valid. Please pass a valid API key.\",\n        \"domain\":
+        \"global\",\n        \"reason\": \"badRequest\"\n      }\n    ],\n    \"status\":
+        \"INVALID_ARGUMENT\"\n  }\n}\n"
+    headers:
+      Accept-Ranges:
+      - none
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000,h3-T051=":443"; ma=2592000,h3-Q050=":443";
+        ma=2592000,h3-Q046=":443"; ma=2592000,h3-Q043=":443"; ma=2592000,quic=":443";
+        ma=2592000; v="46,43"
+      Cache-Control:
+      - private
+      Content-Type:
+      - application/json; charset=UTF-8
+      Date:
+      - Thu, 23 Sep 2021 01:28:37 GMT
+      Server:
+      - scaffolding on HTTPServer2
+      Vary:
+      - X-Origin
+      - Referer
+      - Origin,Accept-Encoding
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-XSS-Protection:
+      - '0'
+    status:
+      code: 400
+      message: Bad Request
+- request:
+    body: null
+    headers:
+      Accept-Language:
+      - en;q=0.8
+      Cookie:
+      - PREF=hl=en;
+      user-agent:
+      - Mopidy-YouTube/3.4 Mopidy/3.2.0 CPython/3.8.10
+    method: GET
+    uri: https://www.googleapis.com/youtube/v3/playlists?fields=items%28id%2Csnippet%28title%2Cthumbnails%2CchannelTitle%29%2CcontentDetails%28itemCount%29%29&id=PLJD13y84Bd032qVrq7CHBLEfKZZtp-u1j&key=fake_key&part=id%2Csnippet%2CcontentDetails
+  response:
+    body:
+      string: "{\n  \"error\": {\n    \"code\": 400,\n    \"message\": \"API key not
+        valid. Please pass a valid API key.\",\n    \"errors\": [\n      {\n        \"message\":
+        \"API key not valid. Please pass a valid API key.\",\n        \"domain\":
+        \"global\",\n        \"reason\": \"badRequest\"\n      }\n    ],\n    \"status\":
+        \"INVALID_ARGUMENT\"\n  }\n}\n"
+    headers:
+      Accept-Ranges:
+      - none
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000,h3-T051=":443"; ma=2592000,h3-Q050=":443";
+        ma=2592000,h3-Q046=":443"; ma=2592000,h3-Q043=":443"; ma=2592000,quic=":443";
+        ma=2592000; v="46,43"
+      Cache-Control:
+      - private
+      Content-Type:
+      - application/json; charset=UTF-8
+      Date:
+      - Thu, 23 Sep 2021 02:07:01 GMT
       Server:
       - scaffolding on HTTPServer2
       Transfer-Encoding:
@@ -105,6 +195,6 @@ interactions:
       X-XSS-Protection:
       - '0'
     status:
-      code: 200
-      message: OK
+      code: 400
+      message: Bad Request
 version: 1
