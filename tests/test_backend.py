@@ -46,11 +46,7 @@ def test_on_start_configures_the_api(api, config, headers):
     with my_vcr.use_cassette(f"tests/fixtures/{api['name']}/backend_on_start.yaml"):
         backend_inst = get_backend(config=config, api_config=api["config"])
         backend_inst.on_start()
-        if api["name"] in [
-            "api",
-            "japi",
-        ]:  # fails because music.Music isn't a proper API yet
-            assert isinstance(youtube.Entry.api, api["class"])
+        assert isinstance(youtube.Entry.api, api["class"])
 
 
 @pytest.mark.parametrize("api", apis)

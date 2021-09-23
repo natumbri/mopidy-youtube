@@ -134,6 +134,10 @@ class Music(Client):
         # playlist.
         results = []
 
+        logger.info(
+            f"youtube_music list_playlists triggered ytmusic.get_song x {len(ids)}: {ids}"
+        )
+
         with ThreadPoolExecutor() as executor:
             futures = executor.map(cls._get_playlist_or_album, ids)
             [results.append(value) for value in futures if value is not None]
