@@ -1,4 +1,8 @@
+from unittest import mock
+
 from mopidy_youtube import Extension
+from mopidy_youtube import backend as backend_lib
+from mopidy_youtube import frontend as frontend_lib
 
 
 def test_get_default_config():
@@ -28,8 +32,16 @@ def test_get_config_schema():
     assert "max_autoplay_length" in schema
     assert "max_degrees_of_separation" in schema
 
-    # TODO Test the content of your config schema
-    # assert "username" in schema
-    # assert "password" in schema
 
-    # TODO Write more tests
+def test_setup():
+    registry = mock.Mock()
+
+    ext = Extension()
+    ext.setup(registry)
+
+    registry.add.assert_any_call("backend", backend_lib.YouTubeBackend)
+    registry.add.assert_any_call("frontend", frontend_lib.YouTubeAutoplayer)
+    registry.add.assert_any_call("frontend", backend_lib.YouTubeCoreListener)
+    registry.add.assert_any_call(
+        "http:app", {"name": ext.ext_name, "factory": ext.webapp}
+    )

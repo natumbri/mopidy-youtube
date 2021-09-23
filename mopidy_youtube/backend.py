@@ -118,12 +118,6 @@ class YouTubeBackend(pykka.ThreadingActor, backend.Backend):
                 }
             )
 
-            # music = youtube_music.Music(proxy, headers)
-            # youtube.Entry.api.search = music.search
-            # youtube.Entry.api.list_channelplaylists = music.list_channelplaylists
-            # youtube.Entry.api.list_playlistitems = music.list_playlistitems
-            # youtube.Entry.api.list_related_videos = music.list_related_videos
-
             youtube.Entry.api = youtube_music.Music(proxy, headers)
             # if youtube.api_enabled:
             #     youtube.Entry.api.list_playlists = music.list_playlists
