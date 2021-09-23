@@ -20,7 +20,6 @@ def test_api_search(api, config, headers):
         setup_entry_api(api, config, headers)
 
         backend_inst = get_backend(config=config, api_config=api["config"])
-        youtube.musicapi_cookie = None
         assert isinstance(youtube.Entry.api, api["class"])
 
         search_result = backend_inst.library.search(query={"omit-any": ["chvrches"]})
