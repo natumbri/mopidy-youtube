@@ -9,6 +9,7 @@ my_vcr = vcr.VCR(
     record_mode="new_episodes",
     filter_query_parameters=[("key", "fake_key")],
     filter_post_data_parameters=["key"],
+    decode_compressed_response=True,
 )
 
 try:
