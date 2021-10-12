@@ -95,7 +95,7 @@ class Music(Client):
         # So, if you have 50 items that's 50 trips to the endpoint.
         results = []
 
-        logger.info(
+        logger.debug(
             f"youtube_music list_videos triggered ytmusic.get_song x {len(ids)}: {ids}"
         )
 
@@ -134,8 +134,8 @@ class Music(Client):
         # playlist.
         results = []
 
-        logger.info(
-            f"youtube_music list_playlists triggered ytmusic.get_song x {len(ids)}: {ids}"
+        logger.debug(
+            f"youtube_music list_playlists triggered _get_playlist_or_album x {len(ids)}: {ids}"
         )
 
         with ThreadPoolExecutor() as executor:
@@ -214,14 +214,15 @@ class Music(Client):
         # public and private playlists
         if channel_id in (None, own_channel_id):
             try:
-                logger.info(
+                logger.debug(
                     f"youtube_music list_channelplaylists triggered "
                     f"ytmusic.get_library_playlists: {channel_id}"
                 )
                 results = ytmusic.get_library_playlists()
+                results.extend(ytmusic.get_library_albums())
 
                 if channel_id:
-                    logger.info(
+                    logger.debug(
                         f"youtube_music list_channelplaylists triggered "
                         f"ytmusic.get_user: {channel_id}"
                     )
@@ -230,9 +231,9 @@ class Music(Client):
                     channelTitle = "unknown"
 
             except Exception as e:
-                logger.info(f"list_channelplaylists exception {e}")
+                logger.debug(f"list_channelplaylists exception {e}")
                 if channel_id:
-                    logger.info(
+                    logger.debug(
                         f"youtube_music list_channelplaylists triggered "
                         f"ytmusic.get_user: {channel_id}"
                     )
@@ -243,7 +244,7 @@ class Music(Client):
         else:
             # if channel_id is not None and not own_channel_id
             # retrieve only public playlists:
-            logger.info(
+            logger.debug(
                 f"youtube_music list_channelplaylists triggered "
                 f"ytmusic.get_user: {channel_id}"
             )
@@ -251,18 +252,30 @@ class Music(Client):
             results = user["playlists"]["results"]
             channelTitle = user["name"]
 
+        [
+            item.setdefault("playlistId", item["browseId"])
+            for item in results
+            if "browseId" in item
+        ]
+
         items = [
             {
                 "id": item["playlistId"],
                 "contentDetails": {
-                    "itemCount": int(item.get("count", "1").replace(",", ""))
+                    "itemCount": int(
+                        item.get("count", "0").replace(",", "")
+                    )  # is it better for this to be zero or one if "count" is missing?
                 },
                 "snippet": {
                     "title": item.get("title", "Unknown"),
                     "resourceId": {"playlistId": item["playlistId"]},
                     # TODO: full support for thumbnails
-                    "thumbnails": {"default": item["thumbnails"][0]},
-                    "channelTitle": channelTitle,
+                    "thumbnails": {"default": item["thumbnails"][-1]},
+                    "channelTitle": (
+                        item["artists"][0]["name"]
+                        if "artists" in item
+                        else channelTitle
+                    ),
                 },
             }
             for item in results
@@ -271,7 +284,7 @@ class Music(Client):
 
     @classmethod
     def search_songs(cls, q):
-        logger.info(f"youtube_music search_songs triggered ytmusic.search: {q}")
+        logger.debug(f"youtube_music search_songs triggered ytmusic.search: {q}")
         results = ytmusic.search(query=q, filter="songs", limit=Video.search_results)
 
         songs = [
@@ -292,7 +305,7 @@ class Music(Client):
 
         def job(result):
             try:
-                logger.info(
+                logger.debug(
                     f"youtube_music search_albums triggered "
                     f"ytmusic.get_album: {result['browseId']}"
                 )
@@ -316,11 +329,17 @@ class Music(Client):
         return albums
 
     def yt_listitem_to_playlist(item):
+        try:
+            playlistId = item["playlistId"]
+        except Exception as e:
+            logger.error(f"yt_listitem_to_playlist, no playlistId: {item}, {e}")
+            playlistId = None  # or should it just stop and return?
+
         playlist = {
-            "id": {"kind": "youtube#playlist", "playlistId": item["playlistId"]},
+            "id": {"kind": "youtube#playlist", "playlistId": playlistId},
             "snippet": {
                 "title": item["title"],
-                "thumbnails": {"default": item["thumbnails"][0]},
+                "thumbnails": {"default": item["thumbnails"][-1]},
                 "channelTitle": item["artists"][0]["name"],
             },
             "contentDetails": {"itemCount": item["trackCount"]},
@@ -404,18 +423,22 @@ class Music(Client):
     def _get_playlist_or_album(id):
         if id.startswith("PL"):
             logger.debug(
-                f"youtube_music playlist_or_album triggered ytmusic.get_playlist: {id}"
+                f"youtube_music _get_playlist_or_album triggered ytmusic.get_playlist: {id}"
             )
             result = ytmusic.get_playlist(id)
             result["playlistId"] = result["id"]
-            result["artists"] = [{"name": result["author"]}]
+            result["artists"] = [result["author"]]
         else:
             logger.debug(
-                f"youtube_music playlist_or_album triggered ytmusic.get_album: {id}"
+                f"youtube_music _get_playlist_or_album triggered ytmusic.get_album: {id}"
             )
             result = ytmusic.get_album(id)
             if "artists" not in result:
                 result["artists"] = result["artist"]
+
+        if "playlistId" not in result:
+            result["playlistId"] = id
+
         return result
 
     def _create_playlist_objects(items):

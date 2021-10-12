@@ -113,8 +113,6 @@ interactions:
       - Thu, 23 Sep 2021 06:03:41 GMT
       Server:
       - scaffolding on HTTPServer2
-      Transfer-Encoding:
-      - chunked
       Vary:
       - X-Origin
       - Referer
@@ -204,6 +202,180 @@ interactions:
       - application/json; charset=UTF-8
       Date:
       - Thu, 23 Sep 2021 06:03:41 GMT
+      Server:
+      - scaffolding on HTTPServer2
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - X-Origin
+      - Referer
+      - Origin,Accept-Encoding
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-XSS-Protection:
+      - '0'
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept-Language:
+      - en;q=0.8
+      Cookie:
+      - PREF=hl=en;
+      user-agent:
+      - Mopidy-YouTube/3.4 Mopidy/3.2.0 CPython/3.8.10
+    method: GET
+    uri: https://www.googleapis.com/youtube/v3/videos?fields=items%28id%2Csnippet%28title%2CchannelTitle%29%2CcontentDetails%28duration%29%29&id=7U_LhzgwJ4U%2Cdu4kNAyjVCg%2CfyyiJc0Wk2M%2C4Eo84jDIMKI%2Ce1YqueG2gtQ%2CBZyzX4c1vIs%2CIvWZS58erqc%2CJjxq36QcUDI%2Cmsgimk3mV6g%2CKNHxwSp-6Og%2CCjwwmFrsX_E%2CkOjc7xtaPes%2CwEdRhmBx8IU&key=fake_key&part=id%2Csnippet%2CcontentDetails
+  response:
+    body:
+      string: "{\n  \"items\": [\n    {\n      \"id\": \"7U_LhzgwJ4U\",\n      \"snippet\":
+        {\n        \"title\": \"CHVRCHES, Robert Smith - How Not To Drown (Official
+        Video)\",\n        \"channelTitle\": \"ChvrchesVEVO\"\n      },\n      \"contentDetails\":
+        {\n        \"duration\": \"PT5M33S\"\n      }\n    },\n    {\n      \"id\":
+        \"du4kNAyjVCg\",\n      \"snippet\": {\n        \"title\": \"CHVRCHES - Good
+        Girls (Official Video)\",\n        \"channelTitle\": \"ChvrchesVEVO\"\n      },\n
+        \     \"contentDetails\": {\n        \"duration\": \"PT3M22S\"\n      }\n
+        \   },\n    {\n      \"id\": \"fyyiJc0Wk2M\",\n      \"snippet\": {\n        \"title\":
+        \"CHVRCHES - He Said She Said\",\n        \"channelTitle\": \"ChvrchesVEVO\"\n
+        \     },\n      \"contentDetails\": {\n        \"duration\": \"PT3M4S\"\n
+        \     }\n    },\n    {\n      \"id\": \"4Eo84jDIMKI\",\n      \"snippet\":
+        {\n        \"title\": \"CHVRCHES - Leave A Trace\",\n        \"channelTitle\":
+        \"ChvrchesVEVO\"\n      },\n      \"contentDetails\": {\n        \"duration\":
+        \"PT3M58S\"\n      }\n    },\n    {\n      \"id\": \"e1YqueG2gtQ\",\n      \"snippet\":
+        {\n        \"title\": \"CHVRCHES - Miracle (Official Video)\",\n        \"channelTitle\":
+        \"ChvrchesVEVO\"\n      },\n      \"contentDetails\": {\n        \"duration\":
+        \"PT3M18S\"\n      }\n    },\n    {\n      \"id\": \"BZyzX4c1vIs\",\n      \"snippet\":
+        {\n        \"title\": \"CHVRCHES - Clearest Blue\",\n        \"channelTitle\":
+        \"ChvrchesVEVO\"\n      },\n      \"contentDetails\": {\n        \"duration\":
+        \"PT4M24S\"\n      }\n    },\n    {\n      \"id\": \"IvWZS58erqc\",\n      \"snippet\":
+        {\n        \"title\": \"CHVRCHES: Good Girls | The Tonight Show Starring Jimmy
+        Fallon\",\n        \"channelTitle\": \"The Tonight Show Starring Jimmy Fallon\"\n
+        \     },\n      \"contentDetails\": {\n        \"duration\": \"PT3M46S\"\n
+        \     }\n    },\n    {\n      \"id\": \"Jjxq36QcUDI\",\n      \"snippet\":
+        {\n        \"title\": \"CHVRCHES - He Said She Said (Audio)\",\n        \"channelTitle\":
+        \"ChvrchesVEVO\"\n      },\n      \"contentDetails\": {\n        \"duration\":
+        \"PT3M10S\"\n      }\n    },\n    {\n      \"id\": \"msgimk3mV6g\",\n      \"snippet\":
+        {\n        \"title\": \"CHVRCHES cover Kendrick Lamar 'LOVE.' for Like A Version\",\n
+        \       \"channelTitle\": \"triple j\"\n      },\n      \"contentDetails\":
+        {\n        \"duration\": \"PT4M3S\"\n      }\n    },\n    {\n      \"id\":
+        \"KNHxwSp-6Og\",\n      \"snippet\": {\n        \"title\": \"CHVRCHES - Empty
+        Threat\",\n        \"channelTitle\": \"ChvrchesVEVO\"\n      },\n      \"contentDetails\":
+        {\n        \"duration\": \"PT4M33S\"\n      }\n    },\n    {\n      \"id\":
+        \"CjwwmFrsX_E\",\n      \"snippet\": {\n        \"title\": \"CHVRCHES cover
+        Arctic Monkeys 'Do I Wanna Know?' for Like A Version\",\n        \"channelTitle\":
+        \"triple j\"\n      },\n      \"contentDetails\": {\n        \"duration\":
+        \"PT5M14S\"\n      }\n    },\n    {\n      \"id\": \"kOjc7xtaPes\",\n      \"snippet\":
+        {\n        \"title\": \"CHVRCHES, Robert Smith - How Not To Drown (Official
+        Audio)\",\n        \"channelTitle\": \"ChvrchesVEVO\"\n      },\n      \"contentDetails\":
+        {\n        \"duration\": \"PT5M32S\"\n      }\n    },\n    {\n      \"id\":
+        \"wEdRhmBx8IU\",\n      \"snippet\": {\n        \"title\": \"CHVRCHES - Somebody
+        Else (The 1975 cover) in the Live Lounge\",\n        \"channelTitle\": \"BBCRadio1VEVO\"\n
+        \     },\n      \"contentDetails\": {\n        \"duration\": \"PT5M37S\"\n
+        \     }\n    }\n  ]\n}\n"
+    headers:
+      Accept-Ranges:
+      - none
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000,h3-T051=":443"; ma=2592000,h3-Q050=":443";
+        ma=2592000,h3-Q046=":443"; ma=2592000,h3-Q043=":443"; ma=2592000,quic=":443";
+        ma=2592000; v="46,43"
+      Cache-Control:
+      - private
+      Content-Type:
+      - application/json; charset=UTF-8
+      Date:
+      - Thu, 23 Sep 2021 12:55:54 GMT
+      Server:
+      - scaffolding on HTTPServer2
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - X-Origin
+      - Referer
+      - Origin,Accept-Encoding
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-XSS-Protection:
+      - '0'
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept-Language:
+      - en;q=0.8
+      Cookie:
+      - PREF=hl=en;
+      user-agent:
+      - Mopidy-YouTube/3.4 Mopidy/3.2.0 CPython/3.8.10
+    method: GET
+    uri: https://www.googleapis.com/youtube/v3/videos?fields=items%28id%2Csnippet%28title%2CchannelTitle%29%2CcontentDetails%28duration%29%29&id=7U_LhzgwJ4U%2Cdu4kNAyjVCg%2C4Eo84jDIMKI%2C_mTRvJ9fugM%2Ce1YqueG2gtQ%2CBZyzX4c1vIs%2CIvWZS58erqc%2CJjxq36QcUDI%2Cmsgimk3mV6g%2CKNHxwSp-6Og%2CCjwwmFrsX_E%2CkOjc7xtaPes%2CwEdRhmBx8IU&key=fake_key&part=id%2Csnippet%2CcontentDetails
+  response:
+    body:
+      string: "{\n  \"items\": [\n    {\n      \"id\": \"7U_LhzgwJ4U\",\n      \"snippet\":
+        {\n        \"title\": \"CHVRCHES, Robert Smith - How Not To Drown (Official
+        Video)\",\n        \"channelTitle\": \"ChvrchesVEVO\"\n      },\n      \"contentDetails\":
+        {\n        \"duration\": \"PT5M33S\"\n      }\n    },\n    {\n      \"id\":
+        \"du4kNAyjVCg\",\n      \"snippet\": {\n        \"title\": \"CHVRCHES - Good
+        Girls (Official Video)\",\n        \"channelTitle\": \"ChvrchesVEVO\"\n      },\n
+        \     \"contentDetails\": {\n        \"duration\": \"PT3M22S\"\n      }\n
+        \   },\n    {\n      \"id\": \"4Eo84jDIMKI\",\n      \"snippet\": {\n        \"title\":
+        \"CHVRCHES - Leave A Trace\",\n        \"channelTitle\": \"ChvrchesVEVO\"\n
+        \     },\n      \"contentDetails\": {\n        \"duration\": \"PT3M58S\"\n
+        \     }\n    },\n    {\n      \"id\": \"_mTRvJ9fugM\",\n      \"snippet\":
+        {\n        \"title\": \"CHVRCHES - The Mother We Share\",\n        \"channelTitle\":
+        \"ChvrchesVEVO\"\n      },\n      \"contentDetails\": {\n        \"duration\":
+        \"PT3M16S\"\n      }\n    },\n    {\n      \"id\": \"e1YqueG2gtQ\",\n      \"snippet\":
+        {\n        \"title\": \"CHVRCHES - Miracle (Official Video)\",\n        \"channelTitle\":
+        \"ChvrchesVEVO\"\n      },\n      \"contentDetails\": {\n        \"duration\":
+        \"PT3M18S\"\n      }\n    },\n    {\n      \"id\": \"BZyzX4c1vIs\",\n      \"snippet\":
+        {\n        \"title\": \"CHVRCHES - Clearest Blue\",\n        \"channelTitle\":
+        \"ChvrchesVEVO\"\n      },\n      \"contentDetails\": {\n        \"duration\":
+        \"PT4M24S\"\n      }\n    },\n    {\n      \"id\": \"IvWZS58erqc\",\n      \"snippet\":
+        {\n        \"title\": \"CHVRCHES: Good Girls | The Tonight Show Starring Jimmy
+        Fallon\",\n        \"channelTitle\": \"The Tonight Show Starring Jimmy Fallon\"\n
+        \     },\n      \"contentDetails\": {\n        \"duration\": \"PT3M46S\"\n
+        \     }\n    },\n    {\n      \"id\": \"Jjxq36QcUDI\",\n      \"snippet\":
+        {\n        \"title\": \"CHVRCHES - He Said She Said (Audio)\",\n        \"channelTitle\":
+        \"ChvrchesVEVO\"\n      },\n      \"contentDetails\": {\n        \"duration\":
+        \"PT3M10S\"\n      }\n    },\n    {\n      \"id\": \"msgimk3mV6g\",\n      \"snippet\":
+        {\n        \"title\": \"CHVRCHES cover Kendrick Lamar 'LOVE.' for Like A Version\",\n
+        \       \"channelTitle\": \"triple j\"\n      },\n      \"contentDetails\":
+        {\n        \"duration\": \"PT4M3S\"\n      }\n    },\n    {\n      \"id\":
+        \"KNHxwSp-6Og\",\n      \"snippet\": {\n        \"title\": \"CHVRCHES - Empty
+        Threat\",\n        \"channelTitle\": \"ChvrchesVEVO\"\n      },\n      \"contentDetails\":
+        {\n        \"duration\": \"PT4M33S\"\n      }\n    },\n    {\n      \"id\":
+        \"CjwwmFrsX_E\",\n      \"snippet\": {\n        \"title\": \"CHVRCHES cover
+        Arctic Monkeys 'Do I Wanna Know?' for Like A Version\",\n        \"channelTitle\":
+        \"triple j\"\n      },\n      \"contentDetails\": {\n        \"duration\":
+        \"PT5M14S\"\n      }\n    },\n    {\n      \"id\": \"kOjc7xtaPes\",\n      \"snippet\":
+        {\n        \"title\": \"CHVRCHES, Robert Smith - How Not To Drown (Official
+        Audio)\",\n        \"channelTitle\": \"ChvrchesVEVO\"\n      },\n      \"contentDetails\":
+        {\n        \"duration\": \"PT5M32S\"\n      }\n    },\n    {\n      \"id\":
+        \"wEdRhmBx8IU\",\n      \"snippet\": {\n        \"title\": \"CHVRCHES - Somebody
+        Else (The 1975 cover) in the Live Lounge\",\n        \"channelTitle\": \"BBCRadio1VEVO\"\n
+        \     },\n      \"contentDetails\": {\n        \"duration\": \"PT5M37S\"\n
+        \     }\n    }\n  ]\n}\n"
+    headers:
+      Accept-Ranges:
+      - none
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000,h3-T051=":443"; ma=2592000,h3-Q050=":443";
+        ma=2592000,h3-Q046=":443"; ma=2592000,h3-Q043=":443"; ma=2592000,quic=":443";
+        ma=2592000; v="46,43"
+      Cache-Control:
+      - private
+      Content-Type:
+      - application/json; charset=UTF-8
+      Date:
+      - Thu, 23 Sep 2021 13:04:13 GMT
       Server:
       - scaffolding on HTTPServer2
       Transfer-Encoding:

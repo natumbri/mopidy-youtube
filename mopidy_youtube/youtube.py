@@ -388,7 +388,9 @@ class Playlist(Entry):
             try:
                 data = cls.api.list_playlists([x.id for x in sublist])
             except Exception as e:
-                logger.error(f"Playlist.load_info list_playlists error {e}")
+                logger.error(
+                    f"Playlist.load_info list_playlists error {e}, {[x.id for x in sublist]}"
+                )
 
             if data:
                 dict = {item["id"]: item for item in data["items"]}
@@ -396,15 +398,13 @@ class Playlist(Entry):
             for pl in sublist:
                 pl._set_api_data(fields, dict.get(pl.id))
 
-        # with API enabled, 50 items at a time
-        batch = 1 + (api_enabled * 49)
         with ThreadPoolExecutor() as executor:
             # make sure order is deterministic so that HTTP requests are replayable in tests
             executor.map(
                 job,
                 [
-                    listOfPlaylists[i : i + batch]
-                    for i in range(0, len(listOfPlaylists), batch)
+                    listOfPlaylists[i : i + 50]
+                    for i in range(0, len(listOfPlaylists), 50)
                 ],
             )
 
@@ -478,10 +478,10 @@ class Playlist(Entry):
             )
 
         if requiresVideos:
-            # executor = ThreadPoolExecutor(max_workers=1)
-            # executor.submit(load_items)
-            # executor.shutdown(wait=False)
-            load_items()
+            executor = ThreadPoolExecutor(max_workers=1)
+            executor.submit(load_items)
+            executor.shutdown(wait=False)
+            # load_items()
 
     @async_property
     def video_count(self):
