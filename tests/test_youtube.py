@@ -32,6 +32,8 @@ def test_youtube_search(api, config, headers):
 
         assert len(playlists) + len(videos) == len(search_results)
 
+        assert videos[0].title.get()
+
         assert videos[0]._title
         assert videos[0]._thumbnails
         assert videos[0]._channel
