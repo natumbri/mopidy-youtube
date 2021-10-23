@@ -5,12 +5,12 @@ import shutil
 from concurrent.futures.thread import ThreadPoolExecutor
 
 import pykka
-import youtube_dl
 from cachetools import TTLCache, cached
 from mopidy.models import Image, ModelJSONEncoder
 
 from mopidy_youtube import logger
 from mopidy_youtube.converters import convert_video_to_track
+from mopidy_youtube.youtube_dl_backend import backend as youtube_dl
 
 api_enabled = False
 channel = None

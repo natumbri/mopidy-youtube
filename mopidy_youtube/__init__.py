@@ -32,6 +32,7 @@ class Extension(ext.Extension):
         schema["strict_autoplay"] = config.Boolean(optional=True)
         schema["max_autoplay_length"] = config.Integer(optional=True)
         schema["max_degrees_of_separation"] = config.Integer()
+        schema["youtube_dl_backend"] = config.String(optional=True)
         return schema
 
     def setup(self, registry):

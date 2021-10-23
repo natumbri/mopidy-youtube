@@ -6,7 +6,7 @@ from mopidy import backend, httpclient
 from mopidy.core import CoreListener
 from mopidy.models import Image, Ref, SearchResult, Track, model_json_decoder
 
-from mopidy_youtube import Extension, logger, youtube
+from mopidy_youtube import Extension, logger, youtube, youtube_dl_backend
 from mopidy_youtube.apis import youtube_api, youtube_japi, youtube_music
 from mopidy_youtube.converters import convert_playlist_to_album, convert_video_to_track
 from mopidy_youtube.data import (
@@ -71,6 +71,10 @@ class YouTubeBackend(pykka.ThreadingActor, backend.Backend):
         youtube_music.own_channel_id = youtube.channel
         self.uri_schemes = ["youtube", "yt"]
         self.user_agent = "{}/{}".format(Extension.dist_name, Extension.version)
+
+        youtube_dl_backend_name = config["youtube"]["youtube_dl_backend"]
+        youtube_dl_backend.backend = __import__(youtube_dl_backend_name, fromlist=[''])
+        logger.info(f"DEV: using {youtube_dl_backend_name} as backend for youtube_dl")
 
     def on_start(self):
         proxy = httpclient.format_proxy(self.config["proxy"])
