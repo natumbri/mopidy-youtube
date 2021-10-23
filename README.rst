@@ -92,7 +92,7 @@ is played.  If you want mopidy-youtube to autoplay related videos, set autoplay_
 
 	[youtube]
 	autoplay_enabled = true
-	
+
 If autoplay is enabled, other options are::
 
 	strict_autoplay = [true/false]
@@ -119,10 +119,10 @@ track (back to one degree of separation).
 Other configuration options are::
 
     [youtube]
-    threads_max = 16            : number of parallel threads to run
-    search_results = 15         : maximum number of search results to return
-    playlist_max_videos = 20    : maximum number of videos in a playlist to return
-
+    threads_max = 16               : number of parallel threads to run
+    search_results = 15            : maximum number of search results to return
+    playlist_max_videos = 20       : maximum number of videos in a playlist to return
+    youtube_dl_backend = "yt_dlp"  : a library that will function as "youtube-dl"
 
 Usage
 =====
