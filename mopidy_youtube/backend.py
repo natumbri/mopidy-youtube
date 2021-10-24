@@ -69,6 +69,7 @@ class YouTubeBackend(pykka.ThreadingActor, backend.Backend):
         youtube.musicapi_enabled = config["youtube"]["musicapi_enabled"]
         youtube.musicapi_cookie = config["youtube"].get("musicapi_cookie", None)
         youtube_music.own_channel_id = youtube.channel
+        youtube.youtube_dl_package = "yt_dlp"  # config["youtube"]["youtube_dl_backend"]
         self.uri_schemes = ["youtube", "yt"]
         self.user_agent = "{}/{}".format(Extension.dist_name, Extension.version)
 
