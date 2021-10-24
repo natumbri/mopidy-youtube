@@ -6,6 +6,7 @@ import shutil
 from concurrent.futures.thread import ThreadPoolExecutor
 
 import pykka
+
 # import youtube_dl
 from cachetools import TTLCache, cached
 from mopidy.models import Image, ModelJSONEncoder
@@ -18,6 +19,7 @@ channel = None
 cache_location = None
 youtube_dl = None
 youtube_dl_package = "youtube_dl"
+
 
 def async_property(func):
     """
@@ -293,7 +295,7 @@ class Video(Entry):
         cache it, and return a file uri. Otherwise, return a url obtained with
         youtube_dl.
         """
-        
+
         global youtube_dl
         if youtube_dl is None:
             logger.info(f"using {youtube_dl_package} package for youtube_dl")
