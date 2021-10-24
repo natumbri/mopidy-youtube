@@ -122,6 +122,7 @@ Other configuration options are::
     threads_max = 16            : number of parallel threads to run
     search_results = 15         : maximum number of search results to return
     playlist_max_videos = 20    : maximum number of videos in a playlist to return
+    youtube_dl_package = [name] : alternative package to replace "youtube-dl"
 
 
 Usage
