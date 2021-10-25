@@ -62,7 +62,7 @@ and set api_enabled = true::
     youtube_api_key = <api key you got from Google>
     api_enabled = true
 
-If you want modipy-youtube to use YouTube Muisc, instead of regular YouTube, set
+If you want modipy-youtube to use YouTube Music, instead of regular YouTube, set
 musicapi_enabled = true::
 
     musicapi_enabled = true  
