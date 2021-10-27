@@ -7,7 +7,6 @@ from concurrent.futures.thread import ThreadPoolExecutor
 
 import pykka
 
-# import youtube_dl
 from cachetools import TTLCache, cached
 from mopidy.models import Image, ModelJSONEncoder
 
