@@ -42,6 +42,7 @@ def config(tmp_path):
             "strict_autoplay": False,
             "max_autoplay_length": 600,
             "max_degrees_of_separation": 3,
+            "youtube_dl_package": "youtube_dl",
         },
         "proxy": {},
     }
