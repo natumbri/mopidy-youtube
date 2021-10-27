@@ -297,7 +297,7 @@ class Video(Entry):
 
         global youtube_dl
         if youtube_dl is None:
-            logger.info(f"using {youtube_dl_package} package for youtube_dl")
+            logger.debug(f"using {youtube_dl_package} package for youtube_dl")
             youtube_dl = importlib.import_module(youtube_dl_package)
 
         requiresUrl = self._add_futures([self], ["audio_url"])
