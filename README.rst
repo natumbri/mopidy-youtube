@@ -55,14 +55,14 @@ mopidy track list will be cached.  Search results are not cached.
 If you want to use cached images, mopidy-HTTP must be enabled and configured
 correctly.  It is bundled with Mopidy and enabled by default.
 
-If you want modipy-youtube to use the YouTube API, before starting Mopidy, 
+If you want mopidy-youtube to use the YouTube API, before starting Mopidy, 
 you must add your Google API key to your Mopidy configuration file
 and set api_enabled = true::
 
     youtube_api_key = <api key you got from Google>
     api_enabled = true
 
-If you want modipy-youtube to use YouTube Muisc, instead of regular YouTube, set
+If you want mopidy-youtube to use YouTube Music, instead of regular YouTube, set
 musicapi_enabled = true::
 
     musicapi_enabled = true  
