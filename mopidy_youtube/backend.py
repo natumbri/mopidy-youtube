@@ -64,6 +64,7 @@ class YouTubeBackend(pykka.ThreadingActor, backend.Backend):
         youtube_api.API.youtube_api_key = config["youtube"]["youtube_api_key"] or None
         youtube.channel = config["youtube"]["channel_id"]
         youtube.Video.search_results = config["youtube"]["search_results"]
+        youtube.Video.http_port = config["http"]["port"]
         youtube.Playlist.playlist_max_videos = config["youtube"]["playlist_max_videos"]
         youtube.api_enabled = config["youtube"]["api_enabled"]
         youtube.musicapi_enabled = config["youtube"]["musicapi_enabled"]
@@ -357,7 +358,7 @@ class YouTubeLibraryProvider(backend.LibraryProvider):
 
 class YouTubePlaybackProvider(backend.PlaybackProvider):
     def should_download(self, uri):
-        return True
+        return False
 
     def translate_uri(self, uri):
         """
