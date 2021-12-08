@@ -93,6 +93,10 @@ class Entry:
 
         if "thumbnails" in item["snippet"]:
             set_api_data.append("thumbnails")
+        if "album" in item:
+            set_api_data.append("album")
+        if "artists" in item:
+            set_api_data.append("artists")
         if "channelId" in item["snippet"]:
             set_api_data.append("channelId")
         obj._set_api_data(set_api_data, item)
@@ -172,6 +176,10 @@ class Entry:
                 val = item["snippet"]["channelTitle"]
             elif k == "owner_channel":
                 val = item["snippet"]["videoOwnerChannelTitle"]
+            elif k == "album":
+                val = item["album"]
+            elif k == "artists":
+                val = item["artists"]
             elif k == "length":
                 # convert PT1H2M10S to 3730
                 m = re.search(
@@ -289,6 +297,26 @@ class Video(Entry):
             )
 
     @async_property
+    def album(self):
+        # make it "async" for uniformity with Playlist.thumbnails
+        requiresAlbumName = self._add_futures([self], ["album"])
+
+        if requiresAlbumName:
+            # ultimate fallback
+            self._album.set({"name": "YouTube Playlist", "uri": None})
+
+    @async_property
+    def artists(self):
+        # make it "async" for uniformity with Playlist.thumbnails
+        requiresArtists = self._add_futures([self], ["artists"])
+
+        if requiresArtists:
+            # ultimate fallback
+            self._artists.set(
+                [{"name": self.channel.get(), "uri": None, "thumbnail": None}]
+            )
+
+    @async_property
     def audio_url(self):
         """
         audio_url is the only property retrived using youtube_dl, it's much more
@@ -346,7 +374,7 @@ class Video(Entry):
         if requiresUrl:
             try:
                 ytdl_options = {
-                    "format": "bestaudio/m4a/mp3/ogg/best",
+                    "format": "bestaudio/ogg/mp3/m4a/best",
                     "proxy": self.proxy,
                     "cachedir": False,
                     "nopart": True,

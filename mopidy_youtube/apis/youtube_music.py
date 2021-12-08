@@ -246,9 +246,14 @@ class Music(Client):
                 f"youtube_music list_channelplaylists triggered "
                 f"ytmusic.get_user: {channel_id}"
             )
-            user = ytmusic.get_user(channel_id)
-            results = user["playlists"]["results"]
-            channelTitle = user["name"]
+            try:
+                user = ytmusic.get_user(channel_id)
+                results = user["playlists"]["results"]
+                channelTitle = user["name"]
+            except:
+                user = ytmusic.get_artist(channel_id)
+                results = user["albums"]["results"]
+                channelTitle = user["name"]
 
         [
             item.setdefault("playlistId", item["browseId"])
@@ -341,6 +346,7 @@ class Music(Client):
                 "channelTitle": item["artists"][0]["name"],
             },
             "contentDetails": {"itemCount": item["trackCount"]},
+            "artists": item["artists"]
         }
 
         if "tracks" in item:
@@ -351,6 +357,20 @@ class Music(Client):
                 for track in item["tracks"]
                 if track[field] is None
             ]
+
+            if "title" in item and "playlistId" in item:
+                [
+                    track.update(
+                        {
+                            "album": {
+                                "name": item["title"],
+                                "id": item["playlistId"],
+                            }
+                        }
+                    )
+                    for track in item["tracks"] if "album" not in track or track["album"] is None
+                ]
+
             playlist["tracks"] = [
                 Music.yt_item_to_video(track)
                 for track in item["tracks"]
@@ -416,6 +436,22 @@ class Music(Client):
             },
         }
 
+        if "album" in item and item["album"] is not None:
+            video["album"] = {
+                "name": item["album"]["name"],
+                "uri": f"yt:playlist:{item['album']['id']}",
+            }
+
+        if "artists" in item and isinstance(item["artists"], list):
+            video["artists"] = [
+                {
+                    "name": artist["name"],
+                    "uri": f"yt:channel:{artist['id']}",
+                    # "thumbnail": ytmusic.get_artist(artist["id"])["thumbnails"][-1]
+                }
+                for artist in item["artists"]
+            ]
+
         return video
 
     def _get_playlist_or_album(id):
@@ -448,8 +484,17 @@ class Music(Client):
             pl._videos = pykka.ThreadingFuture()
 
             for track in item["tracks"]:
+                if "album" not in track:
+                    track.update(
+                        {
+                            "album": {
+                                "name": item["title"],
+                                "id": item["id"]["playlistId"],
+                            }
+                        }
+                    )
                 video = Video.get(track["snippet"]["resourceId"]["videoId"])
-                video._set_api_data(["title", "channel", "length", "thumbnails"], track)
+                video._set_api_data(["title", "channel", "length", "thumbnails", "album"], track)
                 plvideos.append(video)
 
             pl._videos.set(
