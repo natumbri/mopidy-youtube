@@ -3,7 +3,9 @@ from mopidy.models import Album, Artist, Track
 from mopidy_youtube.data import format_playlist_uri, format_video_uri
 
 
-def convert_video_to_track(video, album_name: str = None, album_id: str = None, **kwargs) -> Track:
+def convert_video_to_track(
+    video, album_name: str = None, album_id: str = None, **kwargs
+) -> Track:
 
     try:
         adjustedLength = video.length.get() * 1000

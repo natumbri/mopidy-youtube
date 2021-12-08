@@ -49,7 +49,7 @@ class Extension(ext.Extension):
             AudioHandler,
             ImageHandler,
             IndexHandler,
-            StaticFileAudioHandler,
+            # StaticFileAudioHandler,
         )
 
         cache_dir = self.get_cache_dir(config)

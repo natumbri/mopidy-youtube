@@ -249,7 +249,10 @@ class YouTubeLibraryProvider(backend.LibraryProvider):
 
         tracks = [
             convert_video_to_track(
-                video, album_name=playlist.title.get(), album_id=playlist_id, track_no=count,
+                video,
+                album_name=playlist.title.get(),
+                album_id=playlist_id,
+                track_no=count,
             )
             for count, video in enumerate(videos, 1)
         ]

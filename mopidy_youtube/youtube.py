@@ -337,13 +337,18 @@ class Video(Entry):
 
         def my_hook(d):
             if d["status"] == "finished" and not self.total_bytes:
-                fileUri = f"file://{d['filename']}"  # if it is finished, don't need to serve it up with tornado...
+                fileUri = (
+                    # if it is finished, don't need to serve it up with tornado...
+                    f"file://{d['filename']}"
+                )
                 logger.debug(
-                    f"audio_url not set during downloading; setting audio_url now: {fileUri}, {os.path.basename(d['filename'])}"
+                    f"audio_url not set during downloading; setting audio_url now:"
+                    f" {fileUri}, {os.path.basename(d['filename'])}"
                 )
                 self.total_bytes = d["total_bytes"]
                 logger.debug(
-                    f"expected length of {os.path.basename(d['filename'])}: {self.total_bytes}"
+                    f"expected length of {os.path.basename(d['filename'])}: "
+                    f"{self.total_bytes}"
                 )
                 self._audio_url.set(fileUri)
 
@@ -360,13 +365,18 @@ class Video(Entry):
                     and not self.total_bytes
                     and os.path.splitext(d["filename"])[1] == ".webm"
                 ):
-                    httpUri = f"http://localhost:{self.http_port}/youtube/{os.path.basename(d['filename'])}"
+                    httpUri = (
+                        f"http://localhost:{self.http_port}/youtube/"
+                        f"{os.path.basename(d['filename'])}"
+                    )
                     logger.debug(
-                        f"setting cached audio_url: {httpUri}, {os.path.basename(d['filename'])}"
+                        f"setting cached audio_url: {httpUri}, "
+                        f"{os.path.basename(d['filename'])}"
                     )
                     self.total_bytes = d["total_bytes"]
                     logger.debug(
-                        f"expected length of {os.path.basename(d['filename'])}: {self.total_bytes}"
+                        f"expected length of {os.path.basename(d['filename'])}: "
+                        f"{self.total_bytes}"
                     )
                     self._audio_url.set(httpUri)
 
@@ -409,7 +419,7 @@ class Video(Entry):
                             os.path.join(cache_location, f"{self.id}.json"), "w"
                         ) as outfile:
                             json.dump(
-                                convert_video_to_track(self, "YouTube Video"),
+                                convert_video_to_track(self),
                                 cls=ModelJSONEncoder,
                                 fp=outfile,
                             )
@@ -422,7 +432,8 @@ class Video(Entry):
                             if response.status_code == 200:
                                 logger.debug(f"caching image {self.id}")
                                 with open(
-                                    os.path.join(cache_location, imageFile), "wb",
+                                    os.path.join(cache_location, imageFile),
+                                    "wb",
                                 ) as out_file:
                                     shutil.copyfileobj(response.raw, out_file)
                             del response
@@ -436,7 +447,8 @@ class Video(Entry):
 
                         with youtube_dl.YoutubeDL(ytdl_options) as ydl:
                             info = ydl.extract_info(
-                                **ytdl_extract_info_options, download=True,
+                                **ytdl_extract_info_options,
+                                download=True,
                             )
 
                         # # this is now done by the progress_hooks
@@ -446,7 +458,8 @@ class Video(Entry):
                 else:
                     with youtube_dl.YoutubeDL(ytdl_options) as ydl:
                         info = ydl.extract_info(
-                            **ytdl_extract_info_options, download=False,
+                            **ytdl_extract_info_options,
+                            download=False,
                         )
 
                         self._audio_url.set(info["url"])

@@ -1,13 +1,15 @@
 import logging
 import os
 import pathlib
-import time
+
+# import time
 from typing import Generator, Optional
 
 import tornado.gen
 import tornado.ioloop
 import tornado.web
-from tornado import httputil
+
+# from tornado import httputil
 
 from mopidy_youtube import youtube
 from mopidy_youtube.data import (
@@ -143,7 +145,7 @@ class StaticFileAudioHandler(tornado.web.StaticFileHandler):
             logger.info(f"start: {start}")
             logger.info(f"end: {end}")
 
-            no_chunk = 0
+            # no_chunk = 0
             while remaining:
                 chunk_size = 64 * 1024
                 if remaining < chunk_size:
@@ -151,11 +153,11 @@ class StaticFileAudioHandler(tornado.web.StaticFileHandler):
                 chunk = file.read(chunk_size)
                 if chunk:
                     remaining -= len(chunk)
-                    no_chunk = 0
+                    # no_chunk = 0
                     yield chunk
                 # else:
                 #     no_chunk += 1
                 #     logger.info(f"no_chunk: {no_chunk}")
-                #     if no_chunk == 20:  # how many times in a row with no chunk before give up?
+                #     if no_chunk == 20:  # how many no_chunk before giving up?
                 #         assert remaining == 0
                 #         return

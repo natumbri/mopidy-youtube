@@ -193,7 +193,9 @@ class Music(Client):
         ajax = None
         return json.loads(
             json.dumps(
-                {"nextPageToken": ajax, "items": items}, sort_keys=False, indent=1,
+                {"nextPageToken": ajax, "items": items},
+                sort_keys=False,
+                indent=1,
             )
         )
 
@@ -250,7 +252,7 @@ class Music(Client):
                 user = ytmusic.get_user(channel_id)
                 results = user["playlists"]["results"]
                 channelTitle = user["name"]
-            except:
+            except Exception:
                 user = ytmusic.get_artist(channel_id)
                 results = user["albums"]["results"]
                 channelTitle = user["name"]
@@ -284,6 +286,9 @@ class Music(Client):
             for item in results
         ]
         return json.loads(json.dumps({"items": items}, sort_keys=False, indent=1))
+
+    # methods below are mostly internal, for use by the api methods above (which replicate
+    # the methods from the youtube API)
 
     @classmethod
     def search_songs(cls, q):
@@ -319,7 +324,9 @@ class Music(Client):
                 return album
 
             except Exception as e:
-                logger.error(f"youtube_music search_albums get_album error {e}")
+                logger.error(
+                    f"youtube_music search_albums get_album error {e}, {result}"
+                )
 
         with ThreadPoolExecutor() as executor:
             futures = executor.map(job, results)
@@ -346,7 +353,7 @@ class Music(Client):
                 "channelTitle": item["artists"][0]["name"],
             },
             "contentDetails": {"itemCount": item["trackCount"]},
-            "artists": item["artists"]
+            "artists": item["artists"],
         }
 
         if "tracks" in item:
@@ -368,7 +375,8 @@ class Music(Client):
                             }
                         }
                     )
-                    for track in item["tracks"] if "album" not in track or track["album"] is None
+                    for track in item["tracks"]
+                    if "album" not in track or track["album"] is None
                 ]
 
             playlist["tracks"] = [
@@ -494,7 +502,9 @@ class Music(Client):
                         }
                     )
                 video = Video.get(track["snippet"]["resourceId"]["videoId"])
-                video._set_api_data(["title", "channel", "length", "thumbnails", "album"], track)
+                video._set_api_data(
+                    ["title", "channel", "length", "thumbnails", "album"], track
+                )
                 plvideos.append(video)
 
             pl._videos.set(
