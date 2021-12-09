@@ -193,9 +193,7 @@ class Music(Client):
         ajax = None
         return json.loads(
             json.dumps(
-                {"nextPageToken": ajax, "items": items},
-                sort_keys=False,
-                indent=1,
+                {"nextPageToken": ajax, "items": items}, sort_keys=False, indent=1,
             )
         )
 

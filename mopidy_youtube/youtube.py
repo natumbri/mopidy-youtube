@@ -432,8 +432,7 @@ class Video(Entry):
                             if response.status_code == 200:
                                 logger.debug(f"caching image {self.id}")
                                 with open(
-                                    os.path.join(cache_location, imageFile),
-                                    "wb",
+                                    os.path.join(cache_location, imageFile), "wb",
                                 ) as out_file:
                                     shutil.copyfileobj(response.raw, out_file)
                             del response

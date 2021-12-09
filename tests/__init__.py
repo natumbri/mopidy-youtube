@@ -28,10 +28,7 @@ apis = [
         "name": "api",
         "class": youtube_api.API,
         "config": {
-            "youtube": {
-                "api_enabled": True,
-                "youtube_api_key": youtube_api_key,
-            }
+            "youtube": {"api_enabled": True, "youtube_api_key": youtube_api_key, }
         },
     },
     {
