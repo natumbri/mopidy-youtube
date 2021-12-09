@@ -1,19 +1,13 @@
 import logging
 import os
 import pathlib
+
 # import time
 from typing import Generator, Optional
 
 import tornado.gen
 import tornado.ioloop
 import tornado.web
-from tornado import httputil
-
-from mopidy_youtube import youtube
-from mopidy_youtube.data import (
-    extract_playlist_id,
-    extract_video_id,
-)
 
 # from tornado import httputil
 
@@ -37,6 +31,7 @@ class IndexHandler(tornado.web.RequestHandler):
         self.core = core
         self.config = config
 
+    def get(self, path):
         url = self.get_argument("url", None)
         if url is not None:
             video_id = extract_video_id(url)

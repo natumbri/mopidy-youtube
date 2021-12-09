@@ -28,11 +28,7 @@ def config(tmp_path):
             "cache_dir": str(tmp_path / "cache"),
             "data_dir": str(tmp_path / "data"),
         },
-        "http": {
-            "enabled": True,
-            "hostname": "::",
-            "port": 6680,
-        },
+        "http": {"enabled": True, "hostname": "::", "port": 6680,},
         "youtube": {
             "enabled": True,
             "allow_cache": None,

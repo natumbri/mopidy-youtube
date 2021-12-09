@@ -446,8 +446,7 @@ class Video(Entry):
 
                         with youtube_dl.YoutubeDL(ytdl_options) as ydl:
                             info = ydl.extract_info(
-                                **ytdl_extract_info_options,
-                                download=True,
+                                **ytdl_extract_info_options, download=True,
                             )
 
                         # # this is now done by the progress_hooks
@@ -457,8 +456,7 @@ class Video(Entry):
                 else:
                     with youtube_dl.YoutubeDL(ytdl_options) as ydl:
                         info = ydl.extract_info(
-                            **ytdl_extract_info_options,
-                            download=False,
+                            **ytdl_extract_info_options, download=False,
                         )
 
                         self._audio_url.set(info["url"])
