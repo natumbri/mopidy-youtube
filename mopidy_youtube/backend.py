@@ -247,7 +247,11 @@ class YouTubeLibraryProvider(backend.LibraryProvider):
         ]
 
         tracks = [
-            convert_video_to_track(video, playlist.title.get(), track_no=count,)
+            convert_video_to_track(
+                video,
+                playlist.title.get(),
+                track_no=count,
+            )
             for count, video in enumerate(videos, 1)
         ]
         return tracks
