@@ -210,36 +210,48 @@ class Music(Client):
 
         results = []
         channelTitle = None
-        # if channel_id is None or own_channel_id then try to retrieve
-        # public and private playlists
-        if channel_id in (None, own_channel_id):
-            try:
-                logger.debug(
-                    f"youtube_music list_channelplaylists triggered "
-                    f"ytmusic.get_library_playlists: {channel_id}"
-                )
-                results = ytmusic.get_library_playlists()
-                results.extend(ytmusic.get_library_albums())
+        # first check if the channel is a proper artist channel, in which case, return
+        # albums (and playlists?)
+        try:
+            channelId = channel_id or own_channel_id
+            artist = ytmusic.get_artist(channelId)
+            browseId = artist["albums"]["browseId"]
+            params = artist["albums"]["params"]
+            channelTitle = artist["name"]
+            results = ytmusic.get_artist_albums(browseId, params)
+            # results.append(ytmusic.get_user_playlists(channelId, params))
 
-                if channel_id:
+        except Exception as e:
+            logger.debug(f"youtube_music.list_channelplaylists exception {e}")
+            # if channel_id is None or own_channel_id then try to retrieve
+            # public and private playlists
+            if channel_id in (None, own_channel_id):
+                try:
                     logger.debug(
                         f"youtube_music list_channelplaylists triggered "
-                        f"ytmusic.get_user: {channel_id}"
+                        f"ytmusic.get_library_playlists: {channel_id}"
                     )
-                    channelTitle = ytmusic.get_user(channel_id)["name"]
-                else:
-                    channelTitle = "unknown"
+                    results = ytmusic.get_library_playlists()
+                    results.extend(ytmusic.get_library_albums())
+                    if channel_id:
+                        logger.debug(
+                            f"youtube_music list_channelplaylists triggered "
+                            f"ytmusic.get_user: {channel_id}"
+                        )
+                        channelTitle = ytmusic.get_user(channel_id)["name"]
+                    else:
+                        channelTitle = "unknown"
 
-            except Exception as e:
-                logger.debug(f"list_channelplaylists exception {e}")
-                if channel_id:
-                    logger.debug(
-                        f"youtube_music list_channelplaylists triggered "
-                        f"ytmusic.get_user: {channel_id}"
-                    )
-                    user = ytmusic.get_user(channel_id)
-                    results = user["playlists"]["results"]
-                    channelTitle = user["name"]
+                except Exception as e:
+                    logger.debug(f"list_channelplaylists exception {e}")
+                    if channel_id:
+                        logger.debug(
+                            f"youtube_music list_channelplaylists triggered "
+                            f"ytmusic.get_user: {channel_id}"
+                        )
+                        user = ytmusic.get_user(channel_id)
+                        results = user["playlists"]["results"]
+                        channelTitle = user["name"]
 
         else:
             # if channel_id is not None and not own_channel_id
@@ -284,7 +296,9 @@ class Music(Client):
                 },
             }
             for item in results
+            if not item["playlistId"] == "LM"
         ]
+
         return json.loads(json.dumps({"items": items}, sort_keys=False, indent=1))
 
     # methods below are mostly internal, for use by the api methods above (which replicate
