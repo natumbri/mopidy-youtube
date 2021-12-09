@@ -253,15 +253,20 @@ class Music(Client):
                         results = user["playlists"]["results"]
                         channelTitle = user["name"]
 
-            else:
-                # if channel_id is not None and not own_channel_id
-                # retrieve only public playlists:
-                logger.debug(
-                    f"youtube_music list_channelplaylists triggered "
-                    f"ytmusic.get_user: {channel_id}"
-                )
+        else:
+            # if channel_id is not None and not own_channel_id
+            # retrieve only public playlists:
+            logger.debug(
+                f"youtube_music list_channelplaylists triggered "
+                f"ytmusic.get_user: {channel_id}"
+            )
+            try:
                 user = ytmusic.get_user(channel_id)
                 results = user["playlists"]["results"]
+                channelTitle = user["name"]
+            except Exception:
+                user = ytmusic.get_artist(channel_id)
+                results = user["albums"]["results"]
                 channelTitle = user["name"]
 
         [
@@ -295,6 +300,9 @@ class Music(Client):
         ]
 
         return json.loads(json.dumps({"items": items}, sort_keys=False, indent=1))
+
+    # methods below are mostly internal, for use by the api methods above (which replicate
+    # the methods from the youtube API)
 
     @classmethod
     def search_songs(cls, q):
@@ -330,7 +338,9 @@ class Music(Client):
                 return album
 
             except Exception as e:
-                logger.error(f"youtube_music search_albums get_album error {e}")
+                logger.error(
+                    f"youtube_music search_albums get_album error {e}, {result}"
+                )
 
         with ThreadPoolExecutor() as executor:
             futures = executor.map(job, results)
@@ -357,6 +367,7 @@ class Music(Client):
                 "channelTitle": item["artists"][0]["name"],
             },
             "contentDetails": {"itemCount": item["trackCount"]},
+            "artists": item["artists"],
         }
 
         if "tracks" in item:
@@ -367,6 +378,21 @@ class Music(Client):
                 for track in item["tracks"]
                 if track[field] is None
             ]
+
+            if "title" in item and "playlistId" in item:
+                [
+                    track.update(
+                        {
+                            "album": {
+                                "name": item["title"],
+                                "id": item["playlistId"],
+                            }
+                        }
+                    )
+                    for track in item["tracks"]
+                    if "album" not in track or track["album"] is None
+                ]
+
             playlist["tracks"] = [
                 Music.yt_item_to_video(track)
                 for track in item["tracks"]
@@ -432,6 +458,22 @@ class Music(Client):
             },
         }
 
+        if "album" in item and item["album"] is not None:
+            video["album"] = {
+                "name": item["album"]["name"],
+                "uri": f"yt:playlist:{item['album']['id']}",
+            }
+
+        if "artists" in item and isinstance(item["artists"], list):
+            video["artists"] = [
+                {
+                    "name": artist["name"],
+                    "uri": f"yt:channel:{artist['id']}",
+                    # "thumbnail": ytmusic.get_artist(artist["id"])["thumbnails"][-1]
+                }
+                for artist in item["artists"]
+            ]
+
         return video
 
     def _get_playlist_or_album(id):
@@ -464,8 +506,19 @@ class Music(Client):
             pl._videos = pykka.ThreadingFuture()
 
             for track in item["tracks"]:
+                if "album" not in track:
+                    track.update(
+                        {
+                            "album": {
+                                "name": item["title"],
+                                "id": item["id"]["playlistId"],
+                            }
+                        }
+                    )
                 video = Video.get(track["snippet"]["resourceId"]["videoId"])
-                video._set_api_data(["title", "channel", "length", "thumbnails"], track)
+                video._set_api_data(
+                    ["title", "channel", "length", "thumbnails", "album"], track
+                )
                 plvideos.append(video)
 
             pl._videos.set(

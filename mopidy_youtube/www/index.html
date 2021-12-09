@@ -17,6 +17,10 @@
           font-weight: 500;
           line-height: 1.1em;
       }
+      h2 {
+        font-weight: 250;
+        line-height: 1.05em;
+      }
       a {
           color: #555;
           text-decoration: none;
@@ -31,10 +35,24 @@
   <body>
     <h1>Mopidy-YouTube</h1>
     <p>
-      This Web client is used to serve album art cached from remote
-      media files by the Mopidy-YouTube extension.
+      This web client is used to serve album art cached from remote
+      media files by the Mopidy-YouTube extension and to allow you to
+      easily add youtube tracks and playlists to Mopidy from your web browser.
+    </p>
+    <p>
+      <div><h2>Add a youtube URL to Mopidy tracklist</h2>
+      <form><p>URL: <input style="width: 50%;" name="url" type="text" /><input type="submit" /></form><p></div>
+      <div><h2>Add a youtube URL to Mopidy tracklist while browsing</h2>
+      <textarea id="bookmark" rows="4" style="width: 100%;"></textarea>
+      <script>document.getElementById('bookmark').value="javascript:s='" + window.location +
+      "';f=document.createElement('form');f.action=s;i=document.createElement('input');i.type='hidden';" +
+      "i.name='url';i.value=window.location.href;f.appendChild(i);document.body.appendChild(f);f.submit();"
+      </script>
+      <p>Copy the above snippet, and create a bookmark in your web browser with the snippet as the URL. 
+        When you're browsing youtube, you can simply click that bookmark to add the current page to Mopidy.</p>
     </p>
     <div>
+      <p><h2>Mopidy-YouTube image cache</h2></p> 
       {% for image in images %}
         <a href="{{image}}"><img src="{{image}}"></a>
       {% end %}

@@ -45,11 +45,22 @@ class Extension(ext.Extension):
         registry.add("http:app", {"name": self.ext_name, "factory": self.webapp})
 
     def webapp(self, config, core):
-        from .web import ImageHandler, IndexHandler
+        from .web import (
+            AudioHandler,
+            ImageHandler,
+            IndexHandler,
+            # StaticFileAudioHandler,
+        )
 
         cache_dir = self.get_cache_dir(config)
 
         return [
-            (r"/(index.html)?", IndexHandler, {"root": cache_dir}),
-            (r"/(.+)", ImageHandler, {"path": cache_dir}),
+            (
+                r"/(index.html)?",
+                IndexHandler,
+                {"root": cache_dir, "core": core, "config": config},
+            ),
+            (r"/(.*\.jpg)", ImageHandler, {"path": cache_dir}),
+            (r"/(.*\.(?:webm|m4a|mp3|ogg))", AudioHandler, {"cache_dir": cache_dir}),
+            # (r"/(.*\.(?:webm|m4a|mp3|ogg))", StaticFileAudioHandler, {"path": cache_dir}),
         ]

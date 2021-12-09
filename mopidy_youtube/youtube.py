@@ -93,6 +93,10 @@ class Entry:
 
         if "thumbnails" in item["snippet"]:
             set_api_data.append("thumbnails")
+        if "album" in item:
+            set_api_data.append("album")
+        if "artists" in item:
+            set_api_data.append("artists")
         if "channelId" in item["snippet"]:
             set_api_data.append("channelId")
         obj._set_api_data(set_api_data, item)
@@ -172,6 +176,10 @@ class Entry:
                 val = item["snippet"]["channelTitle"]
             elif k == "owner_channel":
                 val = item["snippet"]["videoOwnerChannelTitle"]
+            elif k == "album":
+                val = item["album"]
+            elif k == "artists":
+                val = item["artists"]
             elif k == "length":
                 # convert PT1H2M10S to 3730
                 m = re.search(
@@ -209,6 +217,9 @@ class Entry:
 
 
 class Video(Entry):
+
+    total_bytes = 0
+
     @classmethod
     def load_info(cls, listOfVideos):
         """
@@ -286,13 +297,34 @@ class Video(Entry):
             )
 
     @async_property
+    def album(self):
+        # make it "async" for uniformity with Playlist.thumbnails
+        requiresAlbumName = self._add_futures([self], ["album"])
+
+        if requiresAlbumName:
+            # ultimate fallback
+            self._album.set({"name": "YouTube Playlist", "uri": None})
+
+    @async_property
+    def artists(self):
+        # make it "async" for uniformity with Playlist.thumbnails
+        requiresArtists = self._add_futures([self], ["artists"])
+
+        if requiresArtists:
+            # ultimate fallback
+            self._artists.set(
+                [{"name": self.channel.get(), "uri": None, "thumbnail": None}]
+            )
+
+    @async_property
     def audio_url(self):
         """
         audio_url is the only property retrived using youtube_dl, it's much more
         expensive than the rest. If caching is turned on and the track is cached,
-        return a file uri. If caching is turned on, and the track isn't cached,
-        cache it, and return a file uri. Otherwise, return a url obtained with
-        youtube_dl.
+        return a (file) url pointing to the cached file. If caching is turned on, and
+        the track isn't cached, start caching it, and - once 2 percent has been
+        cached - return a (http) url pointing to the cached file. If caching is not
+        turned on, return a url obtained with youtube_dl.
         """
 
         global youtube_dl
@@ -300,59 +332,99 @@ class Video(Entry):
             logger.debug(f"using {youtube_dl_package} package for youtube_dl")
             youtube_dl = importlib.import_module(youtube_dl_package)
 
+        # When caching, is it possible to set the audio_url part-way through
+        # a download so audio can start playing quicker?
+
+        def my_hook(d):
+            if d["status"] == "finished" and not self.total_bytes:
+                fileUri = (
+                    # if it is finished, don't need to serve it up with tornado...
+                    f"file://{d['filename']}"
+                )
+                logger.debug(
+                    f"audio_url not set during downloading; setting audio_url now:"
+                    f" {fileUri}, {os.path.basename(d['filename'])}"
+                )
+                self.total_bytes = d["total_bytes"]
+                logger.debug(
+                    f"expected length of {os.path.basename(d['filename'])}: "
+                    f"{self.total_bytes}"
+                )
+                self._audio_url.set(fileUri)
+
+            if d["status"] == "downloading":
+                p = d["_percent_str"]
+                p = float(p.replace("%", ""))
+                logger.debug(f"percent cached: {p}%, {os.path.basename(d['filename'])}")
+
+                # get 2% before setting audio_url; once self.total_bytes has a value,
+                # audio_url is set, so no need to do again; there seems to be problems
+                # with some formats that do not support seeking - limit to .webm
+                if (
+                    p > 2
+                    and not self.total_bytes
+                    and os.path.splitext(d["filename"])[1] == ".webm"
+                ):
+                    httpUri = (
+                        f"http://localhost:{self.http_port}/youtube/"
+                        f"{os.path.basename(d['filename'])}"
+                    )
+                    logger.debug(
+                        f"setting cached audio_url: {httpUri}, "
+                        f"{os.path.basename(d['filename'])}"
+                    )
+                    self.total_bytes = d["total_bytes"]
+                    logger.debug(
+                        f"expected length of {os.path.basename(d['filename'])}: "
+                        f"{self.total_bytes}"
+                    )
+                    self._audio_url.set(httpUri)
+
         requiresUrl = self._add_futures([self], ["audio_url"])
         if requiresUrl:
-            ytdl_options = {
-                "format": "bestaudio/m4a/mp3/ogg/best",
-                "proxy": self.proxy,
-                "cachedir": False,
-            }
-
-            if cache_location:
-                cached = [
-                    cached_file
-                    for cached_file in os.listdir(cache_location)
-                    if cached_file
-                    in [
-                        f"{self.id}.{format}"
-                        for format in ["webm", "m4a", "mp3", "ogg"]
-                    ]
-                ]
-                if cached:
-                    fileUri = f"file://{(os.path.join(cache_location, cached[0]))}"
-                    self._audio_url.set(fileUri)
-                    return
-                else:
-                    ytdl_options["outtmpl"] = os.path.join(
-                        cache_location, "%(id)s.%(ext)s"
-                    )
-
             try:
-                with youtube_dl.YoutubeDL(ytdl_options) as ydl:
-                    info = ydl.extract_info(
-                        url="https://www.youtube.com/watch?v=%s" % self.id,
-                        download=False,
-                        ie_key=None,
-                        extra_info={},
-                        process=True,
-                        force_generic_extractor=False,
-                    )
-                    if cache_location:
-                        logger.debug(f"caching track {self.id}")
-                        ydl.download(["https://www.youtube.com/watch?v=%s" % self.id])
-                        fileUri = f"file://{ydl.prepare_filename(info)}"
+                ytdl_options = {
+                    "format": "bestaudio/ogg/mp3/m4a/best",
+                    "proxy": self.proxy,
+                    "cachedir": False,
+                    "nopart": True,
+                }
+
+                ytdl_extract_info_options = {
+                    "url": f"https://www.youtube.com/watch?v={self.id}",
+                    "ie_key": None,
+                    "extra_info": {},
+                    "process": True,
+                    "force_generic_extractor": False,
+                }
+
+                if cache_location:
+                    cached = [
+                        cached_file
+                        for cached_file in os.listdir(cache_location)
+                        if cached_file
+                        in [
+                            f"{self.id}.{format}"
+                            for format in ["webm", "m4a", "mp3", "ogg"]
+                        ]
+                    ]
+                    if cached:
+                        fileUri = f"file://{(os.path.join(cache_location, cached[0]))}"
+                        self._audio_url.set(fileUri)
+                        return
+                    else:
 
                         logger.debug(f"caching metadata {self.id}")
-
                         with open(
                             os.path.join(cache_location, f"{self.id}.json"), "w"
                         ) as outfile:
                             json.dump(
-                                convert_video_to_track(self, "YouTube Video"),
+                                convert_video_to_track(self),
                                 cls=ModelJSONEncoder,
                                 fp=outfile,
                             )
 
+                        logger.debug(f"caching image {self.id}")
                         imageFile = f"{self.id}.jpg"
                         if imageFile not in os.listdir(cache_location):
                             imageUri = self.thumbnails.get()[0].uri
@@ -366,10 +438,32 @@ class Video(Entry):
                                     shutil.copyfileobj(response.raw, out_file)
                             del response
 
-                        self._audio_url.set(fileUri)
+                        logger.debug(f"caching track {self.id}")
+                        ytdl_options["outtmpl"] = os.path.join(
+                            cache_location, "%(id)s.%(ext)s"
+                        )
 
-                    else:
+                        ytdl_options["progress_hooks"] = [my_hook]
+
+                        with youtube_dl.YoutubeDL(ytdl_options) as ydl:
+                            info = ydl.extract_info(
+                                **ytdl_extract_info_options,
+                                download=True,
+                            )
+
+                        # # this is now done by the progress_hooks
+                        # fileUri = f"file://{ydl.prepare_filename(info)}"
+                        # self._audio_url.set(fileUri)
+
+                else:
+                    with youtube_dl.YoutubeDL(ytdl_options) as ydl:
+                        info = ydl.extract_info(
+                            **ytdl_extract_info_options,
+                            download=False,
+                        )
+
                         self._audio_url.set(info["url"])
+
             except Exception as e:
                 logger.error(f"audio_url error {e} (videoId: {self.id})")
                 self._audio_url.set(None)

@@ -64,6 +64,7 @@ class YouTubeBackend(pykka.ThreadingActor, backend.Backend):
         youtube_api.API.youtube_api_key = config["youtube"]["youtube_api_key"] or None
         youtube.channel = config["youtube"]["channel_id"]
         youtube.Video.search_results = config["youtube"]["search_results"]
+        youtube.Video.http_port = config["http"]["port"]
         youtube.Playlist.playlist_max_videos = config["youtube"]["playlist_max_videos"]
         youtube.api_enabled = config["youtube"]["api_enabled"]
         youtube.musicapi_enabled = config["youtube"]["musicapi_enabled"]
@@ -204,7 +205,7 @@ class YouTubeLibraryProvider(backend.LibraryProvider):
 
         for entry in entries:
             if entry.is_video:
-                tracks.append(convert_video_to_track(entry, "YouTube Video"))
+                tracks.append(convert_video_to_track(entry))
 
         # load video info and playlist videos in the background. they should be
         # ready by the time the user adds search results to the playing queue
@@ -234,7 +235,7 @@ class YouTubeLibraryProvider(backend.LibraryProvider):
 
         video = youtube.Video.get(video_id)
         video.title.get()
-        return convert_video_to_track(video, "YouTube Video")
+        return convert_video_to_track(video)
 
     def lookup_playlist_tracks(self, playlist_id: str):
         playlist = youtube.Playlist.get(playlist_id)
@@ -249,26 +250,29 @@ class YouTubeLibraryProvider(backend.LibraryProvider):
         tracks = [
             convert_video_to_track(
                 video,
-                playlist.title.get(),
+                album_name=playlist.title.get(),
+                album_id=playlist_id,
                 track_no=count,
             )
             for count, video in enumerate(videos, 1)
         ]
         return tracks
 
-    # def lookup_channel_tracks(self, channel_id: str):
-    #     channel = youtube.Channel.get(channel_id)
-    #
-    #     if not channel.videos.get():
-    #         return None
-    #
-    #     # ignore videos for which no info was found (removed, etc)
-    #     videos = [
-    #         video for video in channel.videos.get() if video.length.get() is not None
-    #     ]
-    #     album_name = channel.title.get()
-    #
-    #     return convert_videos_to_tracks(videos, album_name)
+    def lookup_channel_tracks(self, channel_id: str):
+        channel_playlists = youtube.Channel.playlists(channel_id)
+
+        if not channel_playlists:
+            return None
+
+        videos = []
+        for playlist in channel_playlists:
+            videos.extend(playlist.videos.get())
+
+        tracks = [
+            convert_video_to_track(video, track_no=count)
+            for count, video in enumerate(videos, 1)
+        ]
+        return tracks
 
     def lookup(self, uri):
         """
@@ -301,18 +305,16 @@ class YouTubeLibraryProvider(backend.LibraryProvider):
             if playlist_tracks:
                 return playlist_tracks
 
+        channel_id = extract_channel_id(uri)
+        if channel_id:
+            channel_tracks = self.lookup_channel_tracks(channel_id)
+            if channel_tracks is None:
+                logger.error('Cannot load "%s"', uri)
+                return []
+            else:
+                return channel_tracks
+
         logger.error('Cannot load "%s"', uri)
-        return []
-
-        # channel_id = extract_channel_id(uri)
-        # if channel_id:
-        #     channel_tracks = self.lookup_channel_tracks(channel_id)
-        #     if channel_tracks is None:
-        #         logger.error('Cannot load "%s"', uri)
-        #         return []
-        #     else:
-        #         return channel_tracks
-
         return []
 
     def get_images(self, uris):
@@ -357,7 +359,7 @@ class YouTubeLibraryProvider(backend.LibraryProvider):
 
 class YouTubePlaybackProvider(backend.PlaybackProvider):
     def should_download(self, uri):
-        return True
+        return False
 
     def translate_uri(self, uri):
         """
