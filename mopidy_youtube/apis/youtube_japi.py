@@ -6,8 +6,9 @@ from urllib.parse import urlencode, urljoin
 
 from mopidy_youtube import logger
 from mopidy_youtube.apis.json_paths import (
+    deep_search,
     continuationItemsPath,
-    listChannelPlaylistsPath,
+    # listChannelPlaylistsPath,
     listPlaylistItemsPath,
     relatedVideosPath,
     sectionListRendererContentsPath,
@@ -277,17 +278,10 @@ class jAPI(Client):
         logger.debug(
             f"jAPI 'list_channelplaylists' triggered session.get: {channel_id}"
         )
-        result = cls.session.get(cls.endpoint + "channel/" + channel_id)
+        result = cls.session.get(cls.endpoint + "channel/" + channel_id + "/playlists")
 
         yt_data = cls._find_yt_data(result.text)
-        extracted_json = traverse(yt_data, listChannelPlaylistsPath)
-
-        renderers = ["expandedShelfContentsRenderer", "horizontalListRenderer"]
-        extracted_json = [
-            extracted_json[renderer]["items"]
-            for renderer in renderers
-            if renderer in extracted_json
-        ][0]
+        extracted_json = deep_search(["gridPlaylistRenderer"], yt_data)
 
         try:
             items = cls.json_to_items(extracted_json)
@@ -557,14 +551,30 @@ class jAPI(Client):
                 playlist = content["gridPlaylistRenderer"]
 
                 try:
-                    thumbnails = playlist["thumbnailRenderer"][
+                    if (
                         "playlistVideoThumbnailRenderer"
-                    ]["thumbnail"]["thumbnails"][-1]
+                        in playlist["thumbnailRenderer"]
+                    ):
+                        pTR = "playlistVideoThumbnailRenderer"
+                    elif (
+                        "playlistCustomThumbnailRenderer"
+                        in playlist["thumbnailRenderer"]
+                    ):
+                        pTR = "playlistCustomThumbnailRenderer"
+                    else:
+                        raise KeyError(
+                            f"could not find playlist Thumbnail Renderer {playlist}"
+                        )
+
+                    thumbnails = playlist["thumbnailRenderer"][pTR]["thumbnail"][
+                        "thumbnails"
+                    ][-1]
                     thumbnails["url"] = thumbnails["url"].split("?", 1)[
                         0
                     ]  # is the rest tracking stuff? Omit
                 except Exception as e:
                     logger.error(f"thumbnail exception {e}, {playlist['playlistId']}")
+                    thumbnails = None
 
                 try:
                     itemCount = int(
