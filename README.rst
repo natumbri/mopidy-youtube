@@ -36,12 +36,12 @@ Install from github by running::
     python3 -m pip install https://github.com/natumbri/mopidy-youtube/archive/develop.zip
 
 
-Install `youtube-dl` (or a compatible package), for example, from PyPI by running::
+Install `youtube-dl` (or a compatible package) from PyPI by running, for example::
 
     python3 -m pip install --upgrade youtube-dl
 
 For more information about youtube-dl, see https://github.com/ytdl-org/youtube-dl
-Other compatible (and possibly more up-to-date) libraries include 
+Other compatible (and possibly more up-to-date) libraries may include 
 `yt-dlp` (https://github.com/yt-dlp/yt-dlp) and `youtube-dlc`.
 
 If you wish to use an alternate youtube-dl library, in your configuration file
@@ -92,9 +92,8 @@ musicapi_enabled = true::
 The musicapi may be used with or without the youtube api.  
 
 To use the YouTube Music api, you will also need to install an additional python
-package (`ytmusicapi` >= 0.19).  
-
-Install `ytmusicapi` from PyPI, for example, by running::
+package (`ytmusicapi` >= 0.19).  Install `ytmusicapi` from PyPI, for example, 
+by running::
 
     python3 -m pip install --upgrade ytmusicapi   
 
@@ -151,7 +150,6 @@ Other configuration options are::
     threads_max = 16            : number of parallel threads to run
     search_results = 15         : maximum number of search results to return
     playlist_max_videos = 20    : maximum number of videos in a playlist to return
-    youtube_dl_package = [name] : alternative package to replace "youtube-dl"
 
 
 Usage
