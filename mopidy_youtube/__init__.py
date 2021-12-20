@@ -49,7 +49,6 @@ class Extension(ext.Extension):
             AudioHandler,
             ImageHandler,
             IndexHandler,
-            # StaticFileAudioHandler,
         )
 
         cache_dir = self.get_cache_dir(config)
@@ -62,5 +61,4 @@ class Extension(ext.Extension):
             ),
             (r"/(.*\.jpg)", ImageHandler, {"path": cache_dir}),
             (r"/(.*\.(?:webm|m4a|mp3|ogg))", AudioHandler, {"cache_dir": cache_dir}),
-            # (r"/(.*\.(?:webm|m4a|mp3|ogg))", StaticFileAudioHandler, {"path": cache_dir}),
         ]

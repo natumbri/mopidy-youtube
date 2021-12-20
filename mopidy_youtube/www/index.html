@@ -1,61 +1,94 @@
 <!doctype html>
 <html>
-  <head>
-    <title>Mopidy-YouTube</title>
-    <style>
-      html {
-          background: #f8f8f8;
-          color: #555;
-          font-family: Geneva, Tahoma, Verdana, sans-serif;
-          line-height: 1.4em;
-      }
-      body {
-          margin: 0 auto;
-          max-width: 600px;
-      }
-      h1 {
-          font-weight: 500;
-          line-height: 1.1em;
-      }
-      h2 {
-        font-weight: 250;
-        line-height: 1.05em;
-      }
-      a {
-          color: #555;
-          text-decoration: none;
-      }
-      img {
-          border: 0;
-          height: 80px;
-          width: 80px;
-      }
-    </style>
-  </head>
-  <body>
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Mopidy-YouTube</title>
+
+  <script type="text/javascript">
+    var file = "http://" + window.location.host + "/mopidy/mopidy.css";  /* use mopidy's css */
+    var link = document.createElement("link");
+    link.href = file;
+    link.type = "text/css";
+    link.rel = "stylesheet";
+    link.media = "screen,print";
+    document.getElementsByTagName("head")[0].appendChild(link);
+  </script>
+
+  <style>
+    img {
+      width: 63px; height: 63px;  /* default image size */
+      padding-left: 2px;
+      padding-right: 2px;
+    }
+  </style>
+
+</head>
+
+<body>
+
+  <div class="box focus">
     <h1>Mopidy-YouTube</h1>
     <p>
       This web client is used to serve album art cached from remote
       media files by the Mopidy-YouTube extension and to allow you to
       easily add youtube tracks and playlists to Mopidy from your web browser.
     </p>
+  </div>
+  <div class="box">
     <p>
-      <div><h2>Add a youtube URL to Mopidy tracklist</h2>
-      <form><p>URL: <input style="width: 50%;" name="url" type="text" /><input type="submit" /></form><p></div>
-      <div><h2>Add a youtube URL to Mopidy tracklist while browsing</h2>
-      <textarea id="bookmark" rows="4" style="width: 100%;"></textarea>
-      <script>document.getElementById('bookmark').value="javascript:s='" + window.location +
-      "';f=document.createElement('form');f.action=s;i=document.createElement('input');i.type='hidden';" +
-      "i.name='url';i.value=window.location.href;f.appendChild(i);document.body.appendChild(f);f.submit();"
-      </script>
-      <p>Copy the above snippet, and create a bookmark in your web browser with the snippet as the URL. 
-        When you're browsing youtube, you can simply click that bookmark to add the current page to Mopidy.</p>
-    </p>
     <div>
-      <p><h2>Mopidy-YouTube image cache</h2></p> 
-      {% for image in images %}
-        <a href="{{image}}"><img src="{{image}}"></a>
-      {% end %}
+      <h2>Add a youtube URL to Mopidy tracklist</h2>
+      <form>
+        <table style="width: 100%;"><tr>
+          <td style="width: 10%;">URL: </td>
+          <td style="width: 80%;"><input style="width: 98%;" name="url" type="text" /></td>
+          <td style="width: 10%;"><input style="width: 100%;" type="submit" /></td>
+        </tr></table>
+      </form>
+      <p>
     </div>
-  </body>
+    <div>
+      <h2>Add a youtube URL to Mopidy tracklist while browsing</h2>
+      <textarea id="bookmark" rows="4" style="width: 100%;"></textarea>
+      <script>document.getElementById('bookmark').value = "javascript:s='" + window.location +
+          "';f=document.createElement('form');f.action=s;i=document.createElement('input');i.type='hidden';" +
+          "i.name='url';i.value=window.location.href;f.appendChild(i);document.body.appendChild(f);f.submit();"
+      </script>
+      <p>
+        Copy the above snippet, and create a bookmark in your web browser with
+        the snippet as the URL. When you're browsing youtube, you can simply
+        click that bookmark to add the current page to Mopidy.</p>
+      </p>
+    </div>
+  </div>
+
+  <div class="box">
+    <p>
+    <h2 id="b1">Mopidy-YouTube image cache</h2>
+    </p>
+    <span style="font-size: 0; line-height:0">
+      {% for image in images %}
+      <a style="border: 0px none;" href="{{image}}"><img src="{{image}}" loading="lazy"></a>
+      {% end %}
+    </span>
+  </div>
+</body>
+
 </html>
+
+<script>
+
+  var imgwidth = (document.getElementById('b1').clientWidth / 8) - 4,
+    css = 'img {height: ' + imgwidth + 'px; width: ' + imgwidth + 'px;}',
+    head = document.head || document.getElementsByTagName('head')[0],
+    style = document.createElement('style');
+
+  head.appendChild(style);
+
+  style.type = 'text/css';
+  style.appendChild(document.createTextNode(css));
+
+</script>
