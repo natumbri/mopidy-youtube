@@ -20,6 +20,13 @@ Mopidy extension that plays sound from YouTube.
 Installation
 ============
 
+These installation 'instructions' are for unixy systems. It may be possible to 
+install it on other systems, using other commands.  You should have a working 
+`mopidy` installation before you install `mopidy-youtube`.
+
+Depending on how your unixy system is configured, you may need to install as
+superuser (eg, using `sudo`).
+
 Install from PyPI by running::
 
     python3 -m pip install Mopidy-Youtube
@@ -27,6 +34,21 @@ Install from PyPI by running::
 Install from github by running::
 
     python3 -m pip install https://github.com/natumbri/mopidy-youtube/archive/develop.zip
+
+
+Install `youtube-dl` (or a compatible package), for example, from PyPI by running::
+
+    python3 -m pip install --upgrade youtube-dl
+
+For more information about youtube-dl, see https://github.com/ytdl-org/youtube-dl
+Other compatible (and possibly more up-to-date) libraries include 
+`yt-dlp` (https://github.com/yt-dlp/yt-dlp) and `youtube-dlc`.
+
+If you wish to use an alternate youtube-dl library, in your configuration file
+you must set the `youtube_dl_package` option:: 
+
+    [youtube]
+    youtube_dl_package = [name] : alternative package to replace "youtube-dl"
 
 
 Make sure you already have the GStreamer plugins, especially the "bad"
@@ -67,7 +89,14 @@ musicapi_enabled = true::
 
     musicapi_enabled = true  
 
-The musicapi may be used with or without the youtube api.
+The musicapi may be used with or without the youtube api.  
+
+To use the YouTube Music api, you will also need to install an additional python
+package (`ytmusicapi` >= 0.19).  
+
+Install `ytmusicapi` from PyPI, for example, by running::
+
+    python3 -m pip install --upgrade ytmusicapi   
 
 If you want to see the YouTube playlists of a channel in your mopidy library,
 you need to include the channel ID in your config file::
