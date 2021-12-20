@@ -56,7 +56,13 @@ class jAPI(Client):
             futures = executor.map(cls.run_search, repeat(q), params)
             [result.extend(value[: int(Video.search_results)]) for value in futures]
 
-        return json.loads(json.dumps({"items": result}, sort_keys=False, indent=1,))
+        return json.loads(
+            json.dumps(
+                {"items": result},
+                sort_keys=False,
+                indent=1,
+            )
+        )
 
     @classmethod
     def list_related_videos(cls, video_id):
@@ -149,7 +155,13 @@ class jAPI(Client):
                 for id in executor.map(job, ids):
                     items.extend(id)
 
-        return json.loads(json.dumps({"items": items}, sort_keys=False, indent=1,))
+        return json.loads(
+            json.dumps(
+                {"items": items},
+                sort_keys=False,
+                indent=1,
+            )
+        )
 
     @classmethod
     def list_playlists(cls, ids):
@@ -264,7 +276,9 @@ class jAPI(Client):
             items = items[:max_results]
             return json.loads(
                 json.dumps(
-                    {"nextPageToken": None, "items": items}, sort_keys=False, indent=1,
+                    {"nextPageToken": None, "items": items},
+                    sort_keys=False,
+                    indent=1,
                 )
             )
 

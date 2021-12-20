@@ -193,7 +193,9 @@ class Music(Client):
         ajax = None
         return json.loads(
             json.dumps(
-                {"nextPageToken": ajax, "items": items}, sort_keys=False, indent=1,
+                {"nextPageToken": ajax, "items": items},
+                sort_keys=False,
+                indent=1,
             )
         )
 
@@ -380,7 +382,12 @@ class Music(Client):
             if "title" in item and "playlistId" in item:
                 [
                     track.update(
-                        {"album": {"name": item["title"], "id": item["playlistId"],}}
+                        {
+                            "album": {
+                                "name": item["title"],
+                                "id": item["playlistId"],
+                            }
+                        }
                     )
                     for track in item["tracks"]
                     if "album" not in track or track["album"] is None
