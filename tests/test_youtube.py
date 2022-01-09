@@ -9,7 +9,9 @@ from tests.test_api import setup_entry_api
 @pytest.mark.parametrize("api", apis)
 def test_youtube_search(api, config, headers):
 
-    with my_vcr.use_cassette(f"tests/fixtures/{api['name']}/youtube_search.yaml"):
+    with my_vcr.use_cassette(
+        f"tests/fixtures/{api['name']}/youtube_search.yaml", record_mode="new_episodes"
+    ):
         setup_entry_api(api, config, headers)
         youtube.Video.search_results = config["youtube"]["search_results"]
         youtube.Playlist.playlist_max_videos = config["youtube"]["playlist_max_videos"]

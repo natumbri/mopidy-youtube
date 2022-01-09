@@ -30637,6 +30637,573 @@ interactions:
       - Sun, 09 Jan 2022 06:48:04 GMT
       Server:
       - ESF
+      Vary:
+      - Origin
+      - X-Origin
+      - Referer
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-XSS-Protection:
+      - '0'
+      content-length:
+      - '2737301'
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"browseId": "VLPLJD13y84Bd029ENixIHEpDqeWcjiogsFi", "context": {"client":
+      {"clientName": "WEB_REMIX", "clientVersion": "0.1", "hl": "en"}, "user": {}}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '152'
+      X-Goog-Visitor-Id:
+      - CgtlVER4WWt3WUdoOCiTm4COBg%3D%3D
+      accept:
+      - '*/*'
+      accept-encoding:
+      - gzip, deflate
+      content-encoding:
+      - gzip
+      content-type:
+      - application/json
+      origin:
+      - https://music.youtube.com
+      user-agent:
+      - Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:88.0) Gecko/20100101 Firefox/88.0
+    method: POST
+    uri: https://music.youtube.com/youtubei/v1/browse?alt=json&key=fake_key
+  response:
+    body:
+      string: "{\n  \"responseContext\": {\n    \"serviceTrackingParams\": [\n      {\n
+        \       \"service\": \"GFEEDBACK\",\n        \"params\": [\n          {\n
+        \           \"key\": \"has_unlimited_entitlement\",\n            \"value\":
+        \"False\"\n          },\n          {\n            \"key\": \"browse_id\",\n
+        \           \"value\": \"VLPLJD13y84Bd029ENixIHEpDqeWcjiogsFi\"\n          },\n
+        \         {\n            \"key\": \"logged_in\",\n            \"value\": \"0\"\n
+        \         },\n          {\n            \"key\": \"e\",\n            \"value\":
+        \"1714254,24077266,23944779,24127418,24118395,24001373,23968386,24036948,24120992,24077241,24120820,24004644,24143691,23998056,24142941,24007246,24152951,24131024,23744176,23918597,24129193,24028143,24129402,24131400,24128339,24002022,24142470,23934970,24007790,24146886,24153458,23983296,23858057,23882502,23966208,23884386,24080738,24034168,24146461,23946420,24082661,24085811,24108194,24109690,39321475,24138442,24140247,23804281,24135236,24104858,23748147,24145516,24141079,24115641,24002025,24134152,24110902,24143428,24136986,24106839,24136749,24143695\"\n
+        \         }\n        ]\n      },\n      {\n        \"service\": \"CSI\",\n
+        \       \"params\": [\n          {\n            \"key\": \"c\",\n            \"value\":
+        \"WEB_REMIX\"\n          },\n          {\n            \"key\": \"cver\",\n
+        \           \"value\": \"0.1\"\n          },\n          {\n            \"key\":
+        \"yt_li\",\n            \"value\": \"0\"\n          },\n          {\n            \"key\":
+        \"GetBrowsePlaylistDetailPage_rid\",\n            \"value\": \"0x3bd540c5b5351fd8\"\n
+        \         }\n        ]\n      },\n      {\n        \"service\": \"ECATCHER\",\n
+        \       \"params\": [\n          {\n            \"key\": \"client.version\",\n
+        \           \"value\": \"0.1\"\n          },\n          {\n            \"key\":
+        \"client.name\",\n            \"value\": \"WEB_REMIX\"\n          },\n          {\n
+        \           \"key\": \"client.fexp\",\n            \"value\": \"1714254,24077266,23944779,24127418,24118395,24001373,23968386,24036948,24120992,24077241,24120820,24004644,24143691,23998056,24142941,24007246,24152951,24131024,23744176,23918597,24129193,24028143,24129402,24131400,24128339,24002022,24142470,23934970,24007790,24146886,24153458,23983296,23858057,23882502,23966208,23884386,24080738,24034168,24146461,23946420,24082661,24085811,24108194,24109690,39321475,24138442,24140247,23804281,24135236,24104858,23748147,24145516,24141079,24115641,24002025,24134152,24110902,24143428,24136986,24106839,24136749,24143695\"\n
+        \         }\n        ]\n      }\n    ]\n  },\n  \"trackingParams\": \"CAAQhGciEwi29f_rk6T1AhWIBbcAHWJFDqE=\",\n
+        \ \"contents\": {\n    \"singleColumnBrowseResultsRenderer\": {\n      \"tabs\":
+        [\n        {\n          \"tabRenderer\": {\n            \"content\": {\n              \"sectionListRenderer\":
+        {\n                \"contents\": [\n                  {\n                    \"musicPlaylistShelfRenderer\":
+        {\n                      \"playlistId\": \"PLJD13y84Bd029ENixIHEpDqeWcjiogsFi\",\n
+        \                     \"contents\": [\n                        {\n                          \"musicResponsiveListItemRenderer\":
+        {\n                            \"trackingParams\": \"CBQQyfQCGAAiEwi29f_rk6T1AhWIBbcAHWJFDqE=\",\n
+        \                           \"thumbnail\": {\n                              \"musicThumbnailRenderer\":
+        {\n                                \"thumbnail\": {\n                                  \"thumbnails\":
+        [\n                                    {\n                                      \"url\":
+        \"https://i.ytimg.com/vi/KlyXNRrsk4A/sddefault.jpg?sqp=-oaymwEWCJADEOEBIAQqCghqEJQEGHgg6AJIWg&rs=AMzJL3nyoRFMkgD06sg46DBU5YXgPYySQg\",\n
+        \                                     \"width\": 400,\n                                      \"height\":
+        225\n                                    }\n                                  ]\n
+        \                               },\n                                \"thumbnailCrop\":
+        \"MUSIC_THUMBNAIL_CROP_UNSPECIFIED\",\n                                \"thumbnailScale\":
+        \"MUSIC_THUMBNAIL_SCALE_ASPECT_FIT\",\n                                \"trackingParams\":
+        \"CCMQhL8CIhMItvX_65Ok9QIViAW3AB1iRQ6h\"\n                              }\n
+        \                           },\n                            \"overlay\": {\n
+        \                             \"musicItemThumbnailOverlayRenderer\": {\n                                \"background\":
+        {\n                                  \"verticalGradient\": {\n                                    \"gradientLayerColors\":
+        [\n                                      \"3422552064\",\n                                      \"3422552064\"\n
+        \                                   ]\n                                  }\n
+        \                               },\n                                \"content\":
+        {\n                                  \"musicPlayButtonRenderer\": {\n                                    \"playNavigationEndpoint\":
+        {\n                                      \"clickTrackingParams\": \"CCIQyN4CIhMItvX_65Ok9QIViAW3AB1iRQ6h\",\n
+        \                                     \"watchEndpoint\": {\n                                        \"videoId\":
+        \"KlyXNRrsk4A\",\n                                        \"playlistId\":
+        \"PLJD13y84Bd029ENixIHEpDqeWcjiogsFi\",\n                                        \"playlistSetVideoId\":
+        \"56B44F6D10557CC6\",\n                                        \"loggingContext\":
+        {\n                                          \"vssLoggingContext\": {\n                                            \"serializedContextData\":
+        \"GiJQTEpEMTN5ODRCZDAyOUVOaXhJSEVwRHFlV2NqaW9nc0Zp\"\n                                          }\n
+        \                                       },\n                                        \"watchEndpointMusicSupportedConfigs\":
+        {\n                                          \"watchEndpointMusicConfig\":
+        {\n                                            \"musicVideoType\": \"MUSIC_VIDEO_TYPE_OMV\"\n
+        \                                         }\n                                        }\n
+        \                                     }\n                                    },\n
+        \                                   \"trackingParams\": \"CCIQyN4CIhMItvX_65Ok9QIViAW3AB1iRQ6h\",\n
+        \                                   \"playIcon\": {\n                                      \"iconType\":
+        \"PLAY_ARROW\"\n                                    },\n                                    \"pauseIcon\":
+        {\n                                      \"iconType\": \"PAUSE\"\n                                    },\n
+        \                                   \"iconColor\": 4294967295,\n                                    \"backgroundColor\":
+        0,\n                                    \"activeBackgroundColor\": 0,\n                                    \"loadingIndicatorColor\":
+        4294901760,\n                                    \"playingIcon\": {\n                                      \"iconType\":
+        \"VOLUME_UP\"\n                                    },\n                                    \"iconLoadingColor\":
+        0,\n                                    \"activeScaleFactor\": 1,\n                                    \"buttonSize\":
+        \"MUSIC_PLAY_BUTTON_SIZE_SMALL\",\n                                    \"rippleTarget\":
+        \"MUSIC_PLAY_BUTTON_RIPPLE_TARGET_SELF\",\n                                    \"accessibilityPlayData\":
+        {\n                                      \"accessibilityData\": {\n                                        \"label\":
+        \"Play Last Friday Night (T.G.I.F.) (Official Music Video) - Katy Perry -
+        8 minutes, 5 seconds\"\n                                      }\n                                    },\n
+        \                                   \"accessibilityPauseData\": {\n                                      \"accessibilityData\":
+        {\n                                        \"label\": \"Pause Last Friday
+        Night (T.G.I.F.) (Official Music Video) - Katy Perry - 8 minutes, 5 seconds\"\n
+        \                                     }\n                                    }\n
+        \                                 }\n                                },\n
+        \                               \"contentPosition\": \"MUSIC_ITEM_THUMBNAIL_OVERLAY_CONTENT_POSITION_CENTERED\",\n
+        \                               \"displayStyle\": \"MUSIC_ITEM_THUMBNAIL_OVERLAY_DISPLAY_STYLE_PERSISTENT\"\n
+        \                             }\n                            },\n                            \"flexColumns\":
+        [\n                              {\n                                \"musicResponsiveListItemFlexColumnRenderer\":
+        {\n                                  \"text\": {\n                                    \"runs\":
+        [\n                                      {\n                                        \"text\":
+        \"Last Friday Night (T.G.I.F.) (Official Music Video)\",\n                                        \"navigationEndpoint\":
+        {\n                                          \"clickTrackingParams\": \"CBQQyfQCGAAiEwi29f_rk6T1AhWIBbcAHWJFDqE=\",\n
+        \                                         \"watchEndpoint\": {\n                                            \"videoId\":
+        \"KlyXNRrsk4A\",\n                                            \"playlistId\":
+        \"PLJD13y84Bd029ENixIHEpDqeWcjiogsFi\",\n                                            \"playerParams\":
+        \"iAQB\",\n                                            \"loggingContext\":
+        {\n                                              \"vssLoggingContext\": {\n
+        \                                               \"serializedContextData\":
+        \"GiJQTEpEMTN5ODRCZDAyOUVOaXhJSEVwRHFlV2NqaW9nc0Zp\"\n                                              }\n
+        \                                           },\n                                            \"watchEndpointMusicSupportedConfigs\":
+        {\n                                              \"watchEndpointMusicConfig\":
+        {\n                                                \"musicVideoType\": \"MUSIC_VIDEO_TYPE_OMV\"\n
+        \                                             }\n                                            }\n
+        \                                         }\n                                        }\n
+        \                                     }\n                                    ]\n
+        \                                 },\n                                  \"displayPriority\":
+        \"MUSIC_RESPONSIVE_LIST_ITEM_COLUMN_DISPLAY_PRIORITY_HIGH\"\n                                }\n
+        \                             },\n                              {\n                                \"musicResponsiveListItemFlexColumnRenderer\":
+        {\n                                  \"text\": {\n                                    \"runs\":
+        [\n                                      {\n                                        \"text\":
+        \"Katy Perry\",\n                                        \"navigationEndpoint\":
+        {\n                                          \"clickTrackingParams\": \"CBQQyfQCGAAiEwi29f_rk6T1AhWIBbcAHWJFDqE=\",\n
+        \                                         \"browseEndpoint\": {\n                                            \"browseId\":
+        \"UC_7s69e1mDS3lgcTMJEPjCg\",\n                                            \"browseEndpointContextSupportedConfigs\":
+        {\n                                              \"browseEndpointContextMusicConfig\":
+        {\n                                                \"pageType\": \"MUSIC_PAGE_TYPE_ARTIST\"\n
+        \                                             }\n                                            }\n
+        \                                         }\n                                        }\n
+        \                                     }\n                                    ]\n
+        \                                 },\n                                  \"displayPriority\":
+        \"MUSIC_RESPONSIVE_LIST_ITEM_COLUMN_DISPLAY_PRIORITY_HIGH\"\n                                }\n
+        \                             },\n                              {\n                                \"musicResponsiveListItemFlexColumnRenderer\":
+        {\n                                  \"text\": {},\n                                  \"displayPriority\":
+        \"MUSIC_RESPONSIVE_LIST_ITEM_COLUMN_DISPLAY_PRIORITY_MEDIUM\"\n                                }\n
+        \                             }\n                            ],\n                            \"fixedColumns\":
+        [\n                              {\n                                \"musicResponsiveListItemFixedColumnRenderer\":
+        {\n                                  \"text\": {\n                                    \"runs\":
+        [\n                                      {\n                                        \"text\":
+        \"8:05\"\n                                      }\n                                    ]\n
+        \                                 },\n                                  \"displayPriority\":
+        \"MUSIC_RESPONSIVE_LIST_ITEM_COLUMN_DISPLAY_PRIORITY_HIGH\",\n                                  \"size\":
+        \"MUSIC_RESPONSIVE_LIST_ITEM_FIXED_COLUMN_SIZE_SMALL\"\n                                }\n
+        \                             }\n                            ],\n                            \"menu\":
+        {\n                              \"menuRenderer\": {\n                                \"items\":
+        [\n                                  {\n                                    \"menuNavigationItemRenderer\":
+        {\n                                      \"text\": {\n                                        \"runs\":
+        [\n                                          {\n                                            \"text\":
+        \"Start radio\"\n                                          }\n                                        ]\n
+        \                                     },\n                                      \"icon\":
+        {\n                                        \"iconType\": \"MIX\"\n                                      },\n
+        \                                     \"navigationEndpoint\": {\n                                        \"clickTrackingParams\":
+        \"CCEQm_MFGAAiEwi29f_rk6T1AhWIBbcAHWJFDqE=\",\n                                        \"watchEndpoint\":
+        {\n                                          \"videoId\": \"KlyXNRrsk4A\",\n
+        \                                         \"playlistId\": \"RDAMVMKlyXNRrsk4A\",\n
+        \                                         \"params\": \"wAEB\",\n                                          \"loggingContext\":
+        {\n                                            \"vssLoggingContext\": {\n
+        \                                             \"serializedContextData\": \"GhFSREFNVk1LbHlYTlJyc2s0QQ%3D%3D\"\n
+        \                                           }\n                                          },\n
+        \                                         \"watchEndpointMusicSupportedConfigs\":
+        {\n                                            \"watchEndpointMusicConfig\":
+        {\n                                              \"musicVideoType\": \"MUSIC_VIDEO_TYPE_OMV\"\n
+        \                                           }\n                                          }\n
+        \                                       }\n                                      },\n
+        \                                     \"trackingParams\": \"CCEQm_MFGAAiEwi29f_rk6T1AhWIBbcAHWJFDqE=\"\n
+        \                                   }\n                                  },\n
+        \                                 {\n                                    \"menuServiceItemRenderer\":
+        {\n                                      \"text\": {\n                                        \"runs\":
+        [\n                                          {\n                                            \"text\":
+        \"Play next\"\n                                          }\n                                        ]\n
+        \                                     },\n                                      \"icon\":
+        {\n                                        \"iconType\": \"QUEUE_PLAY_NEXT\"\n
+        \                                     },\n                                      \"serviceEndpoint\":
+        {\n                                        \"clickTrackingParams\": \"CB8Qvu4FGAEiEwi29f_rk6T1AhWIBbcAHWJFDqE=\",\n
+        \                                       \"queueAddEndpoint\": {\n                                          \"queueTarget\":
+        {\n                                            \"videoId\": \"KlyXNRrsk4A\"\n
+        \                                         },\n                                          \"queueInsertPosition\":
+        \"INSERT_AFTER_CURRENT_VIDEO\",\n                                          \"commands\":
+        [\n                                            {\n                                              \"clickTrackingParams\":
+        \"CB8Qvu4FGAEiEwi29f_rk6T1AhWIBbcAHWJFDqE=\",\n                                              \"addToToastAction\":
+        {\n                                                \"item\": {\n                                                  \"notificationTextRenderer\":
+        {\n                                                    \"successResponseText\":
+        {\n                                                      \"runs\": [\n                                                        {\n
+        \                                                         \"text\": \"Song
+        will play next\"\n                                                        }\n
+        \                                                     ]\n                                                    },\n
+        \                                                   \"trackingParams\": \"CCAQyscDIhMItvX_65Ok9QIViAW3AB1iRQ6h\"\n
+        \                                                 }\n                                                }\n
+        \                                             }\n                                            }\n
+        \                                         ]\n                                        }\n
+        \                                     },\n                                      \"trackingParams\":
+        \"CB8Qvu4FGAEiEwi29f_rk6T1AhWIBbcAHWJFDqE=\"\n                                    }\n
+        \                                 },\n                                  {\n
+        \                                   \"menuServiceItemRenderer\": {\n                                      \"text\":
+        {\n                                        \"runs\": [\n                                          {\n
+        \                                           \"text\": \"Add to queue\"\n                                          }\n
+        \                                       ]\n                                      },\n
+        \                                     \"icon\": {\n                                        \"iconType\":
+        \"ADD_TO_REMOTE_QUEUE\"\n                                      },\n                                      \"serviceEndpoint\":
+        {\n                                        \"clickTrackingParams\": \"CB0Q--8FGAIiEwi29f_rk6T1AhWIBbcAHWJFDqE=\",\n
+        \                                       \"queueAddEndpoint\": {\n                                          \"queueTarget\":
+        {\n                                            \"videoId\": \"KlyXNRrsk4A\"\n
+        \                                         },\n                                          \"queueInsertPosition\":
+        \"INSERT_AT_END\",\n                                          \"commands\":
+        [\n                                            {\n                                              \"clickTrackingParams\":
+        \"CB0Q--8FGAIiEwi29f_rk6T1AhWIBbcAHWJFDqE=\",\n                                              \"addToToastAction\":
+        {\n                                                \"item\": {\n                                                  \"notificationTextRenderer\":
+        {\n                                                    \"successResponseText\":
+        {\n                                                      \"runs\": [\n                                                        {\n
+        \                                                         \"text\": \"Song
+        added to queue\"\n                                                        }\n
+        \                                                     ]\n                                                    },\n
+        \                                                   \"trackingParams\": \"CB4QyscDIhMItvX_65Ok9QIViAW3AB1iRQ6h\"\n
+        \                                                 }\n                                                }\n
+        \                                             }\n                                            }\n
+        \                                         ]\n                                        }\n
+        \                                     },\n                                      \"trackingParams\":
+        \"CB0Q--8FGAIiEwi29f_rk6T1AhWIBbcAHWJFDqE=\"\n                                    }\n
+        \                                 },\n                                  {\n
+        \                                   \"menuNavigationItemRenderer\": {\n                                      \"text\":
+        {\n                                        \"runs\": [\n                                          {\n
+        \                                           \"text\": \"Add to playlist\"\n
+        \                                         }\n                                        ]\n
+        \                                     },\n                                      \"icon\":
+        {\n                                        \"iconType\": \"ADD_TO_PLAYLIST\"\n
+        \                                     },\n                                      \"navigationEndpoint\":
+        {\n                                        \"clickTrackingParams\": \"CBsQw5QGGAMiEwi29f_rk6T1AhWIBbcAHWJFDqE=\",\n
+        \                                       \"modalEndpoint\": {\n                                          \"modal\":
+        {\n                                            \"modalWithTitleAndButtonRenderer\":
+        {\n                                              \"title\": {\n                                                \"runs\":
+        [\n                                                  {\n                                                    \"text\":
+        \"Save this for later\"\n                                                  }\n
+        \                                               ]\n                                              },\n
+        \                                             \"content\": {\n                                                \"runs\":
+        [\n                                                  {\n                                                    \"text\":
+        \"Make playlists and share them after signing in\"\n                                                  }\n
+        \                                               ]\n                                              },\n
+        \                                             \"button\": {\n                                                \"buttonRenderer\":
+        {\n                                                  \"style\": \"STYLE_BLUE_TEXT\",\n
+        \                                                 \"isDisabled\": false,\n
+        \                                                 \"text\": {\n                                                    \"runs\":
+        [\n                                                      {\n                                                        \"text\":
+        \"Sign in\"\n                                                      }\n                                                    ]\n
+        \                                                 },\n                                                  \"navigationEndpoint\":
+        {\n                                                    \"clickTrackingParams\":
+        \"CBwQ8FsiEwi29f_rk6T1AhWIBbcAHWJFDqE=\",\n                                                    \"signInEndpoint\":
+        {\n                                                      \"hack\": true\n
+        \                                                   }\n                                                  },\n
+        \                                                 \"trackingParams\": \"CBwQ8FsiEwi29f_rk6T1AhWIBbcAHWJFDqE=\"\n
+        \                                               }\n                                              }\n
+        \                                           }\n                                          }\n
+        \                                       }\n                                      },\n
+        \                                     \"trackingParams\": \"CBsQw5QGGAMiEwi29f_rk6T1AhWIBbcAHWJFDqE=\"\n
+        \                                   }\n                                  },\n
+        \                                 {\n                                    \"menuNavigationItemRenderer\":
+        {\n                                      \"text\": {\n                                        \"runs\":
+        [\n                                          {\n                                            \"text\":
+        \"Go to artist\"\n                                          }\n                                        ]\n
+        \                                     },\n                                      \"icon\":
+        {\n                                        \"iconType\": \"ARTIST\"\n                                      },\n
+        \                                     \"navigationEndpoint\": {\n                                        \"clickTrackingParams\":
+        \"CBoQkPsFGAQiEwi29f_rk6T1AhWIBbcAHWJFDqE=\",\n                                        \"browseEndpoint\":
+        {\n                                          \"browseId\": \"UC_7s69e1mDS3lgcTMJEPjCg\",\n
+        \                                         \"browseEndpointContextSupportedConfigs\":
+        {\n                                            \"browseEndpointContextMusicConfig\":
+        {\n                                              \"pageType\": \"MUSIC_PAGE_TYPE_ARTIST\"\n
+        \                                           }\n                                          }\n
+        \                                       }\n                                      },\n
+        \                                     \"trackingParams\": \"CBoQkPsFGAQiEwi29f_rk6T1AhWIBbcAHWJFDqE=\"\n
+        \                                   }\n                                  },\n
+        \                                 {\n                                    \"menuNavigationItemRenderer\":
+        {\n                                      \"text\": {\n                                        \"runs\":
+        [\n                                          {\n                                            \"text\":
+        \"Share\"\n                                          }\n                                        ]\n
+        \                                     },\n                                      \"icon\":
+        {\n                                        \"iconType\": \"SHARE\"\n                                      },\n
+        \                                     \"navigationEndpoint\": {\n                                        \"clickTrackingParams\":
+        \"CBkQkfsFGAUiEwi29f_rk6T1AhWIBbcAHWJFDqE=\",\n                                        \"shareEntityEndpoint\":
+        {\n                                          \"serializedShareEntity\": \"CgtLbHlYTlJyc2s0QQ%3D%3D\",\n
+        \                                         \"sharePanelType\": \"SHARE_PANEL_TYPE_UNIFIED_SHARE_PANEL\"\n
+        \                                       }\n                                      },\n
+        \                                     \"trackingParams\": \"CBkQkfsFGAUiEwi29f_rk6T1AhWIBbcAHWJFDqE=\"\n
+        \                                   }\n                                  }\n
+        \                               ],\n                                \"trackingParams\":
+        \"CBUQpzsiEwi29f_rk6T1AhWIBbcAHWJFDqE=\",\n                                \"topLevelButtons\":
+        [\n                                  {\n                                    \"likeButtonRenderer\":
+        {\n                                      \"target\": {\n                                        \"videoId\":
+        \"KlyXNRrsk4A\"\n                                      },\n                                      \"likeStatus\":
+        \"INDIFFERENT\",\n                                      \"trackingParams\":
+        \"CBYQpUEYBiITCLb1_-uTpPUCFYgFtwAdYkUOoQ==\",\n                                      \"likesAllowed\":
+        true,\n                                      \"dislikeNavigationEndpoint\":
+        {\n                                        \"clickTrackingParams\": \"CBYQpUEYBiITCLb1_-uTpPUCFYgFtwAdYkUOoQ==\",\n
+        \                                       \"modalEndpoint\": {\n                                          \"modal\":
+        {\n                                            \"modalWithTitleAndButtonRenderer\":
+        {\n                                              \"title\": {\n                                                \"runs\":
+        [\n                                                  {\n                                                    \"text\":
+        \"Not a fan?\"\n                                                  }\n                                                ]\n
+        \                                             },\n                                              \"content\":
+        {\n                                                \"runs\": [\n                                                  {\n
+        \                                                   \"text\": \"Improve your
+        recommendations after signing in\"\n                                                  }\n
+        \                                               ]\n                                              },\n
+        \                                             \"button\": {\n                                                \"buttonRenderer\":
+        {\n                                                  \"style\": \"STYLE_BLUE_TEXT\",\n
+        \                                                 \"isDisabled\": false,\n
+        \                                                 \"text\": {\n                                                    \"runs\":
+        [\n                                                      {\n                                                        \"text\":
+        \"Sign in\"\n                                                      }\n                                                    ]\n
+        \                                                 },\n                                                  \"navigationEndpoint\":
+        {\n                                                    \"clickTrackingParams\":
+        \"CBgQ8FsiEwi29f_rk6T1AhWIBbcAHWJFDqE=\",\n                                                    \"signInEndpoint\":
+        {\n                                                      \"hack\": true\n
+        \                                                   }\n                                                  },\n
+        \                                                 \"trackingParams\": \"CBgQ8FsiEwi29f_rk6T1AhWIBbcAHWJFDqE=\"\n
+        \                                               }\n                                              }\n
+        \                                           }\n                                          }\n
+        \                                       }\n                                      },\n
+        \                                     \"likeCommand\": {\n                                        \"clickTrackingParams\":
+        \"CBYQpUEYBiITCLb1_-uTpPUCFYgFtwAdYkUOoQ==\",\n                                        \"modalEndpoint\":
+        {\n                                          \"modal\": {\n                                            \"modalWithTitleAndButtonRenderer\":
+        {\n                                              \"title\": {\n                                                \"runs\":
+        [\n                                                  {\n                                                    \"text\":
+        \"Like this song\"\n                                                  }\n
+        \                                               ]\n                                              },\n
+        \                                             \"content\": {\n                                                \"runs\":
+        [\n                                                  {\n                                                    \"text\":
+        \"Improve recommendations and save music after signing in\"\n                                                  }\n
+        \                                               ]\n                                              },\n
+        \                                             \"button\": {\n                                                \"buttonRenderer\":
+        {\n                                                  \"style\": \"STYLE_BLUE_TEXT\",\n
+        \                                                 \"isDisabled\": false,\n
+        \                                                 \"text\": {\n                                                    \"runs\":
+        [\n                                                      {\n                                                        \"text\":
+        \"Sign in\"\n                                                      }\n                                                    ]\n
+        \                                                 },\n                                                  \"navigationEndpoint\":
+        {\n                                                    \"clickTrackingParams\":
+        \"CBcQ8FsiEwi29f_rk6T1AhWIBbcAHWJFDqE=\",\n                                                    \"signInEndpoint\":
+        {\n                                                      \"hack\": true\n
+        \                                                   }\n                                                  },\n
+        \                                                 \"trackingParams\": \"CBcQ8FsiEwi29f_rk6T1AhWIBbcAHWJFDqE=\"\n
+        \                                               }\n                                              }\n
+        \                                           }\n                                          }\n
+        \                                       }\n                                      }\n
+        \                                   }\n                                  }\n
+        \                               ],\n                                \"accessibility\":
+        {\n                                  \"accessibilityData\": {\n                                    \"label\":
+        \"Action menu\"\n                                  }\n                                }\n
+        \                             }\n                            },\n                            \"playlistItemData\":
+        {\n                              \"playlistSetVideoId\": \"56B44F6D10557CC6\",\n
+        \                             \"videoId\": \"KlyXNRrsk4A\"\n                            }\n
+        \                         }\n                        }\n                      ],\n
+        \                     \"collapsedItemCount\": 1,\n                      \"trackingParams\":
+        \"CBMQ9-MCGAAiEwi29f_rk6T1AhWIBbcAHWJFDqE=\"\n                    }\n                  }\n
+        \               ],\n                \"continuations\": [\n                  {\n
+        \                   \"nextContinuationData\": {\n                      \"continuation\":
+        \"4qmFsgIwEiRWTFBMSkQxM3k4NEJkMDI5RU5peElIRXBEcWVXY2ppb2dzRmkaCGtnRURDTTBH\",\n
+        \                     \"clickTrackingParams\": \"CBIQybcCIhMItvX_65Ok9QIViAW3AB1iRQ6h\"\n
+        \                   }\n                  }\n                ],\n                \"trackingParams\":
+        \"CBEQui8iEwi29f_rk6T1AhWIBbcAHWJFDqE=\"\n              }\n            },\n
+        \           \"trackingParams\": \"CBAQ8JMBGAAiEwi29f_rk6T1AhWIBbcAHWJFDqE=\"\n
+        \         }\n        }\n      ]\n    }\n  },\n  \"header\": {\n    \"musicDetailHeaderRenderer\":
+        {\n      \"title\": {\n        \"runs\": [\n          {\n            \"text\":
+        \"ytmusic pl\"\n          }\n        ]\n      },\n      \"subtitle\": {\n
+        \       \"runs\": [\n          {\n            \"text\": \"Playlist\"\n          },\n
+        \         {\n            \"text\": \" \u2022 \"\n          },\n          {\n
+        \           \"text\": \"Nik\",\n            \"navigationEndpoint\": {\n              \"clickTrackingParams\":
+        \"CAEQ99wCIhMItvX_65Ok9QIViAW3AB1iRQ6h\",\n              \"browseEndpoint\":
+        {\n                \"browseId\": \"UCZtGOj7FTHPd2txgnbJS2kQ\",\n                \"browseEndpointContextSupportedConfigs\":
+        {\n                  \"browseEndpointContextMusicConfig\": {\n                    \"pageType\":
+        \"MUSIC_PAGE_TYPE_USER_CHANNEL\"\n                  }\n                }\n
+        \             }\n            }\n          },\n          {\n            \"text\":
+        \" \u2022 \"\n          },\n          {\n            \"text\": \"2021\"\n
+        \         }\n        ]\n      },\n      \"menu\": {\n        \"menuRenderer\":
+        {\n          \"items\": [\n            {\n              \"menuNavigationItemRenderer\":
+        {\n                \"text\": {\n                  \"runs\": [\n                    {\n
+        \                     \"text\": \"Start radio\"\n                    }\n                  ]\n
+        \               },\n                \"icon\": {\n                  \"iconType\":
+        \"MIX\"\n                },\n                \"navigationEndpoint\": {\n                  \"clickTrackingParams\":
+        \"CA8Qm_MFGAAiEwi29f_rk6T1AhWIBbcAHWJFDqE=\",\n                  \"watchPlaylistEndpoint\":
+        {\n                    \"playlistId\": \"RDAMPLPLJD13y84Bd029ENixIHEpDqeWcjiogsFi\",\n
+        \                   \"params\": \"wAEB\"\n                  }\n                },\n
+        \               \"trackingParams\": \"CA8Qm_MFGAAiEwi29f_rk6T1AhWIBbcAHWJFDqE=\"\n
+        \             }\n            },\n            {\n              \"menuServiceItemRenderer\":
+        {\n                \"text\": {\n                  \"runs\": [\n                    {\n
+        \                     \"text\": \"Play next\"\n                    }\n                  ]\n
+        \               },\n                \"icon\": {\n                  \"iconType\":
+        \"QUEUE_PLAY_NEXT\"\n                },\n                \"serviceEndpoint\":
+        {\n                  \"clickTrackingParams\": \"CA0Qvu4FGAEiEwi29f_rk6T1AhWIBbcAHWJFDqE=\",\n
+        \                 \"queueAddEndpoint\": {\n                    \"queueTarget\":
+        {\n                      \"playlistId\": \"PLJD13y84Bd029ENixIHEpDqeWcjiogsFi\"\n
+        \                   },\n                    \"queueInsertPosition\": \"INSERT_AFTER_CURRENT_VIDEO\",\n
+        \                   \"commands\": [\n                      {\n                        \"clickTrackingParams\":
+        \"CA0Qvu4FGAEiEwi29f_rk6T1AhWIBbcAHWJFDqE=\",\n                        \"addToToastAction\":
+        {\n                          \"item\": {\n                            \"notificationTextRenderer\":
+        {\n                              \"successResponseText\": {\n                                \"runs\":
+        [\n                                  {\n                                    \"text\":
+        \"Playlist will play next\"\n                                  }\n                                ]\n
+        \                             },\n                              \"trackingParams\":
+        \"CA4QyscDIhMItvX_65Ok9QIViAW3AB1iRQ6h\"\n                            }\n
+        \                         }\n                        }\n                      }\n
+        \                   ]\n                  }\n                },\n                \"trackingParams\":
+        \"CA0Qvu4FGAEiEwi29f_rk6T1AhWIBbcAHWJFDqE=\"\n              }\n            },\n
+        \           {\n              \"menuServiceItemRenderer\": {\n                \"text\":
+        {\n                  \"runs\": [\n                    {\n                      \"text\":
+        \"Add to queue\"\n                    }\n                  ]\n                },\n
+        \               \"icon\": {\n                  \"iconType\": \"ADD_TO_REMOTE_QUEUE\"\n
+        \               },\n                \"serviceEndpoint\": {\n                  \"clickTrackingParams\":
+        \"CAsQ--8FGAIiEwi29f_rk6T1AhWIBbcAHWJFDqE=\",\n                  \"queueAddEndpoint\":
+        {\n                    \"queueTarget\": {\n                      \"playlistId\":
+        \"PLJD13y84Bd029ENixIHEpDqeWcjiogsFi\"\n                    },\n                    \"queueInsertPosition\":
+        \"INSERT_AT_END\",\n                    \"commands\": [\n                      {\n
+        \                       \"clickTrackingParams\": \"CAsQ--8FGAIiEwi29f_rk6T1AhWIBbcAHWJFDqE=\",\n
+        \                       \"addToToastAction\": {\n                          \"item\":
+        {\n                            \"notificationTextRenderer\": {\n                              \"successResponseText\":
+        {\n                                \"runs\": [\n                                  {\n
+        \                                   \"text\": \"Playlist added to queue\"\n
+        \                                 }\n                                ]\n                              },\n
+        \                             \"trackingParams\": \"CAwQyscDIhMItvX_65Ok9QIViAW3AB1iRQ6h\"\n
+        \                           }\n                          }\n                        }\n
+        \                     }\n                    ]\n                  }\n                },\n
+        \               \"trackingParams\": \"CAsQ--8FGAIiEwi29f_rk6T1AhWIBbcAHWJFDqE=\"\n
+        \             }\n            },\n            {\n              \"menuNavigationItemRenderer\":
+        {\n                \"text\": {\n                  \"runs\": [\n                    {\n
+        \                     \"text\": \"Add to playlist\"\n                    }\n
+        \                 ]\n                },\n                \"icon\": {\n                  \"iconType\":
+        \"ADD_TO_PLAYLIST\"\n                },\n                \"navigationEndpoint\":
+        {\n                  \"clickTrackingParams\": \"CAkQw5QGGAMiEwi29f_rk6T1AhWIBbcAHWJFDqE=\",\n
+        \                 \"modalEndpoint\": {\n                    \"modal\": {\n
+        \                     \"modalWithTitleAndButtonRenderer\": {\n                        \"title\":
+        {\n                          \"runs\": [\n                            {\n
+        \                             \"text\": \"Save this for later\"\n                            }\n
+        \                         ]\n                        },\n                        \"content\":
+        {\n                          \"runs\": [\n                            {\n
+        \                             \"text\": \"Make playlists and share them after
+        signing in\"\n                            }\n                          ]\n
+        \                       },\n                        \"button\": {\n                          \"buttonRenderer\":
+        {\n                            \"style\": \"STYLE_BLUE_TEXT\",\n                            \"isDisabled\":
+        false,\n                            \"text\": {\n                              \"runs\":
+        [\n                                {\n                                  \"text\":
+        \"Sign in\"\n                                }\n                              ]\n
+        \                           },\n                            \"navigationEndpoint\":
+        {\n                              \"clickTrackingParams\": \"CAoQ8FsiEwi29f_rk6T1AhWIBbcAHWJFDqE=\",\n
+        \                             \"signInEndpoint\": {\n                                \"hack\":
+        true\n                              }\n                            },\n                            \"trackingParams\":
+        \"CAoQ8FsiEwi29f_rk6T1AhWIBbcAHWJFDqE=\"\n                          }\n                        }\n
+        \                     }\n                    }\n                  }\n                },\n
+        \               \"trackingParams\": \"CAkQw5QGGAMiEwi29f_rk6T1AhWIBbcAHWJFDqE=\"\n
+        \             }\n            },\n            {\n              \"menuNavigationItemRenderer\":
+        {\n                \"text\": {\n                  \"runs\": [\n                    {\n
+        \                     \"text\": \"Share\"\n                    }\n                  ]\n
+        \               },\n                \"icon\": {\n                  \"iconType\":
+        \"SHARE\"\n                },\n                \"navigationEndpoint\": {\n
+        \                 \"clickTrackingParams\": \"CAgQkfsFGAQiEwi29f_rk6T1AhWIBbcAHWJFDqE=\",\n
+        \                 \"shareEntityEndpoint\": {\n                    \"serializedShareEntity\":
+        \"EiJQTEpEMTN5ODRCZDAyOUVOaXhJSEVwRHFlV2NqaW9nc0Zp\",\n                    \"sharePanelType\":
+        \"SHARE_PANEL_TYPE_UNIFIED_SHARE_PANEL\"\n                  }\n                },\n
+        \               \"trackingParams\": \"CAgQkfsFGAQiEwi29f_rk6T1AhWIBbcAHWJFDqE=\"\n
+        \             }\n            }\n          ],\n          \"trackingParams\":
+        \"CAQQpzsiEwi29f_rk6T1AhWIBbcAHWJFDqE=\",\n          \"topLevelButtons\":
+        [\n            {\n              \"buttonRenderer\": {\n                \"style\":
+        \"STYLE_DARK_ON_WHITE\",\n                \"size\": \"SIZE_DEFAULT\",\n                \"text\":
+        {\n                  \"runs\": [\n                    {\n                      \"text\":
+        \"Shuffle\"\n                    }\n                  ]\n                },\n
+        \               \"icon\": {\n                  \"iconType\": \"MUSIC_SHUFFLE\"\n
+        \               },\n                \"navigationEndpoint\": {\n                  \"clickTrackingParams\":
+        \"CAcQ8FsYBSITCLb1_-uTpPUCFYgFtwAdYkUOoQ==\",\n                  \"watchPlaylistEndpoint\":
+        {\n                    \"playlistId\": \"PLJD13y84Bd029ENixIHEpDqeWcjiogsFi\",\n
+        \                   \"params\": \"wAEB8gECKAE%3D\"\n                  }\n
+        \               },\n                \"accessibility\": {\n                  \"label\":
+        \"Shuffle\"\n                },\n                \"trackingParams\": \"CAcQ8FsYBSITCLb1_-uTpPUCFYgFtwAdYkUOoQ==\",\n
+        \               \"accessibilityData\": {\n                  \"accessibilityData\":
+        {\n                    \"label\": \"Shuffle\"\n                  }\n                }\n
+        \             }\n            },\n            {\n              \"toggleButtonRenderer\":
+        {\n                \"isToggled\": false,\n                \"isDisabled\":
+        false,\n                \"defaultIcon\": {\n                  \"iconType\":
+        \"LIBRARY_ADD\"\n                },\n                \"defaultText\": {\n
+        \                 \"runs\": [\n                    {\n                      \"text\":
+        \"Add to library\"\n                    }\n                  ],\n                  \"accessibility\":
+        {\n                    \"accessibilityData\": {\n                      \"label\":
+        \"Add to library\"\n                    }\n                  }\n                },\n
+        \               \"toggledIcon\": {\n                  \"iconType\": \"LIBRARY_REMOVE\"\n
+        \               },\n                \"toggledText\": {\n                  \"runs\":
+        [\n                    {\n                      \"text\": \"Remove from library\"\n
+        \                   }\n                  ],\n                  \"accessibility\":
+        {\n                    \"accessibilityData\": {\n                      \"label\":
+        \"Remove from library\"\n                    }\n                  }\n                },\n
+        \               \"trackingParams\": \"CAUQmE0YBiITCLb1_-uTpPUCFYgFtwAdYkUOoQ==\",\n
+        \               \"defaultNavigationEndpoint\": {\n                  \"clickTrackingParams\":
+        \"CAUQmE0YBiITCLb1_-uTpPUCFYgFtwAdYkUOoQ==\",\n                  \"modalEndpoint\":
+        {\n                    \"modal\": {\n                      \"modalWithTitleAndButtonRenderer\":
+        {\n                        \"title\": {\n                          \"runs\":
+        [\n                            {\n                              \"text\":
+        \"Save this for later\"\n                            }\n                          ]\n
+        \                       },\n                        \"content\": {\n                          \"runs\":
+        [\n                            {\n                              \"text\":
+        \"Add favorites to your library after signing in\"\n                            }\n
+        \                         ]\n                        },\n                        \"button\":
+        {\n                          \"buttonRenderer\": {\n                            \"style\":
+        \"STYLE_BLUE_TEXT\",\n                            \"isDisabled\": false,\n
+        \                           \"text\": {\n                              \"runs\":
+        [\n                                {\n                                  \"text\":
+        \"Sign in\"\n                                }\n                              ]\n
+        \                           },\n                            \"navigationEndpoint\":
+        {\n                              \"clickTrackingParams\": \"CAYQ8FsiEwi29f_rk6T1AhWIBbcAHWJFDqE=\",\n
+        \                             \"signInEndpoint\": {\n                                \"hack\":
+        true\n                              }\n                            },\n                            \"trackingParams\":
+        \"CAYQ8FsiEwi29f_rk6T1AhWIBbcAHWJFDqE=\"\n                          }\n                        }\n
+        \                     }\n                    }\n                  }\n                }\n
+        \             }\n            }\n          ],\n          \"accessibility\":
+        {\n            \"accessibilityData\": {\n              \"label\": \"Action
+        menu\"\n            }\n          }\n        }\n      },\n      \"thumbnail\":
+        {\n        \"croppedSquareThumbnailRenderer\": {\n          \"thumbnail\":
+        {\n            \"thumbnails\": [\n              {\n                \"url\":
+        \"https://yt3.ggpht.com/Htwh2YZzyF5yUNtw4zghSMwQDFuJK_n4Z0wV1SnnDKCtZvv31egNX54D-IKWp41R14Kc4-w1CFg=s192\",\n
+        \               \"width\": 192,\n                \"height\": 192\n              },\n
+        \             {\n                \"url\": \"https://yt3.ggpht.com/Htwh2YZzyF5yUNtw4zghSMwQDFuJK_n4Z0wV1SnnDKCtZvv31egNX54D-IKWp41R14Kc4-w1CFg=s576\",\n
+        \               \"width\": 576,\n                \"height\": 576\n              },\n
+        \             {\n                \"url\": \"https://yt3.ggpht.com/Htwh2YZzyF5yUNtw4zghSMwQDFuJK_n4Z0wV1SnnDKCtZvv31egNX54D-IKWp41R14Kc4-w1CFg=s1200\",\n
+        \               \"width\": 1200,\n                \"height\": 1200\n              }\n
+        \           ]\n          },\n          \"trackingParams\": \"CAMQymQiEwi29f_rk6T1AhWIBbcAHWJFDqE=\"\n
+        \       }\n      },\n      \"trackingParams\": \"CAEQ99wCIhMItvX_65Ok9QIViAW3AB1iRQ6h\",\n
+        \     \"description\": {\n        \"runs\": [\n          {\n            \"text\":
+        \"ytmusic pl\"\n          }\n        ]\n      },\n      \"moreButton\": {\n
+        \       \"toggleButtonRenderer\": {\n          \"isToggled\": false,\n          \"isDisabled\":
+        false,\n          \"defaultIcon\": {\n            \"iconType\": \"EXPAND\"\n
+        \         },\n          \"defaultText\": {\n            \"runs\": [\n              {\n
+        \               \"text\": \"More\"\n              }\n            ]\n          },\n
+        \         \"toggledIcon\": {\n            \"iconType\": \"COLLAPSE\"\n          },\n
+        \         \"toggledText\": {\n            \"runs\": [\n              {\n                \"text\":
+        \"Less\"\n              }\n            ]\n          },\n          \"trackingParams\":
+        \"CAIQmE0iEwi29f_rk6T1AhWIBbcAHWJFDqE=\"\n        }\n      },\n      \"secondSubtitle\":
+        {\n        \"runs\": [\n          {\n            \"text\": \"1 song\"\n          },\n
+        \         {\n            \"text\": \" \u2022 \"\n          },\n          {\n
+        \           \"text\": \"8 minutes, 5 seconds\"\n          }\n        ]\n      }\n
+        \   }\n  }\n}\n"
+    headers:
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000,h3-Q050=":443"; ma=2592000,h3-Q046=":443";
+        ma=2592000,h3-Q043=":443"; ma=2592000,quic=":443"; ma=2592000; v="46,43"
+      Cache-Control:
+      - private
+      Content-Type:
+      - application/json; charset=UTF-8
+      Date:
+      - Sun, 09 Jan 2022 07:33:46 GMT
+      Server:
+      - ESF
       Transfer-Encoding:
       - chunked
       Vary:
@@ -30650,7 +31217,7 @@ interactions:
       X-XSS-Protection:
       - '0'
       content-length:
-      - '2737301'
+      - '47548'
     status:
       code: 200
       message: OK
