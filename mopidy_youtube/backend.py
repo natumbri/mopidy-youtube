@@ -155,6 +155,7 @@ class YouTubeLibraryProvider(backend.LibraryProvider):
                     albums.append(convert_playlist_to_album(pl))
                 for album in albums:
                     playlistrefs.append(Ref.playlist(uri=album.uri, name=album.name))
+            playlistrefs.sort(key=lambda x: x.name.lower())
             return playlistrefs
 
     """
@@ -286,8 +287,8 @@ class YouTubeLibraryProvider(backend.LibraryProvider):
             [yt|youtube]:video/<title>.<id>
             [yt|youtube]:playlist/<title>.<id>
 
-        If uri is a video then a single track is returned. If it's a playlist the
-        list of all videos in the playlist is returned.
+        If uri is a video then a single track is returned. If it's a playlist or channel
+        the list of all videos in the playlist or channel is returned.
 
         We also start loading the audio_url of all videos in the background, to
         be ready for playback (see YouTubePlaybackProvider.translate_uri).
@@ -308,13 +309,10 @@ class YouTubeLibraryProvider(backend.LibraryProvider):
         channel_id = extract_channel_id(uri)
         if channel_id:
             channel_tracks = self.lookup_channel_tracks(channel_id)
-            if channel_tracks is None:
-                logger.error('Cannot load "%s"', uri)
-                return []
-            else:
+            if channel_tracks:
                 return channel_tracks
 
-        logger.error('Cannot load "%s"', uri)
+        logger.error(f"Cannot load {uri}")
         return []
 
     def get_images(self, uris):
@@ -372,8 +370,8 @@ class YouTubePlaybackProvider(backend.PlaybackProvider):
         logger.debug('youtube PlaybackProvider.translate_uri "%s"', uri)
 
         video_id = extract_video_id(uri)
-        if not video_id:
-            return None
+        # if not video_id:
+        #     return None
 
         try:
             return youtube.Video.get(video_id).audio_url.get()

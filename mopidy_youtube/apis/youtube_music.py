@@ -60,19 +60,45 @@ class Music(Client):
         returns related videos for a given video_id
         """
 
-        related_videos = ytmusic.get_watch_playlist(video_id)
+        logger.debug(
+            f"youtube_music list_related_videos triggered "
+            f"ytmusic.get_watch_playlist {video_id}"
+        )
+
+        # this is untested - try to add artist and channel to related
+        # videos by calling get_song for each related song
+        # this would be faster with threading, but it all happens in the
+        # background, so who cares?
+        related_videos = [
+            ytmusic.get_song(track["videoId"])["videoDetails"]
+            for track in ytmusic.get_watch_playlist(video_id)["tracks"]
+        ]
+
+        logger.debug(
+            f"youtube_music list_related_videos triggered "
+            f"ytmusic.get_song x {len(related_videos)}: {related_videos}"
+        )
+
+        # old code, which just used the get_watch_playlist, without calling
+        # get_song for each track returned
 
         # hack to deal with ytmusic.get_watch_playlist returning 'thumbnail'
         # instead of 'thumbnails' inside 'tracks'
-        [
-            related_video.update({"thumbnails": related_video["thumbnail"]})
-            for related_video in related_videos["tracks"]
-            if "thumbnail" in related_video
-        ]
 
+        # [
+        #     related_video.update({"thumbnails": related_video["thumbnail"]})
+        #     for related_video in related_videos["tracks"]
+        #     if "thumbnail" in related_video
+        # ]
+
+        # tracks = [
+        #     cls.yt_item_to_video(track)
+        #     for track in related_videos["tracks"]
+        #     if track["videoId"] is not None
+        # ]
         tracks = [
             cls.yt_item_to_video(track)
-            for track in related_videos["tracks"]
+            for track in related_videos
             if track["videoId"] is not None
         ]
 
@@ -220,7 +246,6 @@ class Music(Client):
             channelTitle = artist["name"]
             results = ytmusic.get_artist_albums(browseId, params)
             # results.append(ytmusic.get_user_playlists(channelId, params))
-
         except Exception as e:
             logger.debug(f"youtube_music.list_channelplaylists exception {e}")
             # if channel_id is None or own_channel_id then try to retrieve
@@ -229,10 +254,13 @@ class Music(Client):
                 try:
                     logger.debug(
                         f"youtube_music list_channelplaylists triggered "
-                        f"ytmusic.get_library_playlists: {channel_id}"
+                        f"ytmusic.get_library_playlists and "
+                        f"ytmusic.get_library_albums: {channel_id}"
                     )
                     results = ytmusic.get_library_playlists()
-                    results.extend(ytmusic.get_library_albums())
+                    albums = ytmusic.get_library_albums()
+                    cls.process_albums(albums)
+                    results.extend(albums)
                     if channel_id:
                         logger.debug(
                             f"youtube_music list_channelplaylists triggered "
@@ -243,7 +271,8 @@ class Music(Client):
                         channelTitle = "unknown"
 
                 except Exception as e:
-                    logger.debug(f"list_channelplaylists exception {e}")
+                    logger.debug(f"youtube_music.list_channelplaylists exception {e}")
+
                     if channel_id:
                         logger.debug(
                             f"youtube_music list_channelplaylists triggered "
@@ -253,21 +282,25 @@ class Music(Client):
                         results = user["playlists"]["results"]
                         channelTitle = user["name"]
 
-        else:
-            # if channel_id is not None and not own_channel_id
-            # retrieve only public playlists:
-            logger.debug(
-                f"youtube_music list_channelplaylists triggered "
-                f"ytmusic.get_user: {channel_id}"
-            )
-            try:
-                user = ytmusic.get_user(channel_id)
-                results = user["playlists"]["results"]
-                channelTitle = user["name"]
-            except Exception:
-                user = ytmusic.get_artist(channel_id)
-                results = user["albums"]["results"]
-                channelTitle = user["name"]
+            else:
+                # if channel_id is not None and not own_channel_id
+                # retrieve only public playlists:
+                logger.debug(
+                    f"youtube_music list_channelplaylists triggered "
+                    f"ytmusic.get_user: {channel_id}"
+                )
+                try:
+                    user = ytmusic.get_user(channel_id)
+                    results = user["playlists"]["results"]
+                    channelTitle = user["name"]
+                except Exception:
+                    logger.debug(
+                        f"youtube_music list_channelplaylists triggered "
+                        f"ytmusic.get_artist: {channel_id}"
+                    )
+                    user = ytmusic.get_artist(channel_id)
+                    results = user["albums"]["results"]
+                    channelTitle = user["name"]
 
         [
             item.setdefault("playlistId", item["browseId"])
@@ -276,29 +309,11 @@ class Music(Client):
         ]
 
         items = [
-            {
-                "id": item["playlistId"],
-                "contentDetails": {
-                    "itemCount": int(
-                        item.get("count", "0").replace(",", "")
-                    )  # is it better for this to be zero or one if "count" is missing?
-                },
-                "snippet": {
-                    "title": item.get("title", "Unknown"),
-                    "resourceId": {"playlistId": item["playlistId"]},
-                    # TODO: full support for thumbnails
-                    "thumbnails": {"default": item["thumbnails"][-1]},
-                    "channelTitle": (
-                        item["artists"][0]["name"]
-                        if "artists" in item
-                        else channelTitle
-                    ),
-                },
-            }
+            cls.yt_listitem_to_playlist(item, channelTitle)
             for item in results
             if not item["playlistId"] == "LM"
         ]
-
+        [item.update({"id": item["id"]["playlistId"]}) for item in items]
         return json.loads(json.dumps({"items": items}, sort_keys=False, indent=1))
 
     # methods below are mostly internal, for use by the api methods above (which replicate
@@ -319,16 +334,20 @@ class Music(Client):
 
     @classmethod
     def search_albums(cls, q):
-        albums = []
 
         logger.debug(f"youtube_music search_albums triggered ytmusic.search: {q}")
 
         results = ytmusic.search(query=q, filter="albums", limit=Video.search_results)
+        return cls.process_albums(results)
+
+    @classmethod
+    def process_albums(cls, results):
+        albums = []
 
         def job(result):
             try:
                 logger.debug(
-                    f"youtube_music search_albums triggered "
+                    f"youtube_music process_albums triggered "
                     f"ytmusic.get_album: {result['browseId']}"
                 )
                 # ytmusic.get_album is necessary to get the number of tracks
@@ -339,7 +358,7 @@ class Music(Client):
 
             except Exception as e:
                 logger.error(
-                    f"youtube_music search_albums get_album error {e}, {result}"
+                    f"youtube_music process_albums get_album error {e}, {result}"
                 )
 
         with ThreadPoolExecutor() as executor:
@@ -352,22 +371,30 @@ class Music(Client):
 
         return albums
 
-    def yt_listitem_to_playlist(item):
+    def yt_listitem_to_playlist(item, channelTitle=None):
         try:
             playlistId = item["playlistId"]
         except Exception as e:
             logger.error(f"yt_listitem_to_playlist, no playlistId: {item}, {e}")
             playlistId = None  # or should it just stop and return?
 
+        if "count" in item:
+            itemCount = int(item["count"].replace(",", ""))
+        else:
+            itemCount = item.get("trackCount", "0")
+
         playlist = {
             "id": {"kind": "youtube#playlist", "playlistId": playlistId},
             "snippet": {
-                "title": item["title"],
+                "title": item.get("title", "Unknown"),
+                "resourceId": {"playlistId": item["playlistId"]},
                 "thumbnails": {"default": item["thumbnails"][-1]},
-                "channelTitle": item["artists"][0]["name"],
+                "channelTitle": (
+                    item["artists"][0]["name"] if "artists" in item else channelTitle
+                ),
             },
-            "contentDetails": {"itemCount": item["trackCount"]},
-            "artists": item["artists"],
+            "contentDetails": {"itemCount": itemCount},
+            "artists": item.get("artists", None),
         }
 
         if "tracks" in item:
@@ -438,6 +465,8 @@ class Music(Client):
         elif "byline" in item:
             logger.debug(f'byline: {item["byline"]}')
             channelTitle = item["byline"]
+        elif "author" in item:
+            channelTitle = item["author"]
         else:
             channelTitle = "unknown"
 
@@ -472,6 +501,14 @@ class Music(Client):
                     # "thumbnail": ytmusic.get_artist(artist["id"])["thumbnails"][-1]
                 }
                 for artist in item["artists"]
+            ]
+        elif "author" in item and "channelId" in item:
+            video["artists"] = [
+                {
+                    "name": item["author"],
+                    "uri": f"yt:channel:{item['channelId']}",
+                    # "thumbnail": ytmusic.get_artist(item['channelId'])["thumbnails"][-1]
+                }
             ]
 
         return video
