@@ -45,10 +45,13 @@ Other compatible (and possibly more up-to-date) libraries may include
 `yt-dlp` (https://github.com/yt-dlp/yt-dlp) and `youtube-dlc`.
 
 If you wish to use an alternate youtube-dl library, in your configuration file
-you must set the `youtube_dl_package` option:: 
+you must set the `youtube_dl_package` option to the package name of an alternative
+package:: 
 
     [youtube]
-    youtube_dl_package = [name] : alternative package to replace "youtube-dl"
+    youtube_dl_package = [name] : package name of an alternative package 
+    				  to replace "youtube_dl", for example 
+				  "yt_dlp"
 
 
 Make sure you already have the GStreamer plugins, especially the "bad"
