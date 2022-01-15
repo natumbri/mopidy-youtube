@@ -28,6 +28,7 @@ class Extension(ext.Extension):
         schema["channel_id"] = config.String(optional=True)
         schema["musicapi_enabled"] = config.Boolean(optional=True)
         schema["musicapi_cookie"] = config.String(optional=True)
+        schema["musicapi_cookiefile"] = config.String(optional=True)
         schema["autoplay_enabled"] = config.Boolean(optional=True)
         schema["strict_autoplay"] = config.Boolean(optional=True)
         schema["max_autoplay_length"] = config.Integer(optional=True)

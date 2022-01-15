@@ -1,3 +1,6 @@
+from http.cookiejar import DefaultCookiePolicy, MozillaCookieJar
+from http.cookies import SimpleCookie
+
 import json
 import os
 
@@ -69,6 +72,11 @@ class YouTubeBackend(pykka.ThreadingActor, backend.Backend):
         youtube.api_enabled = config["youtube"]["api_enabled"]
         youtube.musicapi_enabled = config["youtube"]["musicapi_enabled"]
         youtube.musicapi_cookie = config["youtube"].get("musicapi_cookie", None)
+        youtube.musicapi_cookiefile = config["youtube"].get("musicapi_cookiefile", None)
+
+        if youtube.musicapi_cookie and youtube.musicapi_cookiefile:
+            raise ValueError("Only one of youtube/musicapi_cookie or youtube/musicapi_cookiefile can be used at one.")
+
         youtube_music.own_channel_id = youtube.channel
         youtube.youtube_dl_package = config["youtube"]["youtube_dl_package"]
         self.uri_schemes = ["youtube", "yt"]
@@ -109,6 +117,16 @@ class YouTubeBackend(pykka.ThreadingActor, backend.Backend):
         if youtube.musicapi_enabled is True:
             logger.info("Using YouTube Music API")
 
+            if youtube.musicapi_cookiefile:
+                logger.info(f"Reading cookies from {youtube.musicapi_cookiefile}")
+                cj = MozillaCookieJar(youtube.musicapi_cookiefile, policy=DefaultCookiePolicy(allowed_domains="youtube.com"))
+                cj.load()
+                cookie_parts = []
+                for cookie in cj:
+                    cookie_parts.append("%s=%s" % (cookie.name, SimpleCookie().value_encode(cookie.value)[1]))
+                
+                youtube.musicapi_cookie = "; ".join(cookie_parts)
+            
             if youtube.musicapi_cookie:
                 headers.update({"Cookie": youtube.musicapi_cookie})
 

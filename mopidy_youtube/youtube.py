@@ -16,6 +16,8 @@ from mopidy_youtube.converters import convert_video_to_track
 api_enabled = False
 channel = None
 cache_location = None
+musicapi_enabled = None
+musicapi_cookiefile = None
 youtube_dl = None
 youtube_dl_package = "youtube_dl"
 
@@ -389,9 +391,17 @@ class Video(Entry):
                     "cachedir": False,
                     "nopart": True,
                 }
+                if musicapi_cookiefile:
+                    ytdl_options["cookiefile"] = musicapi_cookiefile
+ 
+                base_url = "https://www.youtube.com"
+                if musicapi_enabled:
+                    # High quality music streams are only available to YouTube
+                    # Premium users when using YouTube Music.
+                    base_url = "https://music.youtube.com"
 
                 ytdl_extract_info_options = {
-                    "url": f"https://www.youtube.com/watch?v={self.id}",
+                    "url": f"{base_url}/watch?v={self.id}",
                     "ie_key": None,
                     "extra_info": {},
                     "process": True,

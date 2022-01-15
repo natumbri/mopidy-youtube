@@ -110,13 +110,20 @@ mopidy library, you need to::
 
     - set channel_id to the id for your own channel
     - enable the music api and 
-    - set a musicapi_cookie.  
+    - set a musicapi_cookiefile  
 
-You can obtain the cookie by process mentioned in the `ytmusicapi readme <https://ytmusicapi.readthedocs.io/en/latest/setup.html#copy-authentication-headers>`_.
-You only have to look out for Cookie in the network tab, not all the headers, and include
-it in your config file as musicapi_cookie::
+To enable YouTube Premium high quality streaming you need to setup the `musicapi_cookiefile` and
+use yt-dlp instead of youtube_dl. See `youtube_dl_package` documentation for how to configure it.
+Note: Setting up the cookie using the deprecated `musicapi_cookie` configuration option will
+not work for high quality audio!
 
-    musicapi_cookie = <cookie>  
+Setup a `cookies.txt` (Netscape HTTP Cookie File) containing YouTube cookies:
+- Download an extension to dump YouTube cookies. For example:
+  - Firefox: https://addons.mozilla.org/en-US/firefox/addon/cookies-txt/
+  - Chrome: https://chrome.google.com/webstore/detail/get-cookiestxt/bgaddhkoddajcdgocldbbfleckgcbcid
+- Navigate to youtube.com and ensure you are logged in.
+- Open the extension and export cookies using the "Only for this site" option.
+- Save the file and reference it in `musicapi_cookiefile`.
     
 mopidy-youtube can automatically play 'related' tracks after the last track in the play queue
 is played.  If you want mopidy-youtube to autoplay related videos, set autoplay_enabled = true::
