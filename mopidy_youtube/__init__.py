@@ -55,7 +55,7 @@ class Extension(ext.Extension):
 
         return [
             (
-                r"/(index.html)?",
+                r"/(index.html|image.html)?",
                 IndexHandler,
                 {"root": cache_dir, "core": core, "config": config},
             ),

@@ -76,7 +76,8 @@ class Music(Client):
 
         logger.debug(
             f"youtube_music list_related_videos triggered "
-            f"ytmusic.get_song x {len(related_videos)}: {related_videos}"
+            f"ytmusic.get_song returned {len(related_videos)}: "
+            f"{related_videos}"
         )
 
         # old code, which just used the get_watch_playlist, without calling
@@ -109,6 +110,10 @@ class Music(Client):
             japi_related_videos = youtube_japi.jAPI.list_related_videos(video_id)
             japi_related_videos["items"].extend(tracks)
             return japi_related_videos
+
+        logger.info(
+            f"youtube_music list_related_videos returned {len(tracks)} tracks."
+        )
 
         return json.loads(json.dumps({"items": tracks}, sort_keys=False, indent=1))
 
@@ -186,15 +191,22 @@ class Music(Client):
     @classmethod
     def list_playlistitems(cls, id, page=None, max_results=None):
 
+        logger.info(f"youtube_music list_playlistitems for playlist {id}")
+
+
         result = cls._get_playlist_or_album(id)
         result["playlistId"] = id
-        result = cls.yt_listitem_to_playlist(result)
+        playlist = cls.yt_listitem_to_playlist(result)
 
         # just in case: create the Playlist object and set api data,
         # to avoid list_playlist calling ytmusic.get_playlist if
         # the Playlist object doesn't exist
-        pl = Playlist.get(result["id"]["playlistId"])
-        pl._set_api_data(["title", "video_count", "thumbnails", "channel"], result)
+
+        pl = Playlist.get(playlist["id"]["playlistId"])
+        pl._set_api_data(["title", "video_count", "thumbnails", "channel"], pla)
+        
+        # why isn't the following line a good substitute for the two lines above?
+        # cls._create_playlist_objects([result])
 
         items = [
             track for track in result["tracks"] if track["id"]["videoId"] is not None

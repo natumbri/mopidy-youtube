@@ -1,3 +1,5 @@
+import glob
+import json
 import logging
 import os
 import pathlib
@@ -28,21 +30,22 @@ class IndexHandler(tornado.web.RequestHandler):
 
     def get(self, path):
         url = self.get_argument("url", None)
+        image = self.get_argument("image", None)
         if url is not None:
             video_id = extract_video_id(url)
             playlist_id = extract_playlist_id(url)
-            if playlist_id:
-                self.core.tracklist.add(uris=[f"yt:playlist:{playlist_id}"])
-                self.write(
-                    "<!DOCTYPE html><html><head><title>Playlist Added</title><script>"
-                    "alert('Playlist has been added.');window.history.back()</script>"
-                    "</head></html>"
-                )
-            elif video_id:
+            if video_id:
                 self.core.tracklist.add(uris=[f"yt:video:{video_id}"])
                 self.write(
                     "<!DOCTYPE html><html><head><title>Video Added</title><script>"
                     "alert('Video has been added.');window.history.back()</script>"
+                    "</head></html>"
+                )
+            elif playlist_id:
+                self.core.tracklist.add(uris=[f"yt:playlist:{playlist_id}"])
+                self.write(
+                    "<!DOCTYPE html><html><head><title>Playlist Added</title><script>"
+                    "alert('Playlist has been added.');window.history.back()</script>"
                     "</head></html>"
                 )
             else:
@@ -51,15 +54,25 @@ class IndexHandler(tornado.web.RequestHandler):
                     f"alert('Invalid URL: {url}');window.history.back()</script>"
                     f"</head></html>"
                 )
+
+        elif image is not None:
+            return self.render("image.html", image=image, track=self.get_argument("track", None))
+
         else:
-            return self.render("index.html", images=self.uris())
+            return self.render("index.html", images=self.uri_generator())
 
     def get_template_path(self):
         return pathlib.Path(__file__).parent / "www"
 
-    def uris(self):
-        for _, _, files in os.walk(self.root):
-            yield from [file for file in files if file.endswith(".jpg")]
+    def uri_generator(self):
+        for json_line in self.data_generator():
+            yield (f'{json_line["comment"]}', json_line["name"])
+
+    def data_generator(self):
+        json_pattern = os.path.join(self.root, '*.json')
+        for filename in glob.glob(json_pattern):
+            with open(filename) as openfile:
+                yield json.load(openfile)
 
 
 class AudioHandler(tornado.web.RequestHandler):

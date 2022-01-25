@@ -1,0 +1,35 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Mopidy-YouTube</title>
+    <link rel="stylesheet" href="/mopidy/mopidy.css" type="text/css" media="screen, print">
+</head>
+
+<body>
+    <div class="box focus">
+        <h1>Mopidy-YouTube</h1>
+    </div>
+    <div class="box">
+        <p style="text-align: center;">
+            <img style="max-width: 98%;" alt="Album art for {{track}}" title="{{track}}" src="{{image}}.jpg">
+            <br>{{track}}
+        <form>
+            <table style="width: 100%;">
+                <tr>
+                    <td style="width: 50%; text-align:center">
+                        <input type="button" value="Add to tracklist"
+                            onclick="location.href='?url=yt:video:{{image}}';" />
+                    </td>
+                    <td style="width: 50%; text-align:center">
+                        <input type="button" value="Back" onclick="javascript:history.back()" />
+                    </td>
+                </tr>
+            </table>
+        </form>
+    </div>
+</body>
+
+</html>
