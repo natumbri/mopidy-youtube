@@ -495,4 +495,154 @@ interactions:
     status:
       code: 200
       message: OK
+- request:
+    body: null
+    headers:
+      Accept-Language:
+      - en;q=0.8
+      Cookie:
+      - PREF=hl=en; CONSENT=YES+20210329;
+      user-agent:
+      - Mopidy-YouTube/3.5 Mopidy/3.2.0 CPython/3.8.10
+    method: GET
+    uri: https://www.googleapis.com/youtube/v3/videos?fields=items%28id%2Csnippet%28title%2CchannelTitle%29%2CcontentDetails%28duration%29%29&id=du4kNAyjVCg%2C7U_LhzgwJ4U%2CBZyzX4c1vIs%2CfyyiJc0Wk2M%2C_mTRvJ9fugM%2Cmsgimk3mV6g%2CKNHxwSp-6Og%2CIvWZS58erqc%2C7qDmyRS7mV8%2CCjwwmFrsX_E&key=fake_key&part=id%2Csnippet%2CcontentDetails
+  response:
+    body:
+      string: "{\n  \"error\": {\n    \"code\": 400,\n    \"message\": \"API key not
+        valid. Please pass a valid API key.\",\n    \"errors\": [\n      {\n        \"message\":
+        \"API key not valid. Please pass a valid API key.\",\n        \"domain\":
+        \"global\",\n        \"reason\": \"badRequest\"\n      }\n    ],\n    \"status\":
+        \"INVALID_ARGUMENT\",\n    \"details\": [\n      {\n        \"@type\": \"type.googleapis.com/google.rpc.ErrorInfo\",\n
+        \       \"reason\": \"API_KEY_INVALID\",\n        \"domain\": \"googleapis.com\",\n
+        \       \"metadata\": {\n          \"service\": \"youtube.googleapis.com\"\n
+        \       }\n      }\n    ]\n  }\n}\n"
+    headers:
+      Accept-Ranges:
+      - none
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000,h3-Q050=":443"; ma=2592000,h3-Q046=":443";
+        ma=2592000,h3-Q043=":443"; ma=2592000,quic=":443"; ma=2592000; v="46,43"
+      Cache-Control:
+      - private
+      Content-Type:
+      - application/json; charset=UTF-8
+      Date:
+      - Tue, 25 Jan 2022 21:54:34 GMT
+      Server:
+      - scaffolding on HTTPServer2
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - X-Origin
+      - Referer
+      - Origin,Accept-Encoding
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-XSS-Protection:
+      - '0'
+    status:
+      code: 400
+      message: Bad Request
+- request:
+    body: null
+    headers:
+      Accept-Language:
+      - en;q=0.8
+      Cookie:
+      - PREF=hl=en; CONSENT=YES+20210329;
+      user-agent:
+      - Mopidy-YouTube/3.5 Mopidy/3.2.0 CPython/3.8.10
+    method: GET
+    uri: https://www.googleapis.com/youtube/v3/videos?fields=items%28id%2Csnippet%28title%2CchannelTitle%29%2CcontentDetails%28duration%29%29&id=du4kNAyjVCg%2C4Eo84jDIMKI%2CBZyzX4c1vIs%2CfyyiJc0Wk2M%2C_mTRvJ9fugM%2Ce1YqueG2gtQ%2Cmsgimk3mV6g%2CKNHxwSp-6Og%2Cktoaj1IpTbw%2CIvWZS58erqc%2CB9BLMNn0PrQ%2C7qDmyRS7mV8%2CCjwwmFrsX_E&key=fake_key&part=id%2Csnippet%2CcontentDetails
+  response:
+    body:
+      string: "{\n  \"error\": {\n    \"code\": 400,\n    \"message\": \"API key not
+        valid. Please pass a valid API key.\",\n    \"errors\": [\n      {\n        \"message\":
+        \"API key not valid. Please pass a valid API key.\",\n        \"domain\":
+        \"global\",\n        \"reason\": \"badRequest\"\n      }\n    ],\n    \"status\":
+        \"INVALID_ARGUMENT\",\n    \"details\": [\n      {\n        \"@type\": \"type.googleapis.com/google.rpc.ErrorInfo\",\n
+        \       \"reason\": \"API_KEY_INVALID\",\n        \"domain\": \"googleapis.com\",\n
+        \       \"metadata\": {\n          \"service\": \"youtube.googleapis.com\"\n
+        \       }\n      }\n    ]\n  }\n}\n"
+    headers:
+      Accept-Ranges:
+      - none
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000,h3-Q050=":443"; ma=2592000,h3-Q046=":443";
+        ma=2592000,h3-Q043=":443"; ma=2592000,quic=":443"; ma=2592000; v="46,43"
+      Cache-Control:
+      - private
+      Content-Type:
+      - application/json; charset=UTF-8
+      Date:
+      - Tue, 25 Jan 2022 22:11:28 GMT
+      Server:
+      - scaffolding on HTTPServer2
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - X-Origin
+      - Referer
+      - Origin,Accept-Encoding
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-XSS-Protection:
+      - '0'
+    status:
+      code: 400
+      message: Bad Request
+- request:
+    body: null
+    headers:
+      Accept-Language:
+      - en;q=0.8
+      Cookie:
+      - PREF=hl=en; CONSENT=YES+20210329;
+      user-agent:
+      - Mopidy-YouTube/3.5 Mopidy/3.2.0 CPython/3.8.10
+    method: GET
+    uri: https://www.googleapis.com/youtube/v3/videos?fields=items%28id%2Csnippet%28title%2CchannelTitle%29%2CcontentDetails%28duration%29%29&id=du4kNAyjVCg%2C4Eo84jDIMKI%2C7U_LhzgwJ4U%2CBZyzX4c1vIs%2CfyyiJc0Wk2M%2C_mTRvJ9fugM%2Cmsgimk3mV6g%2CKNHxwSp-6Og%2Cktoaj1IpTbw%2CIvWZS58erqc%2CB9BLMNn0PrQ%2C7qDmyRS7mV8%2CCjwwmFrsX_E&key=fake_key&part=id%2Csnippet%2CcontentDetails
+  response:
+    body:
+      string: "{\n  \"error\": {\n    \"code\": 400,\n    \"message\": \"API key not
+        valid. Please pass a valid API key.\",\n    \"errors\": [\n      {\n        \"message\":
+        \"API key not valid. Please pass a valid API key.\",\n        \"domain\":
+        \"global\",\n        \"reason\": \"badRequest\"\n      }\n    ],\n    \"status\":
+        \"INVALID_ARGUMENT\",\n    \"details\": [\n      {\n        \"@type\": \"type.googleapis.com/google.rpc.ErrorInfo\",\n
+        \       \"reason\": \"API_KEY_INVALID\",\n        \"domain\": \"googleapis.com\",\n
+        \       \"metadata\": {\n          \"service\": \"youtube.googleapis.com\"\n
+        \       }\n      }\n    ]\n  }\n}\n"
+    headers:
+      Accept-Ranges:
+      - none
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000,h3-Q050=":443"; ma=2592000,h3-Q046=":443";
+        ma=2592000,h3-Q043=":443"; ma=2592000,quic=":443"; ma=2592000; v="46,43"
+      Cache-Control:
+      - private
+      Content-Type:
+      - application/json; charset=UTF-8
+      Date:
+      - Tue, 25 Jan 2022 22:11:49 GMT
+      Server:
+      - scaffolding on HTTPServer2
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - X-Origin
+      - Referer
+      - Origin,Accept-Encoding
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-XSS-Protection:
+      - '0'
+    status:
+      code: 400
+      message: Bad Request
 version: 1

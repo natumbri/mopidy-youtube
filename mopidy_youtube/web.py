@@ -56,7 +56,9 @@ class IndexHandler(tornado.web.RequestHandler):
                 )
 
         elif image is not None:
-            return self.render("image.html", image=image, track=self.get_argument("track", None))
+            return self.render(
+                "image.html", image=image, track=self.get_argument("track", None)
+            )
 
         else:
             return self.render("index.html", images=self.uri_generator())
@@ -69,7 +71,7 @@ class IndexHandler(tornado.web.RequestHandler):
             yield (f'{json_line["comment"]}', json_line["name"])
 
     def data_generator(self):
-        json_pattern = os.path.join(self.root, '*.json')
+        json_pattern = os.path.join(self.root, "*.json")
         for filename in glob.glob(json_pattern):
             with open(filename) as openfile:
                 yield json.load(openfile)
