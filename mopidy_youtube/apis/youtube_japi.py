@@ -111,7 +111,7 @@ class jAPI(Client):
 
             else:
 
-                logger.info(f"jAPI 'list_videos' triggered session.get: {id}")
+                logger.debug(f"jAPI 'list_videos' triggered session.get: {id}")
                 result = cls.session.get(cls.endpoint + "watch?v=" + id)
                 if result.status_code == 200:
                     yt_data = cls._find_yt_data(result.text)
@@ -192,7 +192,7 @@ class jAPI(Client):
 
             else:
 
-                logger.info(f"jAPI 'list_playlists' triggered session.get: {id}")
+                logger.debug(f"jAPI 'list_playlists' triggered session.get: {id}")
                 result = cls.session.get(cls.endpoint + "playlist?list=" + id)
                 if result.status_code == 200:
                     yt_data = cls._find_yt_data(result.text)
@@ -368,6 +368,7 @@ class jAPI(Client):
                     for s in sections:
                         if "itemSectionRenderer" in s:
                             extracted_json = s["itemSectionRenderer"]["contents"]
+                            results.extend(cls.json_to_items(extracted_json))
                         if "continuationItemRenderer" in s:
                             continuation_renderer = s["continuationItemRenderer"]
 
@@ -377,9 +378,7 @@ class jAPI(Client):
                             "continuationCommand"
                         ]["token"]
                     else:
-                        continuation = None
-                    results.extend(cls.json_to_items(extracted_json))
-
+                        return results
         return results
 
     @classmethod
