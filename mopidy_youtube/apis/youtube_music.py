@@ -111,9 +111,7 @@ class Music(Client):
             japi_related_videos["items"].extend(tracks)
             return japi_related_videos
 
-        logger.info(
-            f"youtube_music list_related_videos returned {len(tracks)} tracks."
-        )
+        logger.info(f"youtube_music list_related_videos returned {len(tracks)} tracks.")
 
         return json.loads(json.dumps({"items": tracks}, sort_keys=False, indent=1))
 
@@ -193,7 +191,6 @@ class Music(Client):
 
         logger.info(f"youtube_music list_playlistitems for playlist {id}")
 
-
         result = cls._get_playlist_or_album(id)
         result["playlistId"] = id
         playlist = cls.yt_listitem_to_playlist(result)
@@ -203,13 +200,13 @@ class Music(Client):
         # the Playlist object doesn't exist
 
         pl = Playlist.get(playlist["id"]["playlistId"])
-        pl._set_api_data(["title", "video_count", "thumbnails", "channel"], pla)
-        
+        pl._set_api_data(["title", "video_count", "thumbnails", "channel"], playlist)
+
         # why isn't the following line a good substitute for the two lines above?
-        # cls._create_playlist_objects([result])
+        # cls._create_playlist_objects([playlist])
 
         items = [
-            track for track in result["tracks"] if track["id"]["videoId"] is not None
+            track for track in playlist["tracks"] if track["id"]["videoId"] is not None
         ]
 
         # why do ytplaylist_item_to_video and ytalbum_item_to_video both include
