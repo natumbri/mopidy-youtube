@@ -7,18 +7,18 @@
   <title>Mopidy-YouTube</title>
   <link rel="stylesheet" href="/mopidy/mopidy.css" type="text/css" media="screen, print">
   <style>
-    #thumbnail_container {
+    #thumbnails {
       display: grid;
       grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
       grid-gap: 2px;
       line-height: 0%;
     }
 
-    #thumbnail_container a {
+    #thumbnails a {
       border: none;
     }
 
-    #thumbnail_container img {
+    #thumbnails img {
       border: none;
       width: 100%;
       aspect-ratio: 1;
@@ -59,11 +59,10 @@
     </p>
   </div>
   <div class="box">
-    <h2>Mopidy-YouTube image cache</h2>
-    <p>
-      Hover for title; click to enlarge; right click to add to tracklist
-    </p>
-    <div id="thumbnail_container">
+    <h2>Image cache</h2>
+    <p>Images for YouTube videos will automatically appear here. Hover for title; click to enlarge; right click to add
+      to tracklist.</p>
+    <div id="thumbnails">
       {% for image in images %}
       <a href="?image={{image[0]}}&track={{image[1]}}"
         oncontextmenu="location.href='?url=yt:video:{{image[0]}}';return false;">
