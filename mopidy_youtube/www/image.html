@@ -19,12 +19,15 @@
         <form>
             <table style="width: 100%;">
                 <tr>
-                    <td style="width: 50%; text-align:center">
+                    <td style="width: 33%; text-align:center">
                         <input type="button" value="Add to tracklist"
                             onclick="location.href='?url=yt:video:{{image}}';" />
                     </td>
-                    <td style="width: 50%; text-align:center">
+                    <td style="width: 33%; text-align:center">
                         <input type="button" value="Back" onclick="javascript:history.back()" />
+                    </td>
+                    <td style="width: 33%; text-align:center">
+                        <input type="button" value="Open on YouTube" onclick="location.href='https://www.youtube.com/watch?v={{image}}';" />
                     </td>
                 </tr>
             </table>
