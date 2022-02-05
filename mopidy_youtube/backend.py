@@ -7,7 +7,7 @@ from mopidy.core import CoreListener
 from mopidy.models import Image, Ref, SearchResult, Track, model_json_decoder
 
 from mopidy_youtube import Extension, logger, youtube
-from mopidy_youtube.apis import youtube_api, youtube_japi, youtube_music
+from mopidy_youtube.apis import youtube_japi
 from mopidy_youtube.converters import convert_playlist_to_album, convert_video_to_track
 from mopidy_youtube.data import (
     extract_channel_id,
@@ -61,15 +61,21 @@ class YouTubeBackend(pykka.ThreadingActor, backend.Backend):
         self.config = config
         self.library = YouTubeLibraryProvider(backend=self)
         self.playback = YouTubePlaybackProvider(audio=audio, backend=self)
-        youtube_api.API.youtube_api_key = config["youtube"]["youtube_api_key"] or None
+        youtube.api_enabled = config["youtube"]["api_enabled"]
+        if youtube.api_enabled:
+            global youtube_api
+            from mopidy_youtube.apis import youtube_api
+            youtube_api.API.youtube_api_key = config["youtube"]["youtube_api_key"] or None
         youtube.channel = config["youtube"]["channel_id"]
         youtube.Video.search_results = config["youtube"]["search_results"]
         youtube.Video.http_port = config["http"]["port"]
         youtube.Playlist.playlist_max_videos = config["youtube"]["playlist_max_videos"]
-        youtube.api_enabled = config["youtube"]["api_enabled"]
         youtube.musicapi_enabled = config["youtube"]["musicapi_enabled"]
-        youtube.musicapi_cookie = config["youtube"].get("musicapi_cookie", None)
-        youtube_music.own_channel_id = youtube.channel
+        if youtube.musicapi_enabled:
+            global youtube_music
+            from mopidy_youtube.apis import youtube_music
+            youtube.musicapi_cookie = config["youtube"].get("musicapi_cookie", None)
+            youtube_music.own_channel_id = youtube.channel
         youtube.youtube_dl_package = config["youtube"]["youtube_dl_package"]
         self.uri_schemes = ["youtube", "yt"]
         self.user_agent = "{}/{}".format(Extension.dist_name, Extension.version)
