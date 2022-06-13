@@ -24,6 +24,18 @@ def deep_search(needles, haystack):
     return found
 
 
+def traverse(input_dict, keys):
+    internal_dict_value = input_dict
+    for key in keys:
+        if isinstance(internal_dict_value, list):
+            internal_dict_value = internal_dict_value[key]
+        else:
+            internal_dict_value = internal_dict_value.get(key, None)
+        if internal_dict_value is None:
+            raise KeyError
+    return internal_dict_value
+
+
 # json paths
 
 sectionListRendererContentsPath = [
@@ -80,3 +92,12 @@ listPlaylistItemsPath = playlistBasePath + [
 listChannelPlaylistsPath = playlistBasePath + ["shelfRenderer", "content"]
 
 textPath = ["runs", 0, "text"]
+
+ytmErrorThumbnailPath = [
+    "playabilityStatus",
+    "errorScreen",
+    "playerErrorMessageRenderer",
+    "thumbnail",
+    "thumbnails",
+    0,
+]

@@ -75,8 +75,9 @@ class Entry:
         obj.id = id
         return obj
 
-    def create_object(item):
-        set_api_data = ["title", "channel"]
+    @classmethod
+    def create_object(cls, item):
+        minimum_fields = ["title", "channel"]
         if item["id"]["kind"] == "youtube#video":
             obj = Video.get(item["id"]["videoId"])
         elif item["id"]["kind"] == "youtube#playlist":
@@ -84,22 +85,9 @@ class Entry:
         else:
             obj = []
             return obj
-
-        if "contentDetails" in item:
-            if "duration" in item["contentDetails"]:
-                set_api_data.append("length")
-            elif "itemCount" in item["contentDetails"]:
-                set_api_data.append("video_count")
-
-        if "thumbnails" in item["snippet"]:
-            set_api_data.append("thumbnails")
-        if "album" in item:
-            set_api_data.append("album")
-        if "artists" in item:
-            set_api_data.append("artists")
-        if "channelId" in item["snippet"]:
-            set_api_data.append("channelId")
-        obj._set_api_data(set_api_data, item)
+        item, extended_fields = cls.extend_fields(item, minimum_fields)
+        # extended_fields = minimum_fields
+        obj._set_api_data(extended_fields, item)
         return obj
 
     @classmethod
@@ -215,6 +203,47 @@ class Entry:
                 val = item["snippet"]["channelId"]
             future.set(val)
 
+    @classmethod
+    def extend_fields(self, item, fields):
+        # logger.info(f"in: {item, fields}")
+        extended_fields = set(fields)
+        if "snippet" in item:
+            if "channelId" in item["snippet"]:
+                extended_fields.add("channelId")
+
+            if "videoOwnerChannelTitle" in item["snippet"]:
+                extended_fields.add("owner_channel")
+            elif "channelTitle" in item["snippet"]:
+                extended_fields.add("channel")
+            else:
+                logger.warn(f"no channel or owner_channel {item}")
+                item["snippet"]["channelTitle"] = "unknown"
+
+            if "thumbnails" in item["snippet"]:
+                extended_fields.add("thumbnails")
+
+        if "artists" in item:
+            extended_fields.add("artists")
+        elif "channelTitle" in item["snippet"] and "channelId" in item["snippet"]:
+            item["artists"] = [
+                {
+                    "name": f'{item["snippet"]["channelTitle"]} (Channel)',
+                    "uri": f'yt:channel:{item["snippet"]["channelId"]}',
+                }
+            ]
+            extended_fields.add("artists")
+
+        if "album" in item:
+            extended_fields.add("album")
+
+        if "contentDetails" in item:
+            if "duration" in item["contentDetails"]:
+                extended_fields.add("length")
+            elif "itemCount" in item["contentDetails"]:
+                extended_fields.add("video_count")
+        # logger.info(f"out: {item, list(extended_fields)}")
+        return (item, list(extended_fields))
+
 
 class Video(Entry):
 
@@ -226,19 +255,33 @@ class Video(Entry):
         loads title, length, channel of multiple videos using one API call for
         every 50 videos. API calls are split in separate threads.
         """
-        fields = ["title", "length", "channel"]
-        listOfVideos = cls._add_futures(listOfVideos, fields)
+        minimum_fields = ["title", "length", "channel"]
+        listOfVideos = cls._add_futures(listOfVideos, minimum_fields)
 
         def job(sublist):
+            # logger.info(sublist)
             try:
                 data = cls.api.list_videos([x.id for x in sublist])
-                dict = {item["id"]: item for item in data["items"]}
             except Exception as e:
                 logger.error('list_videos error "%s"', e)
-                dict = {}
+
+            if data:
+                item_dict = {item["id"]: item for item in data["items"]}
+            else:
+                item_dict = {}
 
             for video in sublist:
-                video._set_api_data(fields, dict.get(video.id))
+                if item_dict.get(video.id):
+                    item_dict[video.id], extended_fields = cls.extend_fields(
+                        item_dict.get(video.id), minimum_fields
+                    )
+                    # extended_fields = minimum_fields
+                    video._set_api_data(extended_fields, item_dict.get(video.id))
+                else:
+                    logger.info(
+                        f"no dict: {video.id, type(video), item_dict.get(video.id)}"
+                    )
+                logger.info(f"job done: {sublist}")
 
         with ThreadPoolExecutor() as executor:
             # make sure order is deterministic so that HTTP requests are replayable in tests
@@ -265,13 +308,11 @@ class Video(Entry):
             for item in data["items"]:
                 # why are some results returned without a 'snippet'?
                 if "snippet" in item:
-                    set_api_data = ["title", "channel"]
-                    if "contentDetails" in item:
-                        set_api_data.append("length")
-                    if "thumbnails" in item["snippet"]:
-                        set_api_data.append("thumbnails")
+                    minimum_fields = ["title", "channel"]
+                    item, extended_fields = self.extend_fields(item, minimum_fields)
+                    # extended_fields = minimum_fields
                     video = Video.get(item["id"]["videoId"])
-                    video._set_api_data(set_api_data, item)
+                    video._set_api_data(extended_fields, item)
                     relatedvideos.append(video)
 
             # start loading video info in the background
@@ -411,19 +452,7 @@ class Video(Entry):
                     if cached:
                         fileUri = f"file://{(os.path.join(cache_location, cached[0]))}"
                         self._audio_url.set(fileUri)
-                        return
                     else:
-
-                        logger.debug(f"caching metadata {self.id}")
-                        with open(
-                            os.path.join(cache_location, f"{self.id}.json"), "w"
-                        ) as outfile:
-                            json.dump(
-                                convert_video_to_track(self),
-                                cls=ModelJSONEncoder,
-                                fp=outfile,
-                            )
-
                         logger.debug(f"caching image {self.id}")
                         imageFile = f"{self.id}.jpg"
                         if imageFile not in os.listdir(cache_location):
@@ -451,10 +480,22 @@ class Video(Entry):
                                 download=True,
                             )
 
-                        # # this is now done by the progress_hooks
+                        # # self._audio_url.set is now done by the progress_hooks
                         # fileUri = f"file://{ydl.prepare_filename(info)}"
                         # self._audio_url.set(fileUri)
 
+                    # moved this here, because sometimes the metadata might go
+                    # missing, even if the audio and the image do not
+                    if f"{self.id}.json" not in os.listdir(cache_location):
+                        logger.debug(f"caching metadata {self.id}")
+                        with open(
+                            os.path.join(cache_location, f"{self.id}.json"), "w"
+                        ) as outfile:
+                            json.dump(
+                                convert_video_to_track(self),
+                                cls=ModelJSONEncoder,
+                                fp=outfile,
+                            )
                 else:
                     with youtube_dl.YoutubeDL(ytdl_options) as ydl:
                         info = ydl.extract_info(
@@ -481,11 +522,11 @@ class Playlist(Entry):
         loads title, thumbnails, video_count, channel of multiple playlists using
         one API call for every 50 lists. API calls are split in separate threads.
         """
-        fields = ["title", "video_count", "thumbnails", "channel"]
-        listOfPlaylists = cls._add_futures(listOfPlaylists, fields)
+        minimum_fields = ["title", "video_count", "thumbnails", "channel"]
+        listOfPlaylists = cls._add_futures(listOfPlaylists, minimum_fields)
 
         def job(sublist):
-            dict = {}
+            item_dict = {}
 
             try:
                 data = cls.api.list_playlists([x.id for x in sublist])
@@ -495,10 +536,14 @@ class Playlist(Entry):
                 )
 
             if data:
-                dict = {item["id"]: item for item in data["items"]}
-
+                item_dict = {item["id"]: item for item in data["items"]}
+            # logger.info(f"data {data}")
             for pl in sublist:
-                pl._set_api_data(fields, dict.get(pl.id))
+                item_dict[pl.id], extended_fields = cls.extend_fields(
+                    item_dict.get(pl.id), minimum_fields
+                )
+                # extended_fields = minimum_fields
+                pl._set_api_data(extended_fields, item_dict.get(pl.id))
 
         with ThreadPoolExecutor() as executor:
             # make sure order is deterministic so that HTTP requests are replayable in tests
@@ -554,20 +599,12 @@ class Playlist(Entry):
 
             myvideos = []
             for item in data["items"]:
-                if "videoOwnerChannelTitle" in item["snippet"]:
-                    set_api_data = ["title", "owner_channel"]
-                elif "channelTitle" in item["snippet"]:
-                    set_api_data = ["title", "channel"]
-                else:
-                    logger.warn(f"no channel or owner_channel; skipping {item}")
-                    continue
-                if "contentDetails" in item:
-                    set_api_data.append("length")
-                if "thumbnails" in item["snippet"]:
-                    set_api_data.append("thumbnails")
+                minimum_fields = ["title"]
+                item, extended_fields = self.extend_fields(item, minimum_fields)
+                # extended_fields = minimum_fields
                 if item["snippet"]["resourceId"]["videoId"] is not None:
                     video = Video.get(item["snippet"]["resourceId"]["videoId"])
-                    video._set_api_data(set_api_data, item)
+                    video._set_api_data(extended_fields, item)
                     myvideos.append(video)
 
             # start loading video info in the background
@@ -604,7 +641,7 @@ class Channel(Entry):
         """
         Get all public playlists from the channel.
         """
-        set_api_data = ["title", "video_count"]
+        minimum_fields = ["title", "video_count"]
         try:
             if channel_id == "root":
                 channel_id = channel
@@ -618,8 +655,12 @@ class Channel(Entry):
             channel_playlists = []
             for item in data["items"]:
                 pl = Playlist.get(item["id"])
-                pl._set_api_data(set_api_data, item)
+                # this doesn't work. adding 'channel' here breaks something
+                # item, extended_fields = cls.extend_fields(item, minimum_fields)
+                extended_fields = minimum_fields
+                pl._set_api_data(extended_fields, item)
                 channel_playlists.append(pl)
+            logger.info(f"channel_playlists {channel_playlists}")
             Playlist.load_info(channel_playlists)
             return channel_playlists
         except Exception as e:

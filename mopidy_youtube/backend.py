@@ -65,7 +65,11 @@ class YouTubeBackend(pykka.ThreadingActor, backend.Backend):
         if youtube.api_enabled:
             global youtube_api
             from mopidy_youtube.apis import youtube_api
-            youtube_api.API.youtube_api_key = config["youtube"]["youtube_api_key"] or None
+            try:
+                youtube_api.API.youtube_api_key = config["youtube"]["youtube_api_key"]
+            except Exception as e:
+                logger.error(f"No YouTube API key provided, disabling API: {e}")
+                youtube.api_enabled = False
         youtube.channel = config["youtube"]["channel_id"]
         youtube.Video.search_results = config["youtube"]["search_results"]
         youtube.Video.http_port = config["http"]["port"]
@@ -97,16 +101,12 @@ class YouTubeBackend(pykka.ThreadingActor, backend.Backend):
             logger.info("file caching not enabled")
 
         if youtube.api_enabled is True:
-            if youtube_api.API.youtube_api_key is None:
-                logger.error("No YouTube API key provided, disabling API")
+            youtube.Entry.api = youtube_api.API(proxy, headers)
+            if youtube.Entry.search(q="test") is None:
+                logger.error("Failed to verify YouTube API key, disabling API")
                 youtube.api_enabled = False
             else:
-                youtube.Entry.api = youtube_api.API(proxy, headers)
-                if youtube.Entry.search(q="test") is None:
-                    logger.error("Failed to verify YouTube API key, disabling API")
-                    youtube.api_enabled = False
-                else:
-                    logger.info("YouTube API key verified")
+                logger.info("YouTube API key verified")
 
         if youtube.api_enabled is False:
             logger.info("using jAPI")
@@ -133,9 +133,7 @@ class YouTubeBackend(pykka.ThreadingActor, backend.Backend):
 
 class YouTubeLibraryProvider(backend.LibraryProvider):
 
-    root_directory = Ref.directory(
-        uri="youtube:channel:root", name="My Youtube playlists"
-    )
+    root_directory = Ref.directory(uri="youtube:browse", name="YouTube")
 
     """
     Called when root_directory is set to the URI of the youtube channel ID in the mopidy.conf
@@ -144,6 +142,29 @@ class YouTubeLibraryProvider(backend.LibraryProvider):
     """
 
     def browse(self, uri):
+        if uri == "youtube:browse":
+            return [
+                Ref.directory(uri="youtube:channel:root", name="My Youtube playlists"),
+                Ref.directory(uri="youtube:channel:artists", name="My Youtube artists"),
+            ]
+        if uri == "youtube:channel:artists":
+            artistrefs = set()
+            pl = []
+            playlists = [
+                self.lookup(f"yt:playlist:{playlist.id}")
+                for playlist in youtube.Channel.playlists("root")
+            ]
+            for playlist in playlists:
+                for track in playlist:
+                    [
+                        artistrefs.add(Ref.artist(uri=artist.uri, name=artist.name))
+                        for artist in track.artists
+                        if artist.uri
+                    ]
+
+            artistrefs_list = list(artistrefs)
+            artistrefs_list.sort(key=lambda x: x.name.lower())
+            return artistrefs_list
         if extract_playlist_id(uri):
             trackrefs = []
             tracks = self.lookup(uri)
@@ -228,14 +249,9 @@ class YouTubeLibraryProvider(backend.LibraryProvider):
 
     def lookup_video_track(self, video_id: str) -> Track:
         if youtube.cache_location:
-            cached = [
-                cached_file
-                for cached_file in os.listdir(youtube.cache_location)
-                if cached_file == f"{video_id}.json"
-            ]
-            if cached:
+            if f"{video_id}.json" in os.listdir(youtube.cache_location):
                 with open(
-                    os.path.join(youtube.cache_location, cached[0]), "r"
+                    os.path.join(youtube.cache_location, f"{video_id}.json"), "r"
                 ) as infile:
                     track = json.load(infile, object_hook=model_json_decoder)
                 return track
@@ -367,7 +383,7 @@ class YouTubePlaybackProvider(backend.PlaybackProvider):
 
     def translate_uri(self, uri):
         """
-        Called when a track us ready to play, we need to return the actual url of
+        Called when a track is ready to play, we need to return the actual url of
         the audio. uri must be of the form youtube:video/<title>.<id> or youtube:video:<id>
         (only videos can be played, playlists are expanded into tracks by
         YouTubeLibraryProvider.lookup)

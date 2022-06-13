@@ -909,4 +909,54 @@ interactions:
     status:
       code: 200
       message: OK
+- request:
+    body: null
+    headers:
+      Accept-Language:
+      - en;q=0.8
+      Cookie:
+      - PREF=hl=en; CONSENT=YES+20210329;
+      user-agent:
+      - Mopidy-YouTube/3.5 Mopidy/3.3.0 CPython/3.8.10
+    method: GET
+    uri: https://www.googleapis.com/youtube/v3/videos?fields=items%28id%2Csnippet%28title%2CchannelTitle%2CchannelId%29%2CcontentDetails%28duration%29%29&id=e1YqueG2gtQ&key=fake_key&part=id%2Csnippet%2CcontentDetails
+  response:
+    body:
+      string: "{\n  \"error\": {\n    \"code\": 400,\n    \"message\": \"API key not
+        valid. Please pass a valid API key.\",\n    \"errors\": [\n      {\n        \"message\":
+        \"API key not valid. Please pass a valid API key.\",\n        \"domain\":
+        \"global\",\n        \"reason\": \"badRequest\"\n      }\n    ],\n    \"status\":
+        \"INVALID_ARGUMENT\",\n    \"details\": [\n      {\n        \"@type\": \"type.googleapis.com/google.rpc.ErrorInfo\",\n
+        \       \"reason\": \"API_KEY_INVALID\",\n        \"domain\": \"googleapis.com\",\n
+        \       \"metadata\": {\n          \"service\": \"youtube.googleapis.com\"\n
+        \       }\n      }\n    ]\n  }\n}\n"
+    headers:
+      Accept-Ranges:
+      - none
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000,h3-Q050=":443"; ma=2592000,h3-Q046=":443";
+        ma=2592000,h3-Q043=":443"; ma=2592000,quic=":443"; ma=2592000; v="46,43"
+      Cache-Control:
+      - private
+      Content-Type:
+      - application/json; charset=UTF-8
+      Date:
+      - Sun, 12 Jun 2022 09:18:03 GMT
+      Server:
+      - scaffolding on HTTPServer2
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - X-Origin
+      - Referer
+      - Origin,Accept-Encoding
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-XSS-Protection:
+      - '0'
+    status:
+      code: 400
+      message: Bad Request
 version: 1
