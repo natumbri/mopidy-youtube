@@ -5,30 +5,30 @@ interactions:
       Accept-Language:
       - en;q=0.8
       Cookie:
-      - PREF=hl=en;
+      - PREF=hl=en; CONSENT=YES+20210329;
       user-agent:
-      - Mopidy-YouTube/3.4 Mopidy/3.2.0 CPython/3.8.10
+      - Mopidy-YouTube/3.5 Mopidy/3.3.0 CPython/3.8.10
     method: GET
-    uri: https://www.googleapis.com/youtube/v3/videos?fields=items%28id%2Csnippet%28title%2CchannelTitle%29%2CcontentDetails%28duration%29%29&id=e1YqueG2gtQ&key=fake_key&part=id%2Csnippet%2CcontentDetails
+    uri: https://www.googleapis.com/youtube/v3/videos?fields=items%28id%2Csnippet%28title%2CchannelTitle%2CchannelId%29%2CcontentDetails%28duration%29%29&id=e1YqueG2gtQ&key=fake_key&part=id%2Csnippet%2CcontentDetails
   response:
     body:
       string: "{\n  \"items\": [\n    {\n      \"id\": \"e1YqueG2gtQ\",\n      \"snippet\":
-        {\n        \"title\": \"CHVRCHES - Miracle (Official Video)\",\n        \"channelTitle\":
-        \"ChvrchesVEVO\"\n      },\n      \"contentDetails\": {\n        \"duration\":
-        \"PT3M18S\"\n      }\n    }\n  ]\n}\n"
+        {\n        \"channelId\": \"UCDgEglMcFTNpDbGEeQcummw\",\n        \"title\":
+        \"CHVRCHES - Miracle (Official Video)\",\n        \"channelTitle\": \"ChvrchesVEVO\"\n
+        \     },\n      \"contentDetails\": {\n        \"duration\": \"PT3M18S\"\n
+        \     }\n    }\n  ]\n}\n"
     headers:
       Accept-Ranges:
       - none
       Alt-Svc:
-      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000,h3-T051=":443"; ma=2592000,h3-Q050=":443";
-        ma=2592000,h3-Q046=":443"; ma=2592000,h3-Q043=":443"; ma=2592000,quic=":443";
-        ma=2592000; v="46,43"
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000,h3-Q050=":443"; ma=2592000,h3-Q046=":443";
+        ma=2592000,h3-Q043=":443"; ma=2592000,quic=":443"; ma=2592000; v="46,43"
       Cache-Control:
       - private
       Content-Type:
       - application/json; charset=UTF-8
       Date:
-      - Thu, 23 Sep 2021 06:04:44 GMT
+      - Tue, 14 Jun 2022 09:58:52 GMT
       Server:
       - scaffolding on HTTPServer2
       Transfer-Encoding:
@@ -52,78 +52,36 @@ interactions:
       Accept-Language:
       - en;q=0.8
       Cookie:
-      - PREF=hl=en;
+      - PREF=hl=en; CONSENT=YES+20210329;
       user-agent:
-      - Mopidy-YouTube/3.4 Mopidy/3.2.0 CPython/3.8.10
+      - Mopidy-YouTube/3.5 Mopidy/3.3.0 CPython/3.8.10
     method: GET
     uri: https://www.googleapis.com/youtube/v3/search?key=fake_key&maxResults=20&part=snippet&relatedToVideoId=e1YqueG2gtQ&type=video
   response:
     body:
-      string: "{\n  \"kind\": \"youtube#searchListResponse\",\n  \"etag\": \"NrIeaTgoYYx1PTtKjtUIV61m0TE\",\n
+      string: "{\n  \"kind\": \"youtube#searchListResponse\",\n  \"etag\": \"BfzS3b3JzJc3eGn81C2WEMZ35tg\",\n
         \ \"nextPageToken\": \"CBQQAA\",\n  \"regionCode\": \"AU\",\n  \"pageInfo\":
-        {\n    \"totalResults\": 186,\n    \"resultsPerPage\": 20\n  },\n  \"items\":
-        [\n    {\n      \"kind\": \"youtube#searchResult\",\n      \"etag\": \"Uq-rUTopbR8Iw_Nxd2RYs7_4JOk\",\n
+        {\n    \"totalResults\": 175,\n    \"resultsPerPage\": 20\n  },\n  \"items\":
+        [\n    {\n      \"kind\": \"youtube#searchResult\",\n      \"etag\": \"PJsyt2aqLkT39mtiHPXX51P_fwo\",\n
         \     \"id\": {\n        \"kind\": \"youtube#video\",\n        \"videoId\":
-        \"lnLyMjXDA3Q\"\n      },\n      \"snippet\": {\n        \"publishedAt\":
-        \"2019-04-04T15:21:08Z\",\n        \"channelId\": \"UCEdvpU2pFRCVqU6yIPyTpMQ\",\n
-        \       \"title\": \"Marshmello ft. CHVRCHES - Here With Me (Jimmy Kimmel
-        Live in Las Vegas Performance Video)\",\n        \"description\": \"Marshmello
-        and CHVRCHES perform their hit single 'Here With Me' on Jimmy Kimmel Live\\nPurchase/Stream
-        'Here With Me' \u25B6 https://marshmello.lnk.to/herewithme\\nSHOP Limited
-        Edition 'Here With Me' Merch \u25B6 http://mellogang.com\\n[\u2716\u203F\u2716]
-        SUBSCRIBE HERE \u25B6 http://youtube.com/marshmellomusic?sub_confirmation=1\\n\\nMarshmello
-        Fortnite Event \u25B6 https://www.youtube.com/playlist?list=PLcYK4PlHbZQuBdEybTFkZ2IxKPdvPpbne\\n\\nWatch
-        Cooking with Marshmello HERE \u25B6 http://youtube.com/playlist?list=PLcYK4PlHbZQtXROf5fnrr4dO4ruWiv7ts\\n\\nWatch
-        Gaming with Marshmello HERE \u25B6 http://youtube.com/playlist?list=PLcYK4PlHbZQvk3_Q6fbJy0xklOZ2aH7WP\\n\\n---MORE
-        Marshmello Music\\nListen to Joytime II \u25B6 http://smarturl.it/JOYTIMEII\\n\\nWATCH
-        BIBA MUSIC VIDEO \u25B6 https://youtu.be/UhYRlI_bpJQ\\nWATCH PROJECT DREAMS
-        MUSIC VIDEO \u25B6 https://youtu.be/Hn7WDtF3nKA\\nWATCH HAPPIER MUSIC VIDEO
-        \u25B6 https://youtu.be/m7Bc3pLyij0\\nWATCH TOGETHER MUSIC VIDEO \u25B6 https://youtu.be/JePnQ1gSagc\\nWATCH
-        BAYEN HABEIT LYRIC VIDEO \u25B6 https://youtu.be/jNJCdxMf0t8\\nWATCH STARS
-        MUSIC VIDEO \u25B6 https://youtu.be/A57B7B6w3kw\\nWATCH FLASHBACKS MUSIC VIDEO
-        \u25B6 https://youtu.be/Lj-_mD0w474\\nWATCH YOU CAN CRY MUSIC VIDEO \u25B6
-        https://youtu.be/2SJ0hgdciNE\\nWATCH EVERYDAY MUSIC VIDEO \u25B6 https://youtu.be/bEdcJY8Emm8\\nWATCH
-        FLY MUSIC VIDEO \u25B6 https://youtu.be/oRArmtMA9AI\\nWATCH FRIENDS MUSIC
-        VIDEO \u25B6 https://youtu.be/jzD_yyEcp0M\\nWATCH SPOTLIGHT MUSIC VIDEO \u25B6
-        https://youtu.be/7R1N-8SoqcM\\nWATCH LOVE U MUSIC VIDEO \u25B6 https://youtu.be/D-pKeb6Wf4U\\nWATCH
-        TAKE IT BACK MUSIC VIDEO \u25B6 https://youtu.be/P9Ijqa_2eu0\\nWATCH SILENCE
-        MUSIC VIDEO \u25B6 https://youtu.be/Tx1sqYc3qas\\nWATCH BLOCKS MUSIC VIDEO
-        \u25B6 https://youtu.be/5E4ZBSInqUU\\nWATCH YOU & ME MUSIC VIDEO \u25B6 https://youtu.be/fiusxyygqGk\\nWATCH
-        FIND ME MUSIC VIDEO \u25B6 https://youtu.be/ymq1WdGUcw8\\nWATCH MOVING ON
-        MUSIC VIDEO \u25B6 https://youtu.be/yU0tnrEk8H4\\nWATCH SUMMER MUSIC VIDEO
-        \u25B6 https://youtu.be/2vMH8lITTCE\\nWATCH ALONE MUSIC VIDEO \u25B6 https://youtu.be/ALZHF5UqnU4\\nWATCH
-        KEEP IT MELLO MUSIC VIDEO \u25B6 https://youtu.be/_J_VpmXAzqg\\n\\nMARSHMELLO:\\nMerch
-        | http://mellogang.com/\\nSpotify | http://spoti.fi/Marshmello\\nApple Music
-        | http://apple.co/2n8Evz6\\nSoundCloud | http://soundcloud.com/marshmellomusic\\nInstagram
-        | http://instagram.com/marshmellomusic\\nFacebook | http://facebook.com/marshmellomusic\\nTwitter
-        | http://twitter.com/marshmellomusic\\nTwitch | http://twitch.tv/marshmellomusic\\n\\nCHVRCHES:\\nInstagram
-        | https://instagram.com/CHVRCHES\\nFacebook | https://facebook.com/CHVRCHES\\nYouTube
-        | https://youtube.com/CHVRCHES\\nTwitter | https://twitter.com/CHVRCHES\\nSoundCloud
-        | https://soundcloud.com/CHVRCHES\\n\\nConnect with Jimmy Kimmel Live Online:\\nVisit
-        the Jimmy Kimmel Live WEBSITE: http://bit.ly/JKLWebsite\\nLike Jimmy Kimmel
-        on FACEBOOK: http://bit.ly/KimmelFB\\nLike Jimmy Kimmel Live on FACEBOOK:
-        http://bit.ly/JKLFacebook\\nFollow @JimmyKimmel on TWITTER: http://bit.ly/KimmelTW\\nFollow
-        Jimmy Kimmel Live on TWITTER: http://bit.ly/JKLTwitter\\nFollow Jimmy Kimmel
-        Live on INSTAGRAM: http://bit.ly/JKLInstagram\\n\\nWhat are Stuffed Puffs???
-        Find out more here:\\nInstagram | https://instagram.com/stuffedpuffs\\nFacebook
-        | https://facebook.com/StuffedPuffsMarshmallows\\nYouTube | https://youtube.com/stuffedpuffs\\nTwitter
-        | https://twitter.com/stuffedpuffs\\nWebsite | https://stuffedpuffs.com\\n\\nSubscribe
-        to Marshmello on YouTube for the best new music, today's top hits, dance music,
-        pop music, hip hop and trending music in 2019. Live Performance in Las Vegas\\n#Marshmello
-        #CHVRCHES #HereWithMe #KimmelinVegas\",\n        \"thumbnails\": {\n          \"default\":
-        {\n            \"url\": \"https://i.ytimg.com/vi/lnLyMjXDA3Q/default.jpg\",\n
+        \"wEdRhmBx8IU\"\n      },\n      \"snippet\": {\n        \"publishedAt\":
+        \"2018-03-15T16:27:40Z\",\n        \"channelId\": \"UCKoafhJ9dkAWaEvlXCiBBwA\",\n
+        \       \"title\": \"CHVRCHES - Somebody Else (The 1975 cover) in the Live
+        Lounge\",\n        \"description\": \"Chvrches cover The 1975's Somebody Else
+        in the BBC Radio 1 Live Lounge\\n\\nhttp://vevo.ly/G5VSnS\",\n        \"thumbnails\":
+        {\n          \"default\": {\n            \"url\": \"https://i.ytimg.com/vi/wEdRhmBx8IU/default.jpg\",\n
         \           \"width\": 120,\n            \"height\": 90\n          },\n          \"medium\":
-        {\n            \"url\": \"https://i.ytimg.com/vi/lnLyMjXDA3Q/mqdefault.jpg\",\n
+        {\n            \"url\": \"https://i.ytimg.com/vi/wEdRhmBx8IU/mqdefault.jpg\",\n
         \           \"width\": 320,\n            \"height\": 180\n          },\n          \"high\":
-        {\n            \"url\": \"https://i.ytimg.com/vi/lnLyMjXDA3Q/hqdefault.jpg\",\n
+        {\n            \"url\": \"https://i.ytimg.com/vi/wEdRhmBx8IU/hqdefault.jpg\",\n
         \           \"width\": 480,\n            \"height\": 360\n          },\n          \"standard\":
-        {\n            \"url\": \"https://i.ytimg.com/vi/lnLyMjXDA3Q/sddefault.jpg\",\n
+        {\n            \"url\": \"https://i.ytimg.com/vi/wEdRhmBx8IU/sddefault.jpg\",\n
         \           \"width\": 640,\n            \"height\": 480\n          },\n          \"maxres\":
-        {\n            \"url\": \"https://i.ytimg.com/vi/lnLyMjXDA3Q/maxresdefault.jpg\",\n
+        {\n            \"url\": \"https://i.ytimg.com/vi/wEdRhmBx8IU/maxresdefault.jpg\",\n
         \           \"width\": 1280,\n            \"height\": 720\n          }\n        },\n
-        \       \"channelTitle\": \"Marshmello\",\n        \"liveBroadcastContent\":
-        \"none\",\n        \"publishTime\": \"2019-04-04T15:21:08Z\"\n      }\n    },\n
-        \   {\n      \"kind\": \"youtube#searchResult\",\n      \"etag\": \"TwidIEf5iBWhzswV03MQPnSABPQ\",\n
+        \       \"channelTitle\": \"BBCRadio1VEVO\",\n        \"liveBroadcastContent\":
+        \"none\",\n        \"publishTime\": \"2018-03-15T16:27:40Z\"\n      }\n    },\n
+        \   {\n      \"kind\": \"youtube#searchResult\",\n      \"etag\": \"aWM1WUSTF7muTqFVl1x6hC-2juw\",\n
         \     \"id\": {\n        \"kind\": \"youtube#video\",\n        \"videoId\":
         \"RJdOYscmlyo\"\n      },\n      \"snippet\": {\n        \"publishedAt\":
         \"2020-04-21T21:28:28Z\",\n        \"channelId\": \"UCXCfOEJFMa40s-57zxw9MYw\",\n
@@ -168,98 +126,127 @@ interactions:
         \           \"width\": 1280,\n            \"height\": 720\n          }\n        },\n
         \       \"channelTitle\": \"CHVRCHES\",\n        \"liveBroadcastContent\":
         \"none\",\n        \"publishTime\": \"2020-04-21T21:28:28Z\"\n      }\n    },\n
-        \   {\n      \"kind\": \"youtube#searchResult\",\n      \"etag\": \"j-GdIcFVenjwCmU5kqgRd8wEJaE\",\n
+        \   {\n      \"kind\": \"youtube#searchResult\",\n      \"etag\": \"Kq_DKxI387-xwcS6bQDJhvlLaw4\",\n
         \     \"id\": {\n        \"kind\": \"youtube#video\",\n        \"videoId\":
-        \"wEdRhmBx8IU\"\n      },\n      \"snippet\": {\n        \"publishedAt\":
-        \"2018-03-15T16:27:40Z\",\n        \"channelId\": \"UCKoafhJ9dkAWaEvlXCiBBwA\",\n
-        \       \"title\": \"CHVRCHES - Somebody Else (The 1975 cover) in the Live
-        Lounge\",\n        \"description\": \"Chvrches cover The 1975's Somebody Else
-        in the BBC Radio 1 Live Lounge\\n\\nhttp://vevo.ly/G5VSnS\",\n        \"thumbnails\":
-        {\n          \"default\": {\n            \"url\": \"https://i.ytimg.com/vi/wEdRhmBx8IU/default.jpg\",\n
+        \"J3UXp9jIr-U\"\n      },\n      \"snippet\": {\n        \"publishedAt\":
+        \"2019-04-05T02:26:15Z\",\n        \"channelId\": \"UCEdvpU2pFRCVqU6yIPyTpMQ\",\n
+        \       \"title\": \"Marshmello - Here With Me Feat. CHVRCHES (Official Music
+        Video)\",\n        \"description\": \"Marshmello - Here With Me Feat. CHVRCHES
+        (Official Music Video)\\nPurchase/Stream 'Here With Me' \u25B6 https://marshmello.lnk.to/herewithme\\nSHOP
+        Limited Edition Merch \u25B6 https://www.marshmellomusic.com\\n\\n[\u2716\u203F\u2716]
+        SUBSCRIBE HERE \u25B6 http://youtube.com/marshmellomusic?sub_confirmation=1\\nClick
+        Here To Watch The Happier Music Video \u25B6 https://youtu.be/m7Bc3pLyij0\\nBIBA
+        Music Video w/ Pritam, Shirley Setia & Shah Rukh Khan \u25B6 https://youtu.be/UhYRlI_bpJQ\\n\\nMarshmello
+        Fortnite Event \u25B6 https://www.youtube.com/playlist?list=PLcYK4PlHbZQuBdEybTFkZ2IxKPdvPpbne\\n\\nWatch
+        Cooking with Marshmello HERE \u25B6 http://youtube.com/playlist?list=PLcYK4PlHbZQtXROf5fnrr4dO4ruWiv7ts\\n\\nWatch
+        Gaming with Marshmello HERE \u25B6 http://youtube.com/playlist?list=PLcYK4PlHbZQvk3_Q6fbJy0xklOZ2aH7WP\\n\\n---MORE
+        Marshmello Music\\nListen to Joytime II \u25B6 http://smarturl.it/JOYTIMEII\\n\\nWATCH
+        ONE THING RIGHT \u25B6 https://youtu.be/O6RyKbcpBfw\\nWATCH LIGHT IT UP MUSIC
+        VIDEO \u25B6 https://youtu.be/qGh2e-yqEYQ\\nWATCH BIBA MUSIC VIDEO \u25B6
+        https://youtu.be/UhYRlI_bpJQ\\nWATCH PROJECT DREAMS MUSIC VIDEO \u25B6 https://youtu.be/Hn7WDtF3nKA\\nWATCH
+        HAPPIER MUSIC VIDEO \u25B6 https://youtu.be/m7Bc3pLyij0\\nWATCH TOGETHER MUSIC
+        VIDEO \u25B6 https://youtu.be/JePnQ1gSagc\\nWATCH BAYEN HABEIT LYRIC VIDEO
+        \u25B6 https://youtu.be/jNJCdxMf0t8\\nWATCH STARS MUSIC VIDEO \u25B6 https://youtu.be/A57B7B6w3kw\\nWATCH
+        FLASHBACKS MUSIC VIDEO \u25B6 https://youtu.be/Lj-_mD0w474\\nWATCH YOU CAN
+        CRY MUSIC VIDEO \u25B6 https://youtu.be/2SJ0hgdciNE\\nWATCH EVERYDAY MUSIC
+        VIDEO \u25B6 https://youtu.be/bEdcJY8Emm8\\nWATCH FLY MUSIC VIDEO \u25B6 https://youtu.be/oRArmtMA9AI\\nWATCH
+        FRIENDS MUSIC VIDEO \u25B6 https://youtu.be/jzD_yyEcp0M\\nWATCH SPOTLIGHT
+        MUSIC VIDEO \u25B6 https://youtu.be/7R1N-8SoqcM\\nWATCH LOVE U MUSIC VIDEO
+        \u25B6 https://youtu.be/D-pKeb6Wf4U\\nWATCH TAKE IT BACK MUSIC VIDEO \u25B6
+        https://youtu.be/P9Ijqa_2eu0\\nWATCH SILENCE MUSIC VIDEO \u25B6 https://youtu.be/Tx1sqYc3qas\\nWATCH
+        BLOCKS MUSIC VIDEO \u25B6 https://youtu.be/5E4ZBSInqUU\\nWATCH YOU & ME MUSIC
+        VIDEO \u25B6 https://youtu.be/fiusxyygqGk\\nWATCH FIND ME MUSIC VIDEO \u25B6
+        https://youtu.be/ymq1WdGUcw8\\nWATCH MOVING ON MUSIC VIDEO \u25B6 https://youtu.be/yU0tnrEk8H4\\nWATCH
+        SUMMER MUSIC VIDEO \u25B6 https://youtu.be/2vMH8lITTCE\\nWATCH ALONE MUSIC
+        VIDEO \u25B6 https://youtu.be/ALZHF5UqnU4\\nWATCH KEEP IT MELLO MUSIC VIDEO
+        \u25B6 https://youtu.be/_J_VpmXAzqg\\nWATCH RESCUE ME \u25B6 https://youtu.be/O6RyKbcpBfw
+        \\n\\nMARSHMELLO:\\nMerch | http://mellogang.com/\\nSpotify | http://spoti.fi/Marshmello\\nApple
+        Music | http://apple.co/2n8Evz6\\nSoundCloud | http://soundcloud.com/marshmellomusic\\nInstagram
+        | http://instagram.com/marshmellomusic\\nFacebook | http://facebook.com/marshmellomusic\\nTwitter
+        | http://twitter.com/marshmellomusic\\nTwitch | http://twitch.tv/marshmellomusic\\n\\nCHVRCHES:\\nInstagram
+        | https://instagram.com/CHVRCHES\\nFacebook | https://facebook.com/CHVRCHES\\nYouTube
+        | https://youtube.com/CHVRCHES\\nTwitter | https://twitter.com/CHVRCHES\\nSoundCloud
+        | https://soundcloud.com/CHVRCHES\\n\\nCredits:\\nDirector: Mercedes Bryce
+        Morgan\\nStory By: Daniel Malikyar, Karam Gill \\n\\nAgency: MGX CREATIVE\\nExecutive
+        Producers: Daniel Malikyar, Karam Gill\\nProducer: Brian Bell\\nDirector of
+        Photography: Steve Gainer\\nProduction Designer: John Richoux\\nArt Director:
+        Leah Bychurch\\n1st AD: Nicole Jordan Webber, Jared Trimble\\nStylist: Kit
+        Scarbo\\nMUA: Brielle McKenna\\nEditor: Anjoum Agrama\\nColorist: Bryan Smaller\\nVFX
+        Artist: Bill Parker\\n\\nWhat are Stuffed Puffs??? Find out more here:\\nInstagram
+        | https://instagram.com/stuffedpuffs\\nFacebook | https://facebook.com/StuffedPuffsMarshmallows\\nYouTube
+        | https://youtube.com/stuffedpuffs\\nTwitter | https://twitter.com/stuffedpuffs\\nWebsite
+        | https://stuffedpuffs.com\\n\\nSubscribe to Marshmello on YouTube for the
+        best new music, today's top hits, dance music, pop music, hip hop and trending
+        music in 2019.\\n#Marshmello #CHVRCHES #HereWithMe #Alternative\",\n        \"thumbnails\":
+        {\n          \"default\": {\n            \"url\": \"https://i.ytimg.com/vi/J3UXp9jIr-U/default.jpg\",\n
         \           \"width\": 120,\n            \"height\": 90\n          },\n          \"medium\":
-        {\n            \"url\": \"https://i.ytimg.com/vi/wEdRhmBx8IU/mqdefault.jpg\",\n
+        {\n            \"url\": \"https://i.ytimg.com/vi/J3UXp9jIr-U/mqdefault.jpg\",\n
         \           \"width\": 320,\n            \"height\": 180\n          },\n          \"high\":
-        {\n            \"url\": \"https://i.ytimg.com/vi/wEdRhmBx8IU/hqdefault.jpg\",\n
+        {\n            \"url\": \"https://i.ytimg.com/vi/J3UXp9jIr-U/hqdefault.jpg\",\n
         \           \"width\": 480,\n            \"height\": 360\n          },\n          \"standard\":
-        {\n            \"url\": \"https://i.ytimg.com/vi/wEdRhmBx8IU/sddefault.jpg\",\n
+        {\n            \"url\": \"https://i.ytimg.com/vi/J3UXp9jIr-U/sddefault.jpg\",\n
         \           \"width\": 640,\n            \"height\": 480\n          },\n          \"maxres\":
-        {\n            \"url\": \"https://i.ytimg.com/vi/wEdRhmBx8IU/maxresdefault.jpg\",\n
+        {\n            \"url\": \"https://i.ytimg.com/vi/J3UXp9jIr-U/maxresdefault.jpg\",\n
         \           \"width\": 1280,\n            \"height\": 720\n          }\n        },\n
-        \       \"channelTitle\": \"BBCRadio1VEVO\",\n        \"liveBroadcastContent\":
-        \"none\",\n        \"publishTime\": \"2018-03-15T16:27:40Z\"\n      }\n    },\n
-        \   {\n      \"kind\": \"youtube#searchResult\",\n      \"etag\": \"tqoQ1o3EzbLR_nDBRfCbkj3fJUc\",\n
+        \       \"channelTitle\": \"Marshmello\",\n        \"liveBroadcastContent\":
+        \"none\",\n        \"publishTime\": \"2019-04-05T02:26:15Z\"\n      }\n    },\n
+        \   {\n      \"kind\": \"youtube#searchResult\",\n      \"etag\": \"HgZlq1Gj7c2Saq6YiQ3JFXMhatk\",\n
         \     \"id\": {\n        \"kind\": \"youtube#video\",\n        \"videoId\":
-        \"tPbJ7YJVVLw\"\n      },\n      \"snippet\": {\n        \"publishedAt\":
-        \"2019-01-21T16:00:03Z\",\n        \"channelId\": \"UC1HRuZSTUSN5vRSmrHaIyVA\",\n
-        \       \"title\": \"Fragma - Toca\xB4s Miracle (2008 Inpetto New Vocal Version)\",\n
-        \       \"description\": \"Fragma - Toca\xB4s Miracle (2008 Inpetto New Vocal
-        Version)\",\n        \"thumbnails\": {\n          \"default\": {\n            \"url\":
-        \"https://i.ytimg.com/vi/tPbJ7YJVVLw/default.jpg\",\n            \"width\":
-        120,\n            \"height\": 90\n          },\n          \"medium\": {\n
-        \           \"url\": \"https://i.ytimg.com/vi/tPbJ7YJVVLw/mqdefault.jpg\",\n
-        \           \"width\": 320,\n            \"height\": 180\n          },\n          \"high\":
-        {\n            \"url\": \"https://i.ytimg.com/vi/tPbJ7YJVVLw/hqdefault.jpg\",\n
-        \           \"width\": 480,\n            \"height\": 360\n          },\n          \"standard\":
-        {\n            \"url\": \"https://i.ytimg.com/vi/tPbJ7YJVVLw/sddefault.jpg\",\n
-        \           \"width\": 640,\n            \"height\": 480\n          },\n          \"maxres\":
-        {\n            \"url\": \"https://i.ytimg.com/vi/tPbJ7YJVVLw/maxresdefault.jpg\",\n
-        \           \"width\": 1280,\n            \"height\": 720\n          }\n        },\n
-        \       \"channelTitle\": \"Fragma\",\n        \"liveBroadcastContent\": \"none\",\n
-        \       \"publishTime\": \"2019-01-21T16:00:03Z\"\n      }\n    },\n    {\n
-        \     \"kind\": \"youtube#searchResult\",\n      \"etag\": \"pLC11rkrU9E8NjGo4ZrzHw963io\",\n
-        \     \"id\": {\n        \"kind\": \"youtube#video\",\n        \"videoId\":
-        \"T3YG2nA0jmM\"\n      },\n      \"snippet\": {\n        \"publishedAt\":
-        \"2019-02-24T13:07:34Z\",\n        \"channelId\": \"UCXFVUI21c7n7wx6PmlkXJww\",\n
-        \       \"title\": \"Chvrches & BBC Scottish Symphony Orchestra perform Miracle
-        | Beginning | BBC Scotland\",\n        \"description\": \"This specially commissioned
-        film brings together the worlds of synth pop and classical music to create
-        an aural and visual feast for the first transmission on the new BBC Scotland
-        channel. \\n\\nClick here to subscribe to your BBC Scotland Channel: http://bit.ly/BBC-Scotland-Subscribe\\nWe\u2019re
-        also on other channels too!\\nTwitter: http://www.twitter.com/bbcscotland\\nFacebook:
-        http://www.facebook.com/bbcscotland \\nInstagram: http://instagram.com/bbcscotland\\n\\nA
-        unique collaboration between Chvrches and the BBC Scottish Symphony Orchestra,
-        the performance celebrates modern Scotland featuring living portraits of people
-        and images from across the country. \\n\\nThe track builds both musically
-        and visually to represent the constant evolution of Scotland\u2019s society
-        and cultural landscape. This new arrangement of Chvrches\u2019 hit track Miracle
-        was created by the band members Iain Cook, Martin Doherty and Lauren Mayberry
-        with arranger and conductor Paul Campbell.\\n\\nDirector \u2013 Oscar Sansom\\nProducers
-        \u2013 Beth Allan, Gillian McNeil\\nExec Prod \u2013 Pauline Law\\nOrchestra
-        Producer- Andrew Trinick\\nArranger and conductor - Paul Campbell\\nThis is
-        a Forest of Black and BBC Scotland Multiplatform Co-Production\",\n        \"thumbnails\":
-        {\n          \"default\": {\n            \"url\": \"https://i.ytimg.com/vi/T3YG2nA0jmM/default.jpg\",\n
+        \"bmXxLzrue6A\"\n      },\n      \"snippet\": {\n        \"publishedAt\":
+        \"2018-10-11T00:24:24Z\",\n        \"channelId\": \"UCp0hYYBW6IMayGgR-WeoCvQ\",\n
+        \       \"title\": \"CHVRCHES Brings 'Miracle' to Ellen!\",\n        \"description\":
+        \"In their daytime TV debut, CHVRCHES performed their new hit song \\\"Miracle\\\"
+        on Ellen.\\n\\n#CHVRCHES\\n#Ellen\\n#TheEllenShow\",\n        \"thumbnails\":
+        {\n          \"default\": {\n            \"url\": \"https://i.ytimg.com/vi/bmXxLzrue6A/default.jpg\",\n
         \           \"width\": 120,\n            \"height\": 90\n          },\n          \"medium\":
-        {\n            \"url\": \"https://i.ytimg.com/vi/T3YG2nA0jmM/mqdefault.jpg\",\n
+        {\n            \"url\": \"https://i.ytimg.com/vi/bmXxLzrue6A/mqdefault.jpg\",\n
         \           \"width\": 320,\n            \"height\": 180\n          },\n          \"high\":
-        {\n            \"url\": \"https://i.ytimg.com/vi/T3YG2nA0jmM/hqdefault.jpg\",\n
+        {\n            \"url\": \"https://i.ytimg.com/vi/bmXxLzrue6A/hqdefault.jpg\",\n
         \           \"width\": 480,\n            \"height\": 360\n          },\n          \"standard\":
-        {\n            \"url\": \"https://i.ytimg.com/vi/T3YG2nA0jmM/sddefault.jpg\",\n
-        \           \"width\": 640,\n            \"height\": 480\n          }\n        },\n
-        \       \"channelTitle\": \"BBC Scotland\",\n        \"liveBroadcastContent\":
-        \"none\",\n        \"publishTime\": \"2019-02-24T13:07:34Z\"\n      }\n    },\n
-        \   {\n      \"kind\": \"youtube#searchResult\",\n      \"etag\": \"6VxRbrd3utK_Qn73GbE41M4tLeI\",\n
-        \     \"id\": {\n        \"kind\": \"youtube#video\",\n        \"videoId\":
-        \"bv2yNre7saU\"\n      },\n      \"snippet\": {\n        \"publishedAt\":
-        \"2019-12-13T02:08:06Z\",\n        \"channelId\": \"UCqDS7KWjAPKv-7ZSlro9OiQ\",\n
-        \       \"title\": \"CHVRCHES Perform Death Stranding to Open The Game Awards
-        2019\",\n        \"description\": \"Subscribe to Watch The Game Awards Live:
-        \ http://bit.ly/tga18sub\\r\\n\\r\\nFollow The Game Awards on Twitter: http://www.twitter.com/thegameawards\\r\\n\\r\\nFollow
-        The Game Awards on Instagram:\\r\\nhttp://www.instagram.com/thegameawards\\r\\n\\r\\nFollow
-        Geoff Keighley on Twitter:\\r\\nhttp://www.twitter.com/geoffkeighley\",\n
-        \       \"thumbnails\": {\n          \"default\": {\n            \"url\":
-        \"https://i.ytimg.com/vi/bv2yNre7saU/default.jpg\",\n            \"width\":
-        120,\n            \"height\": 90\n          },\n          \"medium\": {\n
-        \           \"url\": \"https://i.ytimg.com/vi/bv2yNre7saU/mqdefault.jpg\",\n
-        \           \"width\": 320,\n            \"height\": 180\n          },\n          \"high\":
-        {\n            \"url\": \"https://i.ytimg.com/vi/bv2yNre7saU/hqdefault.jpg\",\n
-        \           \"width\": 480,\n            \"height\": 360\n          },\n          \"standard\":
-        {\n            \"url\": \"https://i.ytimg.com/vi/bv2yNre7saU/sddefault.jpg\",\n
+        {\n            \"url\": \"https://i.ytimg.com/vi/bmXxLzrue6A/sddefault.jpg\",\n
         \           \"width\": 640,\n            \"height\": 480\n          },\n          \"maxres\":
-        {\n            \"url\": \"https://i.ytimg.com/vi/bv2yNre7saU/maxresdefault.jpg\",\n
+        {\n            \"url\": \"https://i.ytimg.com/vi/bmXxLzrue6A/maxresdefault.jpg\",\n
         \           \"width\": 1280,\n            \"height\": 720\n          }\n        },\n
-        \       \"channelTitle\": \"thegameawards\",\n        \"liveBroadcastContent\":
-        \"none\",\n        \"publishTime\": \"2019-12-13T02:08:06Z\"\n      }\n    },\n
-        \   {\n      \"kind\": \"youtube#searchResult\",\n      \"etag\": \"uye0KK_z0h_GVJ-bl-sArE23JxY\",\n
+        \       \"channelTitle\": \"TheEllenShow\",\n        \"liveBroadcastContent\":
+        \"none\",\n        \"publishTime\": \"2018-10-11T00:24:24Z\"\n      }\n    },\n
+        \   {\n      \"kind\": \"youtube#searchResult\",\n      \"etag\": \"k9JhVFkr2MUnoV2Qv7kIFQyuaow\",\n
+        \     \"id\": {\n        \"kind\": \"youtube#video\",\n        \"videoId\":
+        \"s9MQwTzURwU\"\n      },\n      \"snippet\": {\n        \"publishedAt\":
+        \"2011-04-19T21:52:14Z\",\n        \"channelId\": \"UCBLee0LUtr5E5uQN7Y0ehfw\",\n
+        \       \"title\": \"ABBA - Mamma Mia\",\n        \"description\": \"I've
+        been cheated by you since I don't \\r\\nknow when\\r\\nSo I made up my mind,
+        it must come \\r\\nto an end\\r\\nLook at me now, will I ever learn ? \\r\\nI
+        don't know how but I suddenly \\r\\nlose control\\r\\nThere's a fire within
+        my soul\\r\\nJust one look and I can hear a bell ring\\r\\nOne more look and
+        I forget everything \\r\\n\\r\\nOh! Oh! Mamma Mia, here I go again\\r\\nMy
+        my, how can I resist you ? \\r\\nMamma Mia, does it show again ? \\r\\nMy
+        my, just how much I've missed you\\r\\nYes, I've been broken-hearted\\r\\nBlue
+        since the day we parted\\r\\nWhy why, did I ever let you go ? \\r\\nMamma
+        mia, now I really know\\r\\nMy my, I could never let you go\\r\\n\\r\\nI've
+        been angry and sad about things \\r\\nthat you do\\r\\nI can't count all the
+        times that I've told \\r\\nyou we're through\\r\\nAnd when you go, when you
+        slam \\r\\nthe door\\r\\nI think you know that you won't be \\r\\naway too
+        long\\r\\nYou know that I'm not that strong\\r\\nJust one look and I can hear
+        a bell ring\\r\\nOne more look and I forget everything \\r\\n\\r\\nOh! Oh!
+        Mamma mia, here I go again\\r\\nMy my, how can I resist you ? \\r\\nMamma
+        mia, does it show again ? \\r\\nMy my, just how much I've missed you\\r\\nYes,
+        I've been broken-hearted\\r\\nBlue since the day we parted\\r\\nWhy why, did
+        I ever let you go ? \\r\\nMamma mia, even if I say\\r\\nBye bye, leave me
+        now or never\\r\\nMamma mia, it's a game we play\\r\\nBye bye, doesn't mean
+        forever\\r\\n\\r\\nMamma mia, here I go again\\r\\nMy my, how can I resist
+        you ? \\r\\nMamma mia, does it show again ? \\r\\nMy my, just how much I've
+        missed you\\r\\nYes, I've been broken-hearted\\r\\nBlue since the day we parted\\r\\nWhy
+        why, did I ever let you go ?\\r\\nMamma mia, now I really know\\r\\nMy my,
+        I could never let you go\",\n        \"thumbnails\": {\n          \"default\":
+        {\n            \"url\": \"https://i.ytimg.com/vi/s9MQwTzURwU/default.jpg\",\n
+        \           \"width\": 120,\n            \"height\": 90\n          },\n          \"medium\":
+        {\n            \"url\": \"https://i.ytimg.com/vi/s9MQwTzURwU/mqdefault.jpg\",\n
+        \           \"width\": 320,\n            \"height\": 180\n          },\n          \"high\":
+        {\n            \"url\": \"https://i.ytimg.com/vi/s9MQwTzURwU/hqdefault.jpg\",\n
+        \           \"width\": 480,\n            \"height\": 360\n          }\n        },\n
+        \       \"channelTitle\": \"IQQIQQI\",\n        \"liveBroadcastContent\":
+        \"none\",\n        \"publishTime\": \"2011-04-19T21:52:14Z\"\n      }\n    },\n
+        \   {\n      \"kind\": \"youtube#searchResult\",\n      \"etag\": \"e49rUj3fBAWNZ19fUv-Mlm00nH0\",\n
         \     \"id\": {\n        \"kind\": \"youtube#video\",\n        \"videoId\":
         \"3TesdYxS2xE\"\n      },\n      \"snippet\": {\n        \"publishedAt\":
         \"2018-04-21T14:37:59Z\",\n        \"channelId\": \"UCgaBEIiitVoLUo__M7RtMVA\",\n
@@ -322,91 +309,30 @@ interactions:
         \           \"width\": 640,\n            \"height\": 480\n          },\n          \"maxres\":
         {\n            \"url\": \"https://i.ytimg.com/vi/3TesdYxS2xE/maxresdefault.jpg\",\n
         \           \"width\": 1280,\n            \"height\": 720\n          }\n        },\n
-        \       \"channelTitle\": \"PumProject\",\n        \"liveBroadcastContent\":
+        \       \"channelTitle\": \"Pumproject\",\n        \"liveBroadcastContent\":
         \"none\",\n        \"publishTime\": \"2018-04-21T14:37:59Z\"\n      }\n    },\n
-        \   {\n      \"kind\": \"youtube#searchResult\",\n      \"etag\": \"zyn-80Hpd2SLA7wa1Mri5yMXrdk\",\n
+        \   {\n      \"kind\": \"youtube#searchResult\",\n      \"etag\": \"fN-I3cN5xvi_xg28C0XcipNYTxE\",\n
         \     \"id\": {\n        \"kind\": \"youtube#video\",\n        \"videoId\":
-        \"haunJARHPm4\"\n      },\n      \"snippet\": {\n        \"publishedAt\":
-        \"2014-05-12T20:16:24Z\",\n        \"channelId\": \"UC4eYXhJI4-7wSWc8UNRwD4A\",\n
-        \       \"title\": \"Chvrches: NPR Music Tiny Desk Concert\",\n        \"description\":
-        \"For a brief moment, I imagined hearing Chvrches perform \\\"Recover\\\"
-        or \\\"Gun\\\" with a couple of acoustic guitars and perhaps a shaker or two.
-        And, though these songs would surely stand up well when broken down and bared,
-        I'm thrilled that Chvrches came with a small arsenal of synthesizers to perform
-        a few highlights from last year's album The Bones of What You Believe.\\n\\nSeeing
-        these now-familiar earworms executed up close was nearly as much a campfire
-        moment as an acoustic set might have been, except the flames burned brighter.
-        Lauren Mayberry's voice felt powerful and vulnerable, while Iain Cook and
-        Martin Doherty kept those memorable synth lines bubbling underneath. The result
-        works as a perfect introduction to the Glasgow trio, but also a reaffirmation
-        of talent and longevity for those already love with the band. --BOB BOILEN\\n\\nSet
-        List\\n\\n\\\"Recover\\\"\\n\\\"Gun\\\"\\n\\\"The Mother We Share\\\"\\n\\nCredits\\n\\nProducers:
-        Bob Boilen, Denise DeBelius; Audio Engineer: Kevin Wait; Videographers: Denise
-        DeBelius, Olivia Merrion, Stephen Thompson; photo by Meredith Rizzo/NPR\",\n
-        \       \"thumbnails\": {\n          \"default\": {\n            \"url\":
-        \"https://i.ytimg.com/vi/haunJARHPm4/default.jpg\",\n            \"width\":
-        120,\n            \"height\": 90\n          },\n          \"medium\": {\n
-        \           \"url\": \"https://i.ytimg.com/vi/haunJARHPm4/mqdefault.jpg\",\n
-        \           \"width\": 320,\n            \"height\": 180\n          },\n          \"high\":
-        {\n            \"url\": \"https://i.ytimg.com/vi/haunJARHPm4/hqdefault.jpg\",\n
-        \           \"width\": 480,\n            \"height\": 360\n          },\n          \"standard\":
-        {\n            \"url\": \"https://i.ytimg.com/vi/haunJARHPm4/sddefault.jpg\",\n
-        \           \"width\": 640,\n            \"height\": 480\n          },\n          \"maxres\":
-        {\n            \"url\": \"https://i.ytimg.com/vi/haunJARHPm4/maxresdefault.jpg\",\n
-        \           \"width\": 1280,\n            \"height\": 720\n          }\n        },\n
-        \       \"channelTitle\": \"NPR Music\",\n        \"liveBroadcastContent\":
-        \"none\",\n        \"publishTime\": \"2014-05-12T20:16:24Z\"\n      }\n    },\n
-        \   {\n      \"kind\": \"youtube#searchResult\",\n      \"etag\": \"DPg4Kqmwgzwz65EwJncRc8USXwU\",\n
-        \     \"id\": {\n        \"kind\": \"youtube#video\",\n        \"videoId\":
-        \"5rWWGbCcbpM\"\n      },\n      \"snippet\": {\n        \"publishedAt\":
-        \"2018-04-27T14:24:57Z\",\n        \"channelId\": \"UCxO_ZVCyNBms4KdkBnsDmhw\",\n
-        \       \"title\": \"Blair St. Clair - Now or Never\",\n        \"description\":
-        \"Buy Blair St. Clair\u2019s debut album \u201CCall My Life\u201D now available
-        on iTunes: http://itunes.apple.com/album/id1399418952?ls=1&app=itunes\\n\\nhttp://www.blairstclair.com\\nhttps://www.twitter.com/blairstclair\\nhttps://www.instagram.com/blairst.clair\\nhttps://www.facebook.com/theblairstclair\\n\\nExecutive
-        Producer:  David Charpentier\\nProduced by:  Producer Entertainment Group
-        & Brad Hammer Productions\\nDirected by:  Brad Hammer & Shawn Adeli\\nDirector
-        of Photography:  Shawn Adeli\\nProduction Manager:  Winston Abalos\\nMakeup:
-        \ Kalyd Odeh\\nHair:  Timothy Willy\\nStylists:  William Clark, Kiki Extravaganza\\nEditor:
-        \ Shawn Adeli\\nLighting:  Justin Madsen\\nPA:  Nicholas Monaco\\n\\nCast:\\nBlair
-        St. Clair\\nMax Emerson\\nJinkx Monsoon\\nManila Luzon\\nJody Bradley\\nCandace
-        Pittman\\nJason Kropik\\nJC Mounduix\\nJT VanCollie\\nJayla Carter\\nAndrew
-        Kendall\\nJayne Clair\\nPresley Roy\\nPenny Peyrot\\nJohn Walker\\nEvan Michael
-        Lee\\nChris Jorie\\n\\nfor business inquiries : david@producerentertainment.com\\n\\nCopyright
-        (C) 2018 Producer Entertainment Group.\\n\\nhttp://vevo.ly/hLiAtE\",\n        \"thumbnails\":
-        {\n          \"default\": {\n            \"url\": \"https://i.ytimg.com/vi/5rWWGbCcbpM/default.jpg\",\n
+        \"j8anHsTtr-k\"\n      },\n      \"snippet\": {\n        \"publishedAt\":
+        \"2018-08-30T09:10:27Z\",\n        \"channelId\": \"UCTILfqEQUVaVKPkny8QRE0w\",\n
+        \       \"title\": \"CHVRCHES' Lauren Mayberry: The Joan of Arc of pop music\",\n
+        \       \"description\": \"CHVRCHES singer Lauren Mayberry spoke to Marc Fennell
+        live at Splendour in the Grass.\\n\\nWebsite: https://www.sbs.com.au/news/thefeed\\nFacebook:
+        https://www.facebook.com/thefeedsbsviceland\\nTwitter: https://twitter.com/thefeedsbs\\nInsta:
+        https://instagram.com/thefeedsbs\",\n        \"thumbnails\": {\n          \"default\":
+        {\n            \"url\": \"https://i.ytimg.com/vi/j8anHsTtr-k/default.jpg\",\n
         \           \"width\": 120,\n            \"height\": 90\n          },\n          \"medium\":
-        {\n            \"url\": \"https://i.ytimg.com/vi/5rWWGbCcbpM/mqdefault.jpg\",\n
+        {\n            \"url\": \"https://i.ytimg.com/vi/j8anHsTtr-k/mqdefault.jpg\",\n
         \           \"width\": 320,\n            \"height\": 180\n          },\n          \"high\":
-        {\n            \"url\": \"https://i.ytimg.com/vi/5rWWGbCcbpM/hqdefault.jpg\",\n
+        {\n            \"url\": \"https://i.ytimg.com/vi/j8anHsTtr-k/hqdefault.jpg\",\n
         \           \"width\": 480,\n            \"height\": 360\n          },\n          \"standard\":
-        {\n            \"url\": \"https://i.ytimg.com/vi/5rWWGbCcbpM/sddefault.jpg\",\n
+        {\n            \"url\": \"https://i.ytimg.com/vi/j8anHsTtr-k/sddefault.jpg\",\n
         \           \"width\": 640,\n            \"height\": 480\n          },\n          \"maxres\":
-        {\n            \"url\": \"https://i.ytimg.com/vi/5rWWGbCcbpM/maxresdefault.jpg\",\n
+        {\n            \"url\": \"https://i.ytimg.com/vi/j8anHsTtr-k/maxresdefault.jpg\",\n
         \           \"width\": 1280,\n            \"height\": 720\n          }\n        },\n
-        \       \"channelTitle\": \"BlairStClairVEVO\",\n        \"liveBroadcastContent\":
-        \"none\",\n        \"publishTime\": \"2018-04-27T14:24:57Z\"\n      }\n    },\n
-        \   {\n      \"kind\": \"youtube#searchResult\",\n      \"etag\": \"6Fa1WBnsRG0-K-fCNRyPjKvqyVI\",\n
-        \     \"id\": {\n        \"kind\": \"youtube#video\",\n        \"videoId\":
-        \"Y6DHggNoWDc\"\n      },\n      \"snippet\": {\n        \"publishedAt\":
-        \"2021-08-24T00:55:32Z\",\n        \"channelId\": \"UCXCfOEJFMa40s-57zxw9MYw\",\n
-        \       \"title\": \"CHVRCHES - Asking For A Friend\",\n        \"description\":
-        \"Official Audio for CHVRCHES \\\"Asking For A Friend\\\"\\n\\nListen to Screen
-        Violence here: https://chvrches.lnk.to/screenviolence\\n\\nFollow CHVRCHES:
-        \\nhttp://instagram.com/chvrches \\nhttp://www.facebook.com/chvrches \\nhttp://twitter.com/chvrches
-        \\nhttp://tiktok.com/@chvrches \\nhttp://chvrches.tumblr.com\",\n        \"thumbnails\":
-        {\n          \"default\": {\n            \"url\": \"https://i.ytimg.com/vi/Y6DHggNoWDc/default.jpg\",\n
-        \           \"width\": 120,\n            \"height\": 90\n          },\n          \"medium\":
-        {\n            \"url\": \"https://i.ytimg.com/vi/Y6DHggNoWDc/mqdefault.jpg\",\n
-        \           \"width\": 320,\n            \"height\": 180\n          },\n          \"high\":
-        {\n            \"url\": \"https://i.ytimg.com/vi/Y6DHggNoWDc/hqdefault.jpg\",\n
-        \           \"width\": 480,\n            \"height\": 360\n          },\n          \"standard\":
-        {\n            \"url\": \"https://i.ytimg.com/vi/Y6DHggNoWDc/sddefault.jpg\",\n
-        \           \"width\": 640,\n            \"height\": 480\n          },\n          \"maxres\":
-        {\n            \"url\": \"https://i.ytimg.com/vi/Y6DHggNoWDc/maxresdefault.jpg\",\n
-        \           \"width\": 1280,\n            \"height\": 720\n          }\n        },\n
-        \       \"channelTitle\": \"CHVRCHES\",\n        \"liveBroadcastContent\":
-        \"none\",\n        \"publishTime\": \"2021-08-24T00:55:32Z\"\n      }\n    },\n
-        \   {\n      \"kind\": \"youtube#searchResult\",\n      \"etag\": \"p_Vj5oE96pJn7X68xn0gD98paDg\",\n
+        \       \"channelTitle\": \"SBS The Feed\",\n        \"liveBroadcastContent\":
+        \"none\",\n        \"publishTime\": \"2018-08-30T09:10:27Z\"\n      }\n    },\n
+        \   {\n      \"kind\": \"youtube#searchResult\",\n      \"etag\": \"RDgBF_Oz-f0TUGUQztkrm8hXtrA\",\n
         \     \"id\": {\n        \"kind\": \"youtube#video\",\n        \"videoId\":
         \"l_EIE5f2t6M\"\n      },\n      \"snippet\": {\n        \"publishedAt\":
         \"2015-07-28T20:21:56Z\",\n        \"channelId\": \"UCnnumwiwZd1JWZWpiyqF0gQ\",\n
@@ -446,88 +372,253 @@ interactions:
         \           \"width\": 640,\n            \"height\": 480\n          }\n        },\n
         \       \"channelTitle\": \"Foals\",\n        \"liveBroadcastContent\": \"none\",\n
         \       \"publishTime\": \"2015-07-28T20:21:56Z\"\n      }\n    },\n    {\n
-        \     \"kind\": \"youtube#searchResult\",\n      \"etag\": \"DMsWSTMix3xRy_W00eqwF7XCrB0\",\n
+        \     \"kind\": \"youtube#searchResult\",\n      \"etag\": \"JcT_GEjTfL74Pmh6LKOUdNLFiVY\",\n
         \     \"id\": {\n        \"kind\": \"youtube#video\",\n        \"videoId\":
-        \"TFdRnmqFixU\"\n      },\n      \"snippet\": {\n        \"publishedAt\":
-        \"2021-04-15T22:41:38Z\",\n        \"channelId\": \"UCdUkO-gujlmJ1SiXP2zR_2w\",\n
-        \       \"title\": \"random funny lauren mayberry moments\",\n        \"description\":
-        \"Hi! Recently I've watched lots of interviews with chvrches and decided to
-        put my favourite bits together in a slightly edited video. I hope you enjoy
-        this video as much as I enjoyed making it!\\nI won't put every single video
-        I used here but I DEMAND YOU to watch this interview, I think I watched it
-        about 5 times now:\\nhttps://youtu.be/KTgtGX0cw9g\\nThe music I used in-between
-        clips is \\\"Hiru La Lill\\\" from Kill La Kill:\\nhttps://youtu.be/ZBE6P6hSH04\",\n
-        \       \"thumbnails\": {\n          \"default\": {\n            \"url\":
-        \"https://i.ytimg.com/vi/TFdRnmqFixU/default.jpg\",\n            \"width\":
+        \"buWNjFmQ4uw\"\n      },\n      \"snippet\": {\n        \"publishedAt\":
+        \"2017-05-17T22:19:10Z\",\n        \"channelId\": \"UCGEkfLDyUuXP5DfzQPyvR0Q\",\n
+        \       \"title\": \"Beatie Wolfe - Raw Space - VR Single: Little Moth\",\n
+        \       \"description\": \"Official music video by Beatie Wolfe performing
+        \u201CLittle Moth\u201D \u2013 off her album \u2018Raw Space.\u2019 Stream/Download
+        the album here: http://www.smarturl.it/beatiewolfe\\n\\n\\\"Little Moth,\\\"
+        written in tribute of Elliott Smith, is the opening track off Beatie Wolfe's
+        third album Raw Space, released as the world's first live 360 AR stream. This
+        is a capture of the first time it was played from the quietest room on earth
+        as a physical record stream with the album\u2019s artwork coming to life around
+        you in real-time. Click here to learn more about Raw Space: https://beatiewolfe.com/innovations\\n\\nLittle
+        Moth is the latest AR / VR single from Beatie Wolfe's groundbreaking record
+        Raw Space, which was released as the world\u2019s first 360 AR album and dubbed
+        the \u201Canti-stream experience for our times.\u201D The album was physically
+        streamed live from the quietest room on earth for a week with the artwork
+        coming to life around you in realtime via live augmented reality. Raw Space
+        was released in collaboration with Design I/O (who created the real-time animations)
+        and @Nokia Bell Labs\\n\\n\u25BASubscribe to Beatie Wolfe on YouTube: http://www.smarturl.it/beatiewolfe-youtube\\n\\n\u25BAExclusive
+        Merch: https://beatiewolfe.com/shop\\n\\n\u25BAFollow Beatie Wolfe Online\\nInstagram:
+        http://www.instagram.com/beatiewolfe\\nFacebook: http://facebook.com/beatiewolfe\\nWebsite:
+        http://www.beatiewolfe.com\\n\\n\u25BAOfficial \u2018Little Moth\u2019 Lyrics\\nWritten
+        by Beatie Wolfe\\n\\nI\u2019ve waited so long to find you\\nI'm holding this
+        flame beside me\\nAnd they'll never see you like I do\\nBut darling I see
+        you clearly \\n\\nin your basement hotel\\nwhere you soared\\nwhere you fell\\nand
+        the harsh light of truth\\nleft you blinded in the sun\\nbut you wrote what
+        you felt\\nthe rare joy, the fine hell\\nyou couldn\u2019t lie, you left it
+        bare\\nand tattooed your despair\\nand tattooed your despair\\n\\nThey waited
+        so long, to put you in a box\\nBut nothing can break your spirit\\nThey tried
+        to change you, until you made them stop\\nAnd now you\u2019re so high above
+        it \\n\\nCos if beauty\u2019s skin deep\\nyou had to see what\u2019s beneath\\nso
+        you scratched in your sleep\\nseeing voices in your dreams\\nand they told
+        you its hard\\nwhen you\u2019re flung in this world\\ntender hands turn to
+        fists\\ntil you\u2019re beautifully scarred\\nyou're beautifully scarred\\n\\nMy
+        little moth\\nyou\u2019re too precious for this world\\nbut I\u2019ll keep
+        my wings around you\\nI hope you hear me, hear my thank you\\nheaven is blessed
+        to have you \\n\\nFor in the shadows you grew\\nit was clear no one knew\\njust
+        how sharp every breath\\nfelt to draw and rattled through\\nbut the light
+        that you shone\\nit will always burn on  \\nyou served the world my little
+        moth\\nat the sake of yourself\\nat the sake of yourself\\n\\n\\n\xA9 & \u2117
+        Beatie Wolfe 2016\\n\\n\\nSongwriter, Vocals, Guitar, Mellotron, Piano, Mixed
+        by, Co-producer: @Beatie Wolfe \\nCo-producer, Engineer, Mixed by: Tom Loffman\\nMusical
+        Advisor: Rachel Black\\nMastered by: Ed Woods\\n\\n#BeatieWolfe #RawSpace
+        #live360AR\",\n        \"thumbnails\": {\n          \"default\": {\n            \"url\":
+        \"https://i.ytimg.com/vi/buWNjFmQ4uw/default.jpg\",\n            \"width\":
         120,\n            \"height\": 90\n          },\n          \"medium\": {\n
-        \           \"url\": \"https://i.ytimg.com/vi/TFdRnmqFixU/mqdefault.jpg\",\n
+        \           \"url\": \"https://i.ytimg.com/vi/buWNjFmQ4uw/mqdefault.jpg\",\n
         \           \"width\": 320,\n            \"height\": 180\n          },\n          \"high\":
-        {\n            \"url\": \"https://i.ytimg.com/vi/TFdRnmqFixU/hqdefault.jpg\",\n
+        {\n            \"url\": \"https://i.ytimg.com/vi/buWNjFmQ4uw/hqdefault.jpg\",\n
         \           \"width\": 480,\n            \"height\": 360\n          },\n          \"standard\":
-        {\n            \"url\": \"https://i.ytimg.com/vi/TFdRnmqFixU/sddefault.jpg\",\n
+        {\n            \"url\": \"https://i.ytimg.com/vi/buWNjFmQ4uw/sddefault.jpg\",\n
         \           \"width\": 640,\n            \"height\": 480\n          },\n          \"maxres\":
-        {\n            \"url\": \"https://i.ytimg.com/vi/TFdRnmqFixU/maxresdefault.jpg\",\n
+        {\n            \"url\": \"https://i.ytimg.com/vi/buWNjFmQ4uw/maxresdefault.jpg\",\n
         \           \"width\": 1280,\n            \"height\": 720\n          }\n        },\n
-        \       \"channelTitle\": \"Asbolus\",\n        \"liveBroadcastContent\":
-        \"none\",\n        \"publishTime\": \"2021-04-15T22:41:38Z\"\n      }\n    },\n
-        \   {\n      \"kind\": \"youtube#searchResult\",\n      \"etag\": \"EB2_9t1vSYL5INNwkUvMtAUOWaQ\",\n
+        \       \"channelTitle\": \"Beatie Wolfe\",\n        \"liveBroadcastContent\":
+        \"none\",\n        \"publishTime\": \"2017-05-17T22:19:10Z\"\n      }\n    },\n
+        \   {\n      \"kind\": \"youtube#searchResult\",\n      \"etag\": \"KZsyJ_V6ufyaD4s9rQNFIXygXN8\",\n
         \     \"id\": {\n        \"kind\": \"youtube#video\",\n        \"videoId\":
-        \"wzQF401MX-8\"\n      },\n      \"snippet\": {\n        \"publishedAt\":
-        \"2021-04-12T23:38:12Z\",\n        \"channelId\": \"UCyKs4L4EULCfySbTybA9bAg\",\n
-        \       \"title\": \"Rooftop Restaurant & Bar Music 2021\",\n        \"description\":
-        \"LOUNGE BEATS from the best luxury bars, restaurants & rooftops.\\nRooftop
-        Restaurant & Bar Music - Playlist - Spotify: http://bit.ly/RooftopRestaurant-SP\\n01
-        00:00 The Sweetest Taboo (Remix) - Scubba, Ivette Moraes, Ronan\\n02 03:09
-        Passionfruit - Shelly Sony\\n03 05:46 Dreams (No.oN Remix) - Eve St. Jones,
-        No.On\\n04 09:05 Radioactive (Krister Remix) - Dual Sessions\\n05 12:54 Castle
-        In The Sky \u2013 Von Mondo, Volpe\\n06 15:59 Cuarzo (Javier Penna Remix)
-        - Lila Frascara, Javier Penna\\n07 21:41 Fast Car (Krister Remix) - Dual Sessions\\n08
-        24:38 West End Girls - Bellestar, Sixth Finger\\n09 27:38 Need U (100%) (G-Spliff
-        Remix) - Lila Liu\\n10 29:58 Tape Loop - Ituana\\n11 33:10 Seventh Heaven
-        - Limelight Sound\\n12 36:51 All The Good Girls Go To Hell - Lila Frascara\\n13
-        40:05 Magic - Trippynova, Natalie Renoir\\n14 44:00 09 Let's Dance - Futurama,
-        Dew\\n15 48:22 How Deep Is Your Love - Bellestar, Klub Rider, Glambeats Corp.\\n16
-        52:00 Lovefool (Dalbani Remix) - Urselle\\n17 55:08 Please Don't Go (Dj Leao
-        Remix) - Future Soundscapes, Sao Vicente\\n18 57:38 He's The Greatest Dancer
-        (Luxury Remix) - Ituana\\n19 01:01:11 Oops! I Did It Again (Wax Hero Rework)
-        - Brazil XXI, Eve St. Jones\\n20 01:04:17 Lullaby - Freedom Dub\\n21 01:07:37
-        Can't Take My Eyes Off You - Natalie Renoir, Stereo Dub, Brazil XXI\\n22 01:10:33
-        Taking Me Home - Nick Prosen, Dew\\n23 01:15:35 Just Can't Get Enough (Deep
-        House Mix) - Os Digitalistas, Mayla Da Viola\\n24 01:18:43 Love You Inside
-        Out - Beluga's Trio, Shelly Sony\\n25 01:22:26 The Night - Von Mondo, Volpe,
-        Klub Rider\\n26 01:25:45 I Feel It Coming (Dataset Remix) - Sixth Finger,
-        Natty Bong, Dataset\\n27 01:28:42 Valerie (Deep Piano Mix) - Julie Benson\\n28
-        01:32:19 Waiting For The Night - Glambeats Corp., Herbie Garrett\\n29 01:35:39
-        Tiny Dancer (Ronan Remix) (Radio Edit) - Urban Love, Dew\\n30 01:39:43 Your
-        Love (Bellestar Remix) - Dinah Eastwood, Bellestar\\n31 01:42:28 Wake Me -
-        Adelle\\n32 01:45:04 Good For You (Krister Remix) - Style Project, Krister\\n33
-        01:48:16 Daylight - Ronan, Dew\\n34 01:52:10 Too Much Heaven (Wax Hero Remix
-        Extended) - Dual Sessions, Natalie Renoir\\n35 01:57:23 Can't Take My Eyes
-        Off You - Natalie Renoir, Stereo Dub, Brazil Xxi\\n36 02:00:52 Hymn For The
-        Weekend - Morgan, G & Machines\\n37 02:03:33 If I Can't Have You (Radio Edit)
-        - Sixth Finger\\n38 02:06:44 Melting Edge - Abril D'Sola\\n\\n#Lounge #Rooftop
-        #Restaurant #Bar #Music\",\n        \"thumbnails\": {\n          \"default\":
-        {\n            \"url\": \"https://i.ytimg.com/vi/wzQF401MX-8/default.jpg\",\n
+        \"CjwwmFrsX_E\"\n      },\n      \"snippet\": {\n        \"publishedAt\":
+        \"2014-02-13T06:00:24Z\",\n        \"channelId\": \"UCd2KNtfphz8HvYzM4pwtHmg\",\n
+        \       \"title\": \"CHVRCHES cover Arctic Monkeys 'Do I Wanna Know?' for
+        Like A Version\",\n        \"description\": \"Scottish electrio CHVRCHES cover
+        Arctic Monkeys 'Do I Wanna Know?' for triple j's Like A Version. \\nSubscribe
+        | http://bit.ly/2FYj5jC\\nLike A Version on Spotify | https://spoti.fi/2UpMDcU
+        \\nLike A Version on Apple Music | https://apple.co/2NMJ7Y4\\nFacebook | http://bit.ly/iJ0OH9
+        \\nInstagram | http://bit.ly/2CWGnCA  \\nTwitter | http://bit.ly/2BdFOUI\\n\\nLike
+        A Version is a segment on Australian radio station triple j. Every week a
+        musician or band comes into the studio to play one of their own songs and
+        cover a song they love. \\n\\nSince 2004, many artists have participated,
+        including Childish Gambino, Lorde, CHVRCHES, Tame Impala, Tash Sultana, HAIM,
+        Gang of Youths, Halsey, DMA'S, Aurora, Arctic Monkeys. You can watch past
+        sessions here: http://bit.ly/like_a_version\\n\\nYou can watch Like A Versions
+        ad-free at http://www.triplej.net.au\\n\\n#LikeAVersion\",\n        \"thumbnails\":
+        {\n          \"default\": {\n            \"url\": \"https://i.ytimg.com/vi/CjwwmFrsX_E/default.jpg\",\n
         \           \"width\": 120,\n            \"height\": 90\n          },\n          \"medium\":
-        {\n            \"url\": \"https://i.ytimg.com/vi/wzQF401MX-8/mqdefault.jpg\",\n
+        {\n            \"url\": \"https://i.ytimg.com/vi/CjwwmFrsX_E/mqdefault.jpg\",\n
         \           \"width\": 320,\n            \"height\": 180\n          },\n          \"high\":
-        {\n            \"url\": \"https://i.ytimg.com/vi/wzQF401MX-8/hqdefault.jpg\",\n
+        {\n            \"url\": \"https://i.ytimg.com/vi/CjwwmFrsX_E/hqdefault.jpg\",\n
         \           \"width\": 480,\n            \"height\": 360\n          },\n          \"standard\":
-        {\n            \"url\": \"https://i.ytimg.com/vi/wzQF401MX-8/sddefault.jpg\",\n
+        {\n            \"url\": \"https://i.ytimg.com/vi/CjwwmFrsX_E/sddefault.jpg\",\n
         \           \"width\": 640,\n            \"height\": 480\n          },\n          \"maxres\":
-        {\n            \"url\": \"https://i.ytimg.com/vi/wzQF401MX-8/maxresdefault.jpg\",\n
+        {\n            \"url\": \"https://i.ytimg.com/vi/CjwwmFrsX_E/maxresdefault.jpg\",\n
         \           \"width\": 1280,\n            \"height\": 720\n          }\n        },\n
-        \       \"channelTitle\": \"Music Brokers\",\n        \"liveBroadcastContent\":
-        \"none\",\n        \"publishTime\": \"2021-04-12T23:38:12Z\"\n      }\n    },\n
-        \   {\n      \"kind\": \"youtube#searchResult\",\n      \"etag\": \"4aETUGKyHRzDp0eFyGbLAr9Ud3c\",\n
+        \       \"channelTitle\": \"triple j\",\n        \"liveBroadcastContent\":
+        \"none\",\n        \"publishTime\": \"2014-02-13T06:00:24Z\"\n      }\n    },\n
+        \   {\n      \"kind\": \"youtube#searchResult\",\n      \"etag\": \"iGiBZe6ZtBltzAnE3cnujKZf2iE\",\n
+        \     \"id\": {\n        \"kind\": \"youtube#video\",\n        \"videoId\":
+        \"CRDruiv08_4\"\n      },\n      \"snippet\": {\n        \"publishedAt\":
+        \"2018-06-01T15:42:43Z\",\n        \"channelId\": \"UCySW1JYbZNeuHr-2pTMyizQ\",\n
+        \       \"title\": \"CHVRCHES - Forever\",\n        \"description\": \"musica
+        do album Love is Dead dessa banda maravilhosa. \U0001F617\",\n        \"thumbnails\":
+        {\n          \"default\": {\n            \"url\": \"https://i.ytimg.com/vi/CRDruiv08_4/default.jpg\",\n
+        \           \"width\": 120,\n            \"height\": 90\n          },\n          \"medium\":
+        {\n            \"url\": \"https://i.ytimg.com/vi/CRDruiv08_4/mqdefault.jpg\",\n
+        \           \"width\": 320,\n            \"height\": 180\n          },\n          \"high\":
+        {\n            \"url\": \"https://i.ytimg.com/vi/CRDruiv08_4/hqdefault.jpg\",\n
+        \           \"width\": 480,\n            \"height\": 360\n          },\n          \"standard\":
+        {\n            \"url\": \"https://i.ytimg.com/vi/CRDruiv08_4/sddefault.jpg\",\n
+        \           \"width\": 640,\n            \"height\": 480\n          }\n        },\n
+        \       \"channelTitle\": \"Chvrches TV\",\n        \"liveBroadcastContent\":
+        \"none\",\n        \"publishTime\": \"2018-06-01T15:42:43Z\"\n      }\n    },\n
+        \   {\n      \"kind\": \"youtube#searchResult\",\n      \"etag\": \"vGgDD1PUJ8cmGkrMqzBm1b1oq78\",\n
+        \     \"id\": {\n        \"kind\": \"youtube#video\",\n        \"videoId\":
+        \"TqzbAVCAlQ0\"\n      },\n      \"snippet\": {\n        \"publishedAt\":
+        \"2022-03-17T06:11:57Z\",\n        \"channelId\": \"UCUU4Hj0pwmu8KWHxsNJfUSA\",\n
+        \       \"title\": \"CHVRCHES. How Not To Drown (Feat. Robert Smith). Brixton
+        Academy 16.03.2022.\",\n        \"description\": \"\",\n        \"thumbnails\":
+        {\n          \"default\": {\n            \"url\": \"https://i.ytimg.com/vi/TqzbAVCAlQ0/default.jpg\",\n
+        \           \"width\": 120,\n            \"height\": 90\n          },\n          \"medium\":
+        {\n            \"url\": \"https://i.ytimg.com/vi/TqzbAVCAlQ0/mqdefault.jpg\",\n
+        \           \"width\": 320,\n            \"height\": 180\n          },\n          \"high\":
+        {\n            \"url\": \"https://i.ytimg.com/vi/TqzbAVCAlQ0/hqdefault.jpg\",\n
+        \           \"width\": 480,\n            \"height\": 360\n          },\n          \"standard\":
+        {\n            \"url\": \"https://i.ytimg.com/vi/TqzbAVCAlQ0/sddefault.jpg\",\n
+        \           \"width\": 640,\n            \"height\": 480\n          },\n          \"maxres\":
+        {\n            \"url\": \"https://i.ytimg.com/vi/TqzbAVCAlQ0/maxresdefault.jpg\",\n
+        \           \"width\": 1280,\n            \"height\": 720\n          }\n        },\n
+        \       \"channelTitle\": \"Papa Trix\",\n        \"liveBroadcastContent\":
+        \"none\",\n        \"publishTime\": \"2022-03-17T06:11:57Z\"\n      }\n    },\n
+        \   {\n      \"kind\": \"youtube#searchResult\",\n      \"etag\": \"lceIn6BRiSp3bONNTBr86SO2kOc\",\n
+        \     \"id\": {\n        \"kind\": \"youtube#video\",\n        \"videoId\":
+        \"RGd9tnKDxeI\"\n      },\n      \"snippet\": {\n        \"publishedAt\":
+        \"2018-07-31T22:32:05Z\",\n        \"channelId\": \"UCCePoGMpEnzhfjrvZQk7Xcw\",\n
+        \       \"title\": \"Miracle (Cover) - Chvrches\",\n        \"description\":
+        \"hey there! Hope y'all enjoy this cover of Miracle by Chvrches! Sorry for
+        tha lack of uploads, I was busy with school for the past few weeks :)\",\n
+        \       \"thumbnails\": {\n          \"default\": {\n            \"url\":
+        \"https://i.ytimg.com/vi/RGd9tnKDxeI/default.jpg\",\n            \"width\":
+        120,\n            \"height\": 90\n          },\n          \"medium\": {\n
+        \           \"url\": \"https://i.ytimg.com/vi/RGd9tnKDxeI/mqdefault.jpg\",\n
+        \           \"width\": 320,\n            \"height\": 180\n          },\n          \"high\":
+        {\n            \"url\": \"https://i.ytimg.com/vi/RGd9tnKDxeI/hqdefault.jpg\",\n
+        \           \"width\": 480,\n            \"height\": 360\n          },\n          \"standard\":
+        {\n            \"url\": \"https://i.ytimg.com/vi/RGd9tnKDxeI/sddefault.jpg\",\n
+        \           \"width\": 640,\n            \"height\": 480\n          },\n          \"maxres\":
+        {\n            \"url\": \"https://i.ytimg.com/vi/RGd9tnKDxeI/maxresdefault.jpg\",\n
+        \           \"width\": 1280,\n            \"height\": 720\n          }\n        },\n
+        \       \"channelTitle\": \"TalinMusic\",\n        \"liveBroadcastContent\":
+        \"none\",\n        \"publishTime\": \"2018-07-31T22:32:05Z\"\n      }\n    },\n
+        \   {\n      \"kind\": \"youtube#searchResult\",\n      \"etag\": \"UBe3mLd0PDj2Lmn7GMWKLAbw1FQ\",\n
+        \     \"id\": {\n        \"kind\": \"youtube#video\",\n        \"videoId\":
+        \"i4J7L0eCOik\"\n      },\n      \"snippet\": {\n        \"publishedAt\":
+        \"2017-07-17T15:47:13Z\",\n        \"channelId\": \"UCELD92NzrfHEkxTCYohQ-UQ\",\n
+        \       \"title\": \"Spendtime Palace // \\\"Sonora\\\" (OFFICIAL VIDEO)\",\n
+        \       \"description\": \"Spendtime Palace Presents, \\\"Sonora\\\".  LP/CD/MP3
+        COMING SOON.\\n\\nDirector: Josh Ovalle, Finn Wolfhard \\nAssistant Director:
+        Patrick VanZandt\\nProducer: Karen Lavender\\nExecutive Producer: Wernher
+        Ovalle\\nCasting Director/Producer: Ryan Thompson\\nSuperivising Producer:
+        Behnam Karbassi\\nDirector of Photography: Chris McKechnie\\nEdited: Josh
+        Ovalle, Patrick Vanzandt\",\n        \"thumbnails\": {\n          \"default\":
+        {\n            \"url\": \"https://i.ytimg.com/vi/i4J7L0eCOik/default.jpg\",\n
+        \           \"width\": 120,\n            \"height\": 90\n          },\n          \"medium\":
+        {\n            \"url\": \"https://i.ytimg.com/vi/i4J7L0eCOik/mqdefault.jpg\",\n
+        \           \"width\": 320,\n            \"height\": 180\n          },\n          \"high\":
+        {\n            \"url\": \"https://i.ytimg.com/vi/i4J7L0eCOik/hqdefault.jpg\",\n
+        \           \"width\": 480,\n            \"height\": 360\n          },\n          \"standard\":
+        {\n            \"url\": \"https://i.ytimg.com/vi/i4J7L0eCOik/sddefault.jpg\",\n
+        \           \"width\": 640,\n            \"height\": 480\n          }\n        },\n
+        \       \"channelTitle\": \"Josh Ovalle\",\n        \"liveBroadcastContent\":
+        \"none\",\n        \"publishTime\": \"2017-07-17T15:47:13Z\"\n      }\n    },\n
+        \   {\n      \"kind\": \"youtube#searchResult\",\n      \"etag\": \"s-xT7hOk6CNtKdSIvwRki_cAoFs\",\n
+        \     \"id\": {\n        \"kind\": \"youtube#video\",\n        \"videoId\":
+        \"JtYa0rb_jGQ\"\n      },\n      \"snippet\": {\n        \"publishedAt\":
+        \"2017-12-18T21:23:39Z\",\n        \"channelId\": \"UC8znPlMzmIIR5G1-GBmQCHA\",\n
+        \       \"title\": \"Night Club - \\\"Show It 2 Me\\\" (Official 360 Video)\",\n
+        \       \"description\": \"This is a 360 VR video directed by Dylan Carter
+        and Mark Brooks with art created in Google's Tilt Brush by Titmouse president
+        and owner Chris Prynoski and VP and creative director, Antonio Canobbio.  Use
+        the arrows on the top left to navigate the game.\\n\\nMade with the Tilt Brush
+        Toolkit: https://github.com/googlevr/tilt-brush-toolkit\\n\\nSong available
+        on iTunes: http://itunes.apple.com/us/artist/night-club/id545845538\\nInstagram:
+        @nightclubband\\nhttp://www.nightclubband.com\\nhttp://twitter.com/nightclubband\\nhttp://www.facebook.com/nightclubband\",\n
+        \       \"thumbnails\": {\n          \"default\": {\n            \"url\":
+        \"https://i.ytimg.com/vi/JtYa0rb_jGQ/default.jpg\",\n            \"width\":
+        120,\n            \"height\": 90\n          },\n          \"medium\": {\n
+        \           \"url\": \"https://i.ytimg.com/vi/JtYa0rb_jGQ/mqdefault.jpg\",\n
+        \           \"width\": 320,\n            \"height\": 180\n          },\n          \"high\":
+        {\n            \"url\": \"https://i.ytimg.com/vi/JtYa0rb_jGQ/hqdefault.jpg\",\n
+        \           \"width\": 480,\n            \"height\": 360\n          },\n          \"standard\":
+        {\n            \"url\": \"https://i.ytimg.com/vi/JtYa0rb_jGQ/sddefault.jpg\",\n
+        \           \"width\": 640,\n            \"height\": 480\n          },\n          \"maxres\":
+        {\n            \"url\": \"https://i.ytimg.com/vi/JtYa0rb_jGQ/maxresdefault.jpg\",\n
+        \           \"width\": 1280,\n            \"height\": 720\n          }\n        },\n
+        \       \"channelTitle\": \"Night Club\",\n        \"liveBroadcastContent\":
+        \"none\",\n        \"publishTime\": \"2017-12-18T21:23:39Z\"\n      }\n    },\n
+        \   {\n      \"kind\": \"youtube#searchResult\",\n      \"etag\": \"L7pOcID275h27M35S4srWN8fogQ\",\n
+        \     \"id\": {\n        \"kind\": \"youtube#video\",\n        \"videoId\":
+        \"e7Wtf-EHVyc\"\n      },\n      \"snippet\": {\n        \"publishedAt\":
+        \"2020-03-17T15:01:40Z\",\n        \"channelId\": \"UCTC6nkUN-rI7SKDvA8VyKaw\",\n
+        \       \"title\": \"CHVRCHES - Miracle \uD55C\uAE00\uAC00\uC0AC/\uC790\uB9C9
+        (Korean lyrics)\",\n        \"description\": \"\uC544 \uC81C\uBC1C \uC774\uAC74
+        \uC548\uC9E4\uB9AC\uAC8C \uD574\uC8FC\uC138\uC694... \\n\uC608\uC804\uC5D0
+        \uB9CC\uB4E4\uC5B4\uB454\uAC70\uB77C \uC790\uB9C9 \uD06C\uAE30 \uB4E4\uCB49\uB0A0\uCB49
+        \uC9C0\uBABB\uBBF8...\",\n        \"thumbnails\": {\n          \"default\":
+        {\n            \"url\": \"https://i.ytimg.com/vi/e7Wtf-EHVyc/default.jpg\",\n
+        \           \"width\": 120,\n            \"height\": 90\n          },\n          \"medium\":
+        {\n            \"url\": \"https://i.ytimg.com/vi/e7Wtf-EHVyc/mqdefault.jpg\",\n
+        \           \"width\": 320,\n            \"height\": 180\n          },\n          \"high\":
+        {\n            \"url\": \"https://i.ytimg.com/vi/e7Wtf-EHVyc/hqdefault.jpg\",\n
+        \           \"width\": 480,\n            \"height\": 360\n          },\n          \"standard\":
+        {\n            \"url\": \"https://i.ytimg.com/vi/e7Wtf-EHVyc/sddefault.jpg\",\n
+        \           \"width\": 640,\n            \"height\": 480\n          },\n          \"maxres\":
+        {\n            \"url\": \"https://i.ytimg.com/vi/e7Wtf-EHVyc/maxresdefault.jpg\",\n
+        \           \"width\": 1280,\n            \"height\": 720\n          }\n        },\n
+        \       \"channelTitle\": \"\uBBF8\uC2A4\uD2F0\uC624\uC2A4\",\n        \"liveBroadcastContent\":
+        \"none\",\n        \"publishTime\": \"2020-03-17T15:01:40Z\"\n      }\n    },\n
+        \   {\n      \"kind\": \"youtube#searchResult\",\n      \"etag\": \"C8EMpjgrBM6qGcds32ILUcTMC-w\",\n
+        \     \"id\": {\n        \"kind\": \"youtube#video\",\n        \"videoId\":
+        \"haunJARHPm4\"\n      },\n      \"snippet\": {\n        \"publishedAt\":
+        \"2014-05-12T20:16:24Z\",\n        \"channelId\": \"UC4eYXhJI4-7wSWc8UNRwD4A\",\n
+        \       \"title\": \"Chvrches: NPR Music Tiny Desk Concert\",\n        \"description\":
+        \"For a brief moment, I imagined hearing Chvrches perform \\\"Recover\\\"
+        or \\\"Gun\\\" with a couple of acoustic guitars and perhaps a shaker or two.
+        And, though these songs would surely stand up well when broken down and bared,
+        I'm thrilled that Chvrches came with a small arsenal of synthesizers to perform
+        a few highlights from last year's album The Bones of What You Believe.\\n\\nSeeing
+        these now-familiar earworms executed up close was nearly as much a campfire
+        moment as an acoustic set might have been, except the flames burned brighter.
+        Lauren Mayberry's voice felt powerful and vulnerable, while Iain Cook and
+        Martin Doherty kept those memorable synth lines bubbling underneath. The result
+        works as a perfect introduction to the Glasgow trio, but also a reaffirmation
+        of talent and longevity for those already love with the band. --BOB BOILEN\\n\\nSet
+        List\\n\\n\\\"Recover\\\"\\n\\\"Gun\\\"\\n\\\"The Mother We Share\\\"\\n\\nCredits\\n\\nProducers:
+        Bob Boilen, Denise DeBelius; Audio Engineer: Kevin Wait; Videographers: Denise
+        DeBelius, Olivia Merrion, Stephen Thompson; photo by Meredith Rizzo/NPR\",\n
+        \       \"thumbnails\": {\n          \"default\": {\n            \"url\":
+        \"https://i.ytimg.com/vi/haunJARHPm4/default.jpg\",\n            \"width\":
+        120,\n            \"height\": 90\n          },\n          \"medium\": {\n
+        \           \"url\": \"https://i.ytimg.com/vi/haunJARHPm4/mqdefault.jpg\",\n
+        \           \"width\": 320,\n            \"height\": 180\n          },\n          \"high\":
+        {\n            \"url\": \"https://i.ytimg.com/vi/haunJARHPm4/hqdefault.jpg\",\n
+        \           \"width\": 480,\n            \"height\": 360\n          },\n          \"standard\":
+        {\n            \"url\": \"https://i.ytimg.com/vi/haunJARHPm4/sddefault.jpg\",\n
+        \           \"width\": 640,\n            \"height\": 480\n          },\n          \"maxres\":
+        {\n            \"url\": \"https://i.ytimg.com/vi/haunJARHPm4/maxresdefault.jpg\",\n
+        \           \"width\": 1280,\n            \"height\": 720\n          }\n        },\n
+        \       \"channelTitle\": \"NPR Music\",\n        \"liveBroadcastContent\":
+        \"none\",\n        \"publishTime\": \"2014-05-12T20:16:24Z\"\n      }\n    },\n
+        \   {\n      \"kind\": \"youtube#searchResult\",\n      \"etag\": \"icubqJVC1fw8VfBwmIu8vRLn4yA\",\n
         \     \"id\": {\n        \"kind\": \"youtube#video\",\n        \"videoId\":
         \"NRmSf9VqrUA\"\n      },\n      \"snippet\": {\n        \"publishedAt\":
         \"2019-03-21T17:57:24Z\",\n        \"channelId\": \"UCEdvpU2pFRCVqU6yIPyTpMQ\",\n
         \       \"title\": \"Marshmello - Here With Me Feat. CHVRCHES [Alternative
         Music Video]\",\n        \"description\": \"Marshmello - Here With Me Feat.
         CHVRCHES [Alternative Music Video]\\nPurchase/Stream 'Here With Me' \u25B6
-        https://marshmello.lnk.to/herewithme\\nSHOP Limited Edition 'Here With Me'
-        Merch \u25B6 https://mellogang.com/collections/new-arrivals/\\n\\n[\u2716\u203F\u2716]
+        https://marshmello.lnk.to/herewithme\\nSHOP Limited Edition Merch \u25B6 https://www.marshmellomusic.com\\n\\n[\u2716\u203F\u2716]
         SUBSCRIBE HERE \u25B6 http://youtube.com/marshmellomusic?sub_confirmation=1\\nClick
         Here To Watch The Happier Music Video \u25B6 https://youtu.be/m7Bc3pLyij0\\nBIBA
         Music Video w/ Pritam, Shirley Setia & Shah Rukh Khan \u25B6 https://youtu.be/UhYRlI_bpJQ\\n\\nMarshmello
@@ -576,322 +667,71 @@ interactions:
         \           \"width\": 1280,\n            \"height\": 720\n          }\n        },\n
         \       \"channelTitle\": \"Marshmello\",\n        \"liveBroadcastContent\":
         \"none\",\n        \"publishTime\": \"2019-03-21T17:57:24Z\"\n      }\n    },\n
-        \   {\n      \"kind\": \"youtube#searchResult\",\n      \"etag\": \"BWIPFTMF9hkxrje-Ei_wcgtjV-U\",\n
+        \   {\n      \"kind\": \"youtube#searchResult\",\n      \"etag\": \"o70C1DlVuwUg_5sewhGgXAfAgz8\",\n
         \     \"id\": {\n        \"kind\": \"youtube#video\",\n        \"videoId\":
-        \"JyqemIbjcfg\"\n      },\n      \"snippet\": {\n        \"publishedAt\":
-        \"2013-03-05T10:50:50Z\",\n        \"channelId\": \"UCXCfOEJFMa40s-57zxw9MYw\",\n
-        \       \"title\": \"CHVRCHES - Recover\",\n        \"description\": \"CHVRCHES
-        - Recover\\n\\nRecover EP out now: http://po.st/Sm7Tvk\\n\\nThe debut album
-        The Bones Of What You Believe out now. Standard: http://po.st/TBOWYB I Special:
-        http://po.st/TBOWYBSpecial \\n\\nTour dates and sign up to the mailing list
-        : http://www.chvrch.es \\n\\nSubscribe to the CHVRCHES YouTube Channel: Chvrches.lnk.to/Subscribe
-        \\n\\nFollow CHVRCHES: \\nInstagram: http://instagram.com/chvrches \\nFacebook:
-        http://www.facebook.com/chvrches \\nTwitter: http://twitter.com/chvrches \\nTumblr:
-        http://chvrches.tumblr.com\\nListen: http://Chvrches.lnk.to/Chvrches \\n\\n#Recover
+        \"fB4gjiMVKFI\"\n      },\n      \"snippet\": {\n        \"publishedAt\":
+        \"2016-05-18T16:19:30Z\",\n        \"channelId\": \"UCXCfOEJFMa40s-57zxw9MYw\",\n
+        \       \"title\": \"CHVRCHES - Warning Call (Lyric Video)\",\n        \"description\":
+        \"CHVRCHES- \\\"Warning Call\\\" \\nTheme From Mirror\u2019s Edge Catalyst\\n\\niTunes:
+        http://smarturl.it/WarningCall\\nSpotify: http://smarturl.it/WarningCallSptfy\\nAmazon:
+        http://smarturl.it/WarningCallAmazon\\nGoogle Play: http://smarturl.it/WarningCallGoogle\\n\\nTour
+        dates and sign up to the mailing list: http://www.chvrch.es \\n\\nFollow CHVRCHES:
+        \\nInstagram: http://instagram.com/chvrches \\nFacebook: http://www.facebook.com/chvrches
+        \\nTwitter: http://twitter.com/chvrches \\nTumblr: http://chvrches.tumblr.com\\nWebsite:
+        https://chvrch.es/\\nListen: https://Chvrches.lnk.to/Chvrches \\n\\nSubscribe
+        to the CHVRCHES YouTube Channel: Chvrches.lnk.to/Subscribe \\n\\n#WarningCall
         #CHVRCHES\",\n        \"thumbnails\": {\n          \"default\": {\n            \"url\":
-        \"https://i.ytimg.com/vi/JyqemIbjcfg/default.jpg\",\n            \"width\":
+        \"https://i.ytimg.com/vi/fB4gjiMVKFI/default.jpg\",\n            \"width\":
         120,\n            \"height\": 90\n          },\n          \"medium\": {\n
-        \           \"url\": \"https://i.ytimg.com/vi/JyqemIbjcfg/mqdefault.jpg\",\n
+        \           \"url\": \"https://i.ytimg.com/vi/fB4gjiMVKFI/mqdefault.jpg\",\n
         \           \"width\": 320,\n            \"height\": 180\n          },\n          \"high\":
-        {\n            \"url\": \"https://i.ytimg.com/vi/JyqemIbjcfg/hqdefault.jpg\",\n
+        {\n            \"url\": \"https://i.ytimg.com/vi/fB4gjiMVKFI/hqdefault.jpg\",\n
         \           \"width\": 480,\n            \"height\": 360\n          },\n          \"standard\":
-        {\n            \"url\": \"https://i.ytimg.com/vi/JyqemIbjcfg/sddefault.jpg\",\n
-        \           \"width\": 640,\n            \"height\": 480\n          },\n          \"maxres\":
-        {\n            \"url\": \"https://i.ytimg.com/vi/JyqemIbjcfg/maxresdefault.jpg\",\n
-        \           \"width\": 1280,\n            \"height\": 720\n          }\n        },\n
+        {\n            \"url\": \"https://i.ytimg.com/vi/fB4gjiMVKFI/sddefault.jpg\",\n
+        \           \"width\": 640,\n            \"height\": 480\n          }\n        },\n
         \       \"channelTitle\": \"CHVRCHES\",\n        \"liveBroadcastContent\":
-        \"none\",\n        \"publishTime\": \"2013-03-05T10:50:50Z\"\n      }\n    },\n
-        \   {\n      \"kind\": \"youtube#searchResult\",\n      \"etag\": \"rAv7N_uXVCRq9qlZx0xJDk6EqrU\",\n
+        \"none\",\n        \"publishTime\": \"2016-05-18T16:19:30Z\"\n      }\n    },\n
+        \   {\n      \"kind\": \"youtube#searchResult\",\n      \"etag\": \"sZYpG_v5g-dX5Eo3ML52JmG5jj4\",\n
         \     \"id\": {\n        \"kind\": \"youtube#video\",\n        \"videoId\":
-        \"msgimk3mV6g\"\n      },\n      \"snippet\": {\n        \"publishedAt\":
-        \"2018-07-18T08:28:21Z\",\n        \"channelId\": \"UCd2KNtfphz8HvYzM4pwtHmg\",\n
-        \       \"title\": \"CHVRCHES cover Kendrick Lamar 'LOVE.' for Like A Version\",\n
-        \       \"description\": \"Kendrick Lamar's 'LOVE.' is beautifully reimagined
-        by CHVRCHES for triple j's Like A Version. Like A Version is a segment on
-        Australian radio station triple j. Every week a musician or band comes into
-        the studio to play one of their own songs and cover a song they love. \\n\\nSince
-        2004, many artists have participated, including Childish Gambino, Lorde, CHVRCHES,
-        Tame Impala, Tash Sultana, HAIM, Gang of Youths, Halsey, DMA'S, Aurora, Arctic
-        Monkeys. You can watch past sessions here: http://bit.ly/like_a_version\\n\\nYou
-        can watch Like A Versions ad-free at http://www.triplej.net.au\\n\\n#LikeAVersion\",\n
-        \       \"thumbnails\": {\n          \"default\": {\n            \"url\":
-        \"https://i.ytimg.com/vi/msgimk3mV6g/default.jpg\",\n            \"width\":
-        120,\n            \"height\": 90\n          },\n          \"medium\": {\n
-        \           \"url\": \"https://i.ytimg.com/vi/msgimk3mV6g/mqdefault.jpg\",\n
-        \           \"width\": 320,\n            \"height\": 180\n          },\n          \"high\":
-        {\n            \"url\": \"https://i.ytimg.com/vi/msgimk3mV6g/hqdefault.jpg\",\n
-        \           \"width\": 480,\n            \"height\": 360\n          },\n          \"standard\":
-        {\n            \"url\": \"https://i.ytimg.com/vi/msgimk3mV6g/sddefault.jpg\",\n
-        \           \"width\": 640,\n            \"height\": 480\n          },\n          \"maxres\":
-        {\n            \"url\": \"https://i.ytimg.com/vi/msgimk3mV6g/maxresdefault.jpg\",\n
-        \           \"width\": 1280,\n            \"height\": 720\n          }\n        },\n
-        \       \"channelTitle\": \"triple j\",\n        \"liveBroadcastContent\":
-        \"none\",\n        \"publishTime\": \"2018-07-18T08:28:21Z\"\n      }\n    },\n
-        \   {\n      \"kind\": \"youtube#searchResult\",\n      \"etag\": \"bGZdonWqYiIByEIttz-nSk5s5cs\",\n
-        \     \"id\": {\n        \"kind\": \"youtube#video\",\n        \"videoId\":
-        \"O-3-46RD2W8\"\n      },\n      \"snippet\": {\n        \"publishedAt\":
-        \"2016-04-20T18:08:26Z\",\n        \"channelId\": \"UCGob98kQuOdZs2JXVGUVTKA\",\n
-        \       \"title\": \"CHVRCHES - Clearest Blue (Gryffin Remix)\",\n        \"description\":
-        \"\",\n        \"thumbnails\": {\n          \"default\": {\n            \"url\":
-        \"https://i.ytimg.com/vi/O-3-46RD2W8/default.jpg\",\n            \"width\":
-        120,\n            \"height\": 90\n          },\n          \"medium\": {\n
-        \           \"url\": \"https://i.ytimg.com/vi/O-3-46RD2W8/mqdefault.jpg\",\n
-        \           \"width\": 320,\n            \"height\": 180\n          },\n          \"high\":
-        {\n            \"url\": \"https://i.ytimg.com/vi/O-3-46RD2W8/hqdefault.jpg\",\n
-        \           \"width\": 480,\n            \"height\": 360\n          },\n          \"standard\":
-        {\n            \"url\": \"https://i.ytimg.com/vi/O-3-46RD2W8/sddefault.jpg\",\n
-        \           \"width\": 640,\n            \"height\": 480\n          },\n          \"maxres\":
-        {\n            \"url\": \"https://i.ytimg.com/vi/O-3-46RD2W8/maxresdefault.jpg\",\n
-        \           \"width\": 1280,\n            \"height\": 720\n          }\n        },\n
-        \       \"channelTitle\": \"Sergej Mitrevski\",\n        \"liveBroadcastContent\":
-        \"none\",\n        \"publishTime\": \"2016-04-20T18:08:26Z\"\n      }\n    },\n
-        \   {\n      \"kind\": \"youtube#searchResult\",\n      \"etag\": \"YsqEyAGDW8iAHeIN-mvJEt8Ow14\",\n
-        \     \"id\": {\n        \"kind\": \"youtube#video\",\n        \"videoId\":
-        \"kKaF-sjG06g\"\n      },\n      \"snippet\": {\n        \"publishedAt\":
-        \"2021-08-25T09:03:51Z\",\n        \"channelId\": \"UCJKyu8bHNKC5lNX2o8qQ99g\",\n
-        \       \"title\": \"Party Songs Mix 2021 | Best Club Music Mix 2021| EDM
-        Remixes & Mashups Of Popular Songs \U0001F525\",\n        \"description\":
-        \"Party Songs Mix 2021 | Best Club Music Mix 2021| EDM Remixes & Mashups Of
-        Popular Songs \U0001F525  \\n2 Hours No Stop Mix , real mixed and selected
-        by Valentino Sirolli. \\n\\n\U0001F449\U0001F3FB TRACKLIST :  https://bit.ly/3zq1dWK\\n\\n\U0001F525
-        Support me on Patreon  : https://www.patreon.com/valentinosirolli \\n\\n\U0001F449\U0001F3FB
-        FREE CLUB MUSIC (no mixed) : https://hypeddit.com/track/rcw86l\\n\\n\U0001F381
-        Support me with a gift via my Amazon wishlist: https://www.amazon.it/hz/wishlist/ls/3VPXBYJRX9Z0B
-        \\n\\n\U0001F44DSupport me: https://paypal.me/valentinosirolli \\n\U0001F455
-        Club Music Merch: https://teespring.com/club-music-gang\\n\\n\U0001F4AC Join
-        to my Discord server: https://discord.gg/EZEST4c\\n\U0001F4AC Join to my Telegram
-        channel: http://t.me/valentinosirollitelegram  \\n\\n\U0001F525 Follow my
-        Spotify playlist : http://bit.ly/DAILYEDM\\n\\n\U0001F4BF Submit your track
-        on: promo@valentinosirolli.com\\n\u2753General enquiries: youtube@valentinosirolli.com\\n\U0001F30E
-        Booking: booking@valentinosirolli.com\\n\\n\U0001F680 Subscribe,comments and
-        share on your preferite social \\n\u2714\uFE0FSubscribe and share for more
-        mixes ! \\n\U0001F514 Turn on the bell to never miss an upload!\\n\U0001F512
-        Giveaway after 250.000 subscribers \\n\\n\u2665\uFE0F I want to share some
-        of remix and music that I use and love.\\n\\n\u2753What I use: \\n\u2022 https://www.amazon.it/shop/valentinosirolli\\n\U0001F4F9
-        Software Audio Editing : Logic Pro X \\n\U0001F3AC  Software Video Editing
-        : Adobe Premiere Pro CC \\n\U0001F4F7 Software Photo Editing : Photoshop CC
-        \\n\\n\U0001F4F3 Valentino Sirolli on the web, follow me:\\n\u2022 http://www.valentinosirolli.com
-        \\n\u2022 http://www.facebook.com/valentinosirolli\\n\u2022 https://www.instagram.com/valentinosirolli\\n\u2022
-        https://soundcloud.com/valentinosirolli\\n\u2022 https://www.tiktok.com/@valentinosirolli\\n\\n\u2757PLEASE
-        READ \u2757\\n*I don't own anything in the video, including the audio and
-        picture. The credits go to the respective owners.\\nIf any producer or label
-        has an issue with any of the uploads please get in contact with me and I will
-        change/delete it immediately (this includes artists of the images/elements
-        used).\\nIf you want your song or photo removed from our channel then please
-        email us and it will be removed within two hours. There is no need to file
-        a strike when a much more civil process is able to be made.\\n\\n#partysongs
-        #partymusic #partymix #clubmusic #clubsongs #EDM\\nhttps://youtu.be/kKaF-sjG06g\\n\\nbest
-        music mix 2021,music,club music,mix 2021,mix,music mix 2021,best music mix,club
-        music mix 2021,rnb music 2020,r&b music 2021,music 2021,best music 2021,pop
-        music 2021, rnb 2021,dance music 2021,festival mix 2021,hip hop music 2021,pop
-        mix 2021,new mix 2021,party mix 2021,new music,pop music mix 2021,rnb 2021
-        mix,trap music mix 2021,summer music mix 2021 ,gaming music\\nclub music,mix
-        2021,The best remixes of popular songs,club music 2021,club mix 2021,club
-        mix,club remix,remix 2021,party mix 2021,mashup 2021,clubbing music,club songs,valentino
-        sirolli,dance music 2021,\u30AF\u30E9\u30D6\u30DF\u30E5\u30FC\u30B8\u30C3\u30AF,club
-        remix 2021,club songs 2021,night club music,club hits 2021,nightclub music,dance
-        mix 2021,mashup 2020 remix,party music 2021,EDM Music,Popular Songs,Quarantine,Covid
-        quarantine mix edm,quarantine party mix,quarantena musica, remixes of popular
-        songs,music mix 2021,new year mix 2021,party mix 2020,edm 2021,mix 2020,popular
-        songs,festival mix 2021,music 2020,electro 2021,best remixes of popular songs,best
-        music mix 2020,electro house 2021,2021 mix,new year 2021,best remixes of popular
-        songs 20120club music,best music 2020,party music mix 2021,best trap music
-        mix 2021,new mix 2021,remixes of popular songs 2021, lockdown mix\\n\\nParty
-        Songs Mix 2021 | Best Club Music Mix 2021| EDM  Remixes & Mashups Of Popular
-        Songs \U0001F525\",\n        \"thumbnails\": {\n          \"default\": {\n
-        \           \"url\": \"https://i.ytimg.com/vi/kKaF-sjG06g/default.jpg\",\n
+        \"DYqWrs6NJe4\"\n      },\n      \"snippet\": {\n        \"publishedAt\":
+        \"2020-05-16T17:35:37Z\",\n        \"channelId\": \"UCYheY_5RCoADZHIUwT1J5GA\",\n
+        \       \"title\": \"CHVRCHES - Forever / Death Stranding - 2 songs\",\n        \"description\":
+        \"CHVRCHES Live - Forever / Death Stranding - from home\\nPlay List\\n00:00
+        Forever\\n04:05 Death Stranding\\nOwned by CHVRCHES & Houseparty\\nHouseparty
+        Channel: https://www.youtube.com/channel/UC_2OFsBwsCgX5zYvmZs1NCA\\n\\n(Copyright
+        Statement) This video is not intended to infringe any copyright laws in any
+        way. This is for the sole purpose of entertainment; no profit is gained from
+        this. It is the copyrighted property of its respective owner(s)\\n\\nCopyright
+        Disclaimer Under Section 107 of the\\nCopyright Act 1976, allowance is made
+        for \\\"fair use\\\"\\nfor purposes such as criticism, comment, news\\nreporting,
+        teaching, scholarship, and research. Fair\\nuse is a use permitted by copyright
+        statute that\\nmight otherwise be infringing. Non-profit,\\neducational or
+        personal use tips the balance in favor\\nof fair use\",\n        \"thumbnails\":
+        {\n          \"default\": {\n            \"url\": \"https://i.ytimg.com/vi/DYqWrs6NJe4/default.jpg\",\n
         \           \"width\": 120,\n            \"height\": 90\n          },\n          \"medium\":
-        {\n            \"url\": \"https://i.ytimg.com/vi/kKaF-sjG06g/mqdefault.jpg\",\n
+        {\n            \"url\": \"https://i.ytimg.com/vi/DYqWrs6NJe4/mqdefault.jpg\",\n
         \           \"width\": 320,\n            \"height\": 180\n          },\n          \"high\":
-        {\n            \"url\": \"https://i.ytimg.com/vi/kKaF-sjG06g/hqdefault.jpg\",\n
+        {\n            \"url\": \"https://i.ytimg.com/vi/DYqWrs6NJe4/hqdefault.jpg\",\n
         \           \"width\": 480,\n            \"height\": 360\n          },\n          \"standard\":
-        {\n            \"url\": \"https://i.ytimg.com/vi/kKaF-sjG06g/sddefault.jpg\",\n
+        {\n            \"url\": \"https://i.ytimg.com/vi/DYqWrs6NJe4/sddefault.jpg\",\n
         \           \"width\": 640,\n            \"height\": 480\n          },\n          \"maxres\":
-        {\n            \"url\": \"https://i.ytimg.com/vi/kKaF-sjG06g/maxresdefault.jpg\",\n
+        {\n            \"url\": \"https://i.ytimg.com/vi/DYqWrs6NJe4/maxresdefault.jpg\",\n
         \           \"width\": 1280,\n            \"height\": 720\n          }\n        },\n
-        \       \"channelTitle\": \"Valentino Sirolli\",\n        \"liveBroadcastContent\":
-        \"none\",\n        \"publishTime\": \"2021-08-25T09:03:51Z\"\n      }\n    },\n
-        \   {\n      \"kind\": \"youtube#searchResult\",\n      \"etag\": \"TgKEJuU6eNzl2JeolvqVlQWI0wY\",\n
-        \     \"id\": {\n        \"kind\": \"youtube#video\",\n        \"videoId\":
-        \"IvWZS58erqc\"\n      },\n      \"snippet\": {\n        \"publishedAt\":
-        \"2021-08-26T03:35:02Z\",\n        \"channelId\": \"UC8-Th83bH_thdKZDJCrn88g\",\n
-        \       \"title\": \"CHVRCHES: Good Girls | The Tonight Show Starring Jimmy
-        Fallon\",\n        \"description\": \"Musical guest CHVRCHES performs \\\"Good
-        Girls\\\" for The Tonight Show.\\n\\nThe Tonight Show Starring Jimmy Fallon.
-        \ Stream now on Peacock: https://bit.ly/3gZJaNy\\n\\nSubscribe NOW to The
-        Tonight Show Starring Jimmy Fallon: http://bit.ly/1nwT1aN\\n \\nWatch The
-        Tonight Show Starring Jimmy Fallon Weeknights 11:35/10:35c\\n \\nGet more
-        The Tonight Show Starring Jimmy Fallon: https://www.nbc.com/the-tonight-show\\n
-        \\nJIMMY FALLON ON SOCIAL\\nFollow Jimmy: http://Twitter.com/JimmyFallon\\nLike
-        Jimmy: https://Facebook.com/JimmyFallon\\nFollow Jimmy: https://www.instagram.com/jimmyfallon/\\n
-        \\nTHE TONIGHT SHOW ON SOCIAL\\nFollow The Tonight Show: http://Twitter.com/FallonTonight\\nLike
-        The Tonight Show: https://Facebook.com/FallonTonight\\nFollow The Tonight
-        Show: https://www.instagram.com/fallontonight/\\nTonight Show Tumblr: http://fallontonight.tumblr.com\\n
-        \\nThe Tonight Show Starring Jimmy Fallon features hilarious highlights from
-        the show, including comedy sketches, music parodies, celebrity interviews,
-        ridiculous games, and, of course, Jimmy's Thank You Notes and hashtags! You'll
-        also find behind the scenes videos and other great web exclusives.\\n \\nGET
-        MORE NBC\\nNBC YouTube: http://bit.ly/1dM1qBH\\nLike NBC: http://Facebook.com/NBC\\nFollow
-        NBC: http://Twitter.com/NBC\\nNBC Instagram: http://instagram.com/nbctv\\nNBC
-        Tumblr: http://nbctv.tumblr.com/\\n \\nCHVRCHES: Good Girls | The Tonight
-        Show Starring Jimmy Fallon\\nhttp://www.youtube.com/fallontonight\\n\\n#FallonTonight\\n#CHVRCHES\\n#JimmyFallon\",\n
-        \       \"thumbnails\": {\n          \"default\": {\n            \"url\":
-        \"https://i.ytimg.com/vi/IvWZS58erqc/default.jpg\",\n            \"width\":
-        120,\n            \"height\": 90\n          },\n          \"medium\": {\n
-        \           \"url\": \"https://i.ytimg.com/vi/IvWZS58erqc/mqdefault.jpg\",\n
-        \           \"width\": 320,\n            \"height\": 180\n          },\n          \"high\":
-        {\n            \"url\": \"https://i.ytimg.com/vi/IvWZS58erqc/hqdefault.jpg\",\n
-        \           \"width\": 480,\n            \"height\": 360\n          }\n        },\n
-        \       \"channelTitle\": \"The Tonight Show Starring Jimmy Fallon\",\n        \"liveBroadcastContent\":
-        \"none\",\n        \"publishTime\": \"2021-08-26T03:35:02Z\"\n      }\n    },\n
-        \   {\n      \"kind\": \"youtube#searchResult\",\n      \"etag\": \"cM8omrTZrwZgAgsPSfVPgvCb6zU\",\n
-        \     \"id\": {\n        \"kind\": \"youtube#video\",\n        \"videoId\":
-        \"e7Wtf-EHVyc\"\n      },\n      \"snippet\": {\n        \"publishedAt\":
-        \"2020-03-17T15:01:40Z\",\n        \"channelId\": \"UCTC6nkUN-rI7SKDvA8VyKaw\",\n
-        \       \"title\": \"CHVRCHES - Miracle \uD55C\uAE00\uAC00\uC0AC/\uC790\uB9C9
-        (Korean lyrics)\",\n        \"description\": \"\uC544 \uC81C\uBC1C \uC774\uAC74
-        \uC548\uC9E4\uB9AC\uAC8C \uD574\uC8FC\uC138\uC694... \\n\uC608\uC804\uC5D0
-        \uB9CC\uB4E4\uC5B4\uB454\uAC70\uB77C \uC790\uB9C9 \uD06C\uAE30 \uB4E4\uCB49\uB0A0\uCB49
-        \uC9C0\uBABB\uBBF8...\",\n        \"thumbnails\": {\n          \"default\":
-        {\n            \"url\": \"https://i.ytimg.com/vi/e7Wtf-EHVyc/default.jpg\",\n
-        \           \"width\": 120,\n            \"height\": 90\n          },\n          \"medium\":
-        {\n            \"url\": \"https://i.ytimg.com/vi/e7Wtf-EHVyc/mqdefault.jpg\",\n
-        \           \"width\": 320,\n            \"height\": 180\n          },\n          \"high\":
-        {\n            \"url\": \"https://i.ytimg.com/vi/e7Wtf-EHVyc/hqdefault.jpg\",\n
-        \           \"width\": 480,\n            \"height\": 360\n          },\n          \"standard\":
-        {\n            \"url\": \"https://i.ytimg.com/vi/e7Wtf-EHVyc/sddefault.jpg\",\n
-        \           \"width\": 640,\n            \"height\": 480\n          },\n          \"maxres\":
-        {\n            \"url\": \"https://i.ytimg.com/vi/e7Wtf-EHVyc/maxresdefault.jpg\",\n
-        \           \"width\": 1280,\n            \"height\": 720\n          }\n        },\n
-        \       \"channelTitle\": \"\uBBF8\uC2A4\uD2F0\uC624\uC2A4\",\n        \"liveBroadcastContent\":
-        \"none\",\n        \"publishTime\": \"2020-03-17T15:01:40Z\"\n      }\n    }\n
+        \       \"channelTitle\": \"CHVRCHES Latinoam\xE9rica\",\n        \"liveBroadcastContent\":
+        \"none\",\n        \"publishTime\": \"2020-05-16T17:35:37Z\"\n      }\n    }\n
         \ ]\n}\n"
     headers:
       Accept-Ranges:
       - none
       Alt-Svc:
-      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000,h3-T051=":443"; ma=2592000,h3-Q050=":443";
-        ma=2592000,h3-Q046=":443"; ma=2592000,h3-Q043=":443"; ma=2592000,quic=":443";
-        ma=2592000; v="46,43"
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000,h3-Q050=":443"; ma=2592000,h3-Q046=":443";
+        ma=2592000,h3-Q043=":443"; ma=2592000,quic=":443"; ma=2592000; v="46,43"
       Cache-Control:
       - private
       Content-Type:
       - application/json; charset=UTF-8
       Date:
-      - Thu, 23 Sep 2021 06:04:45 GMT
-      Server:
-      - scaffolding on HTTPServer2
-      Transfer-Encoding:
-      - chunked
-      Vary:
-      - X-Origin
-      - Referer
-      - Origin,Accept-Encoding
-      X-Content-Type-Options:
-      - nosniff
-      X-Frame-Options:
-      - SAMEORIGIN
-      X-XSS-Protection:
-      - '0'
-    status:
-      code: 200
-      message: OK
-- request:
-    body: null
-    headers:
-      Accept-Language:
-      - en;q=0.8
-      Cookie:
-      - PREF=hl=en;
-      user-agent:
-      - Mopidy-YouTube/3.4 Mopidy/3.2.0 CPython/3.8.10
-    method: GET
-    uri: https://www.googleapis.com/youtube/v3/videos?fields=items%28id%2Csnippet%28title%2CchannelTitle%29%2CcontentDetails%28duration%29%29&id=lnLyMjXDA3Q%2CRJdOYscmlyo%2CwEdRhmBx8IU%2CtPbJ7YJVVLw%2CT3YG2nA0jmM%2Cbv2yNre7saU%2C3TesdYxS2xE%2ChaunJARHPm4%2C5rWWGbCcbpM%2CY6DHggNoWDc%2Cl_EIE5f2t6M%2CTFdRnmqFixU%2CwzQF401MX-8%2CNRmSf9VqrUA%2CJyqemIbjcfg%2Cmsgimk3mV6g%2CO-3-46RD2W8%2CkKaF-sjG06g%2CIvWZS58erqc%2Ce7Wtf-EHVyc&key=fake_key&part=id%2Csnippet%2CcontentDetails
-  response:
-    body:
-      string: "{\n  \"items\": [\n    {\n      \"id\": \"lnLyMjXDA3Q\",\n      \"snippet\":
-        {\n        \"title\": \"Marshmello ft. CHVRCHES - Here With Me (Jimmy Kimmel
-        Live in Las Vegas Performance Video)\",\n        \"channelTitle\": \"Marshmello\"\n
-        \     },\n      \"contentDetails\": {\n        \"duration\": \"PT2M55S\"\n
-        \     }\n    },\n    {\n      \"id\": \"RJdOYscmlyo\",\n      \"snippet\":
-        {\n        \"title\": \"CHVRCHES - Forever (Lyric Video)\",\n        \"channelTitle\":
-        \"CHVRCHES\"\n      },\n      \"contentDetails\": {\n        \"duration\":
-        \"PT3M43S\"\n      }\n    },\n    {\n      \"id\": \"wEdRhmBx8IU\",\n      \"snippet\":
-        {\n        \"title\": \"CHVRCHES - Somebody Else (The 1975 cover) in the Live
-        Lounge\",\n        \"channelTitle\": \"BBCRadio1VEVO\"\n      },\n      \"contentDetails\":
-        {\n        \"duration\": \"PT5M37S\"\n      }\n    },\n    {\n      \"id\":
-        \"tPbJ7YJVVLw\",\n      \"snippet\": {\n        \"title\": \"Fragma - Toca\xB4s
-        Miracle (2008 Inpetto New Vocal Version)\",\n        \"channelTitle\": \"Fragma\"\n
-        \     },\n      \"contentDetails\": {\n        \"duration\": \"PT3M20S\"\n
-        \     }\n    },\n    {\n      \"id\": \"T3YG2nA0jmM\",\n      \"snippet\":
-        {\n        \"title\": \"Chvrches & BBC Scottish Symphony Orchestra perform
-        Miracle | Beginning | BBC Scotland\",\n        \"channelTitle\": \"BBC Scotland\"\n
-        \     },\n      \"contentDetails\": {\n        \"duration\": \"PT2M41S\"\n
-        \     }\n    },\n    {\n      \"id\": \"bv2yNre7saU\",\n      \"snippet\":
-        {\n        \"title\": \"CHVRCHES Perform Death Stranding to Open The Game
-        Awards 2019\",\n        \"channelTitle\": \"thegameawards\"\n      },\n      \"contentDetails\":
-        {\n        \"duration\": \"PT3M42S\"\n      }\n    },\n    {\n      \"id\":
-        \"3TesdYxS2xE\",\n      \"snippet\": {\n        \"title\": \"CHVRCHES - Miracle
-        (Lyrics)\",\n        \"channelTitle\": \"PumProject\"\n      },\n      \"contentDetails\":
-        {\n        \"duration\": \"PT3M16S\"\n      }\n    },\n    {\n      \"id\":
-        \"haunJARHPm4\",\n      \"snippet\": {\n        \"title\": \"Chvrches: NPR
-        Music Tiny Desk Concert\",\n        \"channelTitle\": \"NPR Music\"\n      },\n
-        \     \"contentDetails\": {\n        \"duration\": \"PT13M49S\"\n      }\n
-        \   },\n    {\n      \"id\": \"5rWWGbCcbpM\",\n      \"snippet\": {\n        \"title\":
-        \"Blair St. Clair - Now or Never\",\n        \"channelTitle\": \"BlairStClairVEVO\"\n
-        \     },\n      \"contentDetails\": {\n        \"duration\": \"PT5M22S\"\n
-        \     }\n    },\n    {\n      \"id\": \"Y6DHggNoWDc\",\n      \"snippet\":
-        {\n        \"title\": \"CHVRCHES - Asking For A Friend\",\n        \"channelTitle\":
-        \"CHVRCHES\"\n      },\n      \"contentDetails\": {\n        \"duration\":
-        \"PT5M5S\"\n      }\n    },\n    {\n      \"id\": \"l_EIE5f2t6M\",\n      \"snippet\":
-        {\n        \"title\": \"FOALS - Mountain At My Gates [Official Music Video]
-        (GoPro Spherical)\",\n        \"channelTitle\": \"Foals\"\n      },\n      \"contentDetails\":
-        {\n        \"duration\": \"PT4M12S\"\n      }\n    },\n    {\n      \"id\":
-        \"TFdRnmqFixU\",\n      \"snippet\": {\n        \"title\": \"random funny
-        lauren mayberry moments\",\n        \"channelTitle\": \"Asbolus\"\n      },\n
-        \     \"contentDetails\": {\n        \"duration\": \"PT1M45S\"\n      }\n
-        \   },\n    {\n      \"id\": \"wzQF401MX-8\",\n      \"snippet\": {\n        \"title\":
-        \"Rooftop Restaurant & Bar Music 2021\",\n        \"channelTitle\": \"Music
-        Brokers\"\n      },\n      \"contentDetails\": {\n        \"duration\": \"PT2H9M33S\"\n
-        \     }\n    },\n    {\n      \"id\": \"NRmSf9VqrUA\",\n      \"snippet\":
-        {\n        \"title\": \"Marshmello - Here With Me Feat. CHVRCHES [Alternative
-        Music Video]\",\n        \"channelTitle\": \"Marshmello\"\n      },\n      \"contentDetails\":
-        {\n        \"duration\": \"PT2M35S\"\n      }\n    },\n    {\n      \"id\":
-        \"JyqemIbjcfg\",\n      \"snippet\": {\n        \"title\": \"CHVRCHES - Recover\",\n
-        \       \"channelTitle\": \"CHVRCHES\"\n      },\n      \"contentDetails\":
-        {\n        \"duration\": \"PT3M56S\"\n      }\n    },\n    {\n      \"id\":
-        \"msgimk3mV6g\",\n      \"snippet\": {\n        \"title\": \"CHVRCHES cover
-        Kendrick Lamar 'LOVE.' for Like A Version\",\n        \"channelTitle\": \"triple
-        j\"\n      },\n      \"contentDetails\": {\n        \"duration\": \"PT4M3S\"\n
-        \     }\n    },\n    {\n      \"id\": \"O-3-46RD2W8\",\n      \"snippet\":
-        {\n        \"title\": \"CHVRCHES - Clearest Blue (Gryffin Remix)\",\n        \"channelTitle\":
-        \"Sergej Mitrevski\"\n      },\n      \"contentDetails\": {\n        \"duration\":
-        \"PT4M22S\"\n      }\n    },\n    {\n      \"id\": \"kKaF-sjG06g\",\n      \"snippet\":
-        {\n        \"title\": \"Party Songs Mix 2021 | Best Club Music Mix 2021| EDM
-        Remixes & Mashups Of Popular Songs \U0001F525\",\n        \"channelTitle\":
-        \"Valentino Sirolli\"\n      },\n      \"contentDetails\": {\n        \"duration\":
-        \"PT1H31M33S\"\n      }\n    },\n    {\n      \"id\": \"IvWZS58erqc\",\n      \"snippet\":
-        {\n        \"title\": \"CHVRCHES: Good Girls | The Tonight Show Starring Jimmy
-        Fallon\",\n        \"channelTitle\": \"The Tonight Show Starring Jimmy Fallon\"\n
-        \     },\n      \"contentDetails\": {\n        \"duration\": \"PT3M46S\"\n
-        \     }\n    },\n    {\n      \"id\": \"e7Wtf-EHVyc\",\n      \"snippet\":
-        {\n        \"title\": \"CHVRCHES - Miracle \uD55C\uAE00\uAC00\uC0AC/\uC790\uB9C9
-        (Korean lyrics)\",\n        \"channelTitle\": \"\uBBF8\uC2A4\uD2F0\uC624\uC2A4\"\n
-        \     },\n      \"contentDetails\": {\n        \"duration\": \"PT3M18S\"\n
-        \     }\n    }\n  ]\n}\n"
-    headers:
-      Accept-Ranges:
-      - none
-      Alt-Svc:
-      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000,h3-T051=":443"; ma=2592000,h3-Q050=":443";
-        ma=2592000,h3-Q046=":443"; ma=2592000,h3-Q043=":443"; ma=2592000,quic=":443";
-        ma=2592000; v="46,43"
-      Cache-Control:
-      - private
-      Content-Type:
-      - application/json; charset=UTF-8
-      Date:
-      - Thu, 23 Sep 2021 06:04:46 GMT
+      - Tue, 14 Jun 2022 09:58:53 GMT
       Server:
       - scaffolding on HTTPServer2
       Transfer-Encoding:
@@ -919,17 +759,89 @@ interactions:
       user-agent:
       - Mopidy-YouTube/3.5 Mopidy/3.3.0 CPython/3.8.10
     method: GET
-    uri: https://www.googleapis.com/youtube/v3/videos?fields=items%28id%2Csnippet%28title%2CchannelTitle%2CchannelId%29%2CcontentDetails%28duration%29%29&id=e1YqueG2gtQ&key=fake_key&part=id%2Csnippet%2CcontentDetails
+    uri: https://www.googleapis.com/youtube/v3/videos?fields=items%28id%2Csnippet%28title%2CchannelTitle%2CchannelId%29%2CcontentDetails%28duration%29%29&id=wEdRhmBx8IU%2CRJdOYscmlyo%2CJ3UXp9jIr-U%2CbmXxLzrue6A%2Cs9MQwTzURwU%2C3TesdYxS2xE%2Cj8anHsTtr-k%2Cl_EIE5f2t6M%2CbuWNjFmQ4uw%2CCjwwmFrsX_E%2CCRDruiv08_4%2CTqzbAVCAlQ0%2CRGd9tnKDxeI%2Ci4J7L0eCOik%2CJtYa0rb_jGQ%2Ce7Wtf-EHVyc%2ChaunJARHPm4%2CNRmSf9VqrUA%2CfB4gjiMVKFI%2CDYqWrs6NJe4&key=fake_key&part=id%2Csnippet%2CcontentDetails
   response:
     body:
-      string: "{\n  \"error\": {\n    \"code\": 400,\n    \"message\": \"API key not
-        valid. Please pass a valid API key.\",\n    \"errors\": [\n      {\n        \"message\":
-        \"API key not valid. Please pass a valid API key.\",\n        \"domain\":
-        \"global\",\n        \"reason\": \"badRequest\"\n      }\n    ],\n    \"status\":
-        \"INVALID_ARGUMENT\",\n    \"details\": [\n      {\n        \"@type\": \"type.googleapis.com/google.rpc.ErrorInfo\",\n
-        \       \"reason\": \"API_KEY_INVALID\",\n        \"domain\": \"googleapis.com\",\n
-        \       \"metadata\": {\n          \"service\": \"youtube.googleapis.com\"\n
-        \       }\n      }\n    ]\n  }\n}\n"
+      string: "{\n  \"items\": [\n    {\n      \"id\": \"wEdRhmBx8IU\",\n      \"snippet\":
+        {\n        \"channelId\": \"UCKoafhJ9dkAWaEvlXCiBBwA\",\n        \"title\":
+        \"CHVRCHES - Somebody Else (The 1975 cover) in the Live Lounge\",\n        \"channelTitle\":
+        \"BBCRadio1VEVO\"\n      },\n      \"contentDetails\": {\n        \"duration\":
+        \"PT5M37S\"\n      }\n    },\n    {\n      \"id\": \"RJdOYscmlyo\",\n      \"snippet\":
+        {\n        \"channelId\": \"UCXCfOEJFMa40s-57zxw9MYw\",\n        \"title\":
+        \"CHVRCHES - Forever (Lyric Video)\",\n        \"channelTitle\": \"CHVRCHES\"\n
+        \     },\n      \"contentDetails\": {\n        \"duration\": \"PT3M43S\"\n
+        \     }\n    },\n    {\n      \"id\": \"J3UXp9jIr-U\",\n      \"snippet\":
+        {\n        \"channelId\": \"UCEdvpU2pFRCVqU6yIPyTpMQ\",\n        \"title\":
+        \"Marshmello - Here With Me Feat. CHVRCHES (Official Music Video)\",\n        \"channelTitle\":
+        \"Marshmello\"\n      },\n      \"contentDetails\": {\n        \"duration\":
+        \"PT2M46S\"\n      }\n    },\n    {\n      \"id\": \"bmXxLzrue6A\",\n      \"snippet\":
+        {\n        \"channelId\": \"UCp0hYYBW6IMayGgR-WeoCvQ\",\n        \"title\":
+        \"CHVRCHES Brings 'Miracle' to Ellen!\",\n        \"channelTitle\": \"TheEllenShow\"\n
+        \     },\n      \"contentDetails\": {\n        \"duration\": \"PT3M28S\"\n
+        \     }\n    },\n    {\n      \"id\": \"s9MQwTzURwU\",\n      \"snippet\":
+        {\n        \"channelId\": \"UCBLee0LUtr5E5uQN7Y0ehfw\",\n        \"title\":
+        \"ABBA - Mamma Mia\",\n        \"channelTitle\": \"IQQIQQI\"\n      },\n      \"contentDetails\":
+        {\n        \"duration\": \"PT3M33S\"\n      }\n    },\n    {\n      \"id\":
+        \"3TesdYxS2xE\",\n      \"snippet\": {\n        \"channelId\": \"UCgaBEIiitVoLUo__M7RtMVA\",\n
+        \       \"title\": \"CHVRCHES - Miracle (Lyrics)\",\n        \"channelTitle\":
+        \"Pumproject\"\n      },\n      \"contentDetails\": {\n        \"duration\":
+        \"PT3M16S\"\n      }\n    },\n    {\n      \"id\": \"j8anHsTtr-k\",\n      \"snippet\":
+        {\n        \"channelId\": \"UCTILfqEQUVaVKPkny8QRE0w\",\n        \"title\":
+        \"CHVRCHES' Lauren Mayberry: The Joan of Arc of pop music\",\n        \"channelTitle\":
+        \"SBS The Feed\"\n      },\n      \"contentDetails\": {\n        \"duration\":
+        \"PT7M35S\"\n      }\n    },\n    {\n      \"id\": \"l_EIE5f2t6M\",\n      \"snippet\":
+        {\n        \"channelId\": \"UCnnumwiwZd1JWZWpiyqF0gQ\",\n        \"title\":
+        \"FOALS - Mountain At My Gates [Official Music Video] (GoPro Spherical)\",\n
+        \       \"channelTitle\": \"Foals\"\n      },\n      \"contentDetails\": {\n
+        \       \"duration\": \"PT4M12S\"\n      }\n    },\n    {\n      \"id\": \"buWNjFmQ4uw\",\n
+        \     \"snippet\": {\n        \"channelId\": \"UCGEkfLDyUuXP5DfzQPyvR0Q\",\n
+        \       \"title\": \"Beatie Wolfe - Raw Space - VR Single: Little Moth\",\n
+        \       \"channelTitle\": \"Beatie Wolfe\"\n      },\n      \"contentDetails\":
+        {\n        \"duration\": \"PT4M21S\"\n      }\n    },\n    {\n      \"id\":
+        \"CjwwmFrsX_E\",\n      \"snippet\": {\n        \"channelId\": \"UCd2KNtfphz8HvYzM4pwtHmg\",\n
+        \       \"title\": \"CHVRCHES cover Arctic Monkeys 'Do I Wanna Know?' for
+        Like A Version\",\n        \"channelTitle\": \"triple j\"\n      },\n      \"contentDetails\":
+        {\n        \"duration\": \"PT5M14S\"\n      }\n    },\n    {\n      \"id\":
+        \"CRDruiv08_4\",\n      \"snippet\": {\n        \"channelId\": \"UCySW1JYbZNeuHr-2pTMyizQ\",\n
+        \       \"title\": \"CHVRCHES - Forever\",\n        \"channelTitle\": \"Chvrches
+        TV\"\n      },\n      \"contentDetails\": {\n        \"duration\": \"PT3M46S\"\n
+        \     }\n    },\n    {\n      \"id\": \"TqzbAVCAlQ0\",\n      \"snippet\":
+        {\n        \"channelId\": \"UCUU4Hj0pwmu8KWHxsNJfUSA\",\n        \"title\":
+        \"CHVRCHES. How Not To Drown (Feat. Robert Smith). Brixton Academy 16.03.2022.\",\n
+        \       \"channelTitle\": \"Papa Trix\"\n      },\n      \"contentDetails\":
+        {\n        \"duration\": \"PT5M50S\"\n      }\n    },\n    {\n      \"id\":
+        \"RGd9tnKDxeI\",\n      \"snippet\": {\n        \"channelId\": \"UCCePoGMpEnzhfjrvZQk7Xcw\",\n
+        \       \"title\": \"Miracle (Cover) - Chvrches\",\n        \"channelTitle\":
+        \"TalinMusic\"\n      },\n      \"contentDetails\": {\n        \"duration\":
+        \"PT3M16S\"\n      }\n    },\n    {\n      \"id\": \"i4J7L0eCOik\",\n      \"snippet\":
+        {\n        \"channelId\": \"UCELD92NzrfHEkxTCYohQ-UQ\",\n        \"title\":
+        \"Spendtime Palace // \\\"Sonora\\\" (OFFICIAL VIDEO)\",\n        \"channelTitle\":
+        \"Josh Ovalle\"\n      },\n      \"contentDetails\": {\n        \"duration\":
+        \"PT6M24S\"\n      }\n    },\n    {\n      \"id\": \"JtYa0rb_jGQ\",\n      \"snippet\":
+        {\n        \"channelId\": \"UC8znPlMzmIIR5G1-GBmQCHA\",\n        \"title\":
+        \"Night Club - \\\"Show It 2 Me\\\" (Official 360 Video)\",\n        \"channelTitle\":
+        \"Night Club\"\n      },\n      \"contentDetails\": {\n        \"duration\":
+        \"PT4M10S\"\n      }\n    },\n    {\n      \"id\": \"e7Wtf-EHVyc\",\n      \"snippet\":
+        {\n        \"channelId\": \"UCTC6nkUN-rI7SKDvA8VyKaw\",\n        \"title\":
+        \"CHVRCHES - Miracle \uD55C\uAE00\uAC00\uC0AC/\uC790\uB9C9 (Korean lyrics)\",\n
+        \       \"channelTitle\": \"\uBBF8\uC2A4\uD2F0\uC624\uC2A4\"\n      },\n      \"contentDetails\":
+        {\n        \"duration\": \"PT3M18S\"\n      }\n    },\n    {\n      \"id\":
+        \"haunJARHPm4\",\n      \"snippet\": {\n        \"channelId\": \"UC4eYXhJI4-7wSWc8UNRwD4A\",\n
+        \       \"title\": \"Chvrches: NPR Music Tiny Desk Concert\",\n        \"channelTitle\":
+        \"NPR Music\"\n      },\n      \"contentDetails\": {\n        \"duration\":
+        \"PT13M49S\"\n      }\n    },\n    {\n      \"id\": \"NRmSf9VqrUA\",\n      \"snippet\":
+        {\n        \"channelId\": \"UCEdvpU2pFRCVqU6yIPyTpMQ\",\n        \"title\":
+        \"Marshmello - Here With Me Feat. CHVRCHES [Alternative Music Video]\",\n
+        \       \"channelTitle\": \"Marshmello\"\n      },\n      \"contentDetails\":
+        {\n        \"duration\": \"PT2M35S\"\n      }\n    },\n    {\n      \"id\":
+        \"fB4gjiMVKFI\",\n      \"snippet\": {\n        \"channelId\": \"UCXCfOEJFMa40s-57zxw9MYw\",\n
+        \       \"title\": \"CHVRCHES - Warning Call (Lyric Video)\",\n        \"channelTitle\":
+        \"CHVRCHES\"\n      },\n      \"contentDetails\": {\n        \"duration\":
+        \"PT4M36S\"\n      }\n    },\n    {\n      \"id\": \"DYqWrs6NJe4\",\n      \"snippet\":
+        {\n        \"channelId\": \"UCYheY_5RCoADZHIUwT1J5GA\",\n        \"title\":
+        \"CHVRCHES - Forever / Death Stranding - 2 songs\",\n        \"channelTitle\":
+        \"CHVRCHES Latinoam\xE9rica\"\n      },\n      \"contentDetails\": {\n        \"duration\":
+        \"PT9M11S\"\n      }\n    }\n  ]\n}\n"
     headers:
       Accept-Ranges:
       - none
@@ -941,7 +853,7 @@ interactions:
       Content-Type:
       - application/json; charset=UTF-8
       Date:
-      - Sun, 12 Jun 2022 09:18:03 GMT
+      - Tue, 14 Jun 2022 09:58:53 GMT
       Server:
       - scaffolding on HTTPServer2
       Transfer-Encoding:
@@ -957,6 +869,6 @@ interactions:
       X-XSS-Protection:
       - '0'
     status:
-      code: 400
-      message: Bad Request
+      code: 200
+      message: OK
 version: 1

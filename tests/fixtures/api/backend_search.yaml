@@ -5,17 +5,17 @@ interactions:
       Accept-Language:
       - en;q=0.8
       Cookie:
-      - PREF=hl=en;
+      - PREF=hl=en; CONSENT=YES+20210329;
       user-agent:
-      - Mopidy-YouTube/3.5 Mopidy/3.2.0 CPython/3.8.10
+      - Mopidy-YouTube/3.5 Mopidy/3.3.0 CPython/3.8.10
     method: GET
     uri: https://www.googleapis.com/youtube/v3/search?fields=items%28id%2C+snippet%28title%2C+thumbnails%28default%29%2C+channelTitle%29%29&key=fake_key&maxResults=15&part=id%2C+snippet&q=chvrches&type=video%2Cplaylist
   response:
     body:
       string: "{\n  \"items\": [\n    {\n      \"id\": {\n        \"kind\": \"youtube#video\",\n
-        \       \"videoId\": \"du4kNAyjVCg\"\n      },\n      \"snippet\": {\n        \"title\":
-        \"CHVRCHES - Good Girls (Official Video)\",\n        \"thumbnails\": {\n          \"default\":
-        {\n            \"url\": \"https://i.ytimg.com/vi/du4kNAyjVCg/default.jpg\",\n
+        \       \"videoId\": \"7U_LhzgwJ4U\"\n      },\n      \"snippet\": {\n        \"title\":
+        \"CHVRCHES, Robert Smith - How Not To Drown (Official Video)\",\n        \"thumbnails\":
+        {\n          \"default\": {\n            \"url\": \"https://i.ytimg.com/vi/7U_LhzgwJ4U/default.jpg\",\n
         \           \"width\": 120,\n            \"height\": 90\n          }\n        },\n
         \       \"channelTitle\": \"ChvrchesVEVO\"\n      }\n    },\n    {\n      \"id\":
         {\n        \"kind\": \"youtube#video\",\n        \"videoId\": \"4Eo84jDIMKI\"\n
@@ -24,26 +24,20 @@ interactions:
         \"https://i.ytimg.com/vi/4Eo84jDIMKI/default.jpg\",\n            \"width\":
         120,\n            \"height\": 90\n          }\n        },\n        \"channelTitle\":
         \"ChvrchesVEVO\"\n      }\n    },\n    {\n      \"id\": {\n        \"kind\":
-        \"youtube#video\",\n        \"videoId\": \"7U_LhzgwJ4U\"\n      },\n      \"snippet\":
-        {\n        \"title\": \"CHVRCHES, Robert Smith - How Not To Drown (Official
-        Video)\",\n        \"thumbnails\": {\n          \"default\": {\n            \"url\":
-        \"https://i.ytimg.com/vi/7U_LhzgwJ4U/default.jpg\",\n            \"width\":
+        \"youtube#video\",\n        \"videoId\": \"du4kNAyjVCg\"\n      },\n      \"snippet\":
+        {\n        \"title\": \"CHVRCHES - Good Girls (Official Video)\",\n        \"thumbnails\":
+        {\n          \"default\": {\n            \"url\": \"https://i.ytimg.com/vi/du4kNAyjVCg/default.jpg\",\n
+        \           \"width\": 120,\n            \"height\": 90\n          }\n        },\n
+        \       \"channelTitle\": \"ChvrchesVEVO\"\n      }\n    },\n    {\n      \"id\":
+        {\n        \"kind\": \"youtube#video\",\n        \"videoId\": \"_mTRvJ9fugM\"\n
+        \     },\n      \"snippet\": {\n        \"title\": \"CHVRCHES - The Mother
+        We Share\",\n        \"thumbnails\": {\n          \"default\": {\n            \"url\":
+        \"https://i.ytimg.com/vi/_mTRvJ9fugM/default.jpg\",\n            \"width\":
         120,\n            \"height\": 90\n          }\n        },\n        \"channelTitle\":
         \"ChvrchesVEVO\"\n      }\n    },\n    {\n      \"id\": {\n        \"kind\":
         \"youtube#video\",\n        \"videoId\": \"BZyzX4c1vIs\"\n      },\n      \"snippet\":
         {\n        \"title\": \"CHVRCHES - Clearest Blue\",\n        \"thumbnails\":
         {\n          \"default\": {\n            \"url\": \"https://i.ytimg.com/vi/BZyzX4c1vIs/default.jpg\",\n
-        \           \"width\": 120,\n            \"height\": 90\n          }\n        },\n
-        \       \"channelTitle\": \"ChvrchesVEVO\"\n      }\n    },\n    {\n      \"id\":
-        {\n        \"kind\": \"youtube#video\",\n        \"videoId\": \"fyyiJc0Wk2M\"\n
-        \     },\n      \"snippet\": {\n        \"title\": \"CHVRCHES - He Said She
-        Said\",\n        \"thumbnails\": {\n          \"default\": {\n            \"url\":
-        \"https://i.ytimg.com/vi/fyyiJc0Wk2M/default.jpg\",\n            \"width\":
-        120,\n            \"height\": 90\n          }\n        },\n        \"channelTitle\":
-        \"ChvrchesVEVO\"\n      }\n    },\n    {\n      \"id\": {\n        \"kind\":
-        \"youtube#video\",\n        \"videoId\": \"_mTRvJ9fugM\"\n      },\n      \"snippet\":
-        {\n        \"title\": \"CHVRCHES - The Mother We Share\",\n        \"thumbnails\":
-        {\n          \"default\": {\n            \"url\": \"https://i.ytimg.com/vi/_mTRvJ9fugM/default.jpg\",\n
         \           \"width\": 120,\n            \"height\": 90\n          }\n        },\n
         \       \"channelTitle\": \"ChvrchesVEVO\"\n      }\n    },\n    {\n      \"id\":
         {\n        \"kind\": \"youtube#video\",\n        \"videoId\": \"e1YqueG2gtQ\"\n
@@ -52,105 +46,58 @@ interactions:
         \"https://i.ytimg.com/vi/e1YqueG2gtQ/default.jpg\",\n            \"width\":
         120,\n            \"height\": 90\n          }\n        },\n        \"channelTitle\":
         \"ChvrchesVEVO\"\n      }\n    },\n    {\n      \"id\": {\n        \"kind\":
-        \"youtube#video\",\n        \"videoId\": \"msgimk3mV6g\"\n      },\n      \"snippet\":
-        {\n        \"title\": \"CHVRCHES cover Kendrick Lamar &#39;LOVE.&#39; for
-        Like A Version\",\n        \"thumbnails\": {\n          \"default\": {\n            \"url\":
-        \"https://i.ytimg.com/vi/msgimk3mV6g/default.jpg\",\n            \"width\":
-        120,\n            \"height\": 90\n          }\n        },\n        \"channelTitle\":
-        \"triple j\"\n      }\n    },\n    {\n      \"id\": {\n        \"kind\": \"youtube#video\",\n
-        \       \"videoId\": \"KNHxwSp-6Og\"\n      },\n      \"snippet\": {\n        \"title\":
-        \"CHVRCHES - Empty Threat\",\n        \"thumbnails\": {\n          \"default\":
-        {\n            \"url\": \"https://i.ytimg.com/vi/KNHxwSp-6Og/default.jpg\",\n
+        \"youtube#video\",\n        \"videoId\": \"fyyiJc0Wk2M\"\n      },\n      \"snippet\":
+        {\n        \"title\": \"CHVRCHES - He Said She Said\",\n        \"thumbnails\":
+        {\n          \"default\": {\n            \"url\": \"https://i.ytimg.com/vi/fyyiJc0Wk2M/default.jpg\",\n
         \           \"width\": 120,\n            \"height\": 90\n          }\n        },\n
         \       \"channelTitle\": \"ChvrchesVEVO\"\n      }\n    },\n    {\n      \"id\":
-        {\n        \"kind\": \"youtube#playlist\",\n        \"playlistId\": \"PL35JdND4qE9R_tKFnJenivWhFFReUohxs\"\n
-        \     },\n      \"snippet\": {\n        \"title\": \"CHVRCHES Screen Violence
-        Full Album\",\n        \"thumbnails\": {\n          \"default\": {\n            \"url\":
-        \"https://i.ytimg.com/vi/4Acx9sHtpaw/default.jpg\",\n            \"width\":
+        {\n        \"kind\": \"youtube#video\",\n        \"videoId\": \"KNHxwSp-6Og\"\n
+        \     },\n      \"snippet\": {\n        \"title\": \"CHVRCHES - Empty Threat\",\n
+        \       \"thumbnails\": {\n          \"default\": {\n            \"url\":
+        \"https://i.ytimg.com/vi/KNHxwSp-6Og/default.jpg\",\n            \"width\":
         120,\n            \"height\": 90\n          }\n        },\n        \"channelTitle\":
-        \"CHVRCHES Latinoam\xE9rica\"\n      }\n    },\n    {\n      \"id\": {\n        \"kind\":
+        \"ChvrchesVEVO\"\n      }\n    },\n    {\n      \"id\": {\n        \"kind\":
+        \"youtube#video\",\n        \"videoId\": \"CjwwmFrsX_E\"\n      },\n      \"snippet\":
+        {\n        \"title\": \"CHVRCHES cover Arctic Monkeys &#39;Do I Wanna Know?&#39;
+        for Like A Version\",\n        \"thumbnails\": {\n          \"default\": {\n
+        \           \"url\": \"https://i.ytimg.com/vi/CjwwmFrsX_E/default.jpg\",\n
+        \           \"width\": 120,\n            \"height\": 90\n          }\n        },\n
+        \       \"channelTitle\": \"triple j\"\n      }\n    },\n    {\n      \"id\":
+        {\n        \"kind\": \"youtube#video\",\n        \"videoId\": \"B9BLMNn0PrQ\"\n
+        \     },\n      \"snippet\": {\n        \"title\": \"CHVRCHES - Bury It ft.
+        Hayley Williams\",\n        \"thumbnails\": {\n          \"default\": {\n
+        \           \"url\": \"https://i.ytimg.com/vi/B9BLMNn0PrQ/default.jpg\",\n
+        \           \"width\": 120,\n            \"height\": 90\n          }\n        },\n
+        \       \"channelTitle\": \"ChvrchesVEVO\"\n      }\n    },\n    {\n      \"id\":
+        {\n        \"kind\": \"youtube#video\",\n        \"videoId\": \"81RqEnvczV8\"\n
+        \     },\n      \"snippet\": {\n        \"title\": \"CHVRCHES - Lies\",\n
+        \       \"thumbnails\": {\n          \"default\": {\n            \"url\":
+        \"https://i.ytimg.com/vi/81RqEnvczV8/default.jpg\",\n            \"width\":
+        120,\n            \"height\": 90\n          }\n        },\n        \"channelTitle\":
+        \"ChvrchesVEVO\"\n      }\n    },\n    {\n      \"id\": {\n        \"kind\":
         \"youtube#video\",\n        \"videoId\": \"ktoaj1IpTbw\"\n      },\n      \"snippet\":
         {\n        \"title\": \"CHVRCHES - Gun\",\n        \"thumbnails\": {\n          \"default\":
         {\n            \"url\": \"https://i.ytimg.com/vi/ktoaj1IpTbw/default.jpg\",\n
         \           \"width\": 120,\n            \"height\": 90\n          }\n        },\n
         \       \"channelTitle\": \"ChvrchesVEVO\"\n      }\n    },\n    {\n      \"id\":
-        {\n        \"kind\": \"youtube#video\",\n        \"videoId\": \"IvWZS58erqc\"\n
-        \     },\n      \"snippet\": {\n        \"title\": \"CHVRCHES: Good Girls
-        | The Tonight Show Starring Jimmy Fallon\",\n        \"thumbnails\": {\n          \"default\":
-        {\n            \"url\": \"https://i.ytimg.com/vi/IvWZS58erqc/default.jpg\",\n
-        \           \"width\": 120,\n            \"height\": 90\n          }\n        },\n
-        \       \"channelTitle\": \"The Tonight Show Starring Jimmy Fallon\"\n      }\n
-        \   },\n    {\n      \"id\": {\n        \"kind\": \"youtube#video\",\n        \"videoId\":
-        \"B9BLMNn0PrQ\"\n      },\n      \"snippet\": {\n        \"title\": \"CHVRCHES
-        - Bury It ft. Hayley Williams\",\n        \"thumbnails\": {\n          \"default\":
-        {\n            \"url\": \"https://i.ytimg.com/vi/B9BLMNn0PrQ/default.jpg\",\n
-        \           \"width\": 120,\n            \"height\": 90\n          }\n        },\n
-        \       \"channelTitle\": \"ChvrchesVEVO\"\n      }\n    },\n    {\n      \"id\":
-        {\n        \"kind\": \"youtube#video\",\n        \"videoId\": \"7qDmyRS7mV8\"\n
-        \     },\n      \"snippet\": {\n        \"title\": \"CHVRCHES Live - Los Angeles
-        2021 - Full Show\",\n        \"thumbnails\": {\n          \"default\": {\n
-        \           \"url\": \"https://i.ytimg.com/vi/7qDmyRS7mV8/default.jpg\",\n
-        \           \"width\": 120,\n            \"height\": 90\n          }\n        },\n
-        \       \"channelTitle\": \"CHVRCHES Latinoam\xE9rica\"\n      }\n    },\n
-        \   {\n      \"id\": {\n        \"kind\": \"youtube#video\",\n        \"videoId\":
-        \"CjwwmFrsX_E\"\n      },\n      \"snippet\": {\n        \"title\": \"CHVRCHES
-        cover Arctic Monkeys &#39;Do I Wanna Know?&#39; for Like A Version\",\n        \"thumbnails\":
-        {\n          \"default\": {\n            \"url\": \"https://i.ytimg.com/vi/CjwwmFrsX_E/default.jpg\",\n
-        \           \"width\": 120,\n            \"height\": 90\n          }\n        },\n
-        \       \"channelTitle\": \"triple j\"\n      }\n    }\n  ]\n}\n"
-    headers:
-      Accept-Ranges:
-      - none
-      Alt-Svc:
-      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000,h3-Q050=":443"; ma=2592000,h3-Q046=":443";
-        ma=2592000,h3-Q043=":443"; ma=2592000,quic=":443"; ma=2592000; v="46,43"
-      Cache-Control:
-      - private
-      Content-Type:
-      - application/json; charset=UTF-8
-      Date:
-      - Mon, 20 Dec 2021 04:50:50 GMT
-      Server:
-      - scaffolding on HTTPServer2
-      Vary:
-      - X-Origin
-      - Referer
-      - Origin,Accept-Encoding
-      X-Content-Type-Options:
-      - nosniff
-      X-Frame-Options:
-      - SAMEORIGIN
-      X-XSS-Protection:
-      - '0'
-    status:
-      code: 200
-      message: OK
-- request:
-    body: null
-    headers:
-      Accept-Language:
-      - en;q=0.8
-      Cookie:
-      - PREF=hl=en;
-      user-agent:
-      - Mopidy-YouTube/3.5 Mopidy/3.2.0 CPython/3.8.10
-    method: GET
-    uri: https://www.googleapis.com/youtube/v3/playlists?fields=items%28id%2Csnippet%28title%2Cthumbnails%2CchannelTitle%29%2CcontentDetails%28itemCount%29%29&id=PL35JdND4qE9R_tKFnJenivWhFFReUohxs&key=fake_key&part=id%2Csnippet%2CcontentDetails
-  response:
-    body:
-      string: "{\n  \"items\": [\n    {\n      \"id\": \"PL35JdND4qE9R_tKFnJenivWhFFReUohxs\",\n
-        \     \"snippet\": {\n        \"title\": \"CHVRCHES Screen Violence Full Album\",\n
+        {\n        \"kind\": \"youtube#video\",\n        \"videoId\": \"LDSVLQoPc8w\"\n
+        \     },\n      \"snippet\": {\n        \"title\": \"CHVRCHES - Graffiti\",\n
         \       \"thumbnails\": {\n          \"default\": {\n            \"url\":
-        \"https://i.ytimg.com/vi/4Acx9sHtpaw/default.jpg\",\n            \"width\":
-        120,\n            \"height\": 90\n          },\n          \"medium\": {\n
-        \           \"url\": \"https://i.ytimg.com/vi/4Acx9sHtpaw/mqdefault.jpg\",\n
-        \           \"width\": 320,\n            \"height\": 180\n          },\n          \"high\":
-        {\n            \"url\": \"https://i.ytimg.com/vi/4Acx9sHtpaw/hqdefault.jpg\",\n
-        \           \"width\": 480,\n            \"height\": 360\n          },\n          \"standard\":
-        {\n            \"url\": \"https://i.ytimg.com/vi/4Acx9sHtpaw/sddefault.jpg\",\n
-        \           \"width\": 640,\n            \"height\": 480\n          }\n        },\n
-        \       \"channelTitle\": \"CHVRCHES Latinoam\xE9rica\"\n      },\n      \"contentDetails\":
-        {\n        \"itemCount\": 15\n      }\n    }\n  ]\n}\n"
+        \"https://i.ytimg.com/vi/LDSVLQoPc8w/default.jpg\",\n            \"width\":
+        120,\n            \"height\": 90\n          }\n        },\n        \"channelTitle\":
+        \"ChvrchesVEVO\"\n      }\n    },\n    {\n      \"id\": {\n        \"kind\":
+        \"youtube#video\",\n        \"videoId\": \"-HYI26sG8u0\"\n      },\n      \"snippet\":
+        {\n        \"title\": \"CHVRCHES - Full Performance (Live on KEXP at Home)\",\n
+        \       \"thumbnails\": {\n          \"default\": {\n            \"url\":
+        \"https://i.ytimg.com/vi/-HYI26sG8u0/default.jpg\",\n            \"width\":
+        120,\n            \"height\": 90\n          }\n        },\n        \"channelTitle\":
+        \"KEXP\"\n      }\n    },\n    {\n      \"id\": {\n        \"kind\": \"youtube#video\",\n
+        \       \"videoId\": \"yYq851yxBqM\"\n      },\n      \"snippet\": {\n        \"title\":
+        \"CHVRCHES Live - Reading Festival 2016 - Full Show - 1080p\",\n        \"thumbnails\":
+        {\n          \"default\": {\n            \"url\": \"https://i.ytimg.com/vi/yYq851yxBqM/default.jpg\",\n
+        \           \"width\": 120,\n            \"height\": 90\n          }\n        },\n
+        \       \"channelTitle\": \"CHVRCHES Latinoam\xE9rica\"\n      }\n    }\n
+        \ ]\n}\n"
     headers:
       Accept-Ranges:
       - none
@@ -162,68 +109,9 @@ interactions:
       Content-Type:
       - application/json; charset=UTF-8
       Date:
-      - Mon, 20 Dec 2021 04:50:50 GMT
+      - Tue, 14 Jun 2022 09:58:17 GMT
       Server:
       - scaffolding on HTTPServer2
-      Vary:
-      - X-Origin
-      - Referer
-      - Origin,Accept-Encoding
-      X-Content-Type-Options:
-      - nosniff
-      X-Frame-Options:
-      - SAMEORIGIN
-      X-XSS-Protection:
-      - '0'
-    status:
-      code: 200
-      message: OK
-- request:
-    body: null
-    headers:
-      Accept-Language:
-      - en;q=0.8
-      Cookie:
-      - PREF=hl=en;
-      user-agent:
-      - Mopidy-YouTube/3.5 Mopidy/3.2.0 CPython/3.8.10
-    method: GET
-    uri: https://www.googleapis.com/youtube/v3/videos?fields=items%28id%2Csnippet%28title%2CchannelTitle%29%2CcontentDetails%28duration%29%29&id=e1YqueG2gtQ%2CKNHxwSp-6Og%2CIvWZS58erqc%2CB9BLMNn0PrQ%2C7qDmyRS7mV8&key=fake_key&part=id%2Csnippet%2CcontentDetails
-  response:
-    body:
-      string: "{\n  \"items\": [\n    {\n      \"id\": \"e1YqueG2gtQ\",\n      \"snippet\":
-        {\n        \"title\": \"CHVRCHES - Miracle (Official Video)\",\n        \"channelTitle\":
-        \"ChvrchesVEVO\"\n      },\n      \"contentDetails\": {\n        \"duration\":
-        \"PT3M18S\"\n      }\n    },\n    {\n      \"id\": \"KNHxwSp-6Og\",\n      \"snippet\":
-        {\n        \"title\": \"CHVRCHES - Empty Threat\",\n        \"channelTitle\":
-        \"ChvrchesVEVO\"\n      },\n      \"contentDetails\": {\n        \"duration\":
-        \"PT4M33S\"\n      }\n    },\n    {\n      \"id\": \"IvWZS58erqc\",\n      \"snippet\":
-        {\n        \"title\": \"CHVRCHES: Good Girls | The Tonight Show Starring Jimmy
-        Fallon\",\n        \"channelTitle\": \"The Tonight Show Starring Jimmy Fallon\"\n
-        \     },\n      \"contentDetails\": {\n        \"duration\": \"PT3M46S\"\n
-        \     }\n    },\n    {\n      \"id\": \"B9BLMNn0PrQ\",\n      \"snippet\":
-        {\n        \"title\": \"CHVRCHES - Bury It ft. Hayley Williams\",\n        \"channelTitle\":
-        \"ChvrchesVEVO\"\n      },\n      \"contentDetails\": {\n        \"duration\":
-        \"PT3M7S\"\n      }\n    },\n    {\n      \"id\": \"7qDmyRS7mV8\",\n      \"snippet\":
-        {\n        \"title\": \"CHVRCHES Live - Los Angeles 2021 - Full Show\",\n
-        \       \"channelTitle\": \"CHVRCHES Latinoam\xE9rica\"\n      },\n      \"contentDetails\":
-        {\n        \"duration\": \"PT22M53S\"\n      }\n    }\n  ]\n}\n"
-    headers:
-      Accept-Ranges:
-      - none
-      Alt-Svc:
-      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000,h3-Q050=":443"; ma=2592000,h3-Q046=":443";
-        ma=2592000,h3-Q043=":443"; ma=2592000,quic=":443"; ma=2592000; v="46,43"
-      Cache-Control:
-      - private
-      Content-Type:
-      - application/json; charset=UTF-8
-      Date:
-      - Mon, 20 Dec 2021 04:50:51 GMT
-      Server:
-      - scaffolding on HTTPServer2
-      Transfer-Encoding:
-      - chunked
       Vary:
       - X-Origin
       - Referer
@@ -245,57 +133,71 @@ interactions:
       Cookie:
       - PREF=hl=en; CONSENT=YES+20210329;
       user-agent:
-      - Mopidy-YouTube/3.5 Mopidy/3.2.0 CPython/3.8.10
+      - Mopidy-YouTube/3.5 Mopidy/3.3.0 CPython/3.8.10
     method: GET
-    uri: https://www.googleapis.com/youtube/v3/videos?fields=items%28id%2Csnippet%28title%2CchannelTitle%29%2CcontentDetails%28duration%29%29&id=du4kNAyjVCg%2C4Eo84jDIMKI%2C7U_LhzgwJ4U%2CBZyzX4c1vIs%2CfyyiJc0Wk2M%2C_mTRvJ9fugM%2Ce1YqueG2gtQ%2Cmsgimk3mV6g%2CKNHxwSp-6Og%2Cktoaj1IpTbw%2CIvWZS58erqc%2CB9BLMNn0PrQ%2C7qDmyRS7mV8%2CCjwwmFrsX_E&key=fake_key&part=id%2Csnippet%2CcontentDetails
+    uri: https://www.googleapis.com/youtube/v3/videos?fields=items%28id%2Csnippet%28title%2CchannelTitle%2CchannelId%29%2CcontentDetails%28duration%29%29&id=7U_LhzgwJ4U%2C4Eo84jDIMKI%2Cdu4kNAyjVCg%2C_mTRvJ9fugM%2CBZyzX4c1vIs%2Ce1YqueG2gtQ%2CfyyiJc0Wk2M%2CKNHxwSp-6Og%2CCjwwmFrsX_E%2CB9BLMNn0PrQ%2C81RqEnvczV8%2Cktoaj1IpTbw%2CLDSVLQoPc8w%2C-HYI26sG8u0%2CyYq851yxBqM&key=fake_key&part=id%2Csnippet%2CcontentDetails
   response:
     body:
-      string: "{\n  \"items\": [\n    {\n      \"id\": \"du4kNAyjVCg\",\n      \"snippet\":
-        {\n        \"title\": \"CHVRCHES - Good Girls (Official Video)\",\n        \"channelTitle\":
+      string: "{\n  \"items\": [\n    {\n      \"id\": \"7U_LhzgwJ4U\",\n      \"snippet\":
+        {\n        \"channelId\": \"UCDgEglMcFTNpDbGEeQcummw\",\n        \"title\":
+        \"CHVRCHES, Robert Smith - How Not To Drown (Official Video)\",\n        \"channelTitle\":
         \"ChvrchesVEVO\"\n      },\n      \"contentDetails\": {\n        \"duration\":
-        \"PT3M22S\"\n      }\n    },\n    {\n      \"id\": \"4Eo84jDIMKI\",\n      \"snippet\":
-        {\n        \"title\": \"CHVRCHES - Leave A Trace\",\n        \"channelTitle\":
-        \"ChvrchesVEVO\"\n      },\n      \"contentDetails\": {\n        \"duration\":
-        \"PT3M58S\"\n      }\n    },\n    {\n      \"id\": \"7U_LhzgwJ4U\",\n      \"snippet\":
-        {\n        \"title\": \"CHVRCHES, Robert Smith - How Not To Drown (Official
-        Video)\",\n        \"channelTitle\": \"ChvrchesVEVO\"\n      },\n      \"contentDetails\":
-        {\n        \"duration\": \"PT5M33S\"\n      }\n    },\n    {\n      \"id\":
-        \"BZyzX4c1vIs\",\n      \"snippet\": {\n        \"title\": \"CHVRCHES - Clearest
-        Blue\",\n        \"channelTitle\": \"ChvrchesVEVO\"\n      },\n      \"contentDetails\":
-        {\n        \"duration\": \"PT4M24S\"\n      }\n    },\n    {\n      \"id\":
-        \"fyyiJc0Wk2M\",\n      \"snippet\": {\n        \"title\": \"CHVRCHES - He
-        Said She Said\",\n        \"channelTitle\": \"ChvrchesVEVO\"\n      },\n      \"contentDetails\":
-        {\n        \"duration\": \"PT3M4S\"\n      }\n    },\n    {\n      \"id\":
-        \"_mTRvJ9fugM\",\n      \"snippet\": {\n        \"title\": \"CHVRCHES - The
-        Mother We Share\",\n        \"channelTitle\": \"ChvrchesVEVO\"\n      },\n
-        \     \"contentDetails\": {\n        \"duration\": \"PT3M16S\"\n      }\n
-        \   },\n    {\n      \"id\": \"e1YqueG2gtQ\",\n      \"snippet\": {\n        \"title\":
+        \"PT5M33S\"\n      }\n    },\n    {\n      \"id\": \"4Eo84jDIMKI\",\n      \"snippet\":
+        {\n        \"channelId\": \"UCDgEglMcFTNpDbGEeQcummw\",\n        \"title\":
+        \"CHVRCHES - Leave A Trace\",\n        \"channelTitle\": \"ChvrchesVEVO\"\n
+        \     },\n      \"contentDetails\": {\n        \"duration\": \"PT3M58S\"\n
+        \     }\n    },\n    {\n      \"id\": \"du4kNAyjVCg\",\n      \"snippet\":
+        {\n        \"channelId\": \"UCDgEglMcFTNpDbGEeQcummw\",\n        \"title\":
+        \"CHVRCHES - Good Girls (Official Video)\",\n        \"channelTitle\": \"ChvrchesVEVO\"\n
+        \     },\n      \"contentDetails\": {\n        \"duration\": \"PT3M22S\"\n
+        \     }\n    },\n    {\n      \"id\": \"_mTRvJ9fugM\",\n      \"snippet\":
+        {\n        \"channelId\": \"UCDgEglMcFTNpDbGEeQcummw\",\n        \"title\":
+        \"CHVRCHES - The Mother We Share\",\n        \"channelTitle\": \"ChvrchesVEVO\"\n
+        \     },\n      \"contentDetails\": {\n        \"duration\": \"PT3M16S\"\n
+        \     }\n    },\n    {\n      \"id\": \"BZyzX4c1vIs\",\n      \"snippet\":
+        {\n        \"channelId\": \"UCDgEglMcFTNpDbGEeQcummw\",\n        \"title\":
+        \"CHVRCHES - Clearest Blue\",\n        \"channelTitle\": \"ChvrchesVEVO\"\n
+        \     },\n      \"contentDetails\": {\n        \"duration\": \"PT4M24S\"\n
+        \     }\n    },\n    {\n      \"id\": \"e1YqueG2gtQ\",\n      \"snippet\":
+        {\n        \"channelId\": \"UCDgEglMcFTNpDbGEeQcummw\",\n        \"title\":
         \"CHVRCHES - Miracle (Official Video)\",\n        \"channelTitle\": \"ChvrchesVEVO\"\n
         \     },\n      \"contentDetails\": {\n        \"duration\": \"PT3M18S\"\n
-        \     }\n    },\n    {\n      \"id\": \"msgimk3mV6g\",\n      \"snippet\":
-        {\n        \"title\": \"CHVRCHES cover Kendrick Lamar 'LOVE.' for Like A Version\",\n
+        \     }\n    },\n    {\n      \"id\": \"fyyiJc0Wk2M\",\n      \"snippet\":
+        {\n        \"channelId\": \"UCDgEglMcFTNpDbGEeQcummw\",\n        \"title\":
+        \"CHVRCHES - He Said She Said\",\n        \"channelTitle\": \"ChvrchesVEVO\"\n
+        \     },\n      \"contentDetails\": {\n        \"duration\": \"PT3M4S\"\n
+        \     }\n    },\n    {\n      \"id\": \"KNHxwSp-6Og\",\n      \"snippet\":
+        {\n        \"channelId\": \"UCDgEglMcFTNpDbGEeQcummw\",\n        \"title\":
+        \"CHVRCHES - Empty Threat\",\n        \"channelTitle\": \"ChvrchesVEVO\"\n
+        \     },\n      \"contentDetails\": {\n        \"duration\": \"PT4M33S\"\n
+        \     }\n    },\n    {\n      \"id\": \"CjwwmFrsX_E\",\n      \"snippet\":
+        {\n        \"channelId\": \"UCd2KNtfphz8HvYzM4pwtHmg\",\n        \"title\":
+        \"CHVRCHES cover Arctic Monkeys 'Do I Wanna Know?' for Like A Version\",\n
         \       \"channelTitle\": \"triple j\"\n      },\n      \"contentDetails\":
-        {\n        \"duration\": \"PT4M3S\"\n      }\n    },\n    {\n      \"id\":
-        \"KNHxwSp-6Og\",\n      \"snippet\": {\n        \"title\": \"CHVRCHES - Empty
-        Threat\",\n        \"channelTitle\": \"ChvrchesVEVO\"\n      },\n      \"contentDetails\":
-        {\n        \"duration\": \"PT4M33S\"\n      }\n    },\n    {\n      \"id\":
-        \"ktoaj1IpTbw\",\n      \"snippet\": {\n        \"title\": \"CHVRCHES - Gun\",\n
-        \       \"channelTitle\": \"ChvrchesVEVO\"\n      },\n      \"contentDetails\":
-        {\n        \"duration\": \"PT3M53S\"\n      }\n    },\n    {\n      \"id\":
-        \"IvWZS58erqc\",\n      \"snippet\": {\n        \"title\": \"CHVRCHES: Good
-        Girls | The Tonight Show Starring Jimmy Fallon\",\n        \"channelTitle\":
-        \"The Tonight Show Starring Jimmy Fallon\"\n      },\n      \"contentDetails\":
-        {\n        \"duration\": \"PT3M46S\"\n      }\n    },\n    {\n      \"id\":
-        \"B9BLMNn0PrQ\",\n      \"snippet\": {\n        \"title\": \"CHVRCHES - Bury
-        It ft. Hayley Williams\",\n        \"channelTitle\": \"ChvrchesVEVO\"\n      },\n
-        \     \"contentDetails\": {\n        \"duration\": \"PT3M7S\"\n      }\n    },\n
-        \   {\n      \"id\": \"7qDmyRS7mV8\",\n      \"snippet\": {\n        \"title\":
-        \"CHVRCHES Live - Los Angeles 2021 - Full Show\",\n        \"channelTitle\":
-        \"CHVRCHES Latinoam\xE9rica\"\n      },\n      \"contentDetails\": {\n        \"duration\":
-        \"PT22M53S\"\n      }\n    },\n    {\n      \"id\": \"CjwwmFrsX_E\",\n      \"snippet\":
-        {\n        \"title\": \"CHVRCHES cover Arctic Monkeys 'Do I Wanna Know?' for
-        Like A Version\",\n        \"channelTitle\": \"triple j\"\n      },\n      \"contentDetails\":
-        {\n        \"duration\": \"PT5M14S\"\n      }\n    }\n  ]\n}\n"
+        {\n        \"duration\": \"PT5M14S\"\n      }\n    },\n    {\n      \"id\":
+        \"B9BLMNn0PrQ\",\n      \"snippet\": {\n        \"channelId\": \"UCDgEglMcFTNpDbGEeQcummw\",\n
+        \       \"title\": \"CHVRCHES - Bury It ft. Hayley Williams\",\n        \"channelTitle\":
+        \"ChvrchesVEVO\"\n      },\n      \"contentDetails\": {\n        \"duration\":
+        \"PT3M7S\"\n      }\n    },\n    {\n      \"id\": \"81RqEnvczV8\",\n      \"snippet\":
+        {\n        \"channelId\": \"UCDgEglMcFTNpDbGEeQcummw\",\n        \"title\":
+        \"CHVRCHES - Lies\",\n        \"channelTitle\": \"ChvrchesVEVO\"\n      },\n
+        \     \"contentDetails\": {\n        \"duration\": \"PT3M48S\"\n      }\n
+        \   },\n    {\n      \"id\": \"ktoaj1IpTbw\",\n      \"snippet\": {\n        \"channelId\":
+        \"UCDgEglMcFTNpDbGEeQcummw\",\n        \"title\": \"CHVRCHES - Gun\",\n        \"channelTitle\":
+        \"ChvrchesVEVO\"\n      },\n      \"contentDetails\": {\n        \"duration\":
+        \"PT3M53S\"\n      }\n    },\n    {\n      \"id\": \"LDSVLQoPc8w\",\n      \"snippet\":
+        {\n        \"channelId\": \"UCDgEglMcFTNpDbGEeQcummw\",\n        \"title\":
+        \"CHVRCHES - Graffiti\",\n        \"channelTitle\": \"ChvrchesVEVO\"\n      },\n
+        \     \"contentDetails\": {\n        \"duration\": \"PT3M46S\"\n      }\n
+        \   },\n    {\n      \"id\": \"-HYI26sG8u0\",\n      \"snippet\": {\n        \"channelId\":
+        \"UC3I2GFN_F8WudD_2jUZbojA\",\n        \"title\": \"CHVRCHES - Full Performance
+        (Live on KEXP at Home)\",\n        \"channelTitle\": \"KEXP\"\n      },\n
+        \     \"contentDetails\": {\n        \"duration\": \"PT24M50S\"\n      }\n
+        \   },\n    {\n      \"id\": \"yYq851yxBqM\",\n      \"snippet\": {\n        \"channelId\":
+        \"UCYheY_5RCoADZHIUwT1J5GA\",\n        \"title\": \"CHVRCHES Live - Reading
+        Festival 2016 - Full Show - 1080p\",\n        \"channelTitle\": \"CHVRCHES
+        Latinoam\xE9rica\"\n      },\n      \"contentDetails\": {\n        \"duration\":
+        \"PT45M16S\"\n      }\n    }\n  ]\n}\n"
     headers:
       Accept-Ranges:
       - none
@@ -307,7 +209,7 @@ interactions:
       Content-Type:
       - application/json; charset=UTF-8
       Date:
-      - Mon, 20 Dec 2021 04:58:20 GMT
+      - Tue, 14 Jun 2022 10:01:55 GMT
       Server:
       - scaffolding on HTTPServer2
       Transfer-Encoding:
@@ -325,54 +227,4 @@ interactions:
     status:
       code: 200
       message: OK
-- request:
-    body: null
-    headers:
-      Accept-Language:
-      - en;q=0.8
-      Cookie:
-      - PREF=hl=en; CONSENT=YES+20210329;
-      user-agent:
-      - Mopidy-YouTube/3.5 Mopidy/3.2.0 CPython/3.8.10
-    method: GET
-    uri: https://www.googleapis.com/youtube/v3/videos?fields=items%28id%2Csnippet%28title%2CchannelTitle%29%2CcontentDetails%28duration%29%29&id=du4kNAyjVCg%2C7U_LhzgwJ4U%2CBZyzX4c1vIs%2CfyyiJc0Wk2M%2Ce1YqueG2gtQ%2Cmsgimk3mV6g%2CKNHxwSp-6Og%2Cktoaj1IpTbw%2CIvWZS58erqc%2CB9BLMNn0PrQ%2C7qDmyRS7mV8%2CCjwwmFrsX_E&key=fake_key&part=id%2Csnippet%2CcontentDetails
-  response:
-    body:
-      string: "{\n  \"error\": {\n    \"code\": 400,\n    \"message\": \"API key not
-        valid. Please pass a valid API key.\",\n    \"errors\": [\n      {\n        \"message\":
-        \"API key not valid. Please pass a valid API key.\",\n        \"domain\":
-        \"global\",\n        \"reason\": \"badRequest\"\n      }\n    ],\n    \"status\":
-        \"INVALID_ARGUMENT\",\n    \"details\": [\n      {\n        \"@type\": \"type.googleapis.com/google.rpc.ErrorInfo\",\n
-        \       \"reason\": \"API_KEY_INVALID\",\n        \"domain\": \"googleapis.com\",\n
-        \       \"metadata\": {\n          \"service\": \"youtube.googleapis.com\"\n
-        \       }\n      }\n    ]\n  }\n}\n"
-    headers:
-      Accept-Ranges:
-      - none
-      Alt-Svc:
-      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000,h3-Q050=":443"; ma=2592000,h3-Q046=":443";
-        ma=2592000,h3-Q043=":443"; ma=2592000,quic=":443"; ma=2592000; v="46,43"
-      Cache-Control:
-      - private
-      Content-Type:
-      - application/json; charset=UTF-8
-      Date:
-      - Tue, 25 Jan 2022 22:07:13 GMT
-      Server:
-      - scaffolding on HTTPServer2
-      Transfer-Encoding:
-      - chunked
-      Vary:
-      - X-Origin
-      - Referer
-      - Origin,Accept-Encoding
-      X-Content-Type-Options:
-      - nosniff
-      X-Frame-Options:
-      - SAMEORIGIN
-      X-XSS-Protection:
-      - '0'
-    status:
-      code: 400
-      message: Bad Request
 version: 1

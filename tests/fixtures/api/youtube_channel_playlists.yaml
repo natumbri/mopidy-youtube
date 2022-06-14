@@ -5,9 +5,9 @@ interactions:
       Accept-Language:
       - en;q=0.8
       Cookie:
-      - PREF=hl=en;
+      - PREF=hl=en; CONSENT=YES+20210329;
       user-agent:
-      - Mopidy-YouTube/3.5 Mopidy/3.2.0 CPython/3.8.10
+      - Mopidy-YouTube/3.5 Mopidy/3.3.0 CPython/3.8.10
     method: GET
     uri: https://www.googleapis.com/youtube/v3/playlists?channelId=UCZtGOj7FTHPd2txgnbJS2kQ&fields=items%28id%2Csnippet%28title%29%2CcontentDetails%28itemCount%29%29&key=fake_key&maxResults=50&part=id%2Csnippet%2CcontentDetails
   response:
@@ -16,10 +16,10 @@ interactions:
         \     \"snippet\": {\n        \"title\": \"ytmusic pl\"\n      },\n      \"contentDetails\":
         {\n        \"itemCount\": 1\n      }\n    },\n    {\n      \"id\": \"PLJD13y84Bd01Q8b8ONfwNMLD3pVBcqwMq\",\n
         \     \"snippet\": {\n        \"title\": \"respect the rock\"\n      },\n
-        \     \"contentDetails\": {\n        \"itemCount\": 2218\n      }\n    },\n
+        \     \"contentDetails\": {\n        \"itemCount\": 2212\n      }\n    },\n
         \   {\n      \"id\": \"PLJD13y84Bd032qVrq7CHBLEfKZZtp-u1j\",\n      \"snippet\":
         {\n        \"title\": \"skullcave\"\n      },\n      \"contentDetails\": {\n
-        \       \"itemCount\": 1927\n      }\n    }\n  ]\n}\n"
+        \       \"itemCount\": 1921\n      }\n    }\n  ]\n}\n"
     headers:
       Accept-Ranges:
       - none
@@ -31,7 +31,7 @@ interactions:
       Content-Type:
       - application/json; charset=UTF-8
       Date:
-      - Mon, 20 Dec 2021 04:51:36 GMT
+      - Tue, 14 Jun 2022 09:59:16 GMT
       Server:
       - scaffolding on HTTPServer2
       Transfer-Encoding:
@@ -55,9 +55,9 @@ interactions:
       Accept-Language:
       - en;q=0.8
       Cookie:
-      - PREF=hl=en;
+      - PREF=hl=en; CONSENT=YES+20210329;
       user-agent:
-      - Mopidy-YouTube/3.5 Mopidy/3.2.0 CPython/3.8.10
+      - Mopidy-YouTube/3.5 Mopidy/3.3.0 CPython/3.8.10
     method: GET
     uri: https://www.googleapis.com/youtube/v3/playlists?fields=items%28id%2Csnippet%28title%2Cthumbnails%2CchannelTitle%29%2CcontentDetails%28itemCount%29%29&id=PLJD13y84Bd029ENixIHEpDqeWcjiogsFi%2CPLJD13y84Bd01Q8b8ONfwNMLD3pVBcqwMq%2CPLJD13y84Bd032qVrq7CHBLEfKZZtp-u1j&key=fake_key&part=id%2Csnippet%2CcontentDetails
   response:
@@ -88,7 +88,7 @@ interactions:
         {\n            \"url\": \"https://i.ytimg.com/vi/yx4rmRHdYas/maxresdefault.jpg\",\n
         \           \"width\": 1280,\n            \"height\": 720\n          }\n        },\n
         \       \"channelTitle\": \"Nik\"\n      },\n      \"contentDetails\": {\n
-        \       \"itemCount\": 2218\n      }\n    },\n    {\n      \"id\": \"PLJD13y84Bd032qVrq7CHBLEfKZZtp-u1j\",\n
+        \       \"itemCount\": 2212\n      }\n    },\n    {\n      \"id\": \"PLJD13y84Bd032qVrq7CHBLEfKZZtp-u1j\",\n
         \     \"snippet\": {\n        \"title\": \"skullcave\",\n        \"thumbnails\":
         {\n          \"default\": {\n            \"url\": \"https://i.ytimg.com/vi/MzFLCi9nOHQ/default.jpg\",\n
         \           \"width\": 120,\n            \"height\": 90\n          },\n          \"medium\":
@@ -99,7 +99,7 @@ interactions:
         {\n            \"url\": \"https://i.ytimg.com/vi/MzFLCi9nOHQ/sddefault.jpg\",\n
         \           \"width\": 640,\n            \"height\": 480\n          }\n        },\n
         \       \"channelTitle\": \"Nik\"\n      },\n      \"contentDetails\": {\n
-        \       \"itemCount\": 1927\n      }\n    }\n  ]\n}\n"
+        \       \"itemCount\": 1921\n      }\n    }\n  ]\n}\n"
     headers:
       Accept-Ranges:
       - none
@@ -111,7 +111,7 @@ interactions:
       Content-Type:
       - application/json; charset=UTF-8
       Date:
-      - Mon, 20 Dec 2021 04:51:37 GMT
+      - Tue, 14 Jun 2022 09:59:17 GMT
       Server:
       - scaffolding on HTTPServer2
       Transfer-Encoding:

@@ -5,9 +5,9 @@ interactions:
       Accept-Language:
       - en;q=0.8
       Cookie:
-      - PREF=hl=en;
+      - PREF=hl=en; CONSENT=YES+20210329;
       user-agent:
-      - Mopidy-YouTube/3.4 Mopidy/3.2.0 CPython/3.8.10
+      - Mopidy-YouTube/3.5 Mopidy/3.3.0 CPython/3.8.10
     method: GET
     uri: https://www.googleapis.com/youtube/v3/playlists?fields=items%28id%2Csnippet%28title%2Cthumbnails%2CchannelTitle%29%2CcontentDetails%28itemCount%29%29&id=PLJD13y84Bd032qVrq7CHBLEfKZZtp-u1j%2CPLJD13y84Bd01Q8b8ONfwNMLD3pVBcqwMq&key=fake_key&part=id%2Csnippet%2CcontentDetails
   response:
@@ -23,7 +23,7 @@ interactions:
         {\n            \"url\": \"https://i.ytimg.com/vi/MzFLCi9nOHQ/sddefault.jpg\",\n
         \           \"width\": 640,\n            \"height\": 480\n          }\n        },\n
         \       \"channelTitle\": \"Nik\"\n      },\n      \"contentDetails\": {\n
-        \       \"itemCount\": 1928\n      }\n    },\n    {\n      \"id\": \"PLJD13y84Bd01Q8b8ONfwNMLD3pVBcqwMq\",\n
+        \       \"itemCount\": 1921\n      }\n    },\n    {\n      \"id\": \"PLJD13y84Bd01Q8b8ONfwNMLD3pVBcqwMq\",\n
         \     \"snippet\": {\n        \"title\": \"respect the rock\",\n        \"thumbnails\":
         {\n          \"default\": {\n            \"url\": \"https://i.ytimg.com/vi/yx4rmRHdYas/default.jpg\",\n
         \           \"width\": 120,\n            \"height\": 90\n          },\n          \"medium\":
@@ -36,20 +36,19 @@ interactions:
         {\n            \"url\": \"https://i.ytimg.com/vi/yx4rmRHdYas/maxresdefault.jpg\",\n
         \           \"width\": 1280,\n            \"height\": 720\n          }\n        },\n
         \       \"channelTitle\": \"Nik\"\n      },\n      \"contentDetails\": {\n
-        \       \"itemCount\": 2219\n      }\n    }\n  ]\n}\n"
+        \       \"itemCount\": 2212\n      }\n    }\n  ]\n}\n"
     headers:
       Accept-Ranges:
       - none
       Alt-Svc:
-      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000,h3-T051=":443"; ma=2592000,h3-Q050=":443";
-        ma=2592000,h3-Q046=":443"; ma=2592000,h3-Q043=":443"; ma=2592000,quic=":443";
-        ma=2592000; v="46,43"
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000,h3-Q050=":443"; ma=2592000,h3-Q046=":443";
+        ma=2592000,h3-Q043=":443"; ma=2592000,quic=":443"; ma=2592000; v="46,43"
       Cache-Control:
       - private
       Content-Type:
       - application/json; charset=UTF-8
       Date:
-      - Thu, 23 Sep 2021 06:02:52 GMT
+      - Tue, 14 Jun 2022 09:57:45 GMT
       Server:
       - scaffolding on HTTPServer2
       Transfer-Encoding:

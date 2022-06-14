@@ -5,36 +5,38 @@ interactions:
       Accept-Language:
       - en;q=0.8
       Cookie:
-      - PREF=hl=en;
+      - PREF=hl=en; CONSENT=YES+20210329;
       user-agent:
-      - Mopidy-YouTube/3.4 Mopidy/3.2.0 CPython/3.8.10
+      - Mopidy-YouTube/3.5 Mopidy/3.3.0 CPython/3.8.10
     method: GET
-    uri: https://www.googleapis.com/youtube/v3/videos?fields=items%28id%2Csnippet%28title%2CchannelTitle%29%2CcontentDetails%28duration%29%29&id=_mTRvJ9fugM%2Ch_uyq8oGDvU%2CLvXoB1S45j0&key=fake_key&part=id%2Csnippet%2CcontentDetails
+    uri: https://www.googleapis.com/youtube/v3/videos?fields=items%28id%2Csnippet%28title%2CchannelTitle%2CchannelId%29%2CcontentDetails%28duration%29%29&id=_mTRvJ9fugM%2Ch_uyq8oGDvU%2CLvXoB1S45j0&key=fake_key&part=id%2Csnippet%2CcontentDetails
   response:
     body:
       string: "{\n  \"items\": [\n    {\n      \"id\": \"_mTRvJ9fugM\",\n      \"snippet\":
-        {\n        \"title\": \"CHVRCHES - The Mother We Share\",\n        \"channelTitle\":
-        \"ChvrchesVEVO\"\n      },\n      \"contentDetails\": {\n        \"duration\":
-        \"PT3M16S\"\n      }\n    },\n    {\n      \"id\": \"h_uyq8oGDvU\",\n      \"snippet\":
-        {\n        \"title\": \"Don't Cry No Tears (2016 Remaster)\",\n        \"channelTitle\":
-        \"Neil Young - Topic\"\n      },\n      \"contentDetails\": {\n        \"duration\":
+        {\n        \"channelId\": \"UCDgEglMcFTNpDbGEeQcummw\",\n        \"title\":
+        \"CHVRCHES - The Mother We Share\",\n        \"channelTitle\": \"ChvrchesVEVO\"\n
+        \     },\n      \"contentDetails\": {\n        \"duration\": \"PT3M16S\"\n
+        \     }\n    },\n    {\n      \"id\": \"h_uyq8oGDvU\",\n      \"snippet\":
+        {\n        \"channelId\": \"UC6JhadLTf6g6f-ZdeEaAqBQ\",\n        \"title\":
+        \"Don't Cry No Tears (2016 Remaster)\",\n        \"channelTitle\": \"Neil
+        Young - Topic\"\n      },\n      \"contentDetails\": {\n        \"duration\":
         \"PT2M35S\"\n      }\n    },\n    {\n      \"id\": \"LvXoB1S45j0\",\n      \"snippet\":
-        {\n        \"title\": \"Fire and Rain\",\n        \"channelTitle\": \"James
-        Taylor - Topic\"\n      },\n      \"contentDetails\": {\n        \"duration\":
-        \"PT3M21S\"\n      }\n    }\n  ]\n}\n"
+        {\n        \"channelId\": \"UCZJikx4babgeliqeRPnE9rA\",\n        \"title\":
+        \"Fire and Rain\",\n        \"channelTitle\": \"James Taylor - Topic\"\n      },\n
+        \     \"contentDetails\": {\n        \"duration\": \"PT3M21S\"\n      }\n
+        \   }\n  ]\n}\n"
     headers:
       Accept-Ranges:
       - none
       Alt-Svc:
-      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000,h3-T051=":443"; ma=2592000,h3-Q050=":443";
-        ma=2592000,h3-Q046=":443"; ma=2592000,h3-Q043=":443"; ma=2592000,quic=":443";
-        ma=2592000; v="46,43"
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000,h3-Q050=":443"; ma=2592000,h3-Q046=":443";
+        ma=2592000,h3-Q043=":443"; ma=2592000,quic=":443"; ma=2592000; v="46,43"
       Cache-Control:
       - private
       Content-Type:
       - application/json; charset=UTF-8
       Date:
-      - Thu, 23 Sep 2021 06:02:47 GMT
+      - Tue, 14 Jun 2022 09:57:41 GMT
       Server:
       - scaffolding on HTTPServer2
       Transfer-Encoding:
