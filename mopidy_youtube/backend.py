@@ -65,6 +65,7 @@ class YouTubeBackend(pykka.ThreadingActor, backend.Backend):
         if youtube.api_enabled:
             global youtube_api
             from mopidy_youtube.apis import youtube_api
+
             try:
                 youtube_api.API.youtube_api_key = config["youtube"]["youtube_api_key"]
             except Exception as e:
@@ -78,6 +79,7 @@ class YouTubeBackend(pykka.ThreadingActor, backend.Backend):
         if youtube.musicapi_enabled:
             global youtube_music
             from mopidy_youtube.apis import youtube_music
+
             youtube.musicapi_cookie = config["youtube"].get("musicapi_cookie", None)
             youtube_music.own_channel_id = youtube.channel
         youtube.youtube_dl_package = config["youtube"]["youtube_dl_package"]
@@ -318,15 +320,16 @@ class YouTubeLibraryProvider(backend.LibraryProvider):
 
         logger.debug('youtube LibraryProvider.lookup "%s"', uri)
 
-        video_id = extract_video_id(uri)
-        if video_id:
-            return [self.lookup_video_track(video_id)]
-
         playlist_id = extract_playlist_id(uri)
         if playlist_id:
             playlist_tracks = self.lookup_playlist_tracks(playlist_id)
             if playlist_tracks:
                 return playlist_tracks
+
+        video_id = extract_video_id(uri)
+        if video_id:
+            # pass
+            return [self.lookup_video_track(video_id)]
 
         channel_id = extract_channel_id(uri)
         if channel_id:
