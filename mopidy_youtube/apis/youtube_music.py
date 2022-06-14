@@ -240,7 +240,8 @@ class Music(Client):
                     results.append(future.result())
                 except Exception as e:
                     logger.error(
-                        f"youtube_music list_playlists _get_playlist_or_album {e}, {futures[future]}"
+                        f"youtube_music list_playlists "
+                        f"_get_playlist_or_album {e}, {futures[future]}"
                     )
 
         if len(results) == 0:
