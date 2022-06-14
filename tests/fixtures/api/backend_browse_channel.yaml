@@ -34,8 +34,6 @@ interactions:
       - Tue, 14 Jun 2022 09:58:05 GMT
       Server:
       - scaffolding on HTTPServer2
-      Transfer-Encoding:
-      - chunked
       Vary:
       - X-Origin
       - Referer
@@ -112,6 +110,75 @@ interactions:
       - application/json; charset=UTF-8
       Date:
       - Tue, 14 Jun 2022 09:58:06 GMT
+      Server:
+      - scaffolding on HTTPServer2
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - X-Origin
+      - Referer
+      - Origin,Accept-Encoding
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-XSS-Protection:
+      - '0'
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept-Language:
+      - en;q=0.8
+      Cookie:
+      - PREF=hl=en; CONSENT=YES+20210329;
+      user-agent:
+      - Mopidy-YouTube/3.5 Mopidy/3.3.0 CPython/3.8.10
+    method: GET
+    uri: https://www.googleapis.com/youtube/v3/playlists?fields=items%28id%2Csnippet%28title%2Cthumbnails%2CchannelTitle%29%2CcontentDetails%28itemCount%29%29&id=PLJD13y84Bd029ENixIHEpDqeWcjiogsFi%2CPLJD13y84Bd01Q8b8ONfwNMLD3pVBcqwMq&key=fake_key&part=id%2Csnippet%2CcontentDetails
+  response:
+    body:
+      string: "{\n  \"items\": [\n    {\n      \"id\": \"PLJD13y84Bd029ENixIHEpDqeWcjiogsFi\",\n
+        \     \"snippet\": {\n        \"title\": \"ytmusic pl\",\n        \"thumbnails\":
+        {\n          \"default\": {\n            \"url\": \"https://i.ytimg.com/vi/KlyXNRrsk4A/default.jpg\",\n
+        \           \"width\": 120,\n            \"height\": 90\n          },\n          \"medium\":
+        {\n            \"url\": \"https://i.ytimg.com/vi/KlyXNRrsk4A/mqdefault.jpg\",\n
+        \           \"width\": 320,\n            \"height\": 180\n          },\n          \"high\":
+        {\n            \"url\": \"https://i.ytimg.com/vi/KlyXNRrsk4A/hqdefault.jpg\",\n
+        \           \"width\": 480,\n            \"height\": 360\n          },\n          \"standard\":
+        {\n            \"url\": \"https://i.ytimg.com/vi/KlyXNRrsk4A/sddefault.jpg\",\n
+        \           \"width\": 640,\n            \"height\": 480\n          },\n          \"maxres\":
+        {\n            \"url\": \"https://i.ytimg.com/vi/KlyXNRrsk4A/maxresdefault.jpg\",\n
+        \           \"width\": 1280,\n            \"height\": 720\n          }\n        },\n
+        \       \"channelTitle\": \"Nik\"\n      },\n      \"contentDetails\": {\n
+        \       \"itemCount\": 1\n      }\n    },\n    {\n      \"id\": \"PLJD13y84Bd01Q8b8ONfwNMLD3pVBcqwMq\",\n
+        \     \"snippet\": {\n        \"title\": \"respect the rock\",\n        \"thumbnails\":
+        {\n          \"default\": {\n            \"url\": \"https://i.ytimg.com/vi/yx4rmRHdYas/default.jpg\",\n
+        \           \"width\": 120,\n            \"height\": 90\n          },\n          \"medium\":
+        {\n            \"url\": \"https://i.ytimg.com/vi/yx4rmRHdYas/mqdefault.jpg\",\n
+        \           \"width\": 320,\n            \"height\": 180\n          },\n          \"high\":
+        {\n            \"url\": \"https://i.ytimg.com/vi/yx4rmRHdYas/hqdefault.jpg\",\n
+        \           \"width\": 480,\n            \"height\": 360\n          },\n          \"standard\":
+        {\n            \"url\": \"https://i.ytimg.com/vi/yx4rmRHdYas/sddefault.jpg\",\n
+        \           \"width\": 640,\n            \"height\": 480\n          },\n          \"maxres\":
+        {\n            \"url\": \"https://i.ytimg.com/vi/yx4rmRHdYas/maxresdefault.jpg\",\n
+        \           \"width\": 1280,\n            \"height\": 720\n          }\n        },\n
+        \       \"channelTitle\": \"Nik\"\n      },\n      \"contentDetails\": {\n
+        \       \"itemCount\": 2212\n      }\n    }\n  ]\n}\n"
+    headers:
+      Accept-Ranges:
+      - none
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000,h3-Q050=":443"; ma=2592000,h3-Q046=":443";
+        ma=2592000,h3-Q043=":443"; ma=2592000,quic=":443"; ma=2592000; v="46,43"
+      Cache-Control:
+      - private
+      Content-Type:
+      - application/json; charset=UTF-8
+      Date:
+      - Tue, 14 Jun 2022 10:13:16 GMT
       Server:
       - scaffolding on HTTPServer2
       Transfer-Encoding:
