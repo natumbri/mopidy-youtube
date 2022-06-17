@@ -12,8 +12,10 @@ from mopidy_youtube.converters import convert_playlist_to_album, convert_video_t
 from mopidy_youtube.data import (
     extract_channel_id,
     extract_playlist_id,
+    extract_preload_tracks,
     extract_video_id,
 )
+from mopidy_youtube.youtube import Video
 
 """
 A typical interaction:
@@ -320,6 +322,20 @@ class YouTubeLibraryProvider(backend.LibraryProvider):
 
         logger.debug('youtube LibraryProvider.lookup "%s"', uri)
 
+        preload = extract_preload_tracks(uri)
+        if preload:
+            for track in preload[1]:
+                logger.info(track)
+                video = Video.get(track["id"]["videoId"])
+                minimum_fields = ["title", "length", "channel"]
+                item, extended_fields = video.extend_fields(track, minimum_fields)
+                logger.info(f"{extended_fields}")
+                video._set_api_data(
+                    extended_fields,
+                    item,
+                )
+            return [self.lookup_video_track(preload[0])]
+
         playlist_id = extract_playlist_id(uri)
         if playlist_id:
             playlist_tracks = self.lookup_playlist_tracks(playlist_id)
@@ -328,7 +344,6 @@ class YouTubeLibraryProvider(backend.LibraryProvider):
 
         video_id = extract_video_id(uri)
         if video_id:
-            # pass
             return [self.lookup_video_track(video_id)]
 
         channel_id = extract_channel_id(uri)
@@ -338,7 +353,7 @@ class YouTubeLibraryProvider(backend.LibraryProvider):
                 return channel_tracks
 
         logger.error(f"Cannot load {uri}")
-        return []
+        return [Track(uri=None, name=None)]
 
     def get_images(self, uris):
         images = {}

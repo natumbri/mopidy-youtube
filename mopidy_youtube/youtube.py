@@ -6,7 +6,6 @@ import shutil
 from concurrent.futures.thread import ThreadPoolExecutor
 
 import pykka
-
 from cachetools import TTLCache, cached
 from mopidy.models import Image, ModelJSONEncoder
 

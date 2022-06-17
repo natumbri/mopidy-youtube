@@ -1,9 +1,16 @@
+import json
 import re
 from urllib.parse import parse_qs, urlparse
 
-uri_video_regex = re.compile("^(?:youtube|yt):video:(?P<videoid>.+)$")
+from mopidy_youtube.apis.ytm_item_to_video import ytm_item_to_video
+
+uri_video_regex = re.compile("^(?:youtube|yt):video:(?P<videoid>.{11})$")
 uri_playlist_regex = re.compile("^(?:youtube|yt):playlist:(?P<playlistid>.+)$")
 uri_channel_regex = re.compile("^(?:youtube|yt):channel:(?P<channelid>.+)$")
+uri_preload_regex = re.compile(
+    "^(?:youtube|yt):video:(?P<videoid>.{11}):preload:(?P<preload_data>.+)$"
+)
+
 
 old_uri_video_regex = re.compile(r"^(?:youtube|yt):video/(?:.+)\.(?P<videoid>.+)$")
 old_uri_playlist_regex = re.compile(
@@ -67,4 +74,15 @@ def extract_channel_id(uri) -> str:
         match = regex.match(uri)
         if match:
             return match.group("channelid")
+    return ""
+
+
+def extract_preload_tracks(uri) -> str:
+    match = uri_preload_regex.match(uri)
+    if match:
+        preload_data = json.loads(match.group("preload_data"))
+        preload_tracks = [
+            ytm_item_to_video(track) for track in preload_data if "videoId" in track
+        ]
+        return (match.group("videoid"), preload_tracks)
     return ""

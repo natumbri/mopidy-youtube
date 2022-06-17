@@ -5,15 +5,14 @@ from itertools import repeat
 from urllib.parse import urlencode, urljoin
 
 from mopidy_youtube import logger
-from mopidy_youtube.apis.json_paths import (
-    deep_search,
-    traverse,
+from mopidy_youtube.apis.json_paths import (  # listChannelPlaylistsPath,
     continuationItemsPath,
-    # listChannelPlaylistsPath,
+    deep_search,
     listPlaylistItemsPath,
     relatedVideosPath,
     sectionListRendererContentsPath,
     textPath,
+    traverse,
     watchVideoPath,
 )
 from mopidy_youtube.comms import Client

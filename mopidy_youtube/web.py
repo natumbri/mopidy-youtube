@@ -9,10 +9,7 @@ import tornado.ioloop
 import tornado.web
 
 from mopidy_youtube import youtube
-from mopidy_youtube.data import (
-    extract_playlist_id,
-    extract_video_id,
-)
+from mopidy_youtube.data import extract_playlist_id, extract_video_id
 
 logger = logging.getLogger(__name__)
 
