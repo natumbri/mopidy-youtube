@@ -70,9 +70,9 @@ class YouTubeAutoplayer(pykka.ThreadingActor, listener.CoreListener):
                             "better results"
                         )
                         return None
-
+            logger.debug(f"getting current track id for {track.uri}")
             current_track_id = extract_video_id(track.uri)
-
+            logger.debug(f"track id {current_track_id}")
             if self.max_degrees_of_separation:
                 if self.degrees_of_separation < self.max_degrees_of_separation:
                     self.degrees_of_separation += 1
@@ -81,31 +81,38 @@ class YouTubeAutoplayer(pykka.ThreadingActor, listener.CoreListener):
                     current_track_id = self.base_track_id
                     self.degrees_of_separation = 0
                     logger.debug("resetting to autoplay base track id")
+                logger.debug(f"degrees of sep {self.degrees_of_separation}")
 
             if current_track_id not in autoplayed:
                 self.base_track_id = current_track_id
                 autoplayed.append(current_track_id)  # avoid replaying track
                 self.degrees_of_separation = 0
                 logger.debug("setting new autoplay base id")
+                logger.debug(f"base track id {self.base_track_id}")
 
             current_track = youtube.Video.get(current_track_id)
+            logger.debug(f"triggered related videos for {current_track.id}")
             current_track.related_videos
+            logger.debug("getting related videos")
             related_videos = current_track.related_videos.get()
             logger.debug(
                 f"autoplayer is adding a track related to {current_track.title.get()}"
             )
+            logger.debug(f"related videos {related_videos}")
             # remove already autoplayed
             related_videos[:] = [
                 related_video
                 for related_video in related_videos
                 if related_video.id not in autoplayed
             ]
+            logger.debug(f"related videos edit 1 {related_videos}")
             # remove if track_length is 0 (probably a live video) or None
             related_videos[:] = [
                 related_video
                 for related_video in related_videos
                 if related_video.length.get()
             ]
+            logger.debug(f"related videos edit 2 {related_videos}")
             # remove if too long
             if self.max_autoplay_length:
                 related_videos[:] = [
@@ -113,6 +120,7 @@ class YouTubeAutoplayer(pykka.ThreadingActor, listener.CoreListener):
                     for related_video in related_videos
                     if related_video.length.get() < self.max_autoplay_length
                 ]
+            logger.debug(f"related videos edit 3{related_videos}")
 
             if len(related_videos) == 0:
                 logger.warn(
@@ -122,6 +130,7 @@ class YouTubeAutoplayer(pykka.ThreadingActor, listener.CoreListener):
                 return None
             else:
                 next_video = random.choice(related_videos)
+                logger.debug(f"next video {next_video.id}")
                 autoplayed.append(next_video.id)
                 uri = [format_video_uri(next_video.id)]
                 tl.add(uris=uri).get()

@@ -1,5 +1,4 @@
 import json
-
 from concurrent.futures import as_completed
 from concurrent.futures.thread import ThreadPoolExecutor
 from itertools import repeat
@@ -34,7 +33,7 @@ class Music(Client):
             else json.dumps(headers)
         )
         try:
-            ytmusic = YTMusic(auth=auth)
+            ytmusic = YTMusic(auth=auth, requests_session=self.session)
         except Exception as e:
             logger.error("YTMusic init error: %s", str(e))
             ytmusic = YTMusic()
@@ -63,48 +62,54 @@ class Music(Client):
         returns related videos for a given video_id
         """
 
-        logger.debug(
-            f"youtube_music list_related_videos triggered "
-            f"ytmusic.get_watch_playlist {video_id}"
-        )
-
         # this is untested - try to add artist and channel to related
         # videos by calling get_song for each related song
         # this would be faster with threading, but it all happens in the
         # background, so who cares?
 
         # What is better: get_watch_playlist or get_song_related?  Are they different?
-        get_song_related_tracks = []
-        get_watch_playlist = ytmusic.get_watch_playlist(video_id)
-        logger.debug(
-            f"youtube_music list_related_videos triggered "
-            f"ytmusic.get_watch_playlist: {video_id}"
-        )
-
-        related_browseId = get_watch_playlist["related"]
+        get_watch_playlist = {}
 
         try:
+            logger.debug(
+                f"youtube_music list_related_videos triggered "
+                f"ytmusic.get_watch_playlist: {video_id}"
+            )
+
+            get_watch_playlist = ytmusic.get_watch_playlist(video_id)
+            related_browseId = get_watch_playlist.get("related", "none")
+
+        except Exception as e:
+            logger.error(
+                f"youtube_music list_related_videos get_watch_playlist "
+                f"error:{e}. videoId: {video_id}"
+            )
+
+        related_videos = []
+        get_song_related_tracks = []
+        try:
+            logger.debug(
+                f"youtube_music list_related_videos triggered "
+                f"ytmusic.get_song_related ({related_browseId})"
+            )
             get_song_related_tracks = ytmusic.get_song_related(related_browseId)[0][
                 "contents"
             ]
 
+            logger.debug(
+                f"youtube_music list_related_videos triggered "
+                f"ytmusic.get_song for {len(related_videos)} tracks."
+            )
             related_videos = [
                 ytmusic.get_song(track["videoId"])["videoDetails"]
                 for track in get_song_related_tracks
             ]
-
-            logger.debug(
-                f"youtube_music list_related_videos triggered "
-                f"ytmusic.get_song_related ({related_browseId}), and ytmusic.get_song "
-                f"for {len(related_videos)} tracks."
-            )
 
         except Exception as e:
             logger.error(
                 f"youtube_music list_related_videos error:{e} "
                 f"Related_browseId: {related_browseId}"
             )
-            related_videos = []
 
         if len(related_videos) < 10:
             logger.warn(
@@ -112,16 +117,16 @@ class Music(Client):
                 f"Trying get_watch_playlist['tracks'] for more"
             )
             try:
+                logger.debug(
+                    f"youtube_music list_related_videos triggered "
+                    f"ytmusic.get_song for {len(get_watch_playlist['tracks'])} tracks"
+                )
+
                 related_videos.extend(
                     [
                         ytmusic.get_song(track["videoId"])["videoDetails"]
                         for track in get_watch_playlist["tracks"]
                     ]
-                )
-
-                logger.debug(
-                    f"youtube_music list_related_videos triggered "
-                    f"ytmusic.get_song for {len(get_watch_playlist['tracks'])} tracks"
                 )
             except Exception as e:
                 logger.error(f"youtube_music list_related_videos error:{e}")
@@ -146,8 +151,7 @@ class Music(Client):
         if len(tracks) < 10:
             logger.warn(
                 f"get_song_related and get_watch_playlist only returned "
-                f"{len(tracks)} tracks. "
-                f"Trying youtube_japi.jAPI.list_related_videos"
+                f"{len(tracks)} tracks. Trying youtube_japi.jAPI.list_related_videos"
             )
             japi_related_videos = youtube_japi.jAPI.list_related_videos(video_id)
             tracks.extend(japi_related_videos["items"])
@@ -229,7 +233,8 @@ class Music(Client):
         results = []
 
         logger.debug(
-            f"youtube_music list_playlists triggered _get_playlist_or_album x {len(ids)}: {ids}"
+            f"youtube_music list_playlists triggered "
+            f"_get_playlist_or_album x {len(ids)}: {ids}"
         )
 
         with ThreadPoolExecutor() as executor:
@@ -483,7 +488,6 @@ class Music(Client):
             "contentDetails": {"itemCount": itemCount},
             "artists": item.get("artists", None),
         }
-
         if "tracks" in item:
             fields = ["artists", "thumbnails"]
             [

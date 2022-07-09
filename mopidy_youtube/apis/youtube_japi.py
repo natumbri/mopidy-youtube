@@ -16,6 +16,7 @@ from mopidy_youtube.apis.json_paths import (  # listChannelPlaylistsPath,
     watchVideoPath,
 )
 from mopidy_youtube.comms import Client
+from mopidy_youtube.timeformat import format_duration
 from mopidy_youtube.youtube import Video
 
 
@@ -490,9 +491,7 @@ class jAPI(Client):
 
                 try:
                     duration_text = video["lengthText"]["simpleText"]
-                    duration = "PT" + Client.format_duration(
-                        re.match(Client.time_regex, duration_text)
-                    )
+                    duration = "PT" + format_duration(duration_text)
                     logger.debug(f"video {videoId} duration: {duration}")
                 except Exception as e:
                     logger.warn(f"video {videoId} no video-time, possibly live: {e}")

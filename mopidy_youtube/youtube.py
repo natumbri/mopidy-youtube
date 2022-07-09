@@ -1,7 +1,6 @@
 import importlib
 import json
 import os
-import re
 import shutil
 from concurrent.futures.thread import ThreadPoolExecutor
 
@@ -11,6 +10,7 @@ from mopidy.models import Image, ModelJSONEncoder
 
 from mopidy_youtube import logger
 from mopidy_youtube.converters import convert_video_to_track
+from mopidy_youtube.timeformat import ISO8601_to_seconds
 
 api_enabled = False
 channel = None
@@ -168,25 +168,8 @@ class Entry:
             elif k == "artists":
                 val = item["artists"]
             elif k == "length":
-                # convert PT1H2M10S to 3730
-                m = re.search(
-                    r"P((?P<weeks>\d+)W)?"
-                    + r"((?P<days>\d+)D)?"
-                    + r"T((?P<hours>\d+)H)?"
-                    + r"((?P<minutes>\d+)M)?"
-                    + r"((?P<seconds>\d+)S)?",
-                    item["contentDetails"]["duration"],
-                )
-                if m:
-                    val = (
-                        int(m.group("weeks") or 0) * 604800
-                        + int(m.group("days") or 0) * 86400
-                        + int(m.group("hours") or 0) * 3600
-                        + int(m.group("minutes") or 0) * 60
-                        + int(m.group("seconds") or 0)
-                    )
-                else:
-                    val = 0
+                # convert ISO8601 (PT1H2M10S) to s (3730)
+                val = ISO8601_to_seconds(item["contentDetails"]["duration"])
             elif k == "video_count":
                 val = min(
                     int(item["contentDetails"]["itemCount"]),
@@ -194,9 +177,13 @@ class Entry:
                 )
             elif k == "thumbnails":
                 val = [
-                    Image(uri=val["url"], width=val["width"], height=val["height"])
-                    for (key, val) in item["snippet"]["thumbnails"].items()
-                    if key in ["default", "medium", "high"]
+                    Image(
+                        uri=details["url"],
+                        width=details["width"],
+                        height=details["height"],
+                    )
+                    for (quality, details) in item["snippet"]["thumbnails"].items()
+                    if quality in ["default", "medium", "high"]
                 ] or None  # is this "or None" necessary?
             elif k == "channelId":
                 val = item["snippet"]["channelId"]
@@ -204,7 +191,6 @@ class Entry:
 
     @classmethod
     def extend_fields(self, item, fields):
-        # logger.info(f"in: {item, fields}")
         extended_fields = set(fields)
         if "snippet" in item:
             if "channelId" in item["snippet"]:
@@ -240,7 +226,6 @@ class Entry:
                 extended_fields.add("length")
             elif "itemCount" in item["contentDetails"]:
                 extended_fields.add("video_count")
-        # logger.info(f"out: {item, list(extended_fields)}")
         return (item, list(extended_fields))
 
 
@@ -258,7 +243,6 @@ class Video(Entry):
         listOfVideos = cls._add_futures(listOfVideos, minimum_fields)
 
         def job(sublist):
-            # logger.info(sublist)
             try:
                 data = cls.api.list_videos([x.id for x in sublist])
             except Exception as e:
@@ -277,10 +261,9 @@ class Video(Entry):
                     # extended_fields = minimum_fields
                     video._set_api_data(extended_fields, item_dict.get(video.id))
                 else:
-                    logger.info(
+                    logger.warn(
                         f"no dict: {video.id, type(video), item_dict.get(video.id)}"
                     )
-                logger.info(f"job done: {sublist}")
 
         with ThreadPoolExecutor() as executor:
             # make sure order is deterministic so that HTTP requests are replayable in tests
@@ -428,7 +411,11 @@ class Video(Entry):
                     "proxy": self.proxy,
                     "cachedir": False,
                     "nopart": True,
+                    "retries": 10,
                 }
+
+                if youtube_dl_package == "yt_dlp":
+                    ytdl_options["no_color"] = True
 
                 ytdl_extract_info_options = {
                     "url": f"https://www.youtube.com/watch?v={self.id}",
@@ -536,12 +523,10 @@ class Playlist(Entry):
 
             if data:
                 item_dict = {item["id"]: item for item in data["items"]}
-            # logger.info(f"data {data}")
             for pl in sublist:
                 item_dict[pl.id], extended_fields = cls.extend_fields(
                     item_dict.get(pl.id), minimum_fields
                 )
-                # extended_fields = minimum_fields
                 pl._set_api_data(extended_fields, item_dict.get(pl.id))
 
         with ThreadPoolExecutor() as executor:
@@ -659,7 +644,6 @@ class Channel(Entry):
                 extended_fields = minimum_fields
                 pl._set_api_data(extended_fields, item)
                 channel_playlists.append(pl)
-            logger.info(f"channel_playlists {channel_playlists}")
             Playlist.load_info(channel_playlists)
             return channel_playlists
         except Exception as e:

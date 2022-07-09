@@ -1,7 +1,5 @@
-import re
-
 from mopidy_youtube import logger
-from mopidy_youtube.comms import Client
+from mopidy_youtube.timeformat import format_duration
 
 
 def ytm_item_to_video(item):
@@ -35,7 +33,7 @@ def ytm_item_to_video(item):
         logger.error(f"youtube_music yt_item_to_video duration error {e}: {item}")
 
     try:
-        duration = "PT" + Client.format_duration(re.match(Client.time_regex, duration))
+        duration = "PT" + format_duration(duration)
     except Exception as e:
         logger.error(
             f"youtube_music yt_item_to_video format duration error {e}: {item}"

@@ -34,6 +34,8 @@ def format_channel_uri(id) -> str:
 
 
 def extract_video_id(uri) -> str:
+    if uri is None:
+        return ""
     if "youtube.com" in uri:
         url = urlparse(uri.replace("yt:", "").replace("youtube:", ""))
         req = parse_qs(url.query)

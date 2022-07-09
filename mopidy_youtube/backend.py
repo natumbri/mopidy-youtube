@@ -2,6 +2,7 @@ import json
 import os
 
 import pykka
+from cachetools import TTLCache, cached
 from mopidy import backend, httpclient
 from mopidy.core import CoreListener
 from mopidy.models import Image, Ref, SearchResult, Track, model_json_decoder
@@ -144,7 +145,12 @@ class YouTubeLibraryProvider(backend.LibraryProvider):
     When enabled makes possible to browse public playlists of the channel as well as browse
     separate tracks in playlists.
     """
+    cache_max_len = 4000
+    cache_ttl = 21600
 
+    youtube_library_cache = TTLCache(maxsize=cache_max_len, ttl=cache_ttl)
+
+    @cached(cache=youtube_library_cache)
     def browse(self, uri):
         if uri == "youtube:browse":
             return [
@@ -325,15 +331,10 @@ class YouTubeLibraryProvider(backend.LibraryProvider):
         preload = extract_preload_tracks(uri)
         if preload:
             for track in preload[1]:
-                logger.info(track)
                 video = Video.get(track["id"]["videoId"])
                 minimum_fields = ["title", "length", "channel"]
                 item, extended_fields = video.extend_fields(track, minimum_fields)
-                logger.info(f"{extended_fields}")
-                video._set_api_data(
-                    extended_fields,
-                    item,
-                )
+                video._set_api_data(extended_fields, item)
             return [self.lookup_video_track(preload[0])]
 
         playlist_id = extract_playlist_id(uri)
