@@ -1,6 +1,16 @@
 import re
 
 
+def convert_Millis(milliseconds):
+    try:
+        hours, miliseconds = divmod(int(milliseconds), 3600000)
+    except Exception as e:
+        logger.error(f"convert_Millis error: {e}, {milliseconds}")
+        return "00:00:00"
+    minutes, miliseconds = divmod(miliseconds, 60000)
+    seconds = int(miliseconds) / 1000
+    return "%i:%02i:%02i" % (hours, minutes, seconds)
+
 def format_duration(duration_text):
 
     time_regex = (

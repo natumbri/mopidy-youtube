@@ -1,5 +1,5 @@
 from mopidy_youtube import logger
-from mopidy_youtube.timeformat import format_duration
+from mopidy_youtube.timeformat import convert_Millis, format_duration
 
 
 def ytm_item_to_video(item):
@@ -7,25 +7,15 @@ def ytm_item_to_video(item):
     if "videoDetails" in item:
         item = item["videoDetails"]
 
-    def _convertMillis(milliseconds):
-        try:
-            hours, miliseconds = divmod(int(milliseconds), 3600000)
-        except Exception as e:
-            logger.error(f"_convertMillis error: {e}, {milliseconds}")
-            return "00:00:00"
-        minutes, miliseconds = divmod(miliseconds, 60000)
-        seconds = int(miliseconds) / 1000
-        return "%i:%02i:%02i" % (hours, minutes, seconds)
-
     try:
         if "duration" in item:
             duration = item["duration"]
         elif "length" in item:
             duration = item["length"]
         elif "lengthMs" in item:
-            duration = _convertMillis(item["lengthMs"])
+            duration = convert_Millis(item["lengthMs"])
         elif "lengthSeconds" in item:
-            duration = _convertMillis(int(item["lengthSeconds"]) * 1000)
+            duration = convert_Millis(int(item["lengthSeconds"]) * 1000)
         else:
             duration = "00:00:00"
             logger.warn(f"duration missing: {item}")
