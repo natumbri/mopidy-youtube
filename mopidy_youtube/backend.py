@@ -331,6 +331,11 @@ class YouTubeLibraryProvider(backend.LibraryProvider):
         preload = extract_preload_tracks(uri)
         if preload:
             for track in preload[1]:
+                # need to be more careful here: preload data is ytmusic; some information
+                # might not be compatible with other backends. see, for example
+                # https://tickets.metabrainz.org/browse/MBS-10226: an album playlist link taken
+                # from the album column in the [ytm] page you wanted to link to, has no equivalent
+                # URL on YouTube
                 video = Video.get(track["id"]["videoId"])
                 minimum_fields = ["title", "length", "channel"]
                 item, extended_fields = video.extend_fields(track, minimum_fields)

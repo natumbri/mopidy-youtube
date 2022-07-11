@@ -93,7 +93,9 @@ class jAPI(Client):
             for result in results:
                 result.update({"id": result["id"]["videoId"]})
 
-            results = [result for result in results if result["id"] in ids]
+            results = [
+                result for result in results if result["id"] in ids
+            ]  # should this be in id or ids?
 
             if results:
                 return results
@@ -104,9 +106,9 @@ class jAPI(Client):
                 result = cls.session.get(cls.endpoint + "watch?v=" + id)
                 if result.status_code == 200:
                     yt_data = cls._find_yt_data(result.text)
+
                     if yt_data:
                         extracted_json = traverse(yt_data, watchVideoPath)
-
                         title = traverse(
                             extracted_json[0]["videoPrimaryInfoRenderer"]["title"],
                             textPath,

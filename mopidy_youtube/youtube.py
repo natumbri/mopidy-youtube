@@ -245,25 +245,30 @@ class Video(Entry):
         def job(sublist):
             try:
                 data = cls.api.list_videos([x.id for x in sublist])
+                item_dict = {item["id"]: item for item in data["items"]}
             except Exception as e:
                 logger.error('list_videos error "%s"', e)
-
-            if data:
-                item_dict = {item["id"]: item for item in data["items"]}
-            else:
                 item_dict = {}
 
             for video in sublist:
-                if item_dict.get(video.id):
-                    item_dict[video.id], extended_fields = cls.extend_fields(
+                try:
+                    extended_item = cls.extend_fields(
                         item_dict.get(video.id), minimum_fields
                     )
-                    # extended_fields = minimum_fields
-                    video._set_api_data(extended_fields, item_dict.get(video.id))
-                else:
+                    video._set_api_data(extended_item[1], extended_item[0])
+                except Exception as e:
                     logger.warn(
-                        f"no dict: {video.id, type(video), item_dict.get(video.id)}"
+                        f"Error {e} setting api data for {video.id}; probably private or deleted"
                     )
+                    error_dict = {
+                        "contentDetails": {"duration": "PT0S"},
+                        "id": video.id,
+                        "snippet": {
+                            "channelTitle": "Video unplayable",
+                            "title": "Video unplayable",
+                        },
+                    }
+                    video._set_api_data(minimum_fields, error_dict)
 
         with ThreadPoolExecutor() as executor:
             # make sure order is deterministic so that HTTP requests are replayable in tests
@@ -629,6 +634,8 @@ class Channel(Entry):
         try:
             if channel_id == "root":
                 channel_id = channel
+            if channel_id is None:
+                return None
             data = cls.api.list_channelplaylists(channel_id)
             if "error" in data:
                 raise Exception(data["error"])
