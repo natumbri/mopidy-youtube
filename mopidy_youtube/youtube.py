@@ -258,7 +258,8 @@ class Video(Entry):
                     video._set_api_data(extended_item[1], extended_item[0])
                 except Exception as e:
                     logger.warn(
-                        f"Error {e} setting api data for {video.id}; probably private or deleted"
+                        f"Error {e} setting api data for {video.id}; "
+                        f"probably private or deleted"
                     )
                     error_dict = {
                         "contentDetails": {"duration": "PT0S"},
