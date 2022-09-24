@@ -403,7 +403,7 @@ class YouTubeLibraryProvider(backend.LibraryProvider):
 
 class YouTubePlaybackProvider(backend.PlaybackProvider):
     def should_download(self, uri):
-        return False
+        return True
 
     def translate_uri(self, uri):
         """
