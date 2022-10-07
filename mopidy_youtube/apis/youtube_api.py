@@ -60,7 +60,7 @@ class API(Client):
 
         query = {
             "part": "id,snippet,contentDetails",
-            "fields": "items(id,snippet(title,channelTitle),"
+            "fields": "items(id,snippet(title,channelTitle,channelId),"
             + "contentDetails(duration))",
             "id": ",".join(ids),
             "key": cls.youtube_api_key,

@@ -5,9 +5,9 @@ interactions:
       Accept-Language:
       - en;q=0.8
       Cookie:
-      - PREF=hl=en;
+      - PREF=hl=en; CONSENT=YES+20210329;
       user-agent:
-      - Mopidy-YouTube/3.4 Mopidy/3.2.0 CPython/3.8.10
+      - Mopidy-YouTube/3.5 Mopidy/3.3.0 CPython/3.8.10
     method: GET
     uri: https://www.googleapis.com/youtube/v3/playlistItems?fields=nextPageToken%2Citems%28snippet%28title%2C+resourceId%28videoId%29%2C+videoOwnerChannelTitle%29%29&key=fake_key&maxResults=20&part=id%2Csnippet&playlistId=PLJD13y84Bd032qVrq7CHBLEfKZZtp-u1j
   response:
@@ -77,15 +77,14 @@ interactions:
       Accept-Ranges:
       - none
       Alt-Svc:
-      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000,h3-T051=":443"; ma=2592000,h3-Q050=":443";
-        ma=2592000,h3-Q046=":443"; ma=2592000,h3-Q043=":443"; ma=2592000,quic=":443";
-        ma=2592000; v="46,43"
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000,h3-Q050=":443"; ma=2592000,h3-Q046=":443";
+        ma=2592000,h3-Q043=":443"; ma=2592000,quic=":443"; ma=2592000; v="46,43"
       Cache-Control:
       - private
       Content-Type:
       - application/json; charset=UTF-8
       Date:
-      - Thu, 23 Sep 2021 06:02:57 GMT
+      - Tue, 14 Jun 2022 09:57:50 GMT
       Server:
       - scaffolding on HTTPServer2
       Transfer-Encoding:

@@ -5,30 +5,19 @@ from itertools import repeat
 from urllib.parse import urlencode, urljoin
 
 from mopidy_youtube import logger
-from mopidy_youtube.apis.json_paths import (
-    deep_search,
+from mopidy_youtube.apis.json_paths import (  # listChannelPlaylistsPath,
     continuationItemsPath,
-    # listChannelPlaylistsPath,
+    deep_search,
     listPlaylistItemsPath,
     relatedVideosPath,
     sectionListRendererContentsPath,
     textPath,
+    traverse,
     watchVideoPath,
 )
 from mopidy_youtube.comms import Client
+from mopidy_youtube.timeformat import format_duration
 from mopidy_youtube.youtube import Video
-
-
-def traverse(input_dict, keys):
-    internal_dict_value = input_dict
-    for key in keys:
-        if isinstance(internal_dict_value, list):
-            internal_dict_value = internal_dict_value[key]
-        else:
-            internal_dict_value = internal_dict_value.get(key, None)
-        if internal_dict_value is None:
-            raise KeyError
-    return internal_dict_value
 
 
 class jAPI(Client):
@@ -104,20 +93,22 @@ class jAPI(Client):
             for result in results:
                 result.update({"id": result["id"]["videoId"]})
 
-            results = [result for result in results if result["id"] in ids]
+            results = [
+                result for result in results if result["id"] in ids
+            ]  # should this be in id or ids?
 
             if results:
                 return results
 
             else:
 
-                logger.info(f"jAPI 'list_videos' triggered session.get: {id}")
+                logger.debug(f"jAPI 'list_videos' triggered session.get: {id}")
                 result = cls.session.get(cls.endpoint + "watch?v=" + id)
                 if result.status_code == 200:
                     yt_data = cls._find_yt_data(result.text)
+
                     if yt_data:
                         extracted_json = traverse(yt_data, watchVideoPath)
-
                         title = traverse(
                             extracted_json[0]["videoPrimaryInfoRenderer"]["title"],
                             textPath,
@@ -192,7 +183,7 @@ class jAPI(Client):
 
             else:
 
-                logger.info(f"jAPI 'list_playlists' triggered session.get: {id}")
+                logger.debug(f"jAPI 'list_playlists' triggered session.get: {id}")
                 result = cls.session.get(cls.endpoint + "playlist?list=" + id)
                 if result.status_code == 200:
                     yt_data = cls._find_yt_data(result.text)
@@ -368,6 +359,7 @@ class jAPI(Client):
                     for s in sections:
                         if "itemSectionRenderer" in s:
                             extracted_json = s["itemSectionRenderer"]["contents"]
+                            results.extend(cls.json_to_items(extracted_json))
                         if "continuationItemRenderer" in s:
                             continuation_renderer = s["continuationItemRenderer"]
 
@@ -377,9 +369,7 @@ class jAPI(Client):
                             "continuationCommand"
                         ]["token"]
                     else:
-                        continuation = None
-                    results.extend(cls.json_to_items(extracted_json))
-
+                        return results
         return results
 
     @classmethod
@@ -503,9 +493,7 @@ class jAPI(Client):
 
                 try:
                     duration_text = video["lengthText"]["simpleText"]
-                    duration = "PT" + Client.format_duration(
-                        re.match(Client.time_regex, duration_text)
-                    )
+                    duration = "PT" + format_duration(duration_text)
                     logger.debug(f"video {videoId} duration: {duration}")
                 except Exception as e:
                     logger.warn(f"video {videoId} no video-time, possibly live: {e}")

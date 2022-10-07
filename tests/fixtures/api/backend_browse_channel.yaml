@@ -5,9 +5,9 @@ interactions:
       Accept-Language:
       - en;q=0.8
       Cookie:
-      - PREF=hl=en;
+      - PREF=hl=en; CONSENT=YES+20210329;
       user-agent:
-      - Mopidy-YouTube/3.4 Mopidy/3.2.0 CPython/3.8.10
+      - Mopidy-YouTube/3.5 Mopidy/3.3.0 CPython/3.8.10
     method: GET
     uri: https://www.googleapis.com/youtube/v3/playlists?channelId=UCZtGOj7FTHPd2txgnbJS2kQ&fields=items%28id%2Csnippet%28title%29%2CcontentDetails%28itemCount%29%29&key=fake_key&maxResults=50&part=id%2Csnippet%2CcontentDetails
   response:
@@ -16,23 +16,22 @@ interactions:
         \     \"snippet\": {\n        \"title\": \"ytmusic pl\"\n      },\n      \"contentDetails\":
         {\n        \"itemCount\": 1\n      }\n    },\n    {\n      \"id\": \"PLJD13y84Bd01Q8b8ONfwNMLD3pVBcqwMq\",\n
         \     \"snippet\": {\n        \"title\": \"respect the rock\"\n      },\n
-        \     \"contentDetails\": {\n        \"itemCount\": 2219\n      }\n    },\n
+        \     \"contentDetails\": {\n        \"itemCount\": 2212\n      }\n    },\n
         \   {\n      \"id\": \"PLJD13y84Bd032qVrq7CHBLEfKZZtp-u1j\",\n      \"snippet\":
         {\n        \"title\": \"skullcave\"\n      },\n      \"contentDetails\": {\n
-        \       \"itemCount\": 1928\n      }\n    }\n  ]\n}\n"
+        \       \"itemCount\": 1921\n      }\n    }\n  ]\n}\n"
     headers:
       Accept-Ranges:
       - none
       Alt-Svc:
-      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000,h3-T051=":443"; ma=2592000,h3-Q050=":443";
-        ma=2592000,h3-Q046=":443"; ma=2592000,h3-Q043=":443"; ma=2592000,quic=":443";
-        ma=2592000; v="46,43"
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000,h3-Q050=":443"; ma=2592000,h3-Q046=":443";
+        ma=2592000,h3-Q043=":443"; ma=2592000,quic=":443"; ma=2592000; v="46,43"
       Cache-Control:
       - private
       Content-Type:
       - application/json; charset=UTF-8
       Date:
-      - Thu, 23 Sep 2021 06:03:23 GMT
+      - Tue, 14 Jun 2022 09:58:05 GMT
       Server:
       - scaffolding on HTTPServer2
       Vary:
@@ -54,9 +53,9 @@ interactions:
       Accept-Language:
       - en;q=0.8
       Cookie:
-      - PREF=hl=en;
+      - PREF=hl=en; CONSENT=YES+20210329;
       user-agent:
-      - Mopidy-YouTube/3.4 Mopidy/3.2.0 CPython/3.8.10
+      - Mopidy-YouTube/3.5 Mopidy/3.3.0 CPython/3.8.10
     method: GET
     uri: https://www.googleapis.com/youtube/v3/playlists?fields=items%28id%2Csnippet%28title%2Cthumbnails%2CchannelTitle%29%2CcontentDetails%28itemCount%29%29&id=PLJD13y84Bd029ENixIHEpDqeWcjiogsFi%2CPLJD13y84Bd01Q8b8ONfwNMLD3pVBcqwMq%2CPLJD13y84Bd032qVrq7CHBLEfKZZtp-u1j&key=fake_key&part=id%2Csnippet%2CcontentDetails
   response:
@@ -87,7 +86,7 @@ interactions:
         {\n            \"url\": \"https://i.ytimg.com/vi/yx4rmRHdYas/maxresdefault.jpg\",\n
         \           \"width\": 1280,\n            \"height\": 720\n          }\n        },\n
         \       \"channelTitle\": \"Nik\"\n      },\n      \"contentDetails\": {\n
-        \       \"itemCount\": 2219\n      }\n    },\n    {\n      \"id\": \"PLJD13y84Bd032qVrq7CHBLEfKZZtp-u1j\",\n
+        \       \"itemCount\": 2212\n      }\n    },\n    {\n      \"id\": \"PLJD13y84Bd032qVrq7CHBLEfKZZtp-u1j\",\n
         \     \"snippet\": {\n        \"title\": \"skullcave\",\n        \"thumbnails\":
         {\n          \"default\": {\n            \"url\": \"https://i.ytimg.com/vi/MzFLCi9nOHQ/default.jpg\",\n
         \           \"width\": 120,\n            \"height\": 90\n          },\n          \"medium\":
@@ -98,702 +97,19 @@ interactions:
         {\n            \"url\": \"https://i.ytimg.com/vi/MzFLCi9nOHQ/sddefault.jpg\",\n
         \           \"width\": 640,\n            \"height\": 480\n          }\n        },\n
         \       \"channelTitle\": \"Nik\"\n      },\n      \"contentDetails\": {\n
-        \       \"itemCount\": 1928\n      }\n    }\n  ]\n}\n"
+        \       \"itemCount\": 1921\n      }\n    }\n  ]\n}\n"
     headers:
       Accept-Ranges:
       - none
       Alt-Svc:
-      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000,h3-T051=":443"; ma=2592000,h3-Q050=":443";
-        ma=2592000,h3-Q046=":443"; ma=2592000,h3-Q043=":443"; ma=2592000,quic=":443";
-        ma=2592000; v="46,43"
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000,h3-Q050=":443"; ma=2592000,h3-Q046=":443";
+        ma=2592000,h3-Q043=":443"; ma=2592000,quic=":443"; ma=2592000; v="46,43"
       Cache-Control:
       - private
       Content-Type:
       - application/json; charset=UTF-8
       Date:
-      - Thu, 23 Sep 2021 06:03:24 GMT
-      Server:
-      - scaffolding on HTTPServer2
-      Transfer-Encoding:
-      - chunked
-      Vary:
-      - X-Origin
-      - Referer
-      - Origin,Accept-Encoding
-      X-Content-Type-Options:
-      - nosniff
-      X-Frame-Options:
-      - SAMEORIGIN
-      X-XSS-Protection:
-      - '0'
-    status:
-      code: 200
-      message: OK
-- request:
-    body: null
-    headers:
-      Accept-Language:
-      - en;q=0.8
-      Cookie:
-      - PREF=hl=en;
-      user-agent:
-      - Mopidy-YouTube/3.4 Mopidy/3.2.0 CPython/3.8.10
-    method: GET
-    uri: https://www.googleapis.com/youtube/v3/playlistItems?fields=nextPageToken%2Citems%28snippet%28title%2C+resourceId%28videoId%29%2C+videoOwnerChannelTitle%29%29&key=fake_key&maxResults=20&part=id%2Csnippet&playlistId=PLJD13y84Bd029ENixIHEpDqeWcjiogsFi
-  response:
-    body:
-      string: "{\n  \"items\": [\n    {\n      \"snippet\": {\n        \"title\":
-        \"Katy Perry - Last Friday Night (T.G.I.F.) (Official Music Video)\",\n        \"resourceId\":
-        {\n          \"videoId\": \"KlyXNRrsk4A\"\n        },\n        \"videoOwnerChannelTitle\":
-        \"KatyPerryVEVO\"\n      }\n    }\n  ]\n}\n"
-    headers:
-      Accept-Ranges:
-      - none
-      Alt-Svc:
-      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000,h3-T051=":443"; ma=2592000,h3-Q050=":443";
-        ma=2592000,h3-Q046=":443"; ma=2592000,h3-Q043=":443"; ma=2592000,quic=":443";
-        ma=2592000; v="46,43"
-      Cache-Control:
-      - private
-      Content-Type:
-      - application/json; charset=UTF-8
-      Date:
-      - Thu, 23 Sep 2021 06:03:24 GMT
-      Server:
-      - scaffolding on HTTPServer2
-      Vary:
-      - X-Origin
-      - Referer
-      - Origin,Accept-Encoding
-      X-Content-Type-Options:
-      - nosniff
-      X-Frame-Options:
-      - SAMEORIGIN
-      X-XSS-Protection:
-      - '0'
-    status:
-      code: 200
-      message: OK
-- request:
-    body: null
-    headers:
-      Accept-Language:
-      - en;q=0.8
-      Cookie:
-      - PREF=hl=en;
-      user-agent:
-      - Mopidy-YouTube/3.4 Mopidy/3.2.0 CPython/3.8.10
-    method: GET
-    uri: https://www.googleapis.com/youtube/v3/videos?fields=items%28id%2Csnippet%28title%2CchannelTitle%29%2CcontentDetails%28duration%29%29&id=KlyXNRrsk4A&key=fake_key&part=id%2Csnippet%2CcontentDetails
-  response:
-    body:
-      string: "{\n  \"items\": [\n    {\n      \"id\": \"KlyXNRrsk4A\",\n      \"snippet\":
-        {\n        \"title\": \"Katy Perry - Last Friday Night (T.G.I.F.) (Official
-        Music Video)\",\n        \"channelTitle\": \"KatyPerryVEVO\"\n      },\n      \"contentDetails\":
-        {\n        \"duration\": \"PT8M5S\"\n      }\n    }\n  ]\n}\n"
-    headers:
-      Accept-Ranges:
-      - none
-      Alt-Svc:
-      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000,h3-T051=":443"; ma=2592000,h3-Q050=":443";
-        ma=2592000,h3-Q046=":443"; ma=2592000,h3-Q043=":443"; ma=2592000,quic=":443";
-        ma=2592000; v="46,43"
-      Cache-Control:
-      - private
-      Content-Type:
-      - application/json; charset=UTF-8
-      Date:
-      - Thu, 23 Sep 2021 06:03:24 GMT
-      Server:
-      - scaffolding on HTTPServer2
-      Transfer-Encoding:
-      - chunked
-      Vary:
-      - X-Origin
-      - Referer
-      - Origin,Accept-Encoding
-      X-Content-Type-Options:
-      - nosniff
-      X-Frame-Options:
-      - SAMEORIGIN
-      X-XSS-Protection:
-      - '0'
-    status:
-      code: 200
-      message: OK
-- request:
-    body: null
-    headers:
-      Accept-Language:
-      - en;q=0.8
-      Cookie:
-      - PREF=hl=en;
-      user-agent:
-      - Mopidy-YouTube/3.4 Mopidy/3.2.0 CPython/3.8.10
-    method: GET
-    uri: https://www.googleapis.com/youtube/v3/playlistItems?fields=nextPageToken%2Citems%28snippet%28title%2C+resourceId%28videoId%29%2C+videoOwnerChannelTitle%29%29&key=fake_key&maxResults=20&part=id%2Csnippet&playlistId=PLJD13y84Bd01Q8b8ONfwNMLD3pVBcqwMq
-  response:
-    body:
-      string: "{\n  \"nextPageToken\": \"EAAaBlBUOkNCUQ\",\n  \"items\": [\n    {\n
-        \     \"snippet\": {\n        \"title\": \"Son of E.H Holden\",\n        \"resourceId\":
-        {\n          \"videoId\": \"yx4rmRHdYas\"\n        },\n        \"videoOwnerChannelTitle\":
-        \"Spacejunk - Topic\"\n      }\n    },\n    {\n      \"snippet\": {\n        \"title\":
-        \"Clutch - Behold the Colossus\",\n        \"resourceId\": {\n          \"videoId\":
-        \"WZRnyJltTTY\"\n        },\n        \"videoOwnerChannelTitle\": \"Vaggelis
-        Gk\"\n      }\n    },\n    {\n      \"snippet\": {\n        \"title\": \"Witchskull
-        - Pan's Daughter +lyrics\",\n        \"resourceId\": {\n          \"videoId\":
-        \"WCKln2aQrto\"\n        },\n        \"videoOwnerChannelTitle\": \"666MrDoom\"\n
-        \     }\n    },\n    {\n      \"snippet\": {\n        \"title\": \"Deleted
-        video\",\n        \"resourceId\": {\n          \"videoId\": \"tQSumTDq8_E\"\n
-        \       }\n      }\n    },\n    {\n      \"snippet\": {\n        \"title\":
-        \"Runaway Ball\",\n        \"resourceId\": {\n          \"videoId\": \"nW6_lNsR_Yk\"\n
-        \       },\n        \"videoOwnerChannelTitle\": \"Big Daddy Productions\"\n
-        \     }\n    },\n    {\n      \"snippet\": {\n        \"title\": \"BRANT BJORK
-        - Luvin' (Official Video) | Napalm Records\",\n        \"resourceId\": {\n
-        \         \"videoId\": \"Q-a_iVgF9SU\"\n        },\n        \"videoOwnerChannelTitle\":
-        \"Napalm Records\"\n      }\n    },\n    {\n      \"snippet\": {\n        \"title\":
-        \"Helmet - Biscuits For Smut\",\n        \"resourceId\": {\n          \"videoId\":
-        \"gWdCX9FXx5Y\"\n        },\n        \"videoOwnerChannelTitle\": \"HelmetVEVO\"\n
-        \     }\n    },\n    {\n      \"snippet\": {\n        \"title\": \"Black Rheno
-        - No Time For Numb Nuts\",\n        \"resourceId\": {\n          \"videoId\":
-        \"43JXtDga2FY\"\n        },\n        \"videoOwnerChannelTitle\": \"Black Rheno\"\n
-        \     }\n    },\n    {\n      \"snippet\": {\n        \"title\": \"The Rolling
-        Stones - Hate To See You Go\",\n        \"resourceId\": {\n          \"videoId\":
-        \"lrIjMzBr-ck\"\n        },\n        \"videoOwnerChannelTitle\": \"TheRollingStonesVEVO\"\n
-        \     }\n    },\n    {\n      \"snippet\": {\n        \"title\": \"Lock the
-        Gate\",\n        \"resourceId\": {\n          \"videoId\": \"0jRBxXbQKQ4\"\n
-        \       },\n        \"videoOwnerChannelTitle\": \"Black Rheno - Topic\"\n
-        \     }\n    },\n    {\n      \"snippet\": {\n        \"title\": \"The Dacios
-        \\\"Rabbit\\\" - Live on Amateur Hour\",\n        \"resourceId\": {\n          \"videoId\":
-        \"dxxqjj9q0es\"\n        },\n        \"videoOwnerChannelTitle\": \"Amateur
-        Hour\"\n      }\n    },\n    {\n      \"snippet\": {\n        \"title\": \"DON
-        FERNANDO - Haunted by Humans [OFFICIAL FILM CLIP]\",\n        \"resourceId\":
-        {\n          \"videoId\": \"tHsIAE7AybM\"\n        },\n        \"videoOwnerChannelTitle\":
-        \"DonFernandoMusic\"\n      }\n    },\n    {\n      \"snippet\": {\n        \"title\":
-        \"Freak out Forever\",\n        \"resourceId\": {\n          \"videoId\":
-        \"2OGkb4fdKWk\"\n        },\n        \"videoOwnerChannelTitle\": \"The Meanies
-        - Topic\"\n      }\n    },\n    {\n      \"snippet\": {\n        \"title\":
-        \"Blue Bloods\",\n        \"resourceId\": {\n          \"videoId\": \"sflq6IEiFt4\"\n
-        \       },\n        \"videoOwnerChannelTitle\": \"The Nation Blue - Topic\"\n
-        \     }\n    },\n    {\n      \"snippet\": {\n        \"title\": \"Deleted
-        video\",\n        \"resourceId\": {\n          \"videoId\": \"TEi0_zjbRy4\"\n
-        \       }\n      }\n    },\n    {\n      \"snippet\": {\n        \"title\":
-        \"L7-Everglade\",\n        \"resourceId\": {\n          \"videoId\": \"Ie1dmQnMKC8\"\n
-        \       },\n        \"videoOwnerChannelTitle\": \"triumphmark\"\n      }\n
-        \   },\n    {\n      \"snippet\": {\n        \"title\": \"Field \\\"The Hate\\\"\",\n
-        \       \"resourceId\": {\n          \"videoId\": \"n0mw3rcaTQc\"\n        },\n
-        \       \"videoOwnerChannelTitle\": \"MrStonebeliever2\"\n      }\n    },\n
-        \   {\n      \"snippet\": {\n        \"title\": \"You Should Leave Him\",\n
-        \       \"resourceId\": {\n          \"videoId\": \"X7m9QyXcyHQ\"\n        },\n
-        \       \"videoOwnerChannelTitle\": \"Tyrannamen - Topic\"\n      }\n    },\n
-        \   {\n      \"snippet\": {\n        \"title\": \"Courtney Barnett - Avant
-        Gardener\",\n        \"resourceId\": {\n          \"videoId\": \"bcnIhzaDTd0\"\n
-        \       },\n        \"videoOwnerChannelTitle\": \"courtneybarnett\"\n      }\n
-        \   },\n    {\n      \"snippet\": {\n        \"title\": \"Dr. Colossus \u2013
-        Mono  (Live)\",\n        \"resourceId\": {\n          \"videoId\": \"xX7YCZa_JrE\"\n
-        \       },\n        \"videoOwnerChannelTitle\": \"Dr. Colossus\"\n      }\n
-        \   }\n  ]\n}\n"
-    headers:
-      Accept-Ranges:
-      - none
-      Alt-Svc:
-      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000,h3-T051=":443"; ma=2592000,h3-Q050=":443";
-        ma=2592000,h3-Q046=":443"; ma=2592000,h3-Q043=":443"; ma=2592000,quic=":443";
-        ma=2592000; v="46,43"
-      Cache-Control:
-      - private
-      Content-Type:
-      - application/json; charset=UTF-8
-      Date:
-      - Thu, 23 Sep 2021 06:03:25 GMT
-      Server:
-      - scaffolding on HTTPServer2
-      Transfer-Encoding:
-      - chunked
-      Vary:
-      - X-Origin
-      - Referer
-      - Origin,Accept-Encoding
-      X-Content-Type-Options:
-      - nosniff
-      X-Frame-Options:
-      - SAMEORIGIN
-      X-XSS-Protection:
-      - '0'
-    status:
-      code: 200
-      message: OK
-- request:
-    body: null
-    headers:
-      Accept-Language:
-      - en;q=0.8
-      Cookie:
-      - PREF=hl=en;
-      user-agent:
-      - Mopidy-YouTube/3.4 Mopidy/3.2.0 CPython/3.8.10
-    method: GET
-    uri: https://www.googleapis.com/youtube/v3/playlistItems?fields=nextPageToken%2Citems%28snippet%28title%2C+resourceId%28videoId%29%2C+videoOwnerChannelTitle%29%29&key=fake_key&maxResults=2&pageToken=EAAaBlBUOkNCUQ&part=id%2Csnippet&playlistId=PLJD13y84Bd01Q8b8ONfwNMLD3pVBcqwMq
-  response:
-    body:
-      string: "{\n  \"nextPageToken\": \"EAAaBlBUOkNCWQ\",\n  \"items\": [\n    {\n
-        \     \"snippet\": {\n        \"title\": \"Melvins \\\"The Decay of Lying\\\"
-        \u2022 Amphetamine Reptile Records\",\n        \"resourceId\": {\n          \"videoId\":
-        \"Q_976M77YDU\"\n        },\n        \"videoOwnerChannelTitle\": \"HAZE XXL\"\n
-        \     }\n    },\n    {\n      \"snippet\": {\n        \"title\": \"AC/DC -
-        Touch Too Much (Official Video)\",\n        \"resourceId\": {\n          \"videoId\":
-        \"JGftIcp2SC0\"\n        },\n        \"videoOwnerChannelTitle\": \"acdcVEVO\"\n
-        \     }\n    }\n  ]\n}\n"
-    headers:
-      Accept-Ranges:
-      - none
-      Alt-Svc:
-      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000,h3-T051=":443"; ma=2592000,h3-Q050=":443";
-        ma=2592000,h3-Q046=":443"; ma=2592000,h3-Q043=":443"; ma=2592000,quic=":443";
-        ma=2592000; v="46,43"
-      Cache-Control:
-      - private
-      Content-Type:
-      - application/json; charset=UTF-8
-      Date:
-      - Thu, 23 Sep 2021 06:03:25 GMT
-      Server:
-      - scaffolding on HTTPServer2
-      Transfer-Encoding:
-      - chunked
-      Vary:
-      - X-Origin
-      - Referer
-      - Origin,Accept-Encoding
-      X-Content-Type-Options:
-      - nosniff
-      X-Frame-Options:
-      - SAMEORIGIN
-      X-XSS-Protection:
-      - '0'
-    status:
-      code: 200
-      message: OK
-- request:
-    body: null
-    headers:
-      Accept-Language:
-      - en;q=0.8
-      Cookie:
-      - PREF=hl=en;
-      user-agent:
-      - Mopidy-YouTube/3.4 Mopidy/3.2.0 CPython/3.8.10
-    method: GET
-    uri: https://www.googleapis.com/youtube/v3/videos?fields=items%28id%2Csnippet%28title%2CchannelTitle%29%2CcontentDetails%28duration%29%29&id=yx4rmRHdYas%2CWZRnyJltTTY%2CWCKln2aQrto%2CnW6_lNsR_Yk%2CQ-a_iVgF9SU%2CgWdCX9FXx5Y%2C43JXtDga2FY%2ClrIjMzBr-ck%2C0jRBxXbQKQ4%2Cdxxqjj9q0es%2CtHsIAE7AybM%2C2OGkb4fdKWk%2Csflq6IEiFt4%2CIe1dmQnMKC8%2Cn0mw3rcaTQc%2CX7m9QyXcyHQ%2CbcnIhzaDTd0%2CxX7YCZa_JrE%2CQ_976M77YDU%2CJGftIcp2SC0&key=fake_key&part=id%2Csnippet%2CcontentDetails
-  response:
-    body:
-      string: "{\n  \"items\": [\n    {\n      \"id\": \"yx4rmRHdYas\",\n      \"snippet\":
-        {\n        \"title\": \"Son of E.H Holden\",\n        \"channelTitle\": \"Spacejunk
-        - Topic\"\n      },\n      \"contentDetails\": {\n        \"duration\": \"PT5M22S\"\n
-        \     }\n    },\n    {\n      \"id\": \"WZRnyJltTTY\",\n      \"snippet\":
-        {\n        \"title\": \"Clutch - Behold the Colossus\",\n        \"channelTitle\":
-        \"Vaggelis Gk\"\n      },\n      \"contentDetails\": {\n        \"duration\":
-        \"PT3M53S\"\n      }\n    },\n    {\n      \"id\": \"WCKln2aQrto\",\n      \"snippet\":
-        {\n        \"title\": \"Witchskull - Pan's Daughter +lyrics\",\n        \"channelTitle\":
-        \"666MrDoom\"\n      },\n      \"contentDetails\": {\n        \"duration\":
-        \"PT5M15S\"\n      }\n    },\n    {\n      \"id\": \"nW6_lNsR_Yk\",\n      \"snippet\":
-        {\n        \"title\": \"Runaway Ball\",\n        \"channelTitle\": \"Big Daddy
-        Productions\"\n      },\n      \"contentDetails\": {\n        \"duration\":
-        \"PT4M3S\"\n      }\n    },\n    {\n      \"id\": \"Q-a_iVgF9SU\",\n      \"snippet\":
-        {\n        \"title\": \"BRANT BJORK - Luvin' (Official Video) | Napalm Records\",\n
-        \       \"channelTitle\": \"Napalm Records\"\n      },\n      \"contentDetails\":
-        {\n        \"duration\": \"PT4M33S\"\n      }\n    },\n    {\n      \"id\":
-        \"gWdCX9FXx5Y\",\n      \"snippet\": {\n        \"title\": \"Helmet - Biscuits
-        For Smut\",\n        \"channelTitle\": \"HelmetVEVO\"\n      },\n      \"contentDetails\":
-        {\n        \"duration\": \"PT2M55S\"\n      }\n    },\n    {\n      \"id\":
-        \"43JXtDga2FY\",\n      \"snippet\": {\n        \"title\": \"Black Rheno -
-        No Time For Numb Nuts\",\n        \"channelTitle\": \"Black Rheno\"\n      },\n
-        \     \"contentDetails\": {\n        \"duration\": \"PT4M41S\"\n      }\n
-        \   },\n    {\n      \"id\": \"lrIjMzBr-ck\",\n      \"snippet\": {\n        \"title\":
-        \"The Rolling Stones - Hate To See You Go\",\n        \"channelTitle\": \"TheRollingStonesVEVO\"\n
-        \     },\n      \"contentDetails\": {\n        \"duration\": \"PT3M24S\"\n
-        \     }\n    },\n    {\n      \"id\": \"0jRBxXbQKQ4\",\n      \"snippet\":
-        {\n        \"title\": \"Lock the Gate\",\n        \"channelTitle\": \"Black
-        Rheno - Topic\"\n      },\n      \"contentDetails\": {\n        \"duration\":
-        \"PT3M15S\"\n      }\n    },\n    {\n      \"id\": \"dxxqjj9q0es\",\n      \"snippet\":
-        {\n        \"title\": \"The Dacios \\\"Rabbit\\\" - Live on Amateur Hour\",\n
-        \       \"channelTitle\": \"Amateur Hour\"\n      },\n      \"contentDetails\":
-        {\n        \"duration\": \"PT9M49S\"\n      }\n    },\n    {\n      \"id\":
-        \"tHsIAE7AybM\",\n      \"snippet\": {\n        \"title\": \"DON FERNANDO
-        - Haunted by Humans [OFFICIAL FILM CLIP]\",\n        \"channelTitle\": \"DonFernandoMusic\"\n
-        \     },\n      \"contentDetails\": {\n        \"duration\": \"PT3M50S\"\n
-        \     }\n    },\n    {\n      \"id\": \"2OGkb4fdKWk\",\n      \"snippet\":
-        {\n        \"title\": \"Freak out Forever\",\n        \"channelTitle\": \"The
-        Meanies - Topic\"\n      },\n      \"contentDetails\": {\n        \"duration\":
-        \"PT1M45S\"\n      }\n    },\n    {\n      \"id\": \"sflq6IEiFt4\",\n      \"snippet\":
-        {\n        \"title\": \"Blue Bloods\",\n        \"channelTitle\": \"The Nation
-        Blue - Topic\"\n      },\n      \"contentDetails\": {\n        \"duration\":
-        \"PT2M33S\"\n      }\n    },\n    {\n      \"id\": \"Ie1dmQnMKC8\",\n      \"snippet\":
-        {\n        \"title\": \"L7-Everglade\",\n        \"channelTitle\": \"triumphmark\"\n
-        \     },\n      \"contentDetails\": {\n        \"duration\": \"PT3M29S\"\n
-        \     }\n    },\n    {\n      \"id\": \"n0mw3rcaTQc\",\n      \"snippet\":
-        {\n        \"title\": \"Field \\\"The Hate\\\"\",\n        \"channelTitle\":
-        \"MrStonebeliever2\"\n      },\n      \"contentDetails\": {\n        \"duration\":
-        \"PT6M20S\"\n      }\n    },\n    {\n      \"id\": \"X7m9QyXcyHQ\",\n      \"snippet\":
-        {\n        \"title\": \"You Should Leave Him\",\n        \"channelTitle\":
-        \"Tyrannamen - Topic\"\n      },\n      \"contentDetails\": {\n        \"duration\":
-        \"PT3M1S\"\n      }\n    },\n    {\n      \"id\": \"bcnIhzaDTd0\",\n      \"snippet\":
-        {\n        \"title\": \"Courtney Barnett - Avant Gardener\",\n        \"channelTitle\":
-        \"courtneybarnett\"\n      },\n      \"contentDetails\": {\n        \"duration\":
-        \"PT5M20S\"\n      }\n    },\n    {\n      \"id\": \"xX7YCZa_JrE\",\n      \"snippet\":
-        {\n        \"title\": \"Dr. Colossus \u2013 Mono  (Live)\",\n        \"channelTitle\":
-        \"Dr. Colossus\"\n      },\n      \"contentDetails\": {\n        \"duration\":
-        \"PT5M24S\"\n      }\n    },\n    {\n      \"id\": \"Q_976M77YDU\",\n      \"snippet\":
-        {\n        \"title\": \"Melvins \\\"The Decay of Lying\\\" \u2022 Amphetamine
-        Reptile Records\",\n        \"channelTitle\": \"HAZE XXL\"\n      },\n      \"contentDetails\":
-        {\n        \"duration\": \"PT6M36S\"\n      }\n    },\n    {\n      \"id\":
-        \"JGftIcp2SC0\",\n      \"snippet\": {\n        \"title\": \"AC/DC - Touch
-        Too Much (Official Video)\",\n        \"channelTitle\": \"acdcVEVO\"\n      },\n
-        \     \"contentDetails\": {\n        \"duration\": \"PT4M27S\"\n      }\n
-        \   }\n  ]\n}\n"
-    headers:
-      Accept-Ranges:
-      - none
-      Alt-Svc:
-      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000,h3-T051=":443"; ma=2592000,h3-Q050=":443";
-        ma=2592000,h3-Q046=":443"; ma=2592000,h3-Q043=":443"; ma=2592000,quic=":443";
-        ma=2592000; v="46,43"
-      Cache-Control:
-      - private
-      Content-Type:
-      - application/json; charset=UTF-8
-      Date:
-      - Thu, 23 Sep 2021 06:03:25 GMT
-      Server:
-      - scaffolding on HTTPServer2
-      Transfer-Encoding:
-      - chunked
-      Vary:
-      - X-Origin
-      - Referer
-      - Origin,Accept-Encoding
-      X-Content-Type-Options:
-      - nosniff
-      X-Frame-Options:
-      - SAMEORIGIN
-      X-XSS-Protection:
-      - '0'
-    status:
-      code: 200
-      message: OK
-- request:
-    body: null
-    headers:
-      Accept-Language:
-      - en;q=0.8
-      Cookie:
-      - PREF=hl=en;
-      user-agent:
-      - Mopidy-YouTube/3.4 Mopidy/3.2.0 CPython/3.8.10
-    method: GET
-    uri: https://www.googleapis.com/youtube/v3/playlistItems?fields=nextPageToken%2Citems%28snippet%28title%2C+resourceId%28videoId%29%2C+videoOwnerChannelTitle%29%29&key=fake_key&maxResults=20&part=id%2Csnippet&playlistId=PLJD13y84Bd032qVrq7CHBLEfKZZtp-u1j
-  response:
-    body:
-      string: "{\n  \"nextPageToken\": \"EAAaBlBUOkNCUQ\",\n  \"items\": [\n    {\n
-        \     \"snippet\": {\n        \"title\": \"Steve Kilbey & Martin Kennedy -
-        Can't Get Free\",\n        \"resourceId\": {\n          \"videoId\": \"MzFLCi9nOHQ\"\n
-        \       },\n        \"videoOwnerChannelTitle\": \"KilbeyKennedy\"\n      }\n
-        \   },\n    {\n      \"snippet\": {\n        \"title\": \"Icehouse - We Can
-        Get Together\",\n        \"resourceId\": {\n          \"videoId\": \"H2Hh2JVjshg\"\n
-        \       },\n        \"videoOwnerChannelTitle\": \"negfbjm\"\n      }\n    },\n
-        \   {\n      \"snippet\": {\n        \"title\": \"Pinch - Marc Ribot's Ceramic
-        Dog\",\n        \"resourceId\": {\n          \"videoId\": \"13MG9tNMoT4\"\n
-        \       },\n        \"videoOwnerChannelTitle\": \"Aquerontie\"\n      }\n
-        \   },\n    {\n      \"snippet\": {\n        \"title\": \"Sunflower Bean -
-        I Was Home (Live on KEXP)\",\n        \"resourceId\": {\n          \"videoId\":
-        \"6zYRBCQqY6s\"\n        },\n        \"videoOwnerChannelTitle\": \"KEXP\"\n
-        \     }\n    },\n    {\n      \"snippet\": {\n        \"title\": \"The Death
-        Set - Chew it like a Gun Gum\",\n        \"resourceId\": {\n          \"videoId\":
-        \"fP5kHRdN-KE\"\n        },\n        \"videoOwnerChannelTitle\": \"death set\"\n
-        \     }\n    },\n    {\n      \"snippet\": {\n        \"title\": \"Courtney
-        Barnett - \\\"Bein Around\\\" (An Acoustic Session)\",\n        \"resourceId\":
-        {\n          \"videoId\": \"IZTtlLNW5mw\"\n        },\n        \"videoOwnerChannelTitle\":
-        \"courtneybarnett\"\n      }\n    },\n    {\n      \"snippet\": {\n        \"title\":
-        \"Soundhog ~ Whole Lotta Helter Skelter\",\n        \"resourceId\": {\n          \"videoId\":
-        \"tbQ8GTDWEz8\"\n        },\n        \"videoOwnerChannelTitle\": \"Felix Offenbach\"\n
-        \     }\n    },\n    {\n      \"snippet\": {\n        \"title\": \"Perfume
-        Genius - 'Grid' (Official Video)\",\n        \"resourceId\": {\n          \"videoId\":
-        \"FfUzs4NDa64\"\n        },\n        \"videoOwnerChannelTitle\": \"Perfume
-        Genius\"\n      }\n    },\n    {\n      \"snippet\": {\n        \"title\":
-        \"Count Ossie And The Mystic Revelation Of Rastafari - Four Hundred Years
-        (Grounation [1973])\",\n        \"resourceId\": {\n          \"videoId\":
-        \"iuj8zEEUkS0\"\n        },\n        \"videoOwnerChannelTitle\": \"seostattler\"\n
-        \     }\n    },\n    {\n      \"snippet\": {\n        \"title\": \"Private
-        video\",\n        \"resourceId\": {\n          \"videoId\": \"I19Qh727-Tc\"\n
-        \       }\n      }\n    },\n    {\n      \"snippet\": {\n        \"title\":
-        \"Massive Attack Dead Editors 2016\",\n        \"resourceId\": {\n          \"videoId\":
-        \"zZqA_NqWe6k\"\n        },\n        \"videoOwnerChannelTitle\": \"Lem K\"\n
-        \     }\n    },\n    {\n      \"snippet\": {\n        \"title\": \"Frederic
-        Castel - Open Up (1985) vidEo\",\n        \"resourceId\": {\n          \"videoId\":
-        \"hm3ayVkGv1M\"\n        },\n        \"videoOwnerChannelTitle\": \"zOoTiMe\"\n
-        \     }\n    },\n    {\n      \"snippet\": {\n        \"title\": \"Baby Doll
-        House - Whats up - 1991\",\n        \"resourceId\": {\n          \"videoId\":
-        \"Nr45MugvRNM\"\n        },\n        \"videoOwnerChannelTitle\": \"DUCKKARMA\"\n
-        \     }\n    },\n    {\n      \"snippet\": {\n        \"title\": \"Menace
-        Beach - Blue Eye (official audio)\",\n        \"resourceId\": {\n          \"videoId\":
-        \"jjBd5x10L_0\"\n        },\n        \"videoOwnerChannelTitle\": \"Memphis
-        Industries\"\n      }\n    },\n    {\n      \"snippet\": {\n        \"title\":
-        \"Barrence Whitfield & The Savages - Corner Man\",\n        \"resourceId\":
-        {\n          \"videoId\": \"bx_iwtAQBz4\"\n        },\n        \"videoOwnerChannelTitle\":
-        \"Arthur C. Mendoza\"\n      }\n    },\n    {\n      \"snippet\": {\n        \"title\":
-        \"Ducktails - International Date Line\",\n        \"resourceId\": {\n          \"videoId\":
-        \"MqJ4ZH7pEqs\"\n        },\n        \"videoOwnerChannelTitle\": \"Jazzygit\"\n
-        \     }\n    },\n    {\n      \"snippet\": {\n        \"title\": \"10 Deep
-        Street Soul - Deux Fr\xE8res [Freestyle Records]\",\n        \"resourceId\":
-        {\n          \"videoId\": \"wZPgHRBdGOo\"\n        },\n        \"videoOwnerChannelTitle\":
-        \"Freestyle Records\"\n      }\n    },\n    {\n      \"snippet\": {\n        \"title\":
-        \"Dan Brodie - Tear Us Down (Official Video)\",\n        \"resourceId\": {\n
-        \         \"videoId\": \"kIvWnIiIWPs\"\n        },\n        \"videoOwnerChannelTitle\":
-        \"Dan Brodie\"\n      }\n    },\n    {\n      \"snippet\": {\n        \"title\":
-        \"Private video\",\n        \"resourceId\": {\n          \"videoId\": \"8t8WvyxTAEM\"\n
-        \       }\n      }\n    },\n    {\n      \"snippet\": {\n        \"title\":
-        \"Ty Segall // Squealer\",\n        \"resourceId\": {\n          \"videoId\":
-        \"DW3PgQKSI8c\"\n        },\n        \"videoOwnerChannelTitle\": \"decrepitCrescendo\"\n
-        \     }\n    }\n  ]\n}\n"
-    headers:
-      Accept-Ranges:
-      - none
-      Alt-Svc:
-      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000,h3-T051=":443"; ma=2592000,h3-Q050=":443";
-        ma=2592000,h3-Q046=":443"; ma=2592000,h3-Q043=":443"; ma=2592000,quic=":443";
-        ma=2592000; v="46,43"
-      Cache-Control:
-      - private
-      Content-Type:
-      - application/json; charset=UTF-8
-      Date:
-      - Thu, 23 Sep 2021 06:03:26 GMT
-      Server:
-      - scaffolding on HTTPServer2
-      Transfer-Encoding:
-      - chunked
-      Vary:
-      - X-Origin
-      - Referer
-      - Origin,Accept-Encoding
-      X-Content-Type-Options:
-      - nosniff
-      X-Frame-Options:
-      - SAMEORIGIN
-      X-XSS-Protection:
-      - '0'
-    status:
-      code: 200
-      message: OK
-- request:
-    body: null
-    headers:
-      Accept-Language:
-      - en;q=0.8
-      Cookie:
-      - PREF=hl=en;
-      user-agent:
-      - Mopidy-YouTube/3.4 Mopidy/3.2.0 CPython/3.8.10
-    method: GET
-    uri: https://www.googleapis.com/youtube/v3/playlistItems?fields=nextPageToken%2Citems%28snippet%28title%2C+resourceId%28videoId%29%2C+videoOwnerChannelTitle%29%29&key=fake_key&maxResults=2&pageToken=EAAaBlBUOkNCUQ&part=id%2Csnippet&playlistId=PLJD13y84Bd032qVrq7CHBLEfKZZtp-u1j
-  response:
-    body:
-      string: "{\n  \"nextPageToken\": \"EAAaBlBUOkNCWQ\",\n  \"items\": [\n    {\n
-        \     \"snippet\": {\n        \"title\": \"Jamie xx - Gosh\",\n        \"resourceId\":
-        {\n          \"videoId\": \"hTGJfRPLe08\"\n        },\n        \"videoOwnerChannelTitle\":
-        \"JamiexxVEVO\"\n      }\n    },\n    {\n      \"snippet\": {\n        \"title\":
-        \"The Bootleggers Feat  Mark Lanegan- White Light/ White Heat\",\n        \"resourceId\":
-        {\n          \"videoId\": \"89C_PQ_kuUk\"\n        },\n        \"videoOwnerChannelTitle\":
-        \"Alex Adamica\"\n      }\n    }\n  ]\n}\n"
-    headers:
-      Accept-Ranges:
-      - none
-      Alt-Svc:
-      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000,h3-T051=":443"; ma=2592000,h3-Q050=":443";
-        ma=2592000,h3-Q046=":443"; ma=2592000,h3-Q043=":443"; ma=2592000,quic=":443";
-        ma=2592000; v="46,43"
-      Cache-Control:
-      - private
-      Content-Type:
-      - application/json; charset=UTF-8
-      Date:
-      - Thu, 23 Sep 2021 06:03:26 GMT
-      Server:
-      - scaffolding on HTTPServer2
-      Transfer-Encoding:
-      - chunked
-      Vary:
-      - X-Origin
-      - Referer
-      - Origin,Accept-Encoding
-      X-Content-Type-Options:
-      - nosniff
-      X-Frame-Options:
-      - SAMEORIGIN
-      X-XSS-Protection:
-      - '0'
-    status:
-      code: 200
-      message: OK
-- request:
-    body: null
-    headers:
-      Accept-Language:
-      - en;q=0.8
-      Cookie:
-      - PREF=hl=en;
-      user-agent:
-      - Mopidy-YouTube/3.4 Mopidy/3.2.0 CPython/3.8.10
-    method: GET
-    uri: https://www.googleapis.com/youtube/v3/videos?fields=items%28id%2Csnippet%28title%2CchannelTitle%29%2CcontentDetails%28duration%29%29&id=MzFLCi9nOHQ%2CH2Hh2JVjshg%2C13MG9tNMoT4%2C6zYRBCQqY6s%2CfP5kHRdN-KE%2CIZTtlLNW5mw%2CtbQ8GTDWEz8%2CFfUzs4NDa64%2Ciuj8zEEUkS0%2CzZqA_NqWe6k%2Chm3ayVkGv1M%2CNr45MugvRNM%2CjjBd5x10L_0%2Cbx_iwtAQBz4%2CMqJ4ZH7pEqs%2CwZPgHRBdGOo%2CkIvWnIiIWPs%2CDW3PgQKSI8c%2ChTGJfRPLe08%2C89C_PQ_kuUk&key=fake_key&part=id%2Csnippet%2CcontentDetails
-  response:
-    body:
-      string: "{\n  \"items\": [\n    {\n      \"id\": \"MzFLCi9nOHQ\",\n      \"snippet\":
-        {\n        \"title\": \"Steve Kilbey & Martin Kennedy - Can't Get Free\",\n
-        \       \"channelTitle\": \"KilbeyKennedy\"\n      },\n      \"contentDetails\":
-        {\n        \"duration\": \"PT4M27S\"\n      }\n    },\n    {\n      \"id\":
-        \"H2Hh2JVjshg\",\n      \"snippet\": {\n        \"title\": \"Icehouse - We
-        Can Get Together\",\n        \"channelTitle\": \"negfbjm\"\n      },\n      \"contentDetails\":
-        {\n        \"duration\": \"PT3M41S\"\n      }\n    },\n    {\n      \"id\":
-        \"13MG9tNMoT4\",\n      \"snippet\": {\n        \"title\": \"Pinch - Marc
-        Ribot's Ceramic Dog\",\n        \"channelTitle\": \"Aquerontie\"\n      },\n
-        \     \"contentDetails\": {\n        \"duration\": \"PT4M42S\"\n      }\n
-        \   },\n    {\n      \"id\": \"6zYRBCQqY6s\",\n      \"snippet\": {\n        \"title\":
-        \"Sunflower Bean - I Was Home (Live on KEXP)\",\n        \"channelTitle\":
-        \"KEXP\"\n      },\n      \"contentDetails\": {\n        \"duration\": \"PT4M37S\"\n
-        \     }\n    },\n    {\n      \"id\": \"fP5kHRdN-KE\",\n      \"snippet\":
-        {\n        \"title\": \"The Death Set - Chew it like a Gun Gum\",\n        \"channelTitle\":
-        \"death set\"\n      },\n      \"contentDetails\": {\n        \"duration\":
-        \"PT2M31S\"\n      }\n    },\n    {\n      \"id\": \"IZTtlLNW5mw\",\n      \"snippet\":
-        {\n        \"title\": \"Courtney Barnett - \\\"Bein Around\\\" (An Acoustic
-        Session)\",\n        \"channelTitle\": \"courtneybarnett\"\n      },\n      \"contentDetails\":
-        {\n        \"duration\": \"PT2M38S\"\n      }\n    },\n    {\n      \"id\":
-        \"tbQ8GTDWEz8\",\n      \"snippet\": {\n        \"title\": \"Soundhog ~ Whole
-        Lotta Helter Skelter\",\n        \"channelTitle\": \"Felix Offenbach\"\n      },\n
-        \     \"contentDetails\": {\n        \"duration\": \"PT6M2S\"\n      }\n    },\n
-        \   {\n      \"id\": \"FfUzs4NDa64\",\n      \"snippet\": {\n        \"title\":
-        \"Perfume Genius - 'Grid' (Official Video)\",\n        \"channelTitle\": \"Perfume
-        Genius\"\n      },\n      \"contentDetails\": {\n        \"duration\": \"PT2M41S\"\n
-        \     }\n    },\n    {\n      \"id\": \"iuj8zEEUkS0\",\n      \"snippet\":
-        {\n        \"title\": \"Count Ossie And The Mystic Revelation Of Rastafari
-        - Four Hundred Years (Grounation [1973])\",\n        \"channelTitle\": \"seostattler\"\n
-        \     },\n      \"contentDetails\": {\n        \"duration\": \"PT3M59S\"\n
-        \     }\n    },\n    {\n      \"id\": \"zZqA_NqWe6k\",\n      \"snippet\":
-        {\n        \"title\": \"Massive Attack Dead Editors 2016\",\n        \"channelTitle\":
-        \"Lem K\"\n      },\n      \"contentDetails\": {\n        \"duration\": \"PT4M47S\"\n
-        \     }\n    },\n    {\n      \"id\": \"hm3ayVkGv1M\",\n      \"snippet\":
-        {\n        \"title\": \"Frederic Castel - Open Up (1985) vidEo\",\n        \"channelTitle\":
-        \"zOoTiMe\"\n      },\n      \"contentDetails\": {\n        \"duration\":
-        \"PT3M36S\"\n      }\n    },\n    {\n      \"id\": \"Nr45MugvRNM\",\n      \"snippet\":
-        {\n        \"title\": \"Baby Doll House - Whats up - 1991\",\n        \"channelTitle\":
-        \"DUCKKARMA\"\n      },\n      \"contentDetails\": {\n        \"duration\":
-        \"PT5M18S\"\n      }\n    },\n    {\n      \"id\": \"jjBd5x10L_0\",\n      \"snippet\":
-        {\n        \"title\": \"Menace Beach - Blue Eye (official audio)\",\n        \"channelTitle\":
-        \"Memphis Industries\"\n      },\n      \"contentDetails\": {\n        \"duration\":
-        \"PT3M53S\"\n      }\n    },\n    {\n      \"id\": \"bx_iwtAQBz4\",\n      \"snippet\":
-        {\n        \"title\": \"Barrence Whitfield & The Savages - Corner Man\",\n
-        \       \"channelTitle\": \"Arthur C. Mendoza\"\n      },\n      \"contentDetails\":
-        {\n        \"duration\": \"PT2M34S\"\n      }\n    },\n    {\n      \"id\":
-        \"MqJ4ZH7pEqs\",\n      \"snippet\": {\n        \"title\": \"Ducktails - International
-        Date Line\",\n        \"channelTitle\": \"Jazzygit\"\n      },\n      \"contentDetails\":
-        {\n        \"duration\": \"PT1M59S\"\n      }\n    },\n    {\n      \"id\":
-        \"wZPgHRBdGOo\",\n      \"snippet\": {\n        \"title\": \"10 Deep Street
-        Soul - Deux Fr\xE8res [Freestyle Records]\",\n        \"channelTitle\": \"Freestyle
-        Records\"\n      },\n      \"contentDetails\": {\n        \"duration\": \"PT2M48S\"\n
-        \     }\n    },\n    {\n      \"id\": \"kIvWnIiIWPs\",\n      \"snippet\":
-        {\n        \"title\": \"Dan Brodie - Tear Us Down (Official Video)\",\n        \"channelTitle\":
-        \"Dan Brodie\"\n      },\n      \"contentDetails\": {\n        \"duration\":
-        \"PT4M18S\"\n      }\n    },\n    {\n      \"id\": \"DW3PgQKSI8c\",\n      \"snippet\":
-        {\n        \"title\": \"Ty Segall // Squealer\",\n        \"channelTitle\":
-        \"decrepitCrescendo\"\n      },\n      \"contentDetails\": {\n        \"duration\":
-        \"PT3M55S\"\n      }\n    },\n    {\n      \"id\": \"hTGJfRPLe08\",\n      \"snippet\":
-        {\n        \"title\": \"Jamie xx - Gosh\",\n        \"channelTitle\": \"JamiexxVEVO\"\n
-        \     },\n      \"contentDetails\": {\n        \"duration\": \"PT5M23S\"\n
-        \     }\n    },\n    {\n      \"id\": \"89C_PQ_kuUk\",\n      \"snippet\":
-        {\n        \"title\": \"The Bootleggers Feat  Mark Lanegan- White Light/ White
-        Heat\",\n        \"channelTitle\": \"Alex Adamica\"\n      },\n      \"contentDetails\":
-        {\n        \"duration\": \"PT4M26S\"\n      }\n    }\n  ]\n}\n"
-    headers:
-      Accept-Ranges:
-      - none
-      Alt-Svc:
-      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000,h3-T051=":443"; ma=2592000,h3-Q050=":443";
-        ma=2592000,h3-Q046=":443"; ma=2592000,h3-Q043=":443"; ma=2592000,quic=":443";
-        ma=2592000; v="46,43"
-      Cache-Control:
-      - private
-      Content-Type:
-      - application/json; charset=UTF-8
-      Date:
-      - Thu, 23 Sep 2021 06:03:27 GMT
-      Server:
-      - scaffolding on HTTPServer2
-      Transfer-Encoding:
-      - chunked
-      Vary:
-      - X-Origin
-      - Referer
-      - Origin,Accept-Encoding
-      X-Content-Type-Options:
-      - nosniff
-      X-Frame-Options:
-      - SAMEORIGIN
-      X-XSS-Protection:
-      - '0'
-    status:
-      code: 200
-      message: OK
-- request:
-    body: null
-    headers:
-      Accept-Language:
-      - en;q=0.8
-      Cookie:
-      - PREF=hl=en;
-      user-agent:
-      - Mopidy-YouTube/3.4 Mopidy/3.2.0 CPython/3.8.10
-    method: GET
-    uri: https://www.googleapis.com/youtube/v3/playlists?fields=items%28id%2Csnippet%28title%2Cthumbnails%2CchannelTitle%29%2CcontentDetails%28itemCount%29%29&id=PLJD13y84Bd029ENixIHEpDqeWcjiogsFi%2CPLJD13y84Bd032qVrq7CHBLEfKZZtp-u1j&key=fake_key&part=id%2Csnippet%2CcontentDetails
-  response:
-    body:
-      string: "{\n  \"items\": [\n    {\n      \"id\": \"PLJD13y84Bd029ENixIHEpDqeWcjiogsFi\",\n
-        \     \"snippet\": {\n        \"title\": \"ytmusic pl\",\n        \"thumbnails\":
-        {\n          \"default\": {\n            \"url\": \"https://i.ytimg.com/vi/KlyXNRrsk4A/default.jpg\",\n
-        \           \"width\": 120,\n            \"height\": 90\n          },\n          \"medium\":
-        {\n            \"url\": \"https://i.ytimg.com/vi/KlyXNRrsk4A/mqdefault.jpg\",\n
-        \           \"width\": 320,\n            \"height\": 180\n          },\n          \"high\":
-        {\n            \"url\": \"https://i.ytimg.com/vi/KlyXNRrsk4A/hqdefault.jpg\",\n
-        \           \"width\": 480,\n            \"height\": 360\n          },\n          \"standard\":
-        {\n            \"url\": \"https://i.ytimg.com/vi/KlyXNRrsk4A/sddefault.jpg\",\n
-        \           \"width\": 640,\n            \"height\": 480\n          },\n          \"maxres\":
-        {\n            \"url\": \"https://i.ytimg.com/vi/KlyXNRrsk4A/maxresdefault.jpg\",\n
-        \           \"width\": 1280,\n            \"height\": 720\n          }\n        },\n
-        \       \"channelTitle\": \"Nik\"\n      },\n      \"contentDetails\": {\n
-        \       \"itemCount\": 1\n      }\n    },\n    {\n      \"id\": \"PLJD13y84Bd032qVrq7CHBLEfKZZtp-u1j\",\n
-        \     \"snippet\": {\n        \"title\": \"skullcave\",\n        \"thumbnails\":
-        {\n          \"default\": {\n            \"url\": \"https://i.ytimg.com/vi/MzFLCi9nOHQ/default.jpg\",\n
-        \           \"width\": 120,\n            \"height\": 90\n          },\n          \"medium\":
-        {\n            \"url\": \"https://i.ytimg.com/vi/MzFLCi9nOHQ/mqdefault.jpg\",\n
-        \           \"width\": 320,\n            \"height\": 180\n          },\n          \"high\":
-        {\n            \"url\": \"https://i.ytimg.com/vi/MzFLCi9nOHQ/hqdefault.jpg\",\n
-        \           \"width\": 480,\n            \"height\": 360\n          },\n          \"standard\":
-        {\n            \"url\": \"https://i.ytimg.com/vi/MzFLCi9nOHQ/sddefault.jpg\",\n
-        \           \"width\": 640,\n            \"height\": 480\n          }\n        },\n
-        \       \"channelTitle\": \"Nik\"\n      },\n      \"contentDetails\": {\n
-        \       \"itemCount\": 1928\n      }\n    }\n  ]\n}\n"
-    headers:
-      Accept-Ranges:
-      - none
-      Alt-Svc:
-      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000,h3-T051=":443"; ma=2592000,h3-Q050=":443";
-        ma=2592000,h3-Q046=":443"; ma=2592000,h3-Q043=":443"; ma=2592000,quic=":443";
-        ma=2592000; v="46,43"
-      Cache-Control:
-      - private
-      Content-Type:
-      - application/json; charset=UTF-8
-      Date:
-      - Thu, 23 Sep 2021 12:55:50 GMT
+      - Tue, 14 Jun 2022 09:58:06 GMT
       Server:
       - scaffolding on HTTPServer2
       Transfer-Encoding:
@@ -819,9 +135,9 @@ interactions:
       Cookie:
       - PREF=hl=en; CONSENT=YES+20210329;
       user-agent:
-      - Mopidy-YouTube/3.5 Mopidy/3.2.0 CPython/3.8.10
+      - Mopidy-YouTube/3.5 Mopidy/3.3.0 CPython/3.8.10
     method: GET
-    uri: https://www.googleapis.com/youtube/v3/playlists?fields=items%28id%2Csnippet%28title%2Cthumbnails%2CchannelTitle%29%2CcontentDetails%28itemCount%29%29&id=PLJD13y84Bd029ENixIHEpDqeWcjiogsFi&key=fake_key&part=id%2Csnippet%2CcontentDetails
+    uri: https://www.googleapis.com/youtube/v3/playlists?fields=items%28id%2Csnippet%28title%2Cthumbnails%2CchannelTitle%29%2CcontentDetails%28itemCount%29%29&id=PLJD13y84Bd029ENixIHEpDqeWcjiogsFi%2CPLJD13y84Bd01Q8b8ONfwNMLD3pVBcqwMq&key=fake_key&part=id%2Csnippet%2CcontentDetails
   response:
     body:
       string: "{\n  \"items\": [\n    {\n      \"id\": \"PLJD13y84Bd029ENixIHEpDqeWcjiogsFi\",\n
@@ -837,7 +153,20 @@ interactions:
         {\n            \"url\": \"https://i.ytimg.com/vi/KlyXNRrsk4A/maxresdefault.jpg\",\n
         \           \"width\": 1280,\n            \"height\": 720\n          }\n        },\n
         \       \"channelTitle\": \"Nik\"\n      },\n      \"contentDetails\": {\n
-        \       \"itemCount\": 1\n      }\n    }\n  ]\n}\n"
+        \       \"itemCount\": 1\n      }\n    },\n    {\n      \"id\": \"PLJD13y84Bd01Q8b8ONfwNMLD3pVBcqwMq\",\n
+        \     \"snippet\": {\n        \"title\": \"respect the rock\",\n        \"thumbnails\":
+        {\n          \"default\": {\n            \"url\": \"https://i.ytimg.com/vi/yx4rmRHdYas/default.jpg\",\n
+        \           \"width\": 120,\n            \"height\": 90\n          },\n          \"medium\":
+        {\n            \"url\": \"https://i.ytimg.com/vi/yx4rmRHdYas/mqdefault.jpg\",\n
+        \           \"width\": 320,\n            \"height\": 180\n          },\n          \"high\":
+        {\n            \"url\": \"https://i.ytimg.com/vi/yx4rmRHdYas/hqdefault.jpg\",\n
+        \           \"width\": 480,\n            \"height\": 360\n          },\n          \"standard\":
+        {\n            \"url\": \"https://i.ytimg.com/vi/yx4rmRHdYas/sddefault.jpg\",\n
+        \           \"width\": 640,\n            \"height\": 480\n          },\n          \"maxres\":
+        {\n            \"url\": \"https://i.ytimg.com/vi/yx4rmRHdYas/maxresdefault.jpg\",\n
+        \           \"width\": 1280,\n            \"height\": 720\n          }\n        },\n
+        \       \"channelTitle\": \"Nik\"\n      },\n      \"contentDetails\": {\n
+        \       \"itemCount\": 2212\n      }\n    }\n  ]\n}\n"
     headers:
       Accept-Ranges:
       - none
@@ -849,7 +178,7 @@ interactions:
       Content-Type:
       - application/json; charset=UTF-8
       Date:
-      - Sun, 09 Jan 2022 06:47:28 GMT
+      - Tue, 14 Jun 2022 10:13:16 GMT
       Server:
       - scaffolding on HTTPServer2
       Transfer-Encoding:

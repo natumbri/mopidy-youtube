@@ -5,18 +5,21 @@ import json
 import os
 
 import pykka
+from cachetools import TTLCache, cached
 from mopidy import backend, httpclient
 from mopidy.core import CoreListener
 from mopidy.models import Image, Ref, SearchResult, Track, model_json_decoder
 
 from mopidy_youtube import Extension, logger, youtube
-from mopidy_youtube.apis import youtube_api, youtube_japi, youtube_music
+from mopidy_youtube.apis import youtube_japi
 from mopidy_youtube.converters import convert_playlist_to_album, convert_video_to_track
 from mopidy_youtube.data import (
     extract_channel_id,
     extract_playlist_id,
+    extract_preload_tracks,
     extract_video_id,
 )
+from mopidy_youtube.youtube import Video
 
 """
 A typical interaction:
@@ -64,20 +67,29 @@ class YouTubeBackend(pykka.ThreadingActor, backend.Backend):
         self.config = config
         self.library = YouTubeLibraryProvider(backend=self)
         self.playback = YouTubePlaybackProvider(audio=audio, backend=self)
-        youtube_api.API.youtube_api_key = config["youtube"]["youtube_api_key"] or None
+        youtube.api_enabled = config["youtube"]["api_enabled"]
+        if youtube.api_enabled:
+            global youtube_api
+            from mopidy_youtube.apis import youtube_api
+
+            try:
+                youtube_api.API.youtube_api_key = config["youtube"]["youtube_api_key"]
+            except Exception as e:
+                logger.error(f"No YouTube API key provided, disabling API: {e}")
+                youtube.api_enabled = False
         youtube.channel = config["youtube"]["channel_id"]
         youtube.Video.search_results = config["youtube"]["search_results"]
         youtube.Video.http_port = config["http"]["port"]
         youtube.Playlist.playlist_max_videos = config["youtube"]["playlist_max_videos"]
-        youtube.api_enabled = config["youtube"]["api_enabled"]
         youtube.musicapi_enabled = config["youtube"]["musicapi_enabled"]
-        youtube.musicapi_cookie = config["youtube"].get("musicapi_cookie", None)
-        youtube.musicapi_cookiefile = config["youtube"].get("musicapi_cookiefile", None)
-
-        if youtube.musicapi_cookie and youtube.musicapi_cookiefile:
-            raise ValueError("Only one of youtube/musicapi_cookie or youtube/musicapi_cookiefile can be used at one.")
-
-        youtube_music.own_channel_id = youtube.channel
+        if youtube.musicapi_enabled:
+            global youtube_music
+            from mopidy_youtube.apis import youtube_music
+            youtube.musicapi_cookie = config["youtube"].get("musicapi_cookie", None)
+            youtube.musicapi_cookiefile = config["youtube"].get("musicapi_cookiefile", None)
+            if youtube.musicapi_cookie and youtube.musicapi_cookiefile:
+                raise ValueError("Only one of youtube/musicapi_cookie or youtube/musicapi_cookiefile can be used at one.")
+            youtube_music.own_channel_id = youtube.channel
         youtube.youtube_dl_package = config["youtube"]["youtube_dl_package"]
         self.uri_schemes = ["youtube", "yt"]
         self.user_agent = "{}/{}".format(Extension.dist_name, Extension.version)
@@ -99,16 +111,12 @@ class YouTubeBackend(pykka.ThreadingActor, backend.Backend):
             logger.info("file caching not enabled")
 
         if youtube.api_enabled is True:
-            if youtube_api.API.youtube_api_key is None:
-                logger.error("No YouTube API key provided, disabling API")
+            youtube.Entry.api = youtube_api.API(proxy, headers)
+            if youtube.Entry.search(q="test") is None:
+                logger.error("Failed to verify YouTube API key, disabling API")
                 youtube.api_enabled = False
             else:
-                youtube.Entry.api = youtube_api.API(proxy, headers)
-                if youtube.Entry.search(q="test") is None:
-                    logger.error("Failed to verify YouTube API key, disabling API")
-                    youtube.api_enabled = False
-                else:
-                    logger.info("YouTube API key verified")
+                logger.info("YouTube API key verified")
 
         if youtube.api_enabled is False:
             logger.info("using jAPI")
@@ -145,17 +153,43 @@ class YouTubeBackend(pykka.ThreadingActor, backend.Backend):
 
 class YouTubeLibraryProvider(backend.LibraryProvider):
 
-    root_directory = Ref.directory(
-        uri="youtube:channel:root", name="My Youtube playlists"
-    )
+    root_directory = Ref.directory(uri="youtube:browse", name="YouTube")
 
     """
     Called when root_directory is set to the URI of the youtube channel ID in the mopidy.conf
     When enabled makes possible to browse public playlists of the channel as well as browse
     separate tracks in playlists.
     """
+    cache_max_len = 4000
+    cache_ttl = 21600
 
+    youtube_library_cache = TTLCache(maxsize=cache_max_len, ttl=cache_ttl)
+
+    @cached(cache=youtube_library_cache)
     def browse(self, uri):
+        if uri == "youtube:browse":
+            return [
+                Ref.directory(uri="youtube:channel:root", name="My Youtube playlists"),
+                Ref.directory(uri="youtube:channel:artists", name="My Youtube artists"),
+            ]
+        if uri == "youtube:channel:artists":
+            artistrefs = set()
+            pl = []
+            playlists = [
+                self.lookup(f"yt:playlist:{playlist.id}")
+                for playlist in youtube.Channel.playlists("root")
+            ]
+            for playlist in playlists:
+                for track in playlist:
+                    [
+                        artistrefs.add(Ref.artist(uri=artist.uri, name=artist.name))
+                        for artist in track.artists
+                        if artist.uri
+                    ]
+
+            artistrefs_list = list(artistrefs)
+            artistrefs_list.sort(key=lambda x: x.name.lower())
+            return artistrefs_list
         if extract_playlist_id(uri):
             trackrefs = []
             tracks = self.lookup(uri)
@@ -240,14 +274,9 @@ class YouTubeLibraryProvider(backend.LibraryProvider):
 
     def lookup_video_track(self, video_id: str) -> Track:
         if youtube.cache_location:
-            cached = [
-                cached_file
-                for cached_file in os.listdir(youtube.cache_location)
-                if cached_file == f"{video_id}.json"
-            ]
-            if cached:
+            if f"{video_id}.json" in os.listdir(youtube.cache_location):
                 with open(
-                    os.path.join(youtube.cache_location, cached[0]), "r"
+                    os.path.join(youtube.cache_location, f"{video_id}.json"), "r"
                 ) as infile:
                     track = json.load(infile, object_hook=model_json_decoder)
                 return track
@@ -314,15 +343,29 @@ class YouTubeLibraryProvider(backend.LibraryProvider):
 
         logger.debug('youtube LibraryProvider.lookup "%s"', uri)
 
-        video_id = extract_video_id(uri)
-        if video_id:
-            return [self.lookup_video_track(video_id)]
+        preload = extract_preload_tracks(uri)
+        if preload:
+            for track in preload[1]:
+                # need to be more careful here: preload data is ytmusic; some information
+                # might not be compatible with other backends. see, for example
+                # https://tickets.metabrainz.org/browse/MBS-10226: an album playlist link
+                # taken from the album column in the [ytm] page you wanted to link to,
+                # has no equivalent URL on YouTube
+                video = Video.get(track["id"]["videoId"])
+                minimum_fields = ["title", "length", "channel"]
+                item, extended_fields = video.extend_fields(track, minimum_fields)
+                video._set_api_data(extended_fields, item)
+            return [self.lookup_video_track(preload[0])]
 
         playlist_id = extract_playlist_id(uri)
         if playlist_id:
             playlist_tracks = self.lookup_playlist_tracks(playlist_id)
             if playlist_tracks:
                 return playlist_tracks
+
+        video_id = extract_video_id(uri)
+        if video_id:
+            return [self.lookup_video_track(video_id)]
 
         channel_id = extract_channel_id(uri)
         if channel_id:
@@ -331,7 +374,7 @@ class YouTubeLibraryProvider(backend.LibraryProvider):
                 return channel_tracks
 
         logger.error(f"Cannot load {uri}")
-        return []
+        return [Track(uri=None, name=None)]
 
     def get_images(self, uris):
         images = {}
@@ -379,7 +422,7 @@ class YouTubePlaybackProvider(backend.PlaybackProvider):
 
     def translate_uri(self, uri):
         """
-        Called when a track us ready to play, we need to return the actual url of
+        Called when a track is ready to play, we need to return the actual url of
         the audio. uri must be of the form youtube:video/<title>.<id> or youtube:video:<id>
         (only videos can be played, playlists are expanded into tracks by
         YouTubeLibraryProvider.lookup)

@@ -23,12 +23,6 @@ class MyHTTPAdapter(HTTPAdapter):
 
 
 class Client:
-    time_regex = (
-        r"(?:(?:(?P<durationHours>[0-9]+)\:)?"
-        r"(?P<durationMinutes>[0-9]+)\:"
-        r"(?P<durationSeconds>[0-9]{2}))"
-    )
-
     def __init__(self, proxy, headers):
         if not hasattr(type(self), "session"):
             self._create_session(proxy, headers)
@@ -58,14 +52,3 @@ class Client:
         cls.session.mount("https://", adapter)
         cls.session.proxies = {"http": proxy, "https": proxy}
         cls.session.headers = headers
-
-    @classmethod
-    def format_duration(cls, match):
-        duration = ""
-        if match.group("durationHours") is not None:
-            duration += match.group("durationHours") + "H"
-        if match.group("durationMinutes") is not None:
-            duration += match.group("durationMinutes") + "M"
-        if match.group("durationSeconds") is not None:
-            duration += match.group("durationSeconds") + "S"
-        return duration
