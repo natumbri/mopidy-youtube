@@ -121,8 +121,8 @@ it in your config file as musicapi_cookie::
 
 
 Alternatively, you can setup the `musicapi_cookiefile`.  This is necessary to enable YouTube Premium
-high quality streaming (you also need to use yt-dlp instead of youtube_dl. See `youtube_dl_package` 
-documentation for how to configure it. Note: Setting up the cookie using the deprecated `musicapi_cookie`
+high quality streaming. (You also need to use yt-dlp instead of youtube_dl. See `youtube_dl_package` 
+documentation for how to configure it.) Note: Setting up the cookie using the deprecated `musicapi_cookie`
 configuration option will not work for high quality audio!
 
 Setup a `cookies.txt` (Netscape HTTP Cookie File) containing YouTube cookies:

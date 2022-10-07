@@ -1,5 +1,7 @@
 import re
 
+from mopidy_youtube import logger
+
 
 def convert_Millis(milliseconds):
     try:
