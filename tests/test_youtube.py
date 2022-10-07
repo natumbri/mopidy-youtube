@@ -8,8 +8,9 @@ from tests.test_api import setup_entry_api
 
 def test_create_unsupported_object():
 
-    created_object = youtube.Entry.create_object({"id":{"kind": "not valid"}})
+    created_object = youtube.Entry.create_object({"id": {"kind": "not valid"}})
     assert created_object == []
+
 
 @pytest.mark.parametrize("api", apis)
 def test_youtube_search(api, config, headers):

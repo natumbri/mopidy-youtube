@@ -34,12 +34,11 @@ class jAPI(Client):
     endpoint = "https://www.youtube.com/"
 
     @classmethod
-    def search(cls, q):
+    def search(cls, q, params=["EgIQAQ%3D%3D", "EgIQAw%3D%3D"]):
         """
         search for videos and playlists
         """
         result = []
-        params = ["EgIQAQ%3D%3D", "EgIQAw%3D%3D"]
 
         with ThreadPoolExecutor() as executor:
             futures = executor.map(cls.run_search, repeat(q), params)
