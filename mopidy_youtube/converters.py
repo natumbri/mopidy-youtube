@@ -1,7 +1,8 @@
 from mopidy.models import Album, Artist, Track
 
-from mopidy_youtube.data import format_playlist_uri, format_video_uri
 from mopidy_youtube import logger
+from mopidy_youtube.data import format_playlist_uri, format_video_uri
+
 
 def convert_video_to_track(
     video, album_name: str = None, album_id: str = None, **kwargs
@@ -59,7 +60,9 @@ def convert_playlist_to_album(playlist) -> Album:
         uri=format_playlist_uri(playlist.id),
         name=playlist.title.get(),
         artists=[
-            Artist(name=playlist.channel.get())  # f"YouTube Playlist ({playlist.video_count.get()} videos)")
+            Artist(
+                name=playlist.channel.get()
+            )  # f"YouTube Playlist ({playlist.video_count.get()} videos)")
         ],
         num_tracks=playlist.video_count.get(),
     )

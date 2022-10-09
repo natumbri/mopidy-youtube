@@ -85,7 +85,7 @@ class Music(Client):
                 f"youtube_music list_related_videos get_watch_playlist "
                 f"error:{e}. videoId: {video_id}"
             )
-        
+
         related_videos = []
         get_song_related_tracks = []
         try:
