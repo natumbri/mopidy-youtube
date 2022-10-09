@@ -244,12 +244,14 @@ class YouTubeLibraryProvider(backend.LibraryProvider):
 
         # handle only searching (queries with 'any') not browsing!
         if not (query and any(key in query for key in ["uri", "any"])):
-                return None
+            return None
         if "uri" in query:
             tracks = self.lookup(query["uri"][0])
             if tracks[0].uri:
 
-                return SearchResult(uri="youtube:search", tracks=tracks)  # , artists=artists, albums=albums)
+                return SearchResult(
+                    uri="youtube:search", tracks=tracks
+                )  # , artists=artists, albums=albums)
             else:
                 return None
         search_query = " ".join(query["any"])

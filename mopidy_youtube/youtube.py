@@ -483,14 +483,24 @@ class Video(Entry):
                             )
 
                             # get info about best audio format, for debugging
-                            formats = info.get('formats')[::-1]
+                            formats = info.get("formats")[::-1]
                             audio_ext = ["webm", "m4a", "mp3", "ogg"]
-                            best_audio = [f for f in formats if (f['acodec'] != 'none' and f['vcodec'] == 'none' and f['ext'] in audio_ext)][0]
-                            logger.debug({
-                                'format_id': f'{best_audio["format_id"]}',
-                                'requested_formats': [best_audio],
-                                'protocol': f'{best_audio["protocol"]}'
-                            })
+                            best_audio = [
+                                f
+                                for f in formats
+                                if (
+                                    f["acodec"] != "none"
+                                    and f["vcodec"] == "none"
+                                    and f["ext"] in audio_ext
+                                )
+                            ][0]
+                            logger.debug(
+                                {
+                                    "format_id": f'{best_audio["format_id"]}',
+                                    "requested_formats": [best_audio],
+                                    "protocol": f'{best_audio["protocol"]}',
+                                }
+                            )
 
                         # # self._audio_url.set is now done by the progress_hooks
                         # fileUri = f"file://{ydl.prepare_filename(info)}"
