@@ -68,6 +68,7 @@ class Music(Client):
         # background, so who cares?
 
         # What is better: get_watch_playlist or get_song_related?  Are they different?
+
         get_watch_playlist = {}
 
         try:
@@ -84,7 +85,7 @@ class Music(Client):
                 f"youtube_music list_related_videos get_watch_playlist "
                 f"error:{e}. videoId: {video_id}"
             )
-
+        
         related_videos = []
         get_song_related_tracks = []
         try:
@@ -100,11 +101,13 @@ class Music(Client):
                 f"youtube_music list_related_videos triggered "
                 f"ytmusic.get_song for {len(related_videos)} tracks."
             )
-            related_videos = [
+            related_videos = []
+            """
+            [
                 ytmusic.get_song(track["videoId"])["videoDetails"]
                 for track in get_song_related_tracks
             ]
-
+            """
         except Exception as e:
             logger.error(
                 f"youtube_music list_related_videos error:{e} "

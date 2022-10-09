@@ -140,11 +140,10 @@ class YouTubeBackend(pykka.ThreadingActor, backend.Backend):
                 for cookie in cj:
                     cookie_parts.append(
                         "%s=%s"
-                        % (cookie.name, SimpleCookie().value_encode(cookie.value)[1])
+                        % (cookie.name, SimpleCookie().value_encode(cookie.value)[1].replace('"',''))
                     )
 
                 youtube.musicapi_cookie = "; ".join(cookie_parts)
-
             if youtube.musicapi_cookie:
                 headers.update({"Cookie": youtube.musicapi_cookie})
 

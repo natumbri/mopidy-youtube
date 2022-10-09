@@ -423,7 +423,6 @@ class Video(Entry):
                 }
                 if musicapi_cookiefile:
                     ytdl_options["cookiefile"] = musicapi_cookiefile
-
                 base_url = "https://www.youtube.com"
                 if musicapi_enabled:
                     # High quality music streams are only available to YouTube
