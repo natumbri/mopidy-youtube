@@ -207,7 +207,7 @@ class YouTubeLibraryProvider(backend.LibraryProvider):
                 trackrefs.append(Ref.track(uri=track.uri, name=track.name))
             return trackrefs
         elif extract_channel_id(uri):
-            logger.info(f"browse channel / library {uri}")
+            logger.debug(f"browse channel / library {uri}")
             playlistrefs = []
             albums = []
             playlists = youtube.Channel.playlists(extract_channel_id(uri))
@@ -243,9 +243,15 @@ class YouTubeLibraryProvider(backend.LibraryProvider):
         logger.debug('youtube LibraryProvider.search "%s"', query)
 
         # handle only searching (queries with 'any') not browsing!
-        if not (query and "any" in query):
-            return None
+        if not (query and any(key in query for key in ["uri", "any"])):
+                return None
+        if "uri" in query:
+            tracks = self.lookup(query["uri"][0])
+            if tracks[0].uri:
 
+                return SearchResult(uri="youtube:search", tracks=tracks)  # , artists=artists, albums=albums)
+            else:
+                return None
         search_query = " ".join(query["any"])
         logger.debug('Searching YouTube for query "%s"', search_query)
 

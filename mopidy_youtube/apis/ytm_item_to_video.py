@@ -72,7 +72,7 @@ def ytm_item_to_video(item):
         video["artists"] = [
             {
                 "name": artist["name"],
-                "uri": f"yt:channel:{artist['id']}",
+                "uri": f"yt:channel:{artist.get('id')}",
                 # "thumbnail": ytmusic.get_artist(artist["id"])["thumbnails"][-1]
             }
             for artist in item["artists"]
