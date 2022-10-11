@@ -500,6 +500,12 @@ class Music(Client):
                 if track[field] is None
             ]
 
+            if item.get("type") == "Album":
+                [
+                    track.update({"track_no": (number + 1)})
+                    for number, track in enumerate(item["tracks"])
+                ]
+
             if "title" in item and "playlistId" in item:
                 [
                     track.update(
@@ -564,10 +570,17 @@ class Music(Client):
                         }
                     )
                 video = Video.get(track["snippet"]["resourceId"]["videoId"])
-                video._set_api_data(
-                    ["title", "channel", "length", "thumbnails", "album", "artists"],
-                    track,
-                )
+                fields = [
+                    "title",
+                    "channel",
+                    "length",
+                    "thumbnails",
+                    "album",
+                    "artists",
+                ]
+                if "track_no" in track:
+                    fields.append("track_no")
+                video._set_api_data(fields, track)
                 plvideos.append(video)
 
             pl._videos.set(

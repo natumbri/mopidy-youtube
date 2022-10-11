@@ -27,6 +27,7 @@ def convert_video_to_track(
         album=Album(name=album["name"], uri=album["uri"]),
         length=adjustedLength,
         comment=video.id,
+        track_no=video.track_no.get(),
         **kwargs,
     )
 

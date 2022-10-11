@@ -189,6 +189,8 @@ class Entry:
                 ] or None  # is this "or None" necessary?
             elif k == "channelId":
                 val = item["snippet"]["channelId"]
+            elif k == "track_no":
+                val = item["track_no"]
             future.set(val)
 
     @classmethod
@@ -222,6 +224,9 @@ class Entry:
 
         if "album" in item:
             extended_fields.add("album")
+
+        if "track_no" in item:
+            extended_fields.add("track_no")
 
         if "contentDetails" in item:
             if "duration" in item["contentDetails"]:
@@ -335,6 +340,15 @@ class Video(Entry):
         if requiresAlbumName:
             # ultimate fallback
             self._album.set({"name": "YouTube Playlist", "uri": None})
+
+    @async_property
+    def track_no(self):
+
+        requiresTrack_No = self._add_futures([self], ["track_no"])
+
+        if requiresTrack_No:
+            # ultimate fallback to None? Does this work?
+            self._track_no.set(None)
 
     @async_property
     def artists(self):

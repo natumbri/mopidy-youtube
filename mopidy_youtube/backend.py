@@ -322,9 +322,10 @@ class YouTubeLibraryProvider(backend.LibraryProvider):
                 video,
                 album_name=playlist.title.get(),
                 album_id=playlist_id,
-                track_no=count,
+                # track_no=count,
             )
-            for count, video in enumerate(videos, 1)
+            # for count, video in enumerate(videos, 1)
+            for video in videos
         ]
         return tracks
 

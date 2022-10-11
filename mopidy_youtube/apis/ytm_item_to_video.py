@@ -60,6 +60,7 @@ def ytm_item_to_video(item):
             "thumbnails": {"default": thumbnail},
             "channelTitle": channelTitle,
         },
+        "track_no": item.get("track_no"),
     }
 
     if "album" in item and item["album"] is not None:
