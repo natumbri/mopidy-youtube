@@ -1,6 +1,6 @@
 from mopidy.models import Album, Artist, Track
 
-from mopidy_youtube import logger
+# from mopidy_youtube import logger
 from mopidy_youtube.data import format_playlist_uri, format_video_uri
 
 

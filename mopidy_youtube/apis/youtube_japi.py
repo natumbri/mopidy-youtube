@@ -1,5 +1,6 @@
 import json
 import re
+
 from concurrent.futures.thread import ThreadPoolExecutor
 from itertools import repeat
 from urllib.parse import urlencode, urljoin
@@ -34,10 +35,13 @@ class jAPI(Client):
     endpoint = "https://www.youtube.com/"
 
     @classmethod
-    def search(cls, q, params=["EgIQAQ%3D%3D", "EgIQAw%3D%3D"]):
+    def search(cls, q, params=None):
         """
         search for videos and playlists
         """
+        if not params:
+            params = ["EgIQAQ%3D%3D", "EgIQAw%3D%3D"]
+
         result = []
 
         with ThreadPoolExecutor() as executor:

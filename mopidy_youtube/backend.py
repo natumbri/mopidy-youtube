@@ -91,7 +91,8 @@ class YouTubeBackend(pykka.ThreadingActor, backend.Backend):
             )
             if youtube.musicapi_cookie and youtube.musicapi_cookiefile:
                 raise ValueError(
-                    "Only one of youtube/musicapi_cookie or youtube/musicapi_cookiefile can be used at one."
+                    "Only one of youtube/musicapi_cookie or "
+                    "youtube/musicapi_cookiefile can be used at one."
                 )
             youtube_music.own_channel_id = youtube.channel
         youtube.youtube_dl_package = config["youtube"]["youtube_dl_package"]
