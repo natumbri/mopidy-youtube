@@ -101,13 +101,11 @@ class Music(Client):
                 f"youtube_music list_related_videos triggered "
                 f"ytmusic.get_song for {len(related_videos)} tracks."
             )
-            related_videos = []
-            """
-            [
+            related_videos = [
                 ytmusic.get_song(track["videoId"])["videoDetails"]
                 for track in get_song_related_tracks
             ]
-            """
+
         except Exception as e:
             logger.error(
                 f"youtube_music list_related_videos error:{e} "
@@ -134,13 +132,19 @@ class Music(Client):
             except Exception as e:
                 logger.error(f"youtube_music list_related_videos error:{e}")
 
+        related_albums = set()
         for item in related_videos:
             for related_track in get_song_related_tracks:
                 if item["videoId"] == related_track["videoId"]:
                     if "album" in related_track:
                         item["album"] = related_track["album"]
+                        if "id" in related_track["album"]:
+                            related_albums.add(related_track["album"]["id"])
                     if "artists" in related_track:
                         item["artists"] = related_track["artists"]
+
+        with ThreadPoolExecutor() as executor:
+            executor.submit(cls.list_playlists(related_albums))
 
         tracks = [
             ytm_item_to_video(track)
@@ -500,7 +504,9 @@ class Music(Client):
                 if track[field] is None
             ]
 
-            if item.get("type") == "Album":  # there may be other "types" for which this works? "EP"? "Single"?
+            if (
+                item.get("type") == "Album"
+            ):  # there may be other "types" for which this works? "EP"? "Single"?
                 [
                     track.update({"track_no": (number)})
                     for number, track in enumerate(item["tracks"], 1)
