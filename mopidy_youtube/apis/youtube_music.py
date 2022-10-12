@@ -500,10 +500,10 @@ class Music(Client):
                 if track[field] is None
             ]
 
-            if item.get("type") == "Album":
+            if item.get("type") == "Album":  # there may be other "types" for which this works? "EP"? "Single"?
                 [
-                    track.update({"track_no": (number + 1)})
-                    for number, track in enumerate(item["tracks"])
+                    track.update({"track_no": (number)})
+                    for number, track in enumerate(item["tracks"], 1)
                 ]
 
             if "title" in item and "playlistId" in item:

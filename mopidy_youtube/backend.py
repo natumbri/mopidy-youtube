@@ -323,9 +323,7 @@ class YouTubeLibraryProvider(backend.LibraryProvider):
                 video,
                 album_name=playlist.title.get(),
                 album_id=playlist_id,
-                # track_no=count,
             )
-            # for count, video in enumerate(videos, 1)
             for video in videos
         ]
         return tracks
@@ -340,10 +338,8 @@ class YouTubeLibraryProvider(backend.LibraryProvider):
         for playlist in channel_playlists:
             videos.extend(playlist.videos.get())
 
-        tracks = [
-            convert_video_to_track(video, track_no=count)
-            for count, video in enumerate(videos, 1)
-        ]
+        tracks = [convert_video_to_track(video) for video in videos]
+
         return tracks
 
     def lookup(self, uri):
