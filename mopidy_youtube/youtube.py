@@ -469,7 +469,7 @@ class Video(Entry):
                         self._audio_url.set(fileUri)
                     else:
                         logger.debug(f"caching image {self.id}")
-                        imageFile = f"{self.id}.jpg"
+                        imageFile = f"{self.id}.webp"
                         if imageFile not in os.listdir(cache_location):
                             imageUri = self.thumbnails.get()[0].uri
                             response = self.api.session.get(imageUri, stream=True)
