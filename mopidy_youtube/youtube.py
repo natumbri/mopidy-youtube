@@ -327,7 +327,7 @@ class Video(Entry):
             self._thumbnails.set(
                 [
                     Image(
-                        uri=f"https://i.ytimg.com/vi/{self.id.split(':')[-1]}/default.jpg"
+                        uri=f"https://i.ytimg.com/vi_webp/{self.id.split(':')[-1]}/maxresdefault.webp"
                     )
                 ]
             )
