@@ -56,6 +56,6 @@ class Extension(ext.Extension):
                 IndexHandler,
                 {"root": cache_dir, "core": core, "config": config},
             ),
-            (r"/(.*\.jpg)", ImageHandler, {"path": cache_dir}),
+            (r"/(.*\.(?:jpg|webp))", ImageHandler, {"path": cache_dir}),
             (r"/(.*\.(?:webm|m4a|mp3|ogg))", AudioHandler, {"cache_dir": cache_dir}),
         ]
