@@ -408,9 +408,10 @@ class YouTubeLibraryProvider(backend.LibraryProvider):
             for uri in uris:
                 video_id = extract_video_id(uri)
                 if video_id:
-                    imageFile = f"{video_id}.jpg"
-                    if imageFile in os.listdir(youtube.cache_location):
-                        images.update({uri: [Image(uri=f"/youtube/{imageFile}")]})
+                    if f"{video_id}.webp" in os.listdir(youtube.cache_location):
+                        images.update({uri: [Image(uri=f"/youtube/{video_id}.webp")]})
+                    elif f"{video_id}.jpg" in os.listdir(youtube.cache_location):
+                        images.update({uri: [Image(uri=f"/youtube/{video_id}.jpg")]})
 
             logger.debug(
                 f"using cached images: {[extract_video_id(uri) for uri in images]}"

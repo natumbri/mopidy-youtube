@@ -54,7 +54,10 @@ class IndexHandler(tornado.web.RequestHandler):
 
         elif image is not None:
             return self.render(
-                "image.html", image=image, track=self.get_argument("track", None)
+                "image.html",
+                image=image,
+                ext=self.get_argument("ext"),
+                track=self.get_argument("track", None),
             )
 
         else:
@@ -64,8 +67,22 @@ class IndexHandler(tornado.web.RequestHandler):
         return pathlib.Path(__file__).parent / "www"
 
     def uri_generator(self):
+        jpegs = [
+            os.path.basename(x) for x in glob.glob(os.path.join(self.root, "*.jpg"))
+        ]
+        webps = [
+            os.path.basename(x) for x in glob.glob(os.path.join(self.root, "*.webp"))
+        ]
+
         for json_line in self.data_generator():
-            yield (f'{json_line["comment"]}', json_line["name"])
+            if f'{json_line["comment"]}.webp' in webps:
+                yield (f'{json_line["comment"]}', json_line["name"], "webp")
+            elif f'{json_line["comment"]}.jpg' in jpegs:
+                yield (f'{json_line["comment"]}', json_line["name"], "jpg")
+
+            # deal with missing image
+            else:
+                yield (f'{json_line["comment"]}', json_line["name"], "missing")
 
     def data_generator(self):
         json_pattern = os.path.join(self.root, "*.json")

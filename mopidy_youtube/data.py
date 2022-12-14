@@ -86,5 +86,8 @@ def extract_preload_tracks(uri) -> dict:
         preload_tracks = [
             ytm_item_to_video(track) for track in preload_data if "videoId" in track
         ]
-        return {"videoUri": format_video_uri(match.group("videoid")), "preloadTracks": preload_tracks}
+        return {
+            "videoUri": format_video_uri(match.group("videoid")),
+            "preloadTracks": preload_tracks,
+        }
     return ""

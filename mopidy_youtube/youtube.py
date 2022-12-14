@@ -351,8 +351,14 @@ class Video(Entry):
             if album_uri["uri"] and not album_uri["uri"].startswith("PL"):
                 album_id = extract_playlist_id(album_uri)
                 album_tracks = cls.api.list_playlistitems(album_id)
-                self._track_no.set([track["id"]["videoId"] for track in album_tracks].index[extract_video_id(self.id)])
-                logger.info(f"track no {[track['id']['videoId'] for track in album_tracks].index[extract_video_id(self.id)]}")
+                self._track_no.set(
+                    [track["id"]["videoId"] for track in album_tracks].index[
+                        extract_video_id(self.id)
+                    ]
+                )
+                logger.debug(
+                    f"track no {[track['id']['videoId'] for track in album_tracks].index[extract_video_id(self.id)]}"
+                )
             else:
                 # ultimate fallback to None? Does this work?
                 self._track_no.set(None)
@@ -509,7 +515,7 @@ class Video(Entry):
                                     "format_id": info["format_id"],
                                     "format_note": info["format_note"],
                                     "bitrate": info["abr"],
-                                    "audio_ext": info["audio_ext"]
+                                    "audio_ext": info["audio_ext"],
                                 }
                             )
 
@@ -525,7 +531,9 @@ class Video(Entry):
                             os.path.join(cache_location, f"{self.id}.json"), "w"
                         ) as outfile:
                             json.dump(
-                                convert_video_to_track(self, bitrate=int(info.get("tbr",0))),
+                                convert_video_to_track(
+                                    self, bitrate=int(info.get("tbr", 0))
+                                ),
                                 cls=ModelJSONEncoder,
                                 fp=outfile,
                             )

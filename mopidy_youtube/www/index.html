@@ -64,9 +64,9 @@
       to tracklist.</p>
     <div id="thumbnails">
       {% for image in images %}
-      <a href="?image={{image[0]}}&track={{image[1]}}"
+      <a href="?image={{image[0]}}&ext={{image[2]}}&track={{image[1]}}"
         oncontextmenu="location.href='?url=yt:video:{{image[0]}}';return false;">
-        <img src="{{image[0]}}.jpg" alt="Link to album art for {{image[1]}}" title="{{image[1]}}" loading="lazy">
+        <img src="{{image[0]}}.{{image[2]}}" alt="Link to album art for {{image[1]}}" title="{{image[1]}}" loading="lazy">
       </a>
       {% end %}
     </div>
