@@ -79,12 +79,12 @@ def extract_channel_id(uri) -> str:
     return ""
 
 
-def extract_preload_tracks(uri) -> str:
+def extract_preload_tracks(uri) -> dict:
     match = uri_preload_regex.match(uri)
     if match:
         preload_data = json.loads(match.group("preload_data"))
         preload_tracks = [
             ytm_item_to_video(track) for track in preload_data if "videoId" in track
         ]
-        return (match.group("videoid"), preload_tracks)
+        return {"videoUri": format_video_uri(match.group("videoid")), "preloadTracks": preload_tracks}
     return ""

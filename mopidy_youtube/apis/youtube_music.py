@@ -12,6 +12,7 @@ from mopidy_youtube.apis.json_paths import traverse, ytmErrorThumbnailPath
 from mopidy_youtube.apis.ytm_item_to_video import ytm_item_to_video
 from mopidy_youtube.comms import Client
 from mopidy_youtube.youtube import Playlist, Video
+from mopidy_youtube.data import extract_playlist_id
 
 ytmusic = None
 own_channel_id = None
@@ -145,6 +146,7 @@ class Music(Client):
 
         with ThreadPoolExecutor() as executor:
             executor.submit(cls.list_playlists(related_albums))
+            executor.shutdown(wait=False)
 
         tracks = [
             ytm_item_to_video(track)
@@ -424,6 +426,19 @@ class Music(Client):
             for track in results
             if track["videoId"] is not None
         ]
+
+        # listplids = cls.list_playlists([extract_playlist_id(song["album"]["uri"]) for song in songs if song["track_no"] == None and "album" in song and not song["album"]["uri"].startswith("PL")])
+        # logger.info(listplids)
+        # cls.process_albums(listplids)
+        # for song in songs:
+        #     if song["track_no"] == None and "album" in song and not song["album"]["uri"].startswith("PL"):
+        #         album_id = extract_playlist_id(song["album"]["uri"])
+        #         logger.info(album_id)
+        #         album_tracks = cls.list_playlistitems(album_id)
+        #         # logger.info(album_tracks)
+        #         logger.info([track["id"] for track in album_tracks["items"]].index(song["id"]["videoId"])+1)
+        #         song["track_no"] = [track["id"] for track in album_tracks["items"]].index(song["id"]["videoId"])
+        #         # logger.info(f"track no {[track['id']['videoId'] for track in album_tracks].index[song['id']['videoId']]}")            
 
         return songs
 

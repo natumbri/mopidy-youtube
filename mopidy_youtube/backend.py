@@ -365,7 +365,7 @@ class YouTubeLibraryProvider(backend.LibraryProvider):
 
         preload = extract_preload_tracks(uri)
         if preload:
-            for track in preload[1]:
+            for track in preload["preloadTracks"]:
                 # need to be more careful here: preload data is ytmusic; some information
                 # might not be compatible with other backends. see, for example
                 # https://tickets.metabrainz.org/browse/MBS-10226: an album playlist link
@@ -375,7 +375,7 @@ class YouTubeLibraryProvider(backend.LibraryProvider):
                 minimum_fields = ["title", "length", "channel"]
                 item, extended_fields = video.extend_fields(track, minimum_fields)
                 video._set_api_data(extended_fields, item)
-            return [self.lookup_video_track(preload[0])]
+            uri = preload["videoUri"]
 
         playlist_id = extract_playlist_id(uri)
         if playlist_id:

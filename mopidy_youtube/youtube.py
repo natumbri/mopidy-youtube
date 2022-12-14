@@ -347,8 +347,15 @@ class Video(Entry):
         requiresTrack_No = self._add_futures([self], ["track_no"])
 
         if requiresTrack_No:
-            # ultimate fallback to None? Does this work?
-            self._track_no.set(None)
+            album_uri = self.album.get()
+            if album_uri["uri"] and not album_uri["uri"].startswith("PL"):
+                album_id = extract_playlist_id(album_uri)
+                album_tracks = cls.api.list_playlistitems(album_id)
+                self._track_no.set([track["id"]["videoId"] for track in album_tracks].index[extract_video_id(self.id)])
+                logger.info(f"track no {[track['id']['videoId'] for track in album_tracks].index[extract_video_id(self.id)]}")
+            else:
+                # ultimate fallback to None? Does this work?
+                self._track_no.set(None)
 
     @async_property
     def artists(self):
@@ -455,6 +462,7 @@ class Video(Entry):
                 }
 
                 if cache_location:
+                    info = {}
                     cached = [
                         cached_file
                         for cached_file in os.listdir(cache_location)
@@ -495,23 +503,13 @@ class Video(Entry):
                                 download=True,
                             )
 
-                            # get info about best audio format, for debugging
-                            formats = info.get("formats")[::-1]
-                            audio_ext = ["webm", "m4a", "mp3", "ogg"]
-                            best_audio = [
-                                f
-                                for f in formats
-                                if (
-                                    f["acodec"] != "none"
-                                    and f["vcodec"] == "none"
-                                    and f["ext"] in audio_ext
-                                )
-                            ][0]
+                            # get info about audio format, for debugging
                             logger.debug(
                                 {
-                                    "format_id": f'{best_audio["format_id"]}',
-                                    "requested_formats": [best_audio],
-                                    "protocol": f'{best_audio["protocol"]}',
+                                    "format_id": info["format_id"],
+                                    "format_note": info["format_note"],
+                                    "bitrate": info["abr"],
+                                    "audio_ext": info["audio_ext"]
                                 }
                             )
 
@@ -527,7 +525,7 @@ class Video(Entry):
                             os.path.join(cache_location, f"{self.id}.json"), "w"
                         ) as outfile:
                             json.dump(
-                                convert_video_to_track(self),
+                                convert_video_to_track(self, bitrate=int(info.get("tbr",0))),
                                 cls=ModelJSONEncoder,
                                 fp=outfile,
                             )
