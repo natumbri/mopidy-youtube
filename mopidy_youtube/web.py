@@ -11,6 +11,8 @@ import tornado.web
 from mopidy_youtube import youtube
 from mopidy_youtube.data import extract_playlist_id, extract_video_id
 
+# from PIL import Image
+
 logger = logging.getLogger(__name__)
 
 
@@ -67,28 +69,55 @@ class IndexHandler(tornado.web.RequestHandler):
         return pathlib.Path(__file__).parent / "www"
 
     def uri_generator(self):
-        jpegs = [
-            os.path.basename(x) for x in glob.glob(os.path.join(self.root, "*.jpg"))
-        ]
-        webps = [
-            os.path.basename(x) for x in glob.glob(os.path.join(self.root, "*.webp"))
-        ]
+        # jpegs = [
+        #     os.path.basename(x) for x in glob.glob(os.path.join(self.root, "*.jpg"))
+        # ]
+        # webps = [
+        #     os.path.basename(x) for x in glob.glob(os.path.join(self.root, "*.webp"))
+        # ]
 
         for json_line in self.data_generator():
-            if f'{json_line["comment"]}.webp' in webps:
-                yield (f'{json_line["comment"]}', json_line["name"], "webp")
-            elif f'{json_line["comment"]}.jpg' in jpegs:
-                yield (f'{json_line["comment"]}', json_line["name"], "jpg")
-
-            # deal with missing image
-            else:
-                yield (f'{json_line["comment"]}', json_line["name"], "missing")
+            yield (json_line[0]["comment"], json_line[0]["name"], json_line[2])
 
     def data_generator(self):
-        json_pattern = os.path.join(self.root, "*.json")
-        for filename in glob.glob(json_pattern):
-            with open(filename) as openfile:
-                yield json.load(openfile)
+        images = [
+            os.path.basename(x) for x in glob.glob(os.path.join(self.root, "*.jpg"))
+        ] + [os.path.basename(x) for x in glob.glob(os.path.join(self.root, "*.webp"))]
+
+        json_files = glob.glob(os.path.join(self.root, "*.json"))
+
+        combo = []
+        for filename in json_files:
+            # logger.info(f"{os.path.splitext(os.path.basename(filename))[0]}.jpg")
+            if f"{os.path.splitext(os.path.basename(filename))[0]}.jpg" in images:
+                combo.append(
+                    (filename, os.path.splitext(os.path.basename(filename))[0], "jpg")
+                )  # ,  self.find_dominant_color(os.path.join(self.root, f"{os.path.splitext(os.path.basename(filename))[0]}.jpg"))))
+            elif f"{os.path.splitext(os.path.basename(filename))[0]}.webp" in images:
+                combo.append(
+                    (filename, os.path.splitext(os.path.basename(filename))[0], "webp")
+                )  # ,  self.find_dominant_color(os.path.join(self.root, f"{os.path.splitext(os.path.basename(filename))[0]}.webp"))))
+            else:
+                combo.append(
+                    (
+                        filename,
+                        os.path.splitext(os.path.basename(filename))[0],
+                        "missing",
+                    )
+                )  # ,  (0,0,0,0)))
+
+        # for filename in sorted(combo, key=lambda element: (element[3][0], element[3][1], element[3][2])):
+        for filename in combo:
+            with open(filename[0]) as openfile:
+                yield (json.load(openfile), filename[1], filename[2])
+
+    # for arranging images by dominant colour
+    def find_dominant_color(self, filename):
+        img = Image.open(filename)
+        img = img.convert("RGBA")
+        img = img.resize((1, 1), resample=0)
+        dominant_color = img.getpixel((0, 0))
+        return dominant_color
 
 
 class AudioHandler(tornado.web.RequestHandler):
@@ -102,7 +131,7 @@ class AudioHandler(tornado.web.RequestHandler):
     # https://gist.github.com/seriyps/3773703
     @tornado.gen.coroutine
     def get(self, path):
-        logger.info(f"started serving {path} to gstreamer")
+        logger.debug(f"started serving {path} to gstreamer")
         total_bytes = youtube.Video.get(os.path.splitext(path)[0]).total_bytes
         self.path = f"{self.cache_dir}/{path}"
         self.set_header("Content-Type", "application/octet-stream")
@@ -111,11 +140,14 @@ class AudioHandler(tornado.web.RequestHandler):
 
         bytes_written = 0
         fd = open(self.path, "rb")
+
         while bytes_written != total_bytes:
             data = fd.read()
             self.write(data)
-            yield tornado.gen.Task(self.flush)
+            # yield tornado.gen.Task(self.flush)
+            yield self.flush()
             bytes_written += len(data)
+
         fd.close()
         self.finish()
-        logger.info(f"finished serving {path} to gstreamer")
+        logger.debug(f"finished serving {path} to gstreamer")
