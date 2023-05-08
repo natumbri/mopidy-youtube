@@ -15,7 +15,6 @@ def convert_Millis(milliseconds):
 
 
 def format_duration(duration_text):
-
     time_regex = (
         r"(?:(?:(?P<durationHours>[0-9]+)\:)?"
         r"(?P<durationMinutes>[0-9]+)\:"
@@ -36,7 +35,6 @@ def format_duration(duration_text):
 
 
 def ISO8601_to_seconds(iso_duration):
-
     # convert PT1H2M10S to 3730
     m = re.search(
         r"P((?P<weeks>\d+)W)?"

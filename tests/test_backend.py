@@ -52,11 +52,9 @@ def test_on_start_configures_the_api(api, config, headers):
 @pytest.mark.parametrize("api", apis)
 @pytest.mark.parametrize("playlist_uri", playlist_uris)
 def test_backend_browse_playlist(api, config, headers, playlist_uri):
-
     with my_vcr.use_cassette(
         f"tests/fixtures/{api['name']}/backend_browse_playlist.yaml"
     ):
-
         setup_entry_api(api, config, headers)
 
         backend_inst = get_backend(config=config, api_config=api["config"])
@@ -69,11 +67,9 @@ def test_backend_browse_playlist(api, config, headers, playlist_uri):
 @pytest.mark.parametrize("api", apis)
 @pytest.mark.parametrize("channel_uri", channel_uris)
 def test_backend_browse_channel(api, config, headers, channel_uri):
-
     with my_vcr.use_cassette(
         f"tests/fixtures/{api['name']}/backend_browse_channel.yaml"
     ):
-
         setup_entry_api(api, config, headers)
 
         backend_inst = get_backend(config=config, api_config=api["config"])
@@ -85,9 +81,7 @@ def test_backend_browse_channel(api, config, headers, channel_uri):
 
 @pytest.mark.parametrize("api", apis)
 def test_backend_search(api, config, headers):
-
     with my_vcr.use_cassette(f"tests/fixtures/{api['name']}/backend_search.yaml"):
-
         setup_entry_api(api, config, headers)
 
         backend_inst = get_backend(config=config, api_config=api["config"])
@@ -129,11 +123,9 @@ def test_backend_search(api, config, headers):
 @pytest.mark.parametrize("api", apis)
 @pytest.mark.parametrize("pl_uri", playlist_uris)
 def test_backend_lookup_playlist(api, config, headers, pl_uri):
-
     with my_vcr.use_cassette(
         f"tests/fixtures/{api['name']}/backend_lookup_playlist.yaml"
     ):
-
         setup_entry_api(api, config, headers)
 
         backend_inst = get_backend(config=config, api_config=api["config"])
@@ -145,11 +137,9 @@ def test_backend_lookup_playlist(api, config, headers, pl_uri):
 @pytest.mark.parametrize("api", apis)
 @pytest.mark.parametrize("video_uri", video_uris)
 def test_backend_get_video_image(api, config, headers, video_uri):
-
     with my_vcr.use_cassette(
         f"tests/fixtures/{api['name']}/backend_get_video_image.yaml"
     ):
-
         setup_entry_api(api, config, headers)
         backend_inst = get_backend(config=config, api_config=api["config"])
         images = backend_inst.library.get_images(video_uri)
@@ -160,11 +150,9 @@ def test_backend_get_video_image(api, config, headers, video_uri):
 
 @pytest.mark.parametrize("api", apis)
 def test_backend_get_video_images(api, config, headers, video_uris):
-
     with my_vcr.use_cassette(
         f"tests/fixtures/{api['name']}/backend_get_video_images.yaml"
     ):
-
         setup_entry_api(api, config, headers)
 
         backend_inst = get_backend(config=config, api_config=api["config"])
@@ -183,11 +171,9 @@ def test_backend_get_video_images(api, config, headers, video_uris):
 @pytest.mark.parametrize("api", apis)
 @pytest.mark.parametrize("playlist_uri", playlist_uris)
 def test_backend_get_playlist_image(api, config, headers, playlist_uri):
-
     with my_vcr.use_cassette(
         f"tests/fixtures/{api['name']}/backend_get_playlist_image.yaml"
     ):
-
         setup_entry_api(api, config, headers)
         backend_inst = get_backend(config=config, api_config=api["config"])
         images = backend_inst.library.get_images(playlist_uri)
@@ -202,11 +188,9 @@ def test_backend_get_playlist_image(api, config, headers, playlist_uri):
 def test_backend_playback_translate_uri(
     api, config, headers, video_uri, youtube_dl_mock_with_video
 ):
-
     with my_vcr.use_cassette(
         f"tests/fixtures/{api['name']}/backend_playback_translate_uri.yaml"
     ):
-
         setup_entry_api(api, config, headers)
         backend_inst = get_backend(config=config, api_config=api["config"])
         youtube.Video.proxy = None

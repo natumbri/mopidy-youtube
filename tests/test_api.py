@@ -14,9 +14,7 @@ def setup_entry_api(api, config, headers):
 
 @pytest.mark.parametrize("api", apis)
 def test_api_search(api, config, headers):
-
     with my_vcr.use_cassette(f"tests/fixtures/{api['name']}/api_search.yaml"):
-
         setup_entry_api(api, config, headers)
 
         backend_inst = get_backend(config=config, api_config=api["config"])
@@ -43,7 +41,6 @@ def test_api_search(api, config, headers):
 
 @pytest.mark.parametrize("api", apis)
 def test_api_list_related_videos(api, config, headers):
-
     with my_vcr.use_cassette(
         f"tests/fixtures/{api['name']}/api_list_related_videos.yaml"
     ):
@@ -58,7 +55,6 @@ def test_api_list_related_videos(api, config, headers):
 
 @pytest.mark.parametrize("api", apis)
 def test_api_list_videos(api, config, headers):
-
     with my_vcr.use_cassette(f"tests/fixtures/{api['name']}/api_list_videos.yaml"):
         setup_entry_api(api, config, headers)
 
@@ -70,9 +66,7 @@ def test_api_list_videos(api, config, headers):
 
 @pytest.mark.parametrize("api", apis)
 def test_api_list_playlists(api, config, headers):
-
     with my_vcr.use_cassette(f"tests/fixtures/{api['name']}/api_list_playlists.yaml"):
-
         setup_entry_api(api, config, headers)
 
         playlists = youtube.Entry.api.list_playlists(
@@ -87,7 +81,6 @@ def test_api_list_playlists(api, config, headers):
 
 @pytest.mark.parametrize("api", apis)
 def test_api_list_playlistitems(api, config, headers):
-
     with my_vcr.use_cassette(
         f"tests/fixtures/{api['name']}/api_list_playlistitems.yaml"
     ):
@@ -102,7 +95,6 @@ def test_api_list_playlistitems(api, config, headers):
 
 @pytest.mark.parametrize("api", apis)
 def test_api_list_channelplaylists(api, config, headers):
-
     with my_vcr.use_cassette(
         f"tests/fixtures/{api['name']}/api_list_channelplaylists.yaml"
     ):

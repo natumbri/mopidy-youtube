@@ -17,6 +17,7 @@ from mopidy_youtube.data import (
     extract_playlist_id,
     extract_preload_tracks,
     extract_video_id,
+    format_playlist_uri,
 )
 from mopidy_youtube.youtube import Video
 
@@ -158,6 +159,7 @@ class YouTubeBackend(pykka.ThreadingActor, backend.Backend):
                     "Accept": "*/*",
                     "Content-Type": "application/json",
                     "origin": "https://music.youtube.com",
+                    "x-origin": "https://music.youtube.com",  # seems to be needed?
                 }
             )
 
@@ -167,7 +169,6 @@ class YouTubeBackend(pykka.ThreadingActor, backend.Backend):
 
 
 class YouTubeLibraryProvider(backend.LibraryProvider):
-
     root_directory = Ref.directory(uri="youtube:browse", name="YouTube")
 
     """
@@ -187,6 +188,7 @@ class YouTubeLibraryProvider(backend.LibraryProvider):
                 Ref.directory(uri="youtube:channel:root", name="My Youtube playlists"),
                 Ref.directory(uri="youtube:channel:artists", name="My Youtube artists"),
             ]
+
         if uri == "youtube:channel:artists":
             artistrefs = set()
             pl = []
@@ -205,23 +207,30 @@ class YouTubeLibraryProvider(backend.LibraryProvider):
             artistrefs_list = list(artistrefs)
             artistrefs_list.sort(key=lambda x: x.name.lower())
             return artistrefs_list
+
         if extract_playlist_id(uri):
             trackrefs = []
             tracks = self.lookup(uri)
             for track in tracks:
                 trackrefs.append(Ref.track(uri=track.uri, name=track.name))
             return trackrefs
+
         elif extract_channel_id(uri):
             logger.debug(f"browse channel / library {uri}")
             playlistrefs = []
-            albums = []
+            # albums = []
             playlists = youtube.Channel.playlists(extract_channel_id(uri))
             if playlists:
                 for pl in playlists:
-                    pl.videos
-                    albums.append(convert_playlist_to_album(pl))
-                for album in albums:
-                    playlistrefs.append(Ref.playlist(uri=album.uri, name=album.name))
+                    #     # pl.videos  # should we avoid this here, if it gets done in youtube.Channel.playlists
+                    #     albums.append(convert_playlist_to_album(pl))
+                    # for album in albums:
+                    #     playlistrefs.append(Ref.playlist(uri=album.uri, name=album.name))
+                    playlistrefs.append(
+                        Ref.playlist(
+                            uri=format_playlist_uri(pl.id), name=pl.title.get()
+                        )
+                    )
             playlistrefs.sort(key=lambda x: x.name.lower())
             return playlistrefs
 
@@ -253,7 +262,6 @@ class YouTubeLibraryProvider(backend.LibraryProvider):
         if "uri" in query:
             tracks = self.lookup(query["uri"][0])
             if tracks[0].uri:
-
                 return SearchResult(
                     uri="youtube:search", tracks=tracks
                 )  # , artists=artists, albums=albums)

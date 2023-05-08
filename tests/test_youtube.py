@@ -7,14 +7,12 @@ from tests.test_api import setup_entry_api
 
 
 def test_create_unsupported_object():
-
     created_object = youtube.Entry.create_object({"id": {"kind": "not valid"}})
     assert created_object == []
 
 
 @pytest.mark.parametrize("api", apis)
 def test_youtube_search(api, config, headers):
-
     with my_vcr.use_cassette(
         f"tests/fixtures/{api['name']}/youtube_search.yaml", record_mode="new_episodes"
     ):
@@ -57,7 +55,6 @@ def test_youtube_search(api, config, headers):
 
 @pytest.mark.parametrize("api", apis)
 def test_youtube_get_video(api, config, headers):
-
     with my_vcr.use_cassette(f"tests/fixtures/{api['name']}/youtube_get_video.yaml"):
         setup_entry_api(api, config, headers)
 
@@ -78,7 +75,6 @@ def test_youtube_get_video(api, config, headers):
 
 @pytest.mark.parametrize("api", apis)
 def test_audio_url(api, config, headers, youtube_dl_mock_with_video):
-
     setup_entry_api(api, config, headers)
     youtube.Video.proxy = None
     video = youtube.Video.get("e1YqueG2gtQ")
@@ -88,7 +84,6 @@ def test_audio_url(api, config, headers, youtube_dl_mock_with_video):
 
 @pytest.mark.parametrize("api", apis)
 def test_audio_url_fail(api, config, headers, youtube_dl_mock):
-
     setup_entry_api(api, config, headers)
     youtube.Video.proxy = None
 
@@ -101,7 +96,6 @@ def test_audio_url_fail(api, config, headers, youtube_dl_mock):
 
 @pytest.mark.parametrize("api", apis)
 def test_youtube_get_playlist(api, config, headers):
-
     with my_vcr.use_cassette(f"tests/fixtures/{api['name']}/youtube_get_playlist.yaml"):
         setup_entry_api(api, config, headers)
         youtube.Playlist.playlist_max_videos = config["youtube"]["playlist_max_videos"]
@@ -139,7 +133,6 @@ def test_youtube_get_playlist(api, config, headers):
 
 @pytest.mark.parametrize("api", apis)
 def test_youtube_channel_playlists(api, config, headers):
-
     with my_vcr.use_cassette(
         f"tests/fixtures/{api['name']}/youtube_channel_playlists.yaml"
     ):

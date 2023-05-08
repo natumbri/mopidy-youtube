@@ -1,6 +1,5 @@
 import glob
 import json
-import logging
 import os
 import pathlib
 
@@ -8,12 +7,10 @@ import tornado.gen
 import tornado.ioloop
 import tornado.web
 
-from mopidy_youtube import youtube
+from mopidy_youtube import logger, youtube
 from mopidy_youtube.data import extract_playlist_id, extract_video_id
 
 # from PIL import Image
-
-logger = logging.getLogger(__name__)
 
 
 class ImageHandler(tornado.web.StaticFileHandler):
@@ -55,11 +52,28 @@ class IndexHandler(tornado.web.RequestHandler):
                 )
 
         elif image is not None:
+            ext = self.get_argument("ext")
+            track = self.get_argument("track", None)
+            json_file = os.path.join(self.root, f"{image}.json")
+
+            artists = ""
+            album = ""
+
+            if os.path.isfile(json_file):
+                with open(json_file, "r") as openfile:
+                    track_json = json.load(openfile)
+                    if "artists" in track_json:
+                        artists = [artist["name"] for artist in track_json["artists"]]
+                    if "album" in track_json:
+                        album = track_json["album"]["name"]
+
             return self.render(
                 "image.html",
                 image=image,
-                ext=self.get_argument("ext"),
-                track=self.get_argument("track", None),
+                ext=ext,
+                track=track,
+                artists=artists,
+                album=album,
             )
 
         else:
@@ -111,13 +125,13 @@ class IndexHandler(tornado.web.RequestHandler):
             with open(filename[0]) as openfile:
                 yield (json.load(openfile), filename[1], filename[2])
 
-    # for arranging images by dominant colour
-    def find_dominant_color(self, filename):
-        img = Image.open(filename)
-        img = img.convert("RGBA")
-        img = img.resize((1, 1), resample=0)
-        dominant_color = img.getpixel((0, 0))
-        return dominant_color
+    # # for arranging images by dominant colour
+    # def find_dominant_color(self, filename):
+    #     img = Image.open(filename)
+    #     img = img.convert("RGBA")
+    #     img = img.resize((1, 1), resample=0)
+    #     dominant_color = img.getpixel((0, 0))
+    #     return dominant_color
 
 
 class AudioHandler(tornado.web.RequestHandler):

@@ -12,7 +12,6 @@ from mopidy_youtube.apis.json_paths import traverse, ytmErrorThumbnailPath
 from mopidy_youtube.apis.ytm_item_to_video import ytm_item_to_video
 from mopidy_youtube.comms import Client
 from mopidy_youtube.youtube import Playlist, Video
-from mopidy_youtube.data import extract_playlist_id
 
 ytmusic = None
 own_channel_id = None
@@ -265,7 +264,7 @@ class Music(Client):
             return None
 
         # these the playlists that are returned
-        items = [cls.yt_listitem_to_playlist(result) for result in results]
+        items = [cls.yt_listitem_to_playlist(result) for result in results if result]
 
         # create the playlist objects and video objects for each track in
         # the playlist, and add the videos to the playlist to avoid
@@ -276,10 +275,12 @@ class Music(Client):
 
     @classmethod
     def list_playlistitems(cls, id, page=None, max_results=None):
-
         logger.debug(f"youtube_music list_playlistitems for playlist {id}")
 
         result = cls._get_playlist_or_album(id)
+        if not result:
+            return
+
         result["playlistId"] = id
         playlist = cls.yt_listitem_to_playlist(result)
 
@@ -324,7 +325,6 @@ class Music(Client):
 
     @classmethod
     def list_channelplaylists(cls, channel_id):
-
         # this really should be ytmusic.get_user_playlists(), I think, with channel_id
         # controlling which channel's (user's) playlists are retrieved. get_library_playlists()
         # allows only the playlists of the authenticated user.
@@ -444,7 +444,6 @@ class Music(Client):
 
     @classmethod
     def search_albums(cls, q):
-
         logger.debug(f"youtube_music search_albums triggered ytmusic.search: {q}")
 
         results = ytmusic.search(query=q, filter="albums", limit=Video.search_results)
@@ -552,6 +551,12 @@ class Music(Client):
         return playlist
 
     def _get_playlist_or_album(id):
+        # OLAK5uy_lUNm1YMm972Rvy0LpDg3ORQFjtN_8oBtc
+        if id.startswith("OLAK5uy_"):
+            id = YTMusic.get_album_browse_id(
+                YTMusic(), id
+            )  # this needs to be fixed! ytmusic.get_album_browse_id(id)
+
         if id.startswith("PL"):
             logger.debug(
                 f"youtube_music _get_playlist_or_album triggered ytmusic.get_playlist: {id}"
@@ -559,6 +564,7 @@ class Music(Client):
             result = ytmusic.get_playlist(id)
             result["playlistId"] = result["id"]
             result["artists"] = [result["author"]]
+
         else:
             logger.debug(
                 f"youtube_music _get_playlist_or_album triggered ytmusic.get_album: {id}"
@@ -566,9 +572,8 @@ class Music(Client):
             result = ytmusic.get_album(id)
             if "artists" not in result:
                 result["artists"] = result["artist"]
-
-        if "playlistId" not in result:
-            result["playlistId"] = id
+            if "playlistId" not in result:
+                result["playlistId"] = id
 
         return result
 

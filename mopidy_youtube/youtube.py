@@ -10,6 +10,7 @@ from mopidy.models import Image, ModelJSONEncoder
 
 from mopidy_youtube import logger
 from mopidy_youtube.converters import convert_video_to_track
+from mopidy_youtube.data import extract_playlist_id, extract_video_id
 from mopidy_youtube.timeformat import ISO8601_to_seconds
 
 api_enabled = False
@@ -237,7 +238,6 @@ class Entry:
 
 
 class Video(Entry):
-
     total_bytes = 0
 
     @classmethod
@@ -343,14 +343,13 @@ class Video(Entry):
 
     @async_property
     def track_no(self):
-
         requiresTrack_No = self._add_futures([self], ["track_no"])
 
         if requiresTrack_No:
             album_uri = self.album.get()
             if album_uri["uri"] and not album_uri["uri"].startswith("PL"):
                 album_id = extract_playlist_id(album_uri)
-                album_tracks = cls.api.list_playlistitems(album_id)
+                album_tracks = self.api.list_playlistitems(album_id)
                 self._track_no.set(
                     [track["id"]["videoId"] for track in album_tracks].index[
                         extract_video_id(self.id)
@@ -431,7 +430,9 @@ class Video(Entry):
                         f"setting cached audio_url: {httpUri}, "
                         f"{os.path.basename(d['filename'])}"
                     )
-                    self.total_bytes = d["total_bytes"]
+                    self.total_bytes = d.get(
+                        "total_bytes", d["info_dict"].get("filesize")
+                    )
                     logger.debug(
                         f"expected length of {os.path.basename(d['filename'])}: "
                         f"{self.total_bytes}"
@@ -691,6 +692,7 @@ class Channel(Entry):
                 raise Exception(data["error"])
         except Exception as e:
             logger.error('Channel.playlists list_channelplaylists error "%s"', e)
+            print('Channel.playlists list_channelplaylists error "%s"', e)
             return None
         try:
             channel_playlists = []
@@ -700,8 +702,9 @@ class Channel(Entry):
                 # item, extended_fields = cls.extend_fields(item, minimum_fields)
                 extended_fields = minimum_fields
                 pl._set_api_data(extended_fields, item)
+                pl.videos  # should we start loading the videos here?
                 channel_playlists.append(pl)
-            Playlist.load_info(channel_playlists)
+            # Playlist.load_info(channel_playlists)  # what does this do, here?
             return channel_playlists
         except Exception as e:
             logger.error('map error "%s"', e)

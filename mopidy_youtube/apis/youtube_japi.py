@@ -82,7 +82,6 @@ class jAPI(Client):
         items = []
 
         def job(id):
-
             results = cls.pl_run_search(
                 {
                     "search_query": '"' + id + '"',
@@ -103,7 +102,6 @@ class jAPI(Client):
                 return results
 
             else:
-
                 logger.debug(f"jAPI 'list_videos' triggered session.get: {id}")
                 result = cls.session.get(cls.endpoint + "watch?v=" + id)
                 if result.status_code == 200:
@@ -165,7 +163,6 @@ class jAPI(Client):
         items = []
 
         def job(id):
-
             results = cls.pl_run_search(
                 {
                     "search_query": '"' + id + '"',
@@ -184,14 +181,12 @@ class jAPI(Client):
                 return results
 
             else:
-
                 logger.debug(f"jAPI 'list_playlists' triggered session.get: {id}")
                 result = cls.session.get(cls.endpoint + "playlist?list=" + id)
                 if result.status_code == 200:
                     yt_data = cls._find_yt_data(result.text)
 
                     if yt_data:
-
                         extracted_json = yt_data["sidebar"]["playlistSidebarRenderer"][
                             "items"
                         ]
@@ -333,7 +328,6 @@ class jAPI(Client):
         url = f'{urljoin(cls.endpoint, "youtubei/v1/search")}?{urlencode(query)}'
 
         while len(results) < Video.search_results:
-
             if continuation:
                 data.update({"continuation": continuation})
 
@@ -412,7 +406,6 @@ class jAPI(Client):
         items = []
 
         for content in result_json:
-
             base = []
 
             contentRenderers = [
@@ -424,7 +417,6 @@ class jAPI(Client):
             base = [renderer for renderer in contentRenderers if renderer in content]
 
             if base:
-
                 video = content[base[0]]
 
                 try:
@@ -518,7 +510,6 @@ class jAPI(Client):
                 continue
 
             elif "playlistRenderer" in content:
-
                 playlist = content["playlistRenderer"]
 
                 try:
@@ -551,7 +542,6 @@ class jAPI(Client):
                 items.append(item)
 
             elif "gridPlaylistRenderer" in content:
-
                 playlist = content["gridPlaylistRenderer"]
 
                 try:

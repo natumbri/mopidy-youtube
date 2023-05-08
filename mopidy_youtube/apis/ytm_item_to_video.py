@@ -3,7 +3,6 @@ from mopidy_youtube.timeformat import convert_Millis, format_duration
 
 
 def ytm_item_to_video(item):
-
     if "videoDetails" in item:
         item = item["videoDetails"]
 
