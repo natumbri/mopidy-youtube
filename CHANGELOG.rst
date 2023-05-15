@@ -2,6 +2,14 @@
 Changelog
 *********
 
+v3.7 (2023-05-15)
+========================================
+
+- fix up various things that have gone to seed 
+- remove tornado.gen.Task
+- solve problem with caching while playing
+
+
 v3.6 (2022-07-09)
 ========================================
 
