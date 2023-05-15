@@ -402,7 +402,9 @@ class Video(Entry):
                     f"audio_url not set during downloading; setting audio_url now:"
                     f" {fileUri}, {os.path.basename(d['filename'])}"
                 )
-                self.total_bytes = d["total_bytes"]
+
+                self.total_bytes = d.get("total_bytes", d["info_dict"].get("filesize"))
+
                 logger.debug(
                     f"expected length of {os.path.basename(d['filename'])}: "
                     f"{self.total_bytes}"
