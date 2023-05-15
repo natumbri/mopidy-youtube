@@ -126,7 +126,7 @@ documentation for how to configure it.) Note: Setting up the cookie using the de
 configuration option will not work for high quality audio!
 
 Setup a `cookies.txt` (Netscape HTTP Cookie File) containing YouTube cookies:
-- Download an extension to dump YouTube cookies. For example:
+- Download an extension to dump YouTube cookies. For example:  
   - Firefox: https://addons.mozilla.org/en-US/firefox/addon/cookies-txt/
   - Chrome: https://chrome.google.com/webstore/detail/get-cookiestxt/bgaddhkoddajcdgocldbbfleckgcbcid
 - Navigate to youtube.com and ensure you are logged in.
