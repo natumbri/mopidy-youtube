@@ -160,6 +160,7 @@ class YouTubeBackend(pykka.ThreadingActor, backend.Backend):
                     "Content-Type": "application/json",
                     "origin": "https://music.youtube.com",
                     "x-origin": "https://music.youtube.com",  # seems to be needed?
+                    "Authorization": "",  # needed by ytmusicapi
                 }
             )
 
