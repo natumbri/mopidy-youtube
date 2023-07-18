@@ -110,25 +110,19 @@ mopidy library, you need to::
 
     - set channel_id to the id for your own channel
     - enable the music api and 
-    - set a musicapi_cookie OR a musicapi_cookiefile  
+    - set a musicapi_browser_authentication_file
 
-If you want to use a cookie (rather than a cookiefile) you can obtain the cookie by process 
-mentioned in the `ytmusicapi readme <https://ytmusicapi.readthedocs.io/en/latest/setup.html#copy-authentication-headers>`_.
-You only have to look out for Cookie in the network tab, not all the headers, and include
-it in your config file as musicapi_cookie::
+You can obtain the musicapi browser authentication file by process 
+mentioned in the `ytmusicapi readme <https://ytmusicapi.readthedocs.io/en/stable/setup/browser.html>`_.
 
-    musicapi_cookie = <cookie>  
-
-
-Alternatively, you can setup the `musicapi_cookiefile`.  This is necessary to enable YouTube Premium
-high quality streaming. (You also need to use yt-dlp instead of youtube_dl. See `youtube_dl_package` 
-documentation for how to configure it.) Note: Setting up the cookie using the deprecated `musicapi_cookie`
-configuration option will not work for high quality audio!
+To enable YouTube Premium high quality streaming you must setup the `musicapi_cookiefile`. 
+(You also need to use yt-dlp instead of youtube_dl. See `youtube_dl_package` 
+documentation for how to configure it.) 
 
 Setup a `cookies.txt` (Netscape HTTP Cookie File) containing YouTube cookies:
 - Download an extension to dump YouTube cookies. For example:  
   - Firefox: https://addons.mozilla.org/en-US/firefox/addon/cookies-txt/
-  - Chrome: https://chrome.google.com/webstore/detail/get-cookiestxt/bgaddhkoddajcdgocldbbfleckgcbcid
+  - Chrome: https://chrome.google.com/webstore/detail/get-cookiestxt-locally/cclelndahbckbenkjhflpdbgdldlbecc
 - Navigate to youtube.com and ensure you are logged in.
 - Open the extension and export cookies using the "Only for this site" option.
 - Save the file and reference it in `musicapi_cookiefile`.

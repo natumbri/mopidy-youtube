@@ -1,11 +1,9 @@
 import json
 import os
-from http.cookiejar import DefaultCookiePolicy, MozillaCookieJar
-from http.cookies import SimpleCookie
 
 import pykka
 from cachetools import TTLCache, cached
-from mopidy import backend, httpclient
+from mopidy import backend, httpclient, listener
 from mopidy.core import CoreListener
 from mopidy.models import Image, Ref, SearchResult, Track, model_json_decoder
 
@@ -20,6 +18,10 @@ from mopidy_youtube.data import (
     format_playlist_uri,
 )
 from mopidy_youtube.youtube import Video
+
+# from http.cookiejar import DefaultCookiePolicy, MozillaCookieJar
+# from http.cookies import SimpleCookie
+
 
 """
 A typical interaction:
@@ -57,11 +59,50 @@ class YouTubeCoreListener(pykka.ThreadingActor, CoreListener):
             if track.uri.startswith("youtube:video:")
             or track.uri.startswith("yt:video:")
         ]
-        videos = [youtube.Video.get(video_id) for video_id in video_ids]
-        [video.audio_url for video in videos]
+        [youtube.Video.get(video_id).audio_url for video_id in video_ids]
+
+    # used for add to playback history function
+    # stolen from mopidy-ytmusic (https://github.com/OzymandiasTheGreat/mopidy-ytmusic/blob/master/mopidy_ytmusic/scrobble_fe.py)
+    # who stole it from mopidy-gmusic
+    def track_playback_ended(self, tl_track, time_position):
+        if 1 == 1:  # need to add a config option for adding to playback history
+            track = tl_track.track
+            if track.uri.startswith("youtube:video:") or track.uri.startswith(
+                "yt:video:"
+            ):
+                duration = track.length and track.length // 1000 or 0
+                time_position = time_position // 1000
+
+                if time_position < duration // 2 and time_position < 120:
+                    logger.debug(
+                        "Track not played long enough to add to history. (50% or 120s)"
+                    )
+                    return
+
+                bId = track.uri.split(":")[2]
+                logger.debug(f"track playback ended {bId}")
+
+                # probably should add a config option for adding autoplayed to history
+                # for now, autoplayed tracks are not added to history
+                if bId not in self.core.autoplayed.get():
+                    logger.debug(f"adding {bId} to history")
+                    listener.send(
+                        YouTubeAddToHistoryListener,
+                        "add_track_to_history",
+                        bId=bId,
+                    )
+                else:
+                    logger.debug(f"not adding {bId} to history: autoplayed")
 
 
-class YouTubeBackend(pykka.ThreadingActor, backend.Backend):
+class YouTubeAddToHistoryListener(listener.Listener):
+    def add_track_to_history(self, bId):
+        pass
+
+
+class YouTubeBackend(
+    pykka.ThreadingActor, backend.Backend, YouTubeAddToHistoryListener
+):
     def __init__(self, config, audio):
         super().__init__()
         self.config = config
@@ -77,24 +118,34 @@ class YouTubeBackend(pykka.ThreadingActor, backend.Backend):
             except Exception as e:
                 logger.error(f"No YouTube API key provided, disabling API: {e}")
                 youtube.api_enabled = False
+
         youtube.channel = config["youtube"]["channel_id"]
         youtube.Video.search_results = config["youtube"]["search_results"]
         youtube.Video.http_port = config["http"]["port"]
         youtube.Playlist.playlist_max_videos = config["youtube"]["playlist_max_videos"]
+
         youtube.musicapi_enabled = config["youtube"]["musicapi_enabled"]
         if youtube.musicapi_enabled:
             global youtube_music
             from mopidy_youtube.apis import youtube_music
 
-            youtube.musicapi_cookie = config["youtube"].get("musicapi_cookie", None)
+            # # don't allow just pasting in the cookie anymore
+            # youtube.musicapi_cookie = config["youtube"].get("musicapi_cookie", None)
+
+            youtube.musicapi_browser_authentication_file = config["youtube"].get(
+                "musicapi_browser_authentication_file", None
+            )
             youtube.musicapi_cookiefile = config["youtube"].get(
                 "musicapi_cookiefile", None
             )
-            if youtube.musicapi_cookie and youtube.musicapi_cookiefile:
-                raise ValueError(
-                    "Only one of youtube/musicapi_cookie or "
-                    "youtube/musicapi_cookiefile can be used at one."
-                )
+
+            # # not required, because musicapi_cookie is no longer allowed
+            # if youtube.musicapi_cookie and youtube.musicapi_cookiefile:
+            #     raise ValueError(
+            #         "Only one of youtube/musicapi_cookie or "
+            #         "youtube/musicapi_cookiefile can be used at one."
+            #     )
+
             youtube_music.own_channel_id = youtube.channel
         youtube.youtube_dl_package = config["youtube"]["youtube_dl_package"]
         self.uri_schemes = ["youtube", "yt"]
@@ -131,41 +182,96 @@ class YouTubeBackend(pykka.ThreadingActor, backend.Backend):
         if youtube.musicapi_enabled is True:
             logger.info("Using YouTube Music API")
 
-            if youtube.musicapi_cookiefile:
-                logger.info(f"Reading cookies from {youtube.musicapi_cookiefile}")
-                cj = MozillaCookieJar(
-                    youtube.musicapi_cookiefile,
-                    policy=DefaultCookiePolicy(allowed_domains="youtube.com"),
+            if youtube.musicapi_browser_authentication_file:
+                logger.info(
+                    f"Reading cookies from {youtube.musicapi_browser_authentication_file}"
                 )
-                cj.load()
-                cookie_parts = []
-                for cookie in cj:
-                    cookie_parts.append(
-                        "%s=%s"
-                        % (
-                            cookie.name,
-                            SimpleCookie()
-                            .value_encode(cookie.value)[1]
-                            .replace('"', ""),
-                        )
-                    )
+                with open(
+                    youtube.musicapi_browser_authentication_file
+                ) as browser_authentication_file:
+                    headers = json.load(browser_authentication_file)
 
-                youtube.musicapi_cookie = "; ".join(cookie_parts)
-            if youtube.musicapi_cookie:
-                headers.update({"Cookie": youtube.musicapi_cookie})
+            # # previously used the Mozilla cookiejar file that youtube-dl requries
+            # # now use a json file generated according to the instructions on
+            # # https://ytmusicapi.readthedocs.io/en/stable/setup/browser.html
+            # # it would be _much_ better if this were the same for ytmusicapi and
+            # # youtube-dl
 
-            headers.update(
-                {
-                    "Accept": "*/*",
-                    "Content-Type": "application/json",
-                    "origin": "https://music.youtube.com",
-                    "x-origin": "https://music.youtube.com",  # seems to be needed?
-                }
-            )
+            #     cj = MozillaCookieJar(
+            #         youtube.musicapi_cookiefile,
+            #         policy=DefaultCookiePolicy(allowed_domains="youtube.com"),
+            #     )
+            #     cj.load()
+            #     cookie_parts = []
+            #     for cookie in cj:
+            #         cookie_parts.append(
+            #             "%s=%s"
+            #             % (
+            #                 cookie.name,
+            #                 SimpleCookie()
+            #                 .value_encode(cookie.value)[1]
+            #                 .replace('"', ""),
+            #             )
+            #         )
+
+            #     youtube.musicapi_cookie = "; ".join(cookie_parts)
+            # if youtube.musicapi_cookie:
+            #     headers.update({"Cookie": youtube.musicapi_cookie})
+
+            # headers.update(
+            #     {
+            #         "Accept": "*/*",
+            #         "Content-Type": "application/json",
+            #         "origin": "https://music.youtube.com",
+            #         "x-origin": "https://music.youtube.com",  # seems to be needed?
+            #     }
+            # )
 
             youtube.Entry.api = youtube_music.Music(proxy, headers)
             # if youtube.api_enabled:
             #     youtube.Entry.api.list_playlists = music.list_playlists
+
+    def add_track_to_history(self, bId):
+        # this should be done in .youtube, by reference to the relevant API.  But for now...
+
+        # # the code below gets signatureTimestamp; it might be needed for
+        # # ytmusic.get_song() to work properly.
+        # # stolen from mopidy-youtube (https://github.com/OzymandiasTheGreat/mopidy-ytmusic)
+
+        # import requests
+        # import re
+
+        # response = requests.get(
+        #     "https://music.youtube.com",
+        #     headers={
+        #             "Accept": "*/*",
+        #             "user-agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36",
+        #             "Cookie": "PREF=hl=en; CONSENT=YES+20210329;",
+        #             "Accept-Language": "en;q=0.8",
+        #             "origin": "https://music.youtube.com",
+        #             "x-origin": "https://music.youtube.com",  # seems to be needed?
+        #         }
+        # )
+
+        # m = re.search(r'jsUrl"\s*:\s*"([^"]+)"', response.text)
+
+        # if m:
+        #     playerurl = m.group(1)
+
+        # response = requests.get("https://music.youtube.com" + playerurl)
+        # m = re.search(r"signatureTimestamp[:=](\d+)", response.text)
+        # if m:
+        #     signatureTimestamp = m.group(1)
+        #     logger.info(
+        #         "YTMusic updated signatureTimestamp to %s",
+        #         signatureTimestamp,
+        #     )
+
+        logger.debug(f"adding {bId} to history")
+        song = youtube_music.ytmusic.get_song(bId)  # , signatureTimestamp)
+        youtube_music.ytmusic.add_history_item(
+            song
+        )  # will fail if s.youtube.com is blocked by adblocker
 
 
 class YouTubeLibraryProvider(backend.LibraryProvider):

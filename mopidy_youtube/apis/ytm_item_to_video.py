@@ -7,7 +7,7 @@ def ytm_item_to_video(item):
         item = item["videoDetails"]
 
     try:
-        if "duration" in item:
+        if "duration" in item and item["duration"]:
             duration = item["duration"]
         elif "length" in item:
             duration = item["length"]
@@ -15,6 +15,8 @@ def ytm_item_to_video(item):
             duration = convert_Millis(item["lengthMs"])
         elif "lengthSeconds" in item:
             duration = convert_Millis(int(item["lengthSeconds"]) * 1000)
+        elif "song_druation" in item:
+            duration = convert_Millis(int(item["song_duration"]) * 1000)
         else:
             duration = "00:00:00"
             logger.warn(f"duration missing: {item}")

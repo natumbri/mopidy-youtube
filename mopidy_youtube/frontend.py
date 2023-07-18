@@ -9,7 +9,7 @@ from mopidy_youtube.data import extract_video_id, format_video_uri
 autoplay_enabled = False
 strict_autoplay = False
 max_autoplay_length = None
-autoplayed = []
+# autoplayed = []
 max_degrees_of_separation = 3
 
 
@@ -18,6 +18,7 @@ class YouTubeAutoplayer(pykka.ThreadingActor, listener.CoreListener):
         super().__init__()
         self.config = config
         self.core = core
+        self.core.autoplayed = []
         self.autoplay_enabled = config["youtube"]["autoplay_enabled"]
         self.strict_autoplay = config["youtube"]["strict_autoplay"]
         self.max_degrees_of_separation = config["youtube"]["max_degrees_of_separation"]
@@ -83,9 +84,9 @@ class YouTubeAutoplayer(pykka.ThreadingActor, listener.CoreListener):
                     logger.debug("resetting to autoplay base track id")
                 logger.debug(f"degrees of sep {self.degrees_of_separation}")
 
-            if current_track_id not in autoplayed:
+            if current_track_id not in self.core.autoplayed:
                 self.base_track_id = current_track_id
-                autoplayed.append(current_track_id)  # avoid replaying track
+                # self.core.autoplayed.get().append(current_track_id)  # avoid replaying track
                 self.degrees_of_separation = 0
                 logger.debug("setting new autoplay base id")
                 logger.debug(f"base track id {self.base_track_id}")
@@ -103,7 +104,8 @@ class YouTubeAutoplayer(pykka.ThreadingActor, listener.CoreListener):
             related_videos[:] = [
                 related_video
                 for related_video in related_videos
-                if related_video.id not in autoplayed
+                if related_video.id
+                not in (self.core.autoplayed.get() + [self.base_track_id])
             ]
             logger.debug(f"related videos edit 1 {related_videos}")
             # remove if track_length is 0 (probably a live video) or None
@@ -131,7 +133,7 @@ class YouTubeAutoplayer(pykka.ThreadingActor, listener.CoreListener):
             else:
                 next_video = random.choice(related_videos)
                 logger.debug(f"next video {next_video.id}")
-                autoplayed.append(next_video.id)
+                self.core.autoplayed.get().append(next_video.id)
                 uri = [format_video_uri(next_video.id)]
                 tl.add(uris=uri).get()
                 return None
