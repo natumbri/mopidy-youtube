@@ -83,13 +83,6 @@ class IndexHandler(tornado.web.RequestHandler):
         return pathlib.Path(__file__).parent / "www"
 
     def uri_generator(self):
-        # jpegs = [
-        #     os.path.basename(x) for x in glob.glob(os.path.join(self.root, "*.jpg"))
-        # ]
-        # webps = [
-        #     os.path.basename(x) for x in glob.glob(os.path.join(self.root, "*.webp"))
-        # ]
-
         for json_line in self.data_generator():
             yield (json_line[0]["comment"], json_line[0]["name"], json_line[2])
 
@@ -111,14 +104,6 @@ class IndexHandler(tornado.web.RequestHandler):
                 combo.append(
                     (filename, os.path.splitext(os.path.basename(filename))[0], "webp")
                 )  # ,  self.find_dominant_color(os.path.join(self.root, f"{os.path.splitext(os.path.basename(filename))[0]}.webp"))))
-            else:
-                combo.append(
-                    (
-                        filename,
-                        os.path.splitext(os.path.basename(filename))[0],
-                        "missing",
-                    )
-                )  # ,  (0,0,0,0)))
 
         # for filename in sorted(combo, key=lambda element: (element[3][0], element[3][1], element[3][2])):
         for filename in combo:

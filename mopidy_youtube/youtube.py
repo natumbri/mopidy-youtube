@@ -1,7 +1,6 @@
 import importlib
 import json
 import os
-import shutil
 from concurrent.futures.thread import ThreadPoolExecutor
 
 import pykka
@@ -485,20 +484,6 @@ class Video(Entry):
                         fileUri = f"file://{(os.path.join(cache_location, cached[0]))}"
                         self._audio_url.set(fileUri)
                     else:
-                        logger.debug(f"caching image {self.id}")
-                        imageFile = f"{self.id}.webp"
-                        if imageFile not in os.listdir(cache_location):
-                            imageUri = self.thumbnails.get()[0].uri
-                            response = self.api.session.get(imageUri, stream=True)
-                            if response.status_code == 200:
-                                logger.debug(f"caching image {self.id}")
-                                with open(
-                                    os.path.join(cache_location, imageFile),
-                                    "wb",
-                                ) as out_file:
-                                    shutil.copyfileobj(response.raw, out_file)
-                            del response
-
                         logger.debug(f"caching track {self.id}")
                         ytdl_options["outtmpl"] = os.path.join(
                             cache_location, "%(id)s.%(ext)s"
@@ -525,6 +510,49 @@ class Video(Entry):
                         # # self._audio_url.set is now done by the progress_hooks
                         # fileUri = f"file://{ydl.prepare_filename(info)}"
                         # self._audio_url.set(fileUri)
+
+                    # moved this here, because sometimes the image might go
+                    # missing, even if the audio and the json do not
+                    # and updated to account for jpgs and webps
+                    if not any(
+                        image in os.listdir(cache_location)
+                        for image in (f"{self.id}.webp", f"{self.id}.jpg")
+                    ):
+                        logger.debug(f"caching image {self.id}")
+                        imageUri = self.thumbnails.get()[0].uri
+
+                        response = self.api.session.get(
+                            imageUri,
+                            headers={
+                                "content-length": None,
+                                "host": None,
+                            },
+                            stream=True,
+                        )
+
+                        if response.status_code == 200:
+                            logger.debug(f"caching image {self.id}")
+                            magic = next(response.iter_content(4))
+                            if magic == b"\xff\xd8\xff\xe0":
+                                imageFile = f"{self.id}.jpg"
+                            elif magic == b"\x52\x49\x46\x46":
+                                imageFile = f"{self.id}.webp"
+                            else:
+                                logger.debug(
+                                    f"invlaid image format for {self.id}; magic: {magic}"
+                                )
+                                raise Exception(
+                                    f"Invalid image format for {self.id}; magic: {magic}"
+                                )
+
+                            with open(
+                                os.path.join(cache_location, imageFile),
+                                "wb",
+                            ) as out_file:
+                                out_file.write(magic)
+                                for chunk in response.iter_content():
+                                    out_file.write(chunk)
+                        del response
 
                     # moved this here, because sometimes the metadata might go
                     # missing, even if the audio and the image do not
