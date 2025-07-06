@@ -5,7 +5,15 @@ from concurrent.futures.thread import ThreadPoolExecutor
 
 import pykka
 from cachetools import TTLCache, cached
-from mopidy.models import Image, ModelJSONEncoder
+
+from mopidy.models import Image
+
+try:
+    # Mopidy < 4.0
+    from mopidy.models import ModelJSONEncoder
+except ImportError:
+    # Mopidy >= 4.0
+    ModelJSONEncoder = None
 
 from mopidy_youtube import logger
 from mopidy_youtube.converters import convert_video_to_track
@@ -558,16 +566,28 @@ class Video(Entry):
                     # missing, even if the audio and the image do not
                     if f"{self.id}.json" not in os.listdir(cache_location):
                         logger.debug(f"caching metadata {self.id}")
+                        track = convert_video_to_track(
+                            self, bitrate=int(info.get("tbr", 0))
+                        )
+
                         with open(
                             os.path.join(cache_location, f"{self.id}.json"), "w"
                         ) as outfile:
-                            json.dump(
-                                convert_video_to_track(
-                                    self, bitrate=int(info.get("tbr", 0))
-                                ),
-                                cls=ModelJSONEncoder,
-                                fp=outfile,
-                            )
+                            if ModelJSONEncoder:
+                                # Mopidy < 4.0
+                                json.dump(
+                                    track,
+                                    cls=ModelJSONEncoder,
+                                    fp=outfile,
+                                )
+                            else:
+                                # Mopidy >= 4.0
+                                json.dump(
+                                    track.model_dump_json(
+                                        by_aliases=True, exclude_none=True
+                                    ),
+                                    fp=outfile,
+                                )
                 else:
                     with youtube_dl.YoutubeDL(ytdl_options) as ydl:
                         info = ydl.extract_info(
