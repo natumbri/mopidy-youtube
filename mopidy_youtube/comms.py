@@ -32,7 +32,7 @@ class Client:
         cls,
         proxy,
         headers,
-        retries=10,
+        retries=3,
         backoff_factor=0.3,
         status_forcelist=(500, 502, 504),
         session=None,

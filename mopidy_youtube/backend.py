@@ -411,12 +411,15 @@ class YouTubeLibraryProvider(backend.LibraryProvider):
 
     def lookup_video_track(self, video_id: str) -> Track:
         if youtube.cache_location:
-            if f"{video_id}.json" in os.listdir(youtube.cache_location):
+            # if f"{video_id}.json" in os.listdir(youtube.cache_location):
+            try:
                 with open(
                     os.path.join(youtube.cache_location, f"{video_id}.json"), "r"
                 ) as infile:
                     track = json.load(infile, object_hook=model_json_decoder)
                 return track
+            except Exception as e:
+                logger.debug(f'Did not open {video_id}.json: {e}')
 
         video = youtube.Video.get(video_id)
         video.title.get()
