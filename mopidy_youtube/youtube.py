@@ -40,6 +40,22 @@ def async_property(func):
     return property(wrapper)
 
 
+def _future_is_set(future: pykka.Future) -> bool:
+    if hasattr(future, "_queue"):
+        try:
+            return not future._queue.empty()
+        except Exception:
+            return True
+
+    try:
+        future.get(timeout=0)
+        return True
+    except pykka.Timeout:
+        return False
+    except Exception:
+        return True
+
+
 class Entry:
     """
     Entry is a base class of Video and Playlist.
@@ -154,11 +170,8 @@ class Entry:
             if not future:
                 future = self.__dict__[_k] = pykka.ThreadingFuture()
 
-            # # What was this for?  Whatever it was for, it doesn't work
-            # # for pykka v4.3 onwards, since ThreadingFuture uses 
-            # # a condition variable instead of a queue
-            # if not future._queue.empty():  # hack, no public is_set()
-            #     continue
+            if _future_is_set(future):
+                continue
 
             if not item:
                 val = None
