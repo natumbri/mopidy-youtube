@@ -41,12 +41,6 @@ def async_property(func):
 
 
 def _future_is_set(future: pykka.Future) -> bool:
-    if hasattr(future, "_queue"):
-        try:
-            return not future._queue.empty()
-        except Exception:
-            return True
-
     try:
         future.get(timeout=0)
         return True
