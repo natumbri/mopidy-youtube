@@ -1,6 +1,7 @@
 import json
 import re
 from urllib.parse import parse_qs, urlparse
+from mopidy_youtube import logger
 
 from mopidy_youtube.apis.ytm_item_to_video import ytm_item_to_video
 
@@ -82,7 +83,7 @@ def extract_channel_id(uri) -> str:
 def extract_preload_tracks(uri) -> dict:
     match = uri_preload_regex.match(uri)
     if match:
-        preload_data = json.loads(match.group("preload_data"))
+        preload_data = json.loads(bytes.fromhex(match.group("preload_data")).decode('utf-8'))
         preload_tracks = [
             ytm_item_to_video(track) for track in preload_data if "videoId" in track
         ]

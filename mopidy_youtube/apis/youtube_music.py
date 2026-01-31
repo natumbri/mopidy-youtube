@@ -508,6 +508,7 @@ class Music(Client):
             },
             "contentDetails": {"itemCount": itemCount},
             "artists": item.get("artists", None),
+            # "artists": [artist for artist in item.get("artists", None) if artist.get("name") not in ["Album", "Song"]]
         }
         if "tracks" in item:
             fields = ["artists", "thumbnails"]
