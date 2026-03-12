@@ -136,22 +136,32 @@ class Entry:
 
     @classmethod
     def create_object(cls, item):
+        if not item or "id" not in item or not isinstance(item["id"], dict):
+            return None
+
         if is_live_item(item):
             logger.info("Skipping live/upcoming YouTube search result: %s", item)
             return None
 
-        minimum_fields = ["title", "channel"]
-        if item["id"]["kind"] == "youtube#video":
-            obj = Video.get(item["id"]["videoId"])
-        elif item["id"]["kind"] == "youtube#playlist":
-            obj = Playlist.get(item["id"]["playlistId"])
+        kind = item["id"].get("kind")
+        if kind == "youtube#video":
+            video_id = item["id"].get("videoId")
+            if not video_id:
+                return None
+            obj = Video.get(video_id)
+        elif kind == "youtube#playlist":
+            playlist_id = item["id"].get("playlistId")
+            if not playlist_id:
+                return None
+            obj = Playlist.get(playlist_id)
         else:
             return None
 
+        minimum_fields = ["title", "channel"]
         item, extended_fields = cls.extend_fields(item, minimum_fields)
         obj._set_api_data(extended_fields, item)
         return obj
-
+    
     @classmethod
     def search(cls, q):
         """Search for both videos and playlists using a single API call."""
