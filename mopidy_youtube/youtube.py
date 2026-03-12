@@ -1,6 +1,8 @@
 import importlib
 import json
 import os
+import threading
+import time
 from concurrent.futures.thread import ThreadPoolExecutor
 
 import pykka
@@ -27,7 +29,9 @@ musicapi_enabled = None
 musicapi_cookiefile = None
 youtube_dl = None
 youtube_dl_package = "youtube_dl"
-
+search_lock = threading.Lock()
+search_in_progress = False
+search_last_started = 0.0
 
 def async_property(func):
     """
@@ -46,7 +50,53 @@ def async_property(func):
         return self.__dict__[_future_name]
 
     return property(wrapper)
+    
+def is_live_item(item):
+    if not item:
+        return False
 
+    # jAPI / scrape search results often miss normal duration fields for lives
+    try:
+        if item.get("is_live"):
+            return True
+    except AttributeError:
+        pass
+
+    live_status = item.get("live_status")
+    if live_status in ("is_live", "is_upcoming", "post_live"):
+        return True
+
+    # Search-result heuristic: live results often lack normal duration metadata
+    content_details = item.get("contentDetails") or {}
+    duration = content_details.get("duration")
+    if duration in (None, "", "P0D", "PT0S"):
+        # only treat as suspicious if it's clearly a video search result
+        item_id = item.get("id")
+        if isinstance(item_id, dict) and item_id.get("kind") == "youtube#video":
+            snippet = item.get("snippet") or {}
+            # live search results often do not have channelId/length-like metadata
+            if "liveBroadcastContent" in snippet:
+                if snippet.get("liveBroadcastContent") != "none":
+                    return True
+
+    return False
+
+def is_live_info(info):
+    if not info:
+        return False
+
+    if info.get("is_live"):
+        return True
+
+    if info.get("live_status") in ("is_live", "is_upcoming", "post_live"):
+        return True
+
+    if info.get("duration") in (None, 0):
+        # last-resort heuristic
+        if info.get("was_live") or info.get("is_upcoming"):
+            return True
+
+    return False
 
 class Entry:
     """
@@ -83,7 +133,13 @@ class Entry:
         obj = cls()
         obj.id = id
         return obj
-
+        
+    @classmethod
+    def create_object(cls, item):
+        if is_live_item(item):
+            logger.info("Skipping live/upcoming YouTube search result: %s", item)
+            return None
+            
     @classmethod
     def create_object(cls, item):
         minimum_fields = ["title", "channel"]
@@ -101,25 +157,44 @@ class Entry:
 
     @classmethod
     def search(cls, q):
-        """
-        Search for both videos and playlists using a single API call. Fetches
-        title, thumbnails, channel. Depending on the API, may also fetch
-        length and video_count. The official youtube API will require an
-        additional API call to fetch length and video_count (taken care of
-        at Video.load_info and Playlist.load_info).
-        """
+        """Search for both videos and playlists using a single API call."""
+
+        global search_in_progress, search_last_started
+
+        q = (q or "").strip()
+        if not q:
+            logger.warning("youtube search skipped: empty query")
+            return []
+
+        # Allow only one active search at a time
+        with search_lock:
+            if search_in_progress:
+                logger.warning('youtube search skipped while previous search is still running: "%s"', q)
+                return []
+
+            search_in_progress = True
+            search_last_started = time.monotonic()
+
         try:
-            data = cls.api.search(q)
-            if "error" in data:
-                raise Exception(data["error"])
-        except Exception as e:
-            logger.error('youtube search error "%s"', e)
-            return None
-        try:
-            return list(map(cls.create_object, data["items"]))
-        except Exception as e:
-            logger.error('map error "%s"', e)
-            return None
+            try:
+                data = cls.api.search(q)
+                if "error" in data:
+                    raise Exception(data["error"])
+            except Exception as e:
+                logger.error('youtube search error "%s"', e)
+                return []
+
+            try:
+                items = data.get("items", [])
+                mapped = [cls.create_object(item) for item in items]
+                return [obj for obj in mapped if obj is not None]
+            except Exception as e:
+                logger.error('map error "%s"', e)
+                return []
+
+        finally:
+            with search_lock:
+                search_in_progress = False
 
     @classmethod
     def _add_futures(cls, futures_list, fields):
