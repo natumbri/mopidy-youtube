@@ -133,25 +133,22 @@ class Entry:
         obj = cls()
         obj.id = id
         return obj
-        
+
     @classmethod
     def create_object(cls, item):
         if is_live_item(item):
             logger.info("Skipping live/upcoming YouTube search result: %s", item)
             return None
-            
-    @classmethod
-    def create_object(cls, item):
+
         minimum_fields = ["title", "channel"]
         if item["id"]["kind"] == "youtube#video":
             obj = Video.get(item["id"]["videoId"])
         elif item["id"]["kind"] == "youtube#playlist":
             obj = Playlist.get(item["id"]["playlistId"])
         else:
-            obj = []
-            return obj
+            return None
+
         item, extended_fields = cls.extend_fields(item, minimum_fields)
-        # extended_fields = minimum_fields
         obj._set_api_data(extended_fields, item)
         return obj
 
@@ -571,6 +568,20 @@ class Video(Entry):
                         fileUri = f"file://{(os.path.join(cache_location, cached[0]))}"
                         self._audio_url.set(fileUri)
                     else:
+                        with youtube_dl.YoutubeDL(ytdl_options) as ydl:
+                            probe_info = ydl.extract_info(
+                                **ytdl_extract_info_options,
+                                download=False,
+                            )
+
+                        if is_live_info(probe_info):
+                            logger.info(
+                                "Skipping YouTube live/upcoming playback resolution: %s",
+                                self.id,
+                            )
+                            self._audio_url.set(None)
+                            return
+
                         logger.debug(f"caching track {self.id}")
                         ytdl_options["outtmpl"] = os.path.join(
                             cache_location, "%(id)s.%(ext)s"
@@ -583,6 +594,14 @@ class Video(Entry):
                                 **ytdl_extract_info_options,
                                 download=True,
                             )
+
+                            if is_live_info(info):
+                                logger.info(
+                                    "Skipping YouTube live/upcoming playback resolution: %s",
+                                    self.id,
+                                )
+                                self._audio_url.set(None)
+                                return
 
                             # get info about audio format, for debugging
                             logger.debug(
@@ -673,6 +692,14 @@ class Video(Entry):
                             **ytdl_extract_info_options,
                             download=False,
                         )
+
+                        if is_live_info(info):
+                            logger.info(
+                                "Skipping YouTube live/upcoming playback resolution: %s",
+                                self.id,
+                            )
+                            self._audio_url.set(None)
+                            return
 
                         self._audio_url.set(info["url"])
 
