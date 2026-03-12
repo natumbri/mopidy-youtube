@@ -173,10 +173,12 @@ class Entry:
             logger.warning("youtube search skipped: empty query")
             return []
 
-        # Allow only one active search at a time
         with search_lock:
             if search_in_progress:
-                logger.warning('youtube search skipped while previous search is still running: "%s"', q)
+                logger.warning(
+                    'youtube search skipped while previous search is still running: "%s"',
+                    q,
+                )
                 return []
 
             search_in_progress = True
@@ -188,16 +190,21 @@ class Entry:
                 if "error" in data:
                     raise Exception(data["error"])
             except Exception as e:
-                logger.error('youtube search error "%s"', e)
+                logger.exception('youtube search error for query "%s"', q)
                 return []
 
-            try:
-                items = data.get("items", [])
-                mapped = [cls.create_object(item) for item in items]
-                return [obj for obj in mapped if obj is not None]
-            except Exception as e:
-                logger.error('map error "%s"', e)
-                return []
+            items = data.get("items", [])
+            results = []
+
+            for item in items:
+                try:
+                    obj = cls.create_object(item)
+                    if obj is not None:
+                        results.append(obj)
+                except Exception:
+                    logger.exception("map error while processing item: %r", item)
+
+            return results
 
         finally:
             with search_lock:
@@ -289,21 +296,27 @@ class Entry:
 
     @classmethod
     def extend_fields(self, item, fields):
+        if not item:
+            return (None, list(set(fields)))
+
         extended_fields = set(fields)
-        if "snippet" in item:
-            if "channelId" in item["snippet"]:
-                extended_fields.add("channelId")
 
-            if "videoOwnerChannelTitle" in item["snippet"]:
-                extended_fields.add("owner_channel")
-            elif "channelTitle" in item["snippet"]:
-                extended_fields.add("channel")
-            else:
-                logger.warn(f"no channel or owner_channel {item}")
-                item["snippet"]["channelTitle"] = "unknown"
+        if "snippet" not in item or not isinstance(item["snippet"], dict):
+            item["snippet"] = {}
 
-            if "thumbnails" in item["snippet"]:
-                extended_fields.add("thumbnails")
+        if "channelId" in item["snippet"]:
+            extended_fields.add("channelId")
+
+        if "videoOwnerChannelTitle" in item["snippet"]:
+            extended_fields.add("owner_channel")
+        elif "channelTitle" in item["snippet"]:
+            extended_fields.add("channel")
+        else:
+            logger.warning("no channel or owner_channel for item: %r", item)
+            item["snippet"]["channelTitle"] = "unknown"
+
+        if "thumbnails" in item["snippet"]:
+            extended_fields.add("thumbnails")
 
         if "artists" in item:
             extended_fields.add("artists")
@@ -322,14 +335,14 @@ class Entry:
         if "track_no" in item:
             extended_fields.add("track_no")
 
-        if "contentDetails" in item:
+        if "contentDetails" in item and isinstance(item["contentDetails"], dict):
             if "duration" in item["contentDetails"]:
                 extended_fields.add("length")
             elif "itemCount" in item["contentDetails"]:
                 extended_fields.add("video_count")
+
         return (item, list(extended_fields))
-
-
+    
 class Video(Entry):
     total_bytes = 0
 
