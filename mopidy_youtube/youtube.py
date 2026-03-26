@@ -3,6 +3,7 @@ import json
 import os
 import threading
 import time
+from queue import Full
 from concurrent.futures.thread import ThreadPoolExecutor
 
 import pykka
@@ -251,12 +252,6 @@ class Entry:
             if not future:
                 future = self.__dict__[_k] = pykka.ThreadingFuture()
 
-            # # What was this for?  Whatever it was for, it doesn't work
-            # # for pykka v4.3 onwards, since ThreadingFuture uses 
-            # # a condition variable instead of a queue
-            # if not future._queue.empty():  # hack, no public is_set()
-            #     continue
-
             if not item:
                 val = None
             elif k == "title":
@@ -268,10 +263,8 @@ class Entry:
             elif k == "album":
                 val = item["album"]
             elif k == "artists":
-                # val = [artist for artist in item["artists"] if artist["name"] not in ["Album", "Song"]]
                 val = item["artists"]
             elif k == "length":
-                # convert ISO8601 (PT1H2M10S) to s (3730)
                 val = ISO8601_to_seconds(item["contentDetails"]["duration"])
             elif k == "video_count":
                 val = min(
@@ -287,13 +280,27 @@ class Entry:
                     )
                     for (quality, details) in item["snippet"]["thumbnails"].items()
                     if quality in ["default", "medium", "high"]
-                ] or None  # is this "or None" necessary?
+                ] or None
             elif k == "channelId":
                 val = item["snippet"]["channelId"]
             elif k == "track_no":
                 val = item["track_no"]
-            future.set(val)
+            else:
+                continue
 
+            # Skip futures that already have a value
+            if hasattr(future, "_queue") and not future._queue.empty():
+                continue
+
+            try:
+                future.set(val)
+            except Full:
+                logger.debug(
+                    "Future already set for field %s on object %s, skipping",
+                    k,
+                    getattr(self, "id", None),
+                )
+                
     @classmethod
     def extend_fields(self, item, fields):
         if not item:
