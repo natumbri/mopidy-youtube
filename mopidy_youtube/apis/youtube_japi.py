@@ -32,7 +32,50 @@ class jAPI(Client):
     )
 
     endpoint = "https://www.youtube.com/"
-    
+
+    @classmethod
+    def _extract_search_sections(cls, yt_data):
+        """
+        Try the old fixed paths first, then fall back to a deep search for
+        item/continuation renderers anywhere in the returned JSON.
+        """
+        try:
+            return traverse(yt_data, sectionListRendererContentsPath)
+        except Exception:
+            pass
+
+        try:
+            return traverse(yt_data, continuationItemsPath)
+        except Exception:
+            pass
+
+        sections = []
+
+        def walk(node):
+            if isinstance(node, dict):
+                if (
+                    "itemSectionRenderer" in node
+                    or "continuationItemRenderer" in node
+                    or "videoRenderer" in node
+                    or "playlistRenderer" in node
+                    or "compactVideoRenderer" in node
+                    or "playlistVideoRenderer" in node
+                    or "gridPlaylistRenderer" in node
+                    or "radioRenderer" in node
+                ):
+                    sections.append(node)
+
+                for value in node.values():
+                    walk(value)
+
+            elif isinstance(node, list):
+                for value in node:
+                    walk(value)
+
+        walk(yt_data)
+
+        return sections
+        
     @staticmethod
     def _safe_text(node, default="unknown"):
         if node is None:
@@ -127,8 +170,18 @@ class jAPI(Client):
         result = []
 
         with ThreadPoolExecutor() as executor:
-            futures = executor.map(cls.run_search, repeat(q), params)
-            [result.extend(value[: int(Video.search_results)]) for value in futures]
+            future_map = {
+                executor.submit(cls.run_search, q, param): param for param in params
+            }
+
+            for future, param in future_map.items():
+                try:
+                    value = future.result()
+                    result.extend(value[: int(Video.search_results)])
+                except Exception as e:
+                    logger.error(
+                        f"jAPI search branch failed for query {q!r}, param {param}: {e}"
+                    )
 
         return json.loads(
             json.dumps(
@@ -386,9 +439,6 @@ class jAPI(Client):
 
     @classmethod
     def run_search(cls, search_query, sp):
-        # with thanks (or perhaps apologies) to pytube:
-        # https://pytube.io/en/stable/api.html#pytube.contrib.search.Search.fetch_and_parse
-
         continuation = None
         results = []
         headers = {
@@ -414,44 +464,78 @@ class jAPI(Client):
         url = f'{urljoin(cls.endpoint, "youtubei/v1/search")}?{urlencode(query)}'
 
         while len(results) < Video.search_results:
+            payload = dict(data)
             if continuation:
-                data.update({"continuation": continuation})
+                payload["continuation"] = continuation
 
             logger.debug(f"jAPI run_search triggered session.post: {search_query}")
 
             result = cls.session.post(
                 url=url,
-                data=bytes(json.dumps(data), encoding="utf-8"),
+                data=bytes(json.dumps(payload), encoding="utf-8"),
                 headers=headers,
             )
 
-            if result.status_code == 200:
+            if result.status_code != 200:
+                logger.error(
+                    f"jAPI run_search HTTP {result.status_code} for query {search_query}"
+                )
+                return results
+
+            try:
                 yt_data = json.loads(result.text)
+            except Exception as e:
+                logger.error(f"jAPI run_search invalid JSON for {search_query}: {e}")
+                return results
 
-                if yt_data:
-                    # Initial result is handled by try block, continuations by except block
-                    try:
-                        sections = traverse(yt_data, sectionListRendererContentsPath)
-                    except KeyError:
-                        sections = traverse(yt_data, continuationItemsPath)
+            if not yt_data:
+                return results
 
-                    extracted_json = None
-                    continuation_renderer = None
+            sections = cls._extract_search_sections(yt_data)
+            if not sections:
+                logger.error(
+                    f"jAPI run_search could not find search sections for query {search_query}"
+                )
+                return results
 
-                    for s in sections:
-                        if "itemSectionRenderer" in s:
-                            extracted_json = s["itemSectionRenderer"]["contents"]
-                            results.extend(cls.json_to_items(extracted_json))
-                        if "continuationItemRenderer" in s:
-                            continuation_renderer = s["continuationItemRenderer"]
+            continuation_renderer = None
+            page_items = []
 
-                    # If the continuationItemRenderer doesn't exist, assume no further results
-                    if continuation_renderer:
-                        continuation = continuation_renderer["continuationEndpoint"][
-                            "continuationCommand"
-                        ]["token"]
-                    else:
-                        return results
+            for s in sections:
+                if "itemSectionRenderer" in s:
+                    page_items.extend(
+                        cls.json_to_items(s["itemSectionRenderer"].get("contents", []))
+                    )
+                elif any(
+                    renderer in s
+                    for renderer in (
+                        "videoRenderer",
+                        "compactVideoRenderer",
+                        "playlistVideoRenderer",
+                        "playlistRenderer",
+                        "gridPlaylistRenderer",
+                        "radioRenderer",
+                    )
+                ):
+                    page_items.extend(cls.json_to_items([s]))
+
+                if "continuationItemRenderer" in s:
+                    continuation_renderer = s["continuationItemRenderer"]
+
+            if page_items:
+                results.extend(page_items)
+
+            if continuation_renderer:
+                try:
+                    continuation = continuation_renderer["continuationEndpoint"][
+                        "continuationCommand"
+                    ]["token"]
+                except Exception as e:
+                    logger.debug(f"jAPI run_search continuation parse failed: {e}")
+                    return results
+            else:
+                return results
+
         return results
 
     @classmethod
