@@ -1,7 +1,6 @@
 import json
 import re
 from concurrent.futures.thread import ThreadPoolExecutor
-from itertools import repeat
 from urllib.parse import urlencode, urljoin
 
 from mopidy_youtube import logger
@@ -32,49 +31,6 @@ class jAPI(Client):
     )
 
     endpoint = "https://www.youtube.com/"
-
-    @classmethod
-    def _extract_search_sections(cls, yt_data):
-        """
-        Try the old fixed paths first, then fall back to a deep search for
-        item/continuation renderers anywhere in the returned JSON.
-        """
-        try:
-            return traverse(yt_data, sectionListRendererContentsPath)
-        except Exception:
-            pass
-
-        try:
-            return traverse(yt_data, continuationItemsPath)
-        except Exception:
-            pass
-
-        sections = []
-
-        def walk(node):
-            if isinstance(node, dict):
-                if (
-                    "itemSectionRenderer" in node
-                    or "continuationItemRenderer" in node
-                    or "videoRenderer" in node
-                    or "playlistRenderer" in node
-                    or "compactVideoRenderer" in node
-                    or "playlistVideoRenderer" in node
-                    or "gridPlaylistRenderer" in node
-                    or "radioRenderer" in node
-                ):
-                    sections.append(node)
-
-                for value in node.values():
-                    walk(value)
-
-            elif isinstance(node, list):
-                for value in node:
-                    walk(value)
-
-        walk(yt_data)
-
-        return sections
         
     @staticmethod
     def _safe_text(node, default="unknown"):
@@ -105,23 +61,6 @@ class jAPI(Client):
             pass
 
         return default
-
-    @staticmethod
-    def _parse_count_text(text, default=0):
-        if text is None:
-            return default
-
-        if not isinstance(text, str):
-            text = str(text)
-
-        m = re.search(r"([\d.,]+)", text)
-        if not m:
-            return default
-
-        try:
-            return int(m.group(1).replace(",", "").replace(".", ""))
-        except Exception:
-            return default
 
     @classmethod
     def _extract_duration(cls, video, video_id):
@@ -201,6 +140,8 @@ class jAPI(Client):
 
         logger.debug(f"jAPI 'list_related_videos' triggered session.get: {video_id}")
 
+        items = []
+
         result = cls.session.get(cls.endpoint + "watch", params=query)
         if result.status_code == 200:
             yt_data = cls._find_yt_data(result.text)
@@ -275,7 +216,7 @@ class jAPI(Client):
                         }
                         return [item]
                     except Exception as e:
-                        logger.error(f"jAPI 'list_videos' watch fallback failed for {id}: {e}")
+                        logger.warning(f"jAPI 'list_videos' watch fallback failed for {id}: {e}")
 
             return []
 
@@ -315,7 +256,7 @@ class jAPI(Client):
             for result in results:
                 result.update({"id": result["id"]["playlistId"]})
 
-            results = [result for result in results if result["id"] in ids]
+            results = [result for result in results if result["id"] == id]
 
             if results:
                 return results
@@ -384,8 +325,8 @@ class jAPI(Client):
             with ThreadPoolExecutor() as executor:
                 # make sure order is deterministic so that HTTP requests
                 # are replayable in tests
-                for id in executor.map(job, ids):
-                    items.extend(id)
+                for result_items in executor.map(job, ids):
+                    items.extend(result_items or [])
 
         return json.loads(json.dumps({"items": items}, sort_keys=False, indent=1))
 
@@ -464,7 +405,7 @@ class jAPI(Client):
 
         url = f'{urljoin(cls.endpoint, "youtubei/v1/search")}?{urlencode(query)}'
 
-        while len(results) < Video.search_results:
+        while len(results) < int(Video.search_results):
             payload = dict(data)
             if continuation:
                 payload.update({"continuation": continuation})
@@ -493,7 +434,7 @@ class jAPI(Client):
                     try:
                         sections = traverse(yt_data, continuationItemsPath)
                     except KeyError:
-                        logger.error(
+                        logger.warning(
                             f"jAPI run_search could not find search sections for query {search_query}"
                         )
                         return results
@@ -531,10 +472,11 @@ class jAPI(Client):
                             extracted_json = section["itemSectionRenderer"].get("contents", [])
                             return cls.json_to_items(extracted_json)
                 except Exception as e:
-                    logger.error(f"jAPI pl_run_search parse failed: {e}")
+                    logger.warning(f"jAPI pl_run_search parse failed: {e}")
 
         return []
-
+        
+    @staticmethod
     def _find_yt_data(text):
         for r in jAPI.ytdata_regex:
             result = re.search(r, text)
@@ -549,7 +491,8 @@ class jAPI(Client):
 
         logger.error("No data found on page")
         raise Exception("No data found on page")
-
+        
+    @staticmethod
     def json_to_items(result_json):
         if len(result_json) > 1 and "itemSectionRenderer" in result_json[1]:
             result_json = result_json[1]["itemSectionRenderer"]["contents"]
@@ -644,7 +587,7 @@ class jAPI(Client):
                     logger.debug(f"video {videoId} channelId: {channelId}")
                     item["snippet"].update({"channelId": channelId})
                 except Exception as e:
-                    logger.error(f"video {videoId}, no channelId detected; ({e})")
+                    logger.debug(f"video {videoId}, no channelId detected; ({e})")
 
                 items.append(item)
 
@@ -730,8 +673,12 @@ class jAPI(Client):
                 }
                 items.append(item)
 
-        items[:] = [
-            json.loads(t) for t in {json.dumps(d, sort_keys=True) for d in items}
-        ]
+        deduped = []
+        seen = set()
+        for item in items:
+            key = json.dumps(item, sort_keys=True)
+            if key not in seen:
+                seen.add(key)
+                deduped.append(item)
 
-        return items
+        return deduped
