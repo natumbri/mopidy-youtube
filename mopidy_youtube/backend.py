@@ -5,7 +5,15 @@ import pykka
 from cachetools import TTLCache, cached
 from mopidy import backend, httpclient, listener
 from mopidy.core import CoreListener
-from mopidy.models import Image, Ref, SearchResult, Track, model_json_decoder
+
+from mopidy.models import Image, Ref, SearchResult, Track
+
+try:
+    # Mopidy < 4.0
+    from mopidy.models import model_json_decoder
+except ImportError:
+    # Mopidy >= 4.0
+    model_json_decoder = None
 
 from mopidy_youtube import Extension, logger, youtube
 from mopidy_youtube.apis import youtube_japi
@@ -416,7 +424,12 @@ class YouTubeLibraryProvider(backend.LibraryProvider):
                 with open(
                     os.path.join(youtube.cache_location, f"{video_id}.json"), "r"
                 ) as infile:
-                    track = json.load(infile, object_hook=model_json_decoder)
+                    if model_json_decoder:
+                        # Mopidy < 4.0
+                        track = json.load(infile, object_hook=model_json_decoder)
+                    else:
+                        # Mopidy >= 4.0
+                        track = Track.model_validate(json.load(infile))
                 return track
             except Exception as e:
                 logger.debug(f'Did not open {video_id}.json: {e}')

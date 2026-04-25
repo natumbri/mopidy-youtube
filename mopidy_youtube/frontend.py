@@ -1,7 +1,7 @@
 import random
 
 import pykka
-from mopidy.core import listener
+from mopidy.core import CoreListener
 
 from mopidy_youtube import logger, youtube
 from mopidy_youtube.data import extract_video_id, format_video_uri
@@ -13,7 +13,7 @@ max_autoplay_length = None
 max_degrees_of_separation = 3
 
 
-class YouTubeAutoplayer(pykka.ThreadingActor, listener.CoreListener):
+class YouTubeAutoplayer(pykka.ThreadingActor, CoreListener):
     def __init__(self, config, core):
         super().__init__()
         self.config = config
