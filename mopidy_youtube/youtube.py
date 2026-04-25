@@ -155,10 +155,10 @@ class Entry:
                 future = self.__dict__[_k] = pykka.ThreadingFuture()
 
             # # What was this for?  Whatever it was for, it doesn't work
-            # # for pykka v4.3 onwards, since ThreadingFuture uses 
+            # # for pykka v4.3 onwards, since ThreadingFuture uses
             # # a condition variable instead of a queue
-            # if not future._queue.empty():  # hack, no public is_set()
-            #     continue
+            if not future._queue.empty():  # hack, no public is_set()
+                continue
 
             if not item:
                 val = None
@@ -462,9 +462,6 @@ class Video(Entry):
                     # Premium users when using YouTube Music.
                     base_url = "https://music.youtube.com"
 
-                if youtube_dl_package == "yt_dlp":
-                    ytdl_options["no_color"] = True
-
                 ytdl_extract_info_options = {
                     "url": f"{base_url}/watch?v={self.id}",
                     "ie_key": None,
@@ -472,6 +469,9 @@ class Video(Entry):
                     "process": True,
                     "force_generic_extractor": False,
                 }
+
+                if youtube_dl_package == "yt_dlp":
+                    ytdl_options["no_color"] = True
 
                 if cache_location:
                     info = {}
@@ -560,7 +560,13 @@ class Video(Entry):
 
                     # moved this here, because sometimes the metadata might go
                     # missing, even if the audio and the image do not
-                    if f"{self.id}.json" not in os.listdir(cache_location) or os.path.getsize(os.path.join(cache_location, f"{self.id}.json")) == 0:
+                    if (
+                        f"{self.id}.json" not in os.listdir(cache_location)
+                        or os.path.getsize(
+                            os.path.join(cache_location, f"{self.id}.json")
+                        )
+                        == 0
+                    ):
                         logger.debug(f"caching metadata {self.id}")
                         with open(
                             os.path.join(cache_location, f"{self.id}.json"), "w"
