@@ -40,6 +40,16 @@ def async_property(func):
     return property(wrapper)
 
 
+def _future_is_set(future: pykka.Future) -> bool:
+    try:
+        future.get(timeout=0)
+        return True
+    except pykka.Timeout:
+        return False
+    except Exception:
+        return True
+
+
 class Entry:
     """
     Entry is a base class of Video and Playlist.
