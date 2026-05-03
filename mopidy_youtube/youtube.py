@@ -402,10 +402,25 @@ class Video(Entry):
         turned on, return a url obtained with youtube_dl.
         """
 
+        # from @blacklight (https://github.com/blacklight/mopidy-youtube)
         global youtube_dl
+        global youtube_dl_package
+
         if youtube_dl is None:
+            if youtube_dl_package == "youtube_dl":
+                try:
+                    youtube_dl = importlib.import_module("yt_dlp")
+                    youtube_dl_package = "yt_dlp"
+                    logger.warning(
+                        "youtube_dl_package is set to youtube_dl, but yt_dlp is available; "
+                        "using yt_dlp to avoid incompatible youtube_dl/yt_dlp internals"
+                    )
+                except ImportError:
+                    youtube_dl = importlib.import_module(youtube_dl_package)
+            else:
+                youtube_dl = importlib.import_module(youtube_dl_package)
+
             logger.debug(f"using {youtube_dl_package} package for youtube_dl")
-            youtube_dl = importlib.import_module(youtube_dl_package)
 
         # When caching, is it possible to set the audio_url part-way through
         # a download so audio can start playing quicker?
@@ -613,10 +628,32 @@ class Video(Entry):
                             download=False,
                         )
 
-                        self._audio_url.set(info["url"])
+                        # from @blacklight (https://github.com/blacklight/mopidy-youtube)
+                        url = info.get("url")
+                        if not url and info.get("requested_formats"):
+                            for fmt in info["requested_formats"]:
+                                if fmt.get("url") and fmt.get("acodec") != "none":
+                                    url = fmt["url"]
+                                    break
+                        if not url and info.get("formats"):
+                            for fmt in info["formats"]:
+                                if (
+                                    fmt.get("url")
+                                    and fmt.get("acodec") != "none"
+                                    and fmt.get("vcodec") in (None, "none")
+                                ):
+                                    url = fmt["url"]
+                                    break
+
+                        if not url:
+                            raise KeyError(
+                                "No playable audio URL found in extractor result"
+                            )
+
+                        self._audio_url.set(url)
 
             except Exception as e:
-                logger.error(f"audio_url error {e} (videoId: {self.id})")
+                logger.exception(f"audio_url error {e} (videoId: {self.id})")
                 self._audio_url.set(None)
                 return
 
