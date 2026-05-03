@@ -2,6 +2,11 @@
 Changelog
 *********
 
+Unreleased
+========================================
+
+- fix Pydantic v2 model serialization keyword in cache metadata (use by_alias)
+
 v3.7 (2023-05-15)
 ========================================
 
