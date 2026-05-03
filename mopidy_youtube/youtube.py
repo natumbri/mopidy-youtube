@@ -601,7 +601,8 @@ class Video(Entry):
                                 # Mopidy >= 4.0
                                 json.dump(
                                     track.model_dump_json(
-                                        by_aliases=True, exclude_none=True
+                                        by_alias=True,
+                                        exclude_none=True,
                                     ),
                                     fp=outfile,
                                 )
