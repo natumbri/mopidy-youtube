@@ -83,6 +83,22 @@ def test_audio_url(api, config, headers, youtube_dl_mock_with_video):
 
 
 @pytest.mark.parametrize("api", apis)
+def test_audio_url_with_cache_metadata(api, config, headers, youtube_dl_mock_with_video, tmp_path):
+    setup_entry_api(api, config, headers)
+    youtube.Video.proxy = None
+    youtube.cache_location = str(tmp_path)
+    video = youtube.Video.get("e1YqueG2gtQ")
+
+    (tmp_path / f"{video.id}.webm").write_bytes(b"cached audio")
+    (tmp_path / f"{video.id}.webp").write_bytes(b"cached image")
+
+    assert video.audio_url.get()
+    assert (tmp_path / f"{video.id}.json").exists()
+
+    youtube.cache_location = None
+
+
+@pytest.mark.parametrize("api", apis)
 def test_audio_url_fail(api, config, headers, youtube_dl_mock):
     setup_entry_api(api, config, headers)
     youtube.Video.proxy = None
