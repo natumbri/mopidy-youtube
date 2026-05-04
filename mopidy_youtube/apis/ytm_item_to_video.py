@@ -77,7 +77,8 @@ def ytm_item_to_video(item):
                 "uri": f"yt:channel:{artist.get('id')}",
                 # "thumbnail": ytmusic.get_artist(artist["id"])["thumbnails"][-1]
             }
-            for artist in item["artists"] if artist["name"] not in ["Album", "Song"]
+            for artist in item["artists"]
+            if artist["name"] not in ["Album", "Song"]
         ]
     elif "author" in item and "channelId" in item:
         video["artists"] = [

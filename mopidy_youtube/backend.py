@@ -247,7 +247,9 @@ class YouTubeBackend(
         try:
             from mopidy_youtube import youtube_music
         except Exception as e:
-            logger.debug(f"youtube_music import unavailable, skipping history for {bId}: {e}")
+            logger.debug(
+                f"youtube_music import unavailable, skipping history for {bId}: {e}"
+            )
             return
 
         try:
@@ -260,6 +262,7 @@ class YouTubeBackend(
             ytmusic.add_history_item(song)  # may fail if s.youtube.com is blocked
         except Exception as e:
             logger.warning(f"failed to add {bId} to YouTube history: {e}")
+
 
 class YouTubeLibraryProvider(backend.LibraryProvider):
     root_directory = Ref.directory(uri="youtube:browse", name="YouTube")
@@ -411,7 +414,7 @@ class YouTubeLibraryProvider(backend.LibraryProvider):
                         track = Track.model_validate(json.load(infile))
                 return track
             except Exception as e:
-                logger.debug(f'Did not open {video_id}.json: {e}')
+                logger.debug(f"Did not open {video_id}.json: {e}")
 
         video = youtube.Video.get(video_id)
         video.title.get()

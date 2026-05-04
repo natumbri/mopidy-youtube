@@ -2,10 +2,23 @@
 Changelog
 *********
 
-Unreleased
+v4.0.2 (2024-05-04)
 ========================================
 
 - fix Pydantic v2 model serialization keyword in cache metadata (use by_alias)
+- fix compatibility with Mopidy 4.0
+- improve compatibility with yt-dlp
+- improve jAPI 
+- improve detection of live tracks
+
+
+v4.0.1
+========================================
+
+
+v4.0
+========================================
+
 
 v3.7 (2023-05-15)
 ========================================

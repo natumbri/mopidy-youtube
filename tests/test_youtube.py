@@ -83,7 +83,9 @@ def test_audio_url(api, config, headers, youtube_dl_mock_with_video):
 
 
 @pytest.mark.parametrize("api", apis)
-def test_audio_url_with_cache_metadata(api, config, headers, youtube_dl_mock_with_video, tmp_path):
+def test_audio_url_with_cache_metadata(
+    api, config, headers, youtube_dl_mock_with_video, tmp_path
+):
     setup_entry_api(api, config, headers)
     youtube.Video.proxy = None
     youtube.cache_location = str(tmp_path)

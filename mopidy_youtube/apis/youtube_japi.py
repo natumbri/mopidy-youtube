@@ -31,7 +31,7 @@ class jAPI(Client):
     )
 
     endpoint = "https://www.youtube.com/"
-        
+
     @staticmethod
     def _safe_text(node, default="unknown"):
         if node is None:
@@ -45,11 +45,14 @@ class jAPI(Client):
                 if "simpleText" in node:
                     return node["simpleText"]
                 if "runs" in node:
-                    return "".join(
-                        run.get("text", "")
-                        for run in node.get("runs", [])
-                        if isinstance(run, dict)
-                    ).strip() or default
+                    return (
+                        "".join(
+                            run.get("text", "")
+                            for run in node.get("runs", [])
+                            if isinstance(run, dict)
+                        ).strip()
+                        or default
+                    )
         except Exception:
             pass
 
@@ -106,7 +109,7 @@ class jAPI(Client):
 
         logger.warning(f"video {video_id} no video-time, possibly live")
         return "PT0S"
-        
+
     @classmethod
     def search(cls, q, params=None):
         if not params:
@@ -130,7 +133,7 @@ class jAPI(Client):
                 indent=1,
             )
         )
-        
+
     @classmethod
     def list_related_videos(cls, video_id):
         """
@@ -216,7 +219,9 @@ class jAPI(Client):
                         }
                         return [item]
                     except Exception as e:
-                        logger.warning(f"jAPI 'list_videos' watch fallback failed for {id}: {e}")
+                        logger.warning(
+                            f"jAPI 'list_videos' watch fallback failed for {id}: {e}"
+                        )
 
             return []
 
@@ -234,7 +239,7 @@ class jAPI(Client):
                 indent=1,
             )
         )
-        
+
     @classmethod
     def list_playlists(cls, ids):
         """
@@ -469,13 +474,15 @@ class jAPI(Client):
                     sections = traverse(yt_data, sectionListRendererContentsPath)
                     for section in sections:
                         if "itemSectionRenderer" in section:
-                            extracted_json = section["itemSectionRenderer"].get("contents", [])
+                            extracted_json = section["itemSectionRenderer"].get(
+                                "contents", []
+                            )
                             return cls.json_to_items(extracted_json)
                 except Exception as e:
                     logger.warning(f"jAPI pl_run_search parse failed: {e}")
 
         return []
-        
+
     @staticmethod
     def _find_yt_data(text):
         for r in jAPI.ytdata_regex:
@@ -491,7 +498,7 @@ class jAPI(Client):
 
         logger.error("No data found on page")
         raise Exception("No data found on page")
-        
+
     @staticmethod
     def json_to_items(result_json):
         if len(result_json) > 1 and "itemSectionRenderer" in result_json[1]:

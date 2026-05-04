@@ -34,6 +34,7 @@ search_lock = threading.Lock()
 search_in_progress = False
 search_last_started = 0.0
 
+
 def async_property(func):
     """
     decorator for creating async properties using pykka.ThreadingFuture
@@ -51,6 +52,55 @@ def async_property(func):
         return self.__dict__[_future_name]
 
     return property(wrapper)
+
+
+def is_live_item(item):
+    if not item:
+        return False
+
+    # jAPI / scrape search results often miss normal duration fields for lives
+    try:
+        if item.get("is_live"):
+            return True
+    except AttributeError:
+        pass
+
+    live_status = item.get("live_status")
+    if live_status in ("is_live", "is_upcoming", "post_live"):
+        return True
+
+    # Search-result heuristic: live results often lack normal duration metadata
+    content_details = item.get("contentDetails") or {}
+    duration = content_details.get("duration")
+    if duration in (None, "", "P0D", "PT0S"):
+        # only treat as suspicious if it's clearly a video search result
+        item_id = item.get("id")
+        if isinstance(item_id, dict) and item_id.get("kind") == "youtube#video":
+            snippet = item.get("snippet") or {}
+            # live search results often do not have channelId/length-like metadata
+            if "liveBroadcastContent" in snippet:
+                if snippet.get("liveBroadcastContent") != "none":
+                    return True
+
+    return False
+
+
+def is_live_info(info):
+    if not info:
+        return False
+
+    if info.get("is_live"):
+        return True
+
+    if info.get("live_status") in ("is_live", "is_upcoming", "post_live"):
+        return True
+
+    if info.get("duration") in (None, 0):
+        # last-resort heuristic
+        if info.get("was_live") or info.get("is_upcoming"):
+            return True
+
+    return False
 
 
 class Entry:
@@ -116,7 +166,7 @@ class Entry:
         item, extended_fields = cls.extend_fields(item, minimum_fields)
         obj._set_api_data(extended_fields, item)
         return obj
-    
+
     @classmethod
     def search(cls, q):
         """Search for both videos and playlists using a single API call."""
@@ -207,7 +257,7 @@ class Entry:
                 future = self.__dict__[_k] = pykka.ThreadingFuture()
 
             # # What was this for?  Whatever it was for, it doesn't work
-            # # for pykka v4.3 onwards, since ThreadingFuture uses 
+            # # for pykka v4.3 onwards, since ThreadingFuture uses
             # # a condition variable instead of a queue
             # if not future._queue.empty():  # hack, no public is_set()
             #     continue
@@ -260,7 +310,7 @@ class Entry:
                     k,
                     getattr(self, "id", None),
                 )
-                
+
     @classmethod
     def extend_fields(self, item, fields):
         if not item:
@@ -309,7 +359,8 @@ class Entry:
                 extended_fields.add("video_count")
 
         return (item, list(extended_fields))
-    
+
+
 class Video(Entry):
     total_bytes = 0
 
