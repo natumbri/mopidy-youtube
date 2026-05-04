@@ -240,47 +240,26 @@ class YouTubeBackend(
             #     youtube.Entry.api.list_playlists = music.list_playlists
 
     def add_track_to_history(self, bId):
-        # this should be done in .youtube, by reference to the relevant API.  But for now...
-
-        # # the code below gets signatureTimestamp; it might be needed for
-        # # ytmusic.get_song() to work properly.
-        # # stolen from mopidy-youtube (https://github.com/OzymandiasTheGreat/mopidy-ytmusic)
-
-        # import requests
-        # import re
-
-        # response = requests.get(
-        #     "https://music.youtube.com",
-        #     headers={
-        #             "Accept": "*/*",
-        #             "user-agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36",
-        #             "Cookie": "PREF=hl=en; CONSENT=YES+20210329;",
-        #             "Accept-Language": "en;q=0.8",
-        #             "origin": "https://music.youtube.com",
-        #             "x-origin": "https://music.youtube.com",  # seems to be needed?
-        #         }
-        # )
-
-        # m = re.search(r'jsUrl"\s*:\s*"([^"]+)"', response.text)
-
-        # if m:
-        #     playerurl = m.group(1)
-
-        # response = requests.get("https://music.youtube.com" + playerurl)
-        # m = re.search(r"signatureTimestamp[:=](\d+)", response.text)
-        # if m:
-        #     signatureTimestamp = m.group(1)
-        #     logger.info(
-        #         "YTMusic updated signatureTimestamp to %s",
-        #         signatureTimestamp,
-        #     )
+        # this should be done in .youtube, by reference to the relevant API. But for now...
 
         logger.debug(f"adding {bId} to history")
-        song = youtube_music.ytmusic.get_song(bId)  # , signatureTimestamp)
-        youtube_music.ytmusic.add_history_item(
-            song
-        )  # will fail if s.youtube.com is blocked by adblocker
 
+        try:
+            from mopidy_youtube import youtube_music
+        except Exception as e:
+            logger.debug(f"youtube_music import unavailable, skipping history for {bId}: {e}")
+            return
+
+        try:
+            ytmusic = getattr(youtube_music, "ytmusic", None)
+            if ytmusic is None:
+                logger.debug(f"ytmusic client unavailable, skipping history for {bId}")
+                return
+
+            song = ytmusic.get_song(bId)  # , signatureTimestamp)
+            ytmusic.add_history_item(song)  # may fail if s.youtube.com is blocked
+        except Exception as e:
+            logger.warning(f"failed to add {bId} to YouTube history: {e}")
 
 class YouTubeLibraryProvider(backend.LibraryProvider):
     root_directory = Ref.directory(uri="youtube:browse", name="YouTube")
