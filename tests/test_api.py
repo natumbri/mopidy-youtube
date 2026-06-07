@@ -93,6 +93,67 @@ def test_api_list_playlistitems(api, config, headers):
         assert len(playlistitems["items"]) == 20
 
 
+def test_japi_list_playlistitems_retries_incomplete_page(config, headers, monkeypatch):
+    # YouTube intermittently serves a video-less "shell" playlist page that
+    # raises KeyError while parsing; list_playlistitems should re-fetch instead
+    # of letting a single bad response yield an empty playlist.
+    from mopidy_youtube.apis import youtube_japi
+
+    api = youtube_japi.jAPI(proxy=config["proxy"], headers=headers)
+
+    class _Resp:
+        status_code = 200
+
+        def __init__(self, tag):
+            self.text = tag
+
+    responses = iter([_Resp("shell"), _Resp("complete")])
+    monkeypatch.setattr(api.session, "get", lambda *a, **k: next(responses))
+    monkeypatch.setattr(
+        youtube_japi.jAPI, "_find_yt_data", staticmethod(lambda text: {"page": text})
+    )
+
+    def fake_traverse(data, path):
+        if data["page"] == "shell":
+            raise KeyError  # incomplete shell page — no playlistVideoListRenderer
+        return ["v1", "v2"]
+
+    monkeypatch.setattr(youtube_japi, "traverse", fake_traverse)
+    monkeypatch.setattr(
+        youtube_japi.jAPI, "json_to_items", staticmethod(lambda extracted: list(extracted))
+    )
+
+    result = youtube_japi.jAPI.list_playlistitems("PLfake", None, 20)
+
+    assert result["items"] == ["v1", "v2"]  # retried past the shell page
+
+
+def test_japi_list_playlistitems_gives_up_cleanly(config, headers, monkeypatch):
+    # If every attempt is an unparseable shell page, return an empty-but-valid
+    # result rather than raising or returning a bare list.
+    from mopidy_youtube.apis import youtube_japi
+
+    api = youtube_japi.jAPI(proxy=config["proxy"], headers=headers)
+
+    class _Resp:
+        status_code = 200
+        text = "shell"
+
+    monkeypatch.setattr(api.session, "get", lambda *a, **k: _Resp())
+    monkeypatch.setattr(
+        youtube_japi.jAPI, "_find_yt_data", staticmethod(lambda text: {"page": text})
+    )
+
+    def always_fail(data, path):
+        raise KeyError
+
+    monkeypatch.setattr(youtube_japi, "traverse", always_fail)
+
+    result = youtube_japi.jAPI.list_playlistitems("PLfake", None, 20)
+
+    assert result == {"nextPageToken": None, "items": []}
+
+
 @pytest.mark.parametrize("api", apis)
 def test_api_list_channelplaylists(api, config, headers):
     with my_vcr.use_cassette(

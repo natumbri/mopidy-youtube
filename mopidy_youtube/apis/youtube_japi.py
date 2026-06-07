@@ -335,19 +335,37 @@ class jAPI(Client):
 
         return json.loads(json.dumps({"items": items}, sort_keys=False, indent=1))
 
+    # YouTube intermittently serves a video-less "shell" of the playlist page
+    # (a sectionListRenderer without playlistVideoListRenderer) that can't be
+    # parsed inline. A re-fetch almost always returns the full page, so retry a
+    # few times before giving up rather than letting a single bad response
+    # silently yield an empty playlist.
+    playlistitem_retries = 3
+
     @classmethod
     def list_playlistitems(cls, id, page, max_results):
         query = {"list": id, "app": "desktop", "persist_app": 1}
         logger.debug(f"jAPI 'list_playlistitems' triggered session.get: {id}")
 
-        items = []
-
-        result = cls.session.get(urljoin(cls.endpoint, "playlist"), params=query)
-        if result.status_code == 200:
+        for attempt in range(cls.playlistitem_retries):
+            result = cls.session.get(
+                urljoin(cls.endpoint, "playlist"), params=query
+            )
+            if result.status_code != 200:
+                break
             yt_data = cls._find_yt_data(result.text)
-            extracted_json = traverse(yt_data, listPlaylistItemsPath)
-            items = cls.json_to_items(extracted_json)
-            items = items[:max_results]
+            try:
+                extracted_json = traverse(yt_data, listPlaylistItemsPath)
+            except KeyError:
+                logger.debug(
+                    "jAPI 'list_playlistitems' got an incomplete playlist page "
+                    "for %s (attempt %d/%d); retrying",
+                    id,
+                    attempt + 1,
+                    cls.playlistitem_retries,
+                )
+                continue
+            items = cls.json_to_items(extracted_json)[:max_results]
             return json.loads(
                 json.dumps(
                     {"nextPageToken": None, "items": items},
@@ -356,7 +374,13 @@ class jAPI(Client):
                 )
             )
 
-        return []
+        logger.warning(
+            "jAPI 'list_playlistitems' could not retrieve playlist items for "
+            "%s after %d attempt(s)",
+            id,
+            cls.playlistitem_retries,
+        )
+        return {"nextPageToken": None, "items": []}
 
     @classmethod
     def list_channelplaylists(cls, channel_id):
