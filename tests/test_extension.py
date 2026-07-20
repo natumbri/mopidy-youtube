@@ -26,7 +26,7 @@ def test_get_config_schema():
     assert "api_enabled" in schema
     assert "channel_id" in schema
     assert "musicapi_enabled" in schema
-    assert "musicapi_cookie" in schema
+    assert "musicapi_cookiefile" in schema
     assert "autoplay_enabled" in schema
     assert "strict_autoplay" in schema
     assert "max_autoplay_length" in schema
