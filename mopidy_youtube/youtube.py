@@ -733,13 +733,16 @@ class Video(Entry):
                         with open(
                             os.path.join(cache_location, f"{self.id}.json"), "w"
                         ) as outfile:
-                            json.dump(
-                                convert_video_to_track(
-                                    self, bitrate=int(info.get("tbr", 0))
-                                ),
-                                cls=ModelJSONEncoder,
-                                fp=outfile,
-                            )
+                            if ModelJSONEncoder:
+                                # Mopidy < 4.0
+                                json.dump(track, cls=ModelJSONEncoder, fp=outfile)
+                            else:
+                                # Mopidy >= 4.0
+                                outfile.write(
+                                    track.model_dump_json(
+                                        by_alias=True, exclude_none=True
+                                    )
+                                )
                 else:
                     with youtube_dl.YoutubeDL(ytdl_options) as ydl:
                         info = ydl.extract_info(
