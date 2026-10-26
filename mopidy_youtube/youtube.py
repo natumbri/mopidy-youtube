@@ -312,12 +312,21 @@ class Entry:
 
 class Video(Entry):
     total_bytes = 0
+    _load_executor = None
+
+    @classmethod
+    def get_load_executor(cls):
+        if cls._load_executor is None:
+            cls._load_executor = ThreadPoolExecutor(
+                max_workers=max(2, min(8, (os.cpu_count() or 1) + 2))
+            )
+        return cls._load_executor
 
     @classmethod
     def load_info(cls, listOfVideos):
         """
         loads title, length, channel of multiple videos using one API call for
-        every 50 videos. API calls are split in separate threads.
+        every 50 videos. API calls are split across a shared executor.
         """
         minimum_fields = ["title", "length", "channel"]
         listOfVideos = cls._add_futures(listOfVideos, minimum_fields)
@@ -351,12 +360,11 @@ class Video(Entry):
                     }
                     video._set_api_data(minimum_fields, error_dict)
 
-        with ThreadPoolExecutor() as executor:
-            # make sure order is deterministic so that HTTP requests are replayable in tests
-            executor.map(
-                job,
-                [listOfVideos[i : i + 50] for i in range(0, len(listOfVideos), 50)],
-            )
+        executor = cls.get_load_executor()
+        executor.map(
+            job,
+            [listOfVideos[i : i + 50] for i in range(0, len(listOfVideos), 50)],
+        )
 
     @async_property
     def related_videos(self):
@@ -393,7 +401,6 @@ class Video(Entry):
 
     @async_property
     def thumbnails(self):
-        # make it "async" for uniformity with Playlist.thumbnails
         requiresThumbnail = self._add_futures([self], ["thumbnails"])
 
         if requiresThumbnail:
@@ -407,11 +414,9 @@ class Video(Entry):
 
     @async_property
     def album(self):
-        # make it "async" for uniformity with Playlist.thumbnails
         requiresAlbumName = self._add_futures([self], ["album"])
 
         if requiresAlbumName:
-            # ultimate fallback
             self._album.set({"name": "YouTube Playlist", "uri": None})
 
     @async_property
@@ -462,16 +467,13 @@ class Video(Entry):
                 self._track_no.set(track_no)
                 logger.debug("track no %s for %s in %s", track_no, self.id, playlist_id)
             else:
-                # ultimate fallback to None? Does this work?
                 self._track_no.set(None)
 
     @async_property
     def artists(self):
-        # make it "async" for uniformity with Playlist.thumbnails
         requiresArtists = self._add_futures([self], ["artists"])
 
         if requiresArtists:
-            # ultimate fallback
             self._artists.set(
                 [{"name": self.channel.get(), "uri": None, "thumbnail": None}]
             )
@@ -628,13 +630,13 @@ class Video(Entry):
 
 
 class Playlist(Entry):
-    _videos_executor = None
+    _playlist_videos_executor = None
 
     @classmethod
-    def get_videos_executor(cls):
-        if cls._videos_executor is None:
-            cls._videos_executor = ThreadPoolExecutor(max_workers=1)
-        return cls._videos_executor
+    def get_playlist_videos_executor(cls):
+        if cls._playlist_videos_executor is None:
+            cls._playlist_videos_executor = ThreadPoolExecutor(max_workers=1)
+        return cls._playlist_videos_executor
 
     @classmethod
     def load_info(cls, listOfPlaylists):
@@ -663,15 +665,14 @@ class Playlist(Entry):
                 )
                 pl._set_api_data(extended_fields, item_dict.get(pl.id))
 
-        with ThreadPoolExecutor() as executor:
-            # make sure order is deterministic so that HTTP requests are replayable in tests
-            executor.map(
-                job,
-                [
-                    listOfPlaylists[i : i + 50]
-                    for i in range(0, len(listOfPlaylists), 50)
-                ],
-            )
+        executor = cls.get_playlist_videos_executor()
+        executor.map(
+            job,
+            [
+                listOfPlaylists[i : i + 50]
+                for i in range(0, len(listOfPlaylists), 50)
+            ],
+        )
 
     @async_property
     def videos(self):
@@ -735,8 +736,7 @@ class Playlist(Entry):
             )
 
         if requiresVideos:
-            self.get_videos_executor().submit(load_items)
-            # load_items()
+            self.get_playlist_videos_executor().submit(load_items)
 
     @async_property
     def video_count(self):
@@ -774,13 +774,10 @@ class Channel(Entry):
             channel_playlists = []
             for item in data["items"]:
                 pl = Playlist.get(item["id"])
-                # this doesn't work. adding 'channel' here breaks something
-                # item, extended_fields = cls.extend_fields(item, minimum_fields)
                 extended_fields = minimum_fields
                 pl._set_api_data(extended_fields, item)
-                pl.videos  # should we start loading the videos here?
+                pl.videos
                 channel_playlists.append(pl)
-            # Playlist.load_info(channel_playlists)  # what does this do, here?
             return channel_playlists
         except Exception as e:
             logger.error('map error "%s"', e)

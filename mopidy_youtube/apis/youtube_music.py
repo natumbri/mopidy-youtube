@@ -1,4 +1,5 @@
 import json
+import os
 from concurrent.futures import as_completed
 from concurrent.futures.thread import ThreadPoolExecutor
 from itertools import repeat
@@ -23,8 +24,17 @@ own_channel_id = None
 
 class Music(Client):
     endpoint = None
+    _executor = None
     _playlist_lookup_executor = None
     _ytmusic_session = None
+
+    @classmethod
+    def get_executor(cls):
+        if cls._executor is None:
+            cls._executor = ThreadPoolExecutor(
+                max_workers=max(2, min(8, (os.cpu_count() or 1) + 2))
+            )
+        return cls._executor
 
     @classmethod
     def _ensure_ytmusic(cls):
@@ -73,14 +83,14 @@ class Music(Client):
 
         cls._ensure_ytmusic()
         search_functions = [cls.search_albums, cls.search_songs]
+        executor = cls.get_executor()
 
-        with ThreadPoolExecutor() as executor:
-            futures = executor.map(lambda x, y: x(y), search_functions, repeat(q))
-            result = [
-                item
-                for values in futures
-                for item in values[: int(Video.search_results)]
-            ]
+        futures = executor.map(lambda x, y: x(y), search_functions, repeat(q))
+        result = [
+            item
+            for values in futures
+            for item in values[: int(Video.search_results)]
+        ]
 
         return json.loads(json.dumps({"items": result}))
 
@@ -193,19 +203,15 @@ class Music(Client):
 
     @classmethod
     def list_videos(cls, ids):
-        """
-        list videos - do we need this? When would it be called? Untested.
-        """
+        """List videos by fetching each requested item individually."""
         cls._ensure_ytmusic()
-        # what follows should work, but it loads each item separately.
-        # So, if you have 50 items that's 50 trips to the endpoint.
         logger.debug(
             f"youtube_music list_videos triggered ytmusic.get_song x {len(ids)}: {ids}"
         )
 
-        with ThreadPoolExecutor() as executor:
-            futures = executor.map(ytmusic.get_song, ids)
-            results = [value for value in futures if value is not None]
+        executor = cls.get_executor()
+        futures = executor.map(ytmusic.get_song, ids)
+        results = [value for value in futures if value is not None]
 
         for result in results:
             if result["playabilityStatus"]["status"] == "ERROR":
@@ -260,18 +266,16 @@ class Music(Client):
             f"_get_playlist_or_album x {len(ids)}: {ids}"
         )
 
-        with ThreadPoolExecutor() as executor:
-            futures = {
-                executor.submit(cls._get_playlist_or_album, id): id for id in ids
-            }
-            for future in as_completed(futures):
-                try:
-                    results.append(future.result())
-                except Exception as e:
-                    logger.error(
-                        f"youtube_music list_playlists "
-                        f"_get_playlist_or_album {e}, {futures[future]}"
-                    )
+        executor = cls.get_executor()
+        futures = {executor.submit(cls._get_playlist_or_album, id): id for id in ids}
+        for future in as_completed(futures):
+            try:
+                results.append(future.result())
+            except Exception as e:
+                logger.error(
+                    f"youtube_music list_playlists "
+                    f"_get_playlist_or_album {e}, {futures[future]}"
+                )
 
         if len(results) == 0:
             logger.debug(f"list_playlists for {ids} returned no results")
@@ -448,15 +452,15 @@ class Music(Client):
             album = cls.yt_listitem_to_playlist(ytmusic_album)
             return album
 
-        with ThreadPoolExecutor() as executor:
-            futures = {executor.submit(job, result): result for result in results}
-            for future in as_completed(futures):
-                try:
-                    albums.append(future.result())
-                except Exception as e:
-                    logger.error(
-                        f"youtube_music process_albums get_album error {e}, {futures[future]}"
-                    )
+        executor = cls.get_executor()
+        futures = {executor.submit(job, result): result for result in results}
+        for future in as_completed(futures):
+            try:
+                albums.append(future.result())
+            except Exception as e:
+                logger.error(
+                    f"youtube_music process_albums get_album error {e}, {futures[future]}"
+                )
 
         # given we're calling ytmusic.get_album, which returns tracks, we might
         # as well create the playlist objects and the related video objects.

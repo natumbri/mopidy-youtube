@@ -5,10 +5,17 @@ Changelog
 Unreleased
 ========================================
 
-- modernize for Mopidy 4 and Python 3.13 only
-- remove legacy compatibility branches and old fixture-based testing patterns
-- simplify config defaults to the modern yt-dlp workflow
-- rewrite the core tests around small behavior-focused contracts
+- no unreleased changes; the current tree is released as v4.0.3
+
+
+v4.0.3 (2026-10-26)
+========================================
+
+- modernize the extension for Mopidy 4 and Python 3.13 only
+- fix runtime queue/autoplay semantics and reduce blocking during track switching
+- tighten actor and background-thread behavior around prefetch and media resolution
+- harden API session handling and remove unnecessary executor churn
+- streamline stale comments and ambiguous helper naming while keeping the code light
 
 
 v4.0.2 (2024-05-04)

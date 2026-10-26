@@ -56,14 +56,10 @@ class YouTubeCoreListener(pykka.ThreadingActor, CoreListener):
                 logger.exception("Failed to prefetch audio for YouTube video %s", video_id)
 
     def tracklist_changed(self):
-        # Keep the Mopidy actor callback itself lightweight. We only enqueue the
-        # work in a shared background thread so we do not block the actor on
-        # tracklist resolution or network/media fetches.
+        # Keep the actor callback lightweight and move the expensive prefetch work
+        # to the shared background executor instead of blocking Mopidy's actor loop.
         self.get_prefetch_executor().submit(self._prefetch_youtube_audio)
 
-    # used for add to playback history function
-    # stolen from mopidy-ytmusic (https://github.com/OzymandiasTheGreat/mopidy-ytmusic/blob/master/mopidy_ytmusic/scrobble_fe.py)
-    # who stole it from mopidy-gmusic
     def track_playback_ended(self, tl_track, time_position):
         if not self.config.get("youtube", {}).get("history_enabled", False):
             return
@@ -82,8 +78,6 @@ class YouTubeCoreListener(pykka.ThreadingActor, CoreListener):
             b_id = track.uri.split(":")[2]
             logger.debug(f"track playback ended {b_id}")
 
-            # probably should add a config option for adding autoplayed to history
-            # for now, autoplayed tracks are not added to history
             if b_id not in self.autoplayed:
                 logger.debug(f"adding {b_id} to history")
                 listener.send(

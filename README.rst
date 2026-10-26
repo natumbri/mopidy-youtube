@@ -16,6 +16,9 @@ Mopidy-YouTube
 
 Mopidy extension that plays sound from YouTube.
 
+This release targets Mopidy 4 and Python 3.13 and keeps the code aligned with
+current Mopidy actor conventions and a modern yt-dlp workflow.
+
 
 Installation
 ============

@@ -1,4 +1,5 @@
 import json
+import os
 import re
 from concurrent.futures.thread import ThreadPoolExecutor
 from urllib.parse import urlencode, urljoin
@@ -24,6 +25,16 @@ class jAPI(Client):
     Indirect access to YouTube data, without API
     using json where available
     """
+
+    _executor = None
+
+    @classmethod
+    def get_executor(cls):
+        if cls._executor is None:
+            cls._executor = ThreadPoolExecutor(
+                max_workers=max(2, min(8, (os.cpu_count() or 1) + 2))
+            )
+        return cls._executor
 
     ytdata_regex = (
         r'window\["ytInitialData"] = ({.*?});',
@@ -116,15 +127,15 @@ class jAPI(Client):
             params = ["EgIQAQ%3D%3D", "EgIQAw%3D%3D"]
 
         result = []
+        executor = cls.get_executor()
 
-        with ThreadPoolExecutor() as executor:
-            futures = [executor.submit(cls.run_search, q, param) for param in params]
-            for future in futures:
-                try:
-                    value = future.result()
-                    result.extend(value[: int(Video.search_results)])
-                except Exception as e:
-                    logger.error(f"youtube search branch failed for query {q!r}: {e}")
+        futures = [executor.submit(cls.run_search, q, param) for param in params]
+        for future in futures:
+            try:
+                value = future.result()
+                result.extend(value[: int(Video.search_results)])
+            except Exception as e:
+                logger.error(f"youtube search branch failed for query {q!r}: {e}")
 
         return json.loads(
             json.dumps(
@@ -228,9 +239,9 @@ class jAPI(Client):
         if len(ids) == 1:
             items.extend(job(ids[0]))
         else:
-            with ThreadPoolExecutor() as executor:
-                for result_items in executor.map(job, ids):
-                    items.extend(result_items or [])
+            executor = cls.get_executor()
+            for result_items in executor.map(job, ids):
+                items.extend(result_items or [])
 
         return json.loads(
             json.dumps(
@@ -327,11 +338,11 @@ class jAPI(Client):
         if len(ids) == 1:
             items.extend(job(ids[0]))
         else:
-            with ThreadPoolExecutor() as executor:
-                # make sure order is deterministic so that HTTP requests
-                # are replayable in tests
-                for result_items in executor.map(job, ids):
-                    items.extend(result_items or [])
+            executor = cls.get_executor()
+            # make sure order is deterministic so that HTTP requests
+            # are replayable in tests
+            for result_items in executor.map(job, ids):
+                items.extend(result_items or [])
 
         return json.loads(json.dumps({"items": items}, sort_keys=False, indent=1))
 
