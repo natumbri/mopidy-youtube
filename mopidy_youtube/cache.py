@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import os
+import tempfile
 
 from mopidy_youtube import logger
 from mopidy_youtube.converters import convert_video_to_track
@@ -64,10 +65,30 @@ def cache_metadata(video, cache_location, info):
         return
 
     metadata_path = os.path.join(cache_location, f"{video.id}.json")
-    if os.path.exists(metadata_path) and os.path.getsize(metadata_path) > 0:
-        return
+    if os.path.exists(metadata_path):
+        try:
+            with open(metadata_path, "r", encoding="utf-8") as infile:
+                json.load(infile)
+            return
+        except (OSError, TypeError, ValueError, json.JSONDecodeError):
+            logger.warning("Discarding malformed cache metadata for %s; rebuilding", metadata_path)
+            try:
+                os.remove(metadata_path)
+            except OSError:
+                pass
 
     logger.debug(f"caching metadata {video.id}")
     track = convert_video_to_track(video, bitrate=int(info.get("tbr", 0)))
-    with open(metadata_path, "w") as outfile:
-        json.dump(track.model_dump(mode="json"), fp=outfile)
+    payload = json.dumps(track.model_dump(mode="json"))
+
+    with tempfile.NamedTemporaryFile(
+        mode="w",
+        encoding="utf-8",
+        suffix=".json",
+        dir=cache_location,
+        delete=False,
+    ) as tempfile_handle:
+        tempfile_handle.write(payload)
+        temp_path = tempfile_handle.name
+
+    os.replace(temp_path, metadata_path)

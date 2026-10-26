@@ -31,15 +31,28 @@
     // script to allow for right click to add to track list
     // doing it per img prevents lazy loading
     window.addEventListener("contextmenu", e => {
-        const targetElement = e.target;
-        if (targetElement && targetElement.nodeName === "IMG") {
+        const target = e.target;
+        
+        // Safety check: ensure it's an image and has a source
+        if (target?.nodeName === "IMG" && target.src) {
             e.preventDefault();
-            const imgsrc = targetElement.src.split(".");
-            const ytid = imgsrc[imgsrc.length - 2].split("/").pop();
-            const newHref = `?url=yt:video:${ytid}`;
-            location.href = newHref;
+            
+            try {
+                // Use native URL parser to safely extract the pathname
+                const urlObj = new URL(target.src);
+                const pathParts = urlObj.pathname.split('/');
+                
+                // Gets the filename without extension (e.g., "dQw4w9WgXcQ.jpg" -> "dQw4w9WgXcQ")
+                const filename = pathParts.pop() || '';
+                const ytid = filename.split('.')[0];
+                
+                if (ytid) {
+                    location.href = `?url=yt:video:${ytid}`;
+                }
+            } catch (err) {
+                console.error("Failed to parse image URL:", err);
+            }
         }
-        return false;
     });
   </script>
 
@@ -50,6 +63,7 @@
       media files by the Mopidy-YouTube extension and to allow you to
       easily add youtube tracks and playlists to Mopidy from your web browser.
     </p>
+    <small>Version: {{version}}</small>
   </div>
   <div class="box">
     <h2>Add a youtube URL to Mopidy tracklist</h2>

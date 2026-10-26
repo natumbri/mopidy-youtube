@@ -334,7 +334,7 @@ def test_index_template_uses_event_parameter_for_context_menu_target():
 
     html = html_path.read_text(encoding="utf-8")
 
-    assert "const targetElement = e.target;" in html
+    assert "const target = e.target;" in html
     assert "event.target" not in html
 
 

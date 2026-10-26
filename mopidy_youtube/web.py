@@ -7,7 +7,7 @@ import tornado.gen
 import tornado.ioloop
 import tornado.web
 
-from mopidy_youtube import logger, youtube
+from mopidy_youtube import __version__, logger, youtube
 from mopidy_youtube.data import extract_playlist_id, extract_video_id
 
 
@@ -93,7 +93,7 @@ class IndexHandler(tornado.web.RequestHandler):
             )
 
         else:
-            return self.render("index.html", images=self.uri_generator())
+            return self.render("index.html", images=self.uri_generator(), version=__version__)
 
     def get_template_path(self):
         return pathlib.Path(__file__).parent / "www"
