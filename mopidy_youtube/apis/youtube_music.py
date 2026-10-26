@@ -42,7 +42,11 @@ class Music(Client):
         session = getattr(cls, "session", None)
         if ytmusic is None or cls._ytmusic_session is not session:
             try:
-                ytmusic = YTMusic(requests_session=session) if session is not None else YTMusic()
+                ytmusic = (
+                    YTMusic(requests_session=session)
+                    if session is not None
+                    else YTMusic()
+                )
             except Exception:
                 ytmusic = YTMusic()
             cls._ytmusic_session = session
@@ -87,9 +91,7 @@ class Music(Client):
 
         futures = executor.map(lambda x, y: x(y), search_functions, repeat(q))
         result = [
-            item
-            for values in futures
-            for item in values[: int(Video.search_results)]
+            item for values in futures for item in values[: int(Video.search_results)]
         ]
 
         return json.loads(json.dumps({"items": result}))

@@ -39,7 +39,9 @@ class YouTubeAutoplayer(pykka.ThreadingActor, CoreListener):
             tl = self.core.tracklist
 
             if tl.get_repeat().get() is True:
-                logger.warning("Autoplayer: will not add tracks when repeat is enabled.")
+                logger.warning(
+                    "Autoplayer: will not add tracks when repeat is enabled."
+                )
                 return None
 
             if tl.get_random().get() is True:
@@ -97,7 +99,9 @@ class YouTubeAutoplayer(pykka.ThreadingActor, CoreListener):
             logger.debug(f"related videos edit 1 {related_videos}")
             # remove if track_length is 0 (probably a live video) or None
             related_videos[:] = [
-                related_video for related_video in related_videos if related_video.length.get()
+                related_video
+                for related_video in related_videos
+                if related_video.length.get()
             ]
             logger.debug(f"related videos edit 2 {related_videos}")
             # remove if too long

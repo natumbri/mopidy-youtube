@@ -10,7 +10,6 @@ from mopidy_youtube.listener import YouTubeAddToHistoryListener, YouTubeCoreList
 from mopidy_youtube.library import YouTubeLibraryProvider
 from mopidy_youtube.playback import YouTubePlaybackProvider
 
-
 """
 A typical interaction:
 1. User searches for a keyword (YouTubeLibraryProvider.search)

@@ -563,9 +563,7 @@ class jAPI(Client):
                     "unknown",
                 )
                 if byline == "unknown":
-                    logger.error(
-                        f"json_to_items: no byline detected for {videoId};"
-                    )
+                    logger.error(f"json_to_items: no byline detected for {videoId};")
 
                 try:
                     thumbnails = video["thumbnail"]["thumbnails"][-1]
@@ -692,7 +690,5 @@ class jAPI(Client):
                 }
                 items.append(item)
 
-        deduped = {
-            json.dumps(item, sort_keys=True): item for item in items
-        }
+        deduped = {json.dumps(item, sort_keys=True): item for item in items}
         return list(deduped.values())

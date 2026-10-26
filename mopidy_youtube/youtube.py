@@ -154,7 +154,9 @@ class Entry:
                     logger.exception("map error while processing item: %r", item)
                     return None
 
-            return [obj for obj in (map_item(item) for item in items) if obj is not None]
+            return [
+                obj for obj in (map_item(item) for item in items) if obj is not None
+            ]
 
         finally:
             with runtime.search_lock:
@@ -442,9 +444,11 @@ class Video(Entry):
                         (
                             track["id"].get("videoId")
                             if isinstance(track.get("id"), dict)
-                            else track.get("id")
-                            if isinstance(track.get("id"), str)
-                            else None
+                            else (
+                                track.get("id")
+                                if isinstance(track.get("id"), str)
+                                else None
+                            )
                         )
                     ]
                     if track_id
@@ -612,7 +616,11 @@ class Video(Entry):
                     logger.warning(
                         "yt-dlp did not provide a direct audio URL for %s; info keys: %s",
                         self.id,
-                        sorted(info.keys()) if isinstance(info, dict) else type(info).__name__,
+                        (
+                            sorted(info.keys())
+                            if isinstance(info, dict)
+                            else type(info).__name__
+                        ),
                     )
                     self._audio_url.set(None)
                     return
@@ -668,10 +676,7 @@ class Playlist(Entry):
         executor = cls.get_playlist_videos_executor()
         executor.map(
             job,
-            [
-                listOfPlaylists[i : i + 50]
-                for i in range(0, len(listOfPlaylists), 50)
-            ],
+            [listOfPlaylists[i : i + 50] for i in range(0, len(listOfPlaylists), 50)],
         )
 
     @async_property

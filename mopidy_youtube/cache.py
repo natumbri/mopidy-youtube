@@ -15,8 +15,7 @@ def find_cached_audio_path(cache_location, video_id):
     cached = [
         cached_file
         for cached_file in os.listdir(cache_location)
-        if cached_file
-        in [f"{video_id}.{fmt}" for fmt in ["webm", "m4a", "mp3", "ogg"]]
+        if cached_file in [f"{video_id}.{fmt}" for fmt in ["webm", "m4a", "mp3", "ogg"]]
     ]
     if not cached:
         return None
@@ -27,7 +26,10 @@ def cache_image(video, cache_location):
     if not cache_location:
         return
 
-    if any(image in os.listdir(cache_location) for image in (f"{video.id}.webp", f"{video.id}.jpg")):
+    if any(
+        image in os.listdir(cache_location)
+        for image in (f"{video.id}.webp", f"{video.id}.jpg")
+    ):
         return
 
     logger.debug(f"caching image {video.id}")
@@ -71,7 +73,9 @@ def cache_metadata(video, cache_location, info):
                 json.load(infile)
             return
         except (OSError, TypeError, ValueError, json.JSONDecodeError):
-            logger.warning("Discarding malformed cache metadata for %s; rebuilding", metadata_path)
+            logger.warning(
+                "Discarding malformed cache metadata for %s; rebuilding", metadata_path
+            )
             try:
                 os.remove(metadata_path)
             except OSError:

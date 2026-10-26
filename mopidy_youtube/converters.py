@@ -43,4 +43,3 @@ def convert_playlist_to_album(playlist) -> Album:
         ],
         num_tracks=playlist.video_count.get(),
     )
-

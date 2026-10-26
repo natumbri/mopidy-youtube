@@ -18,11 +18,7 @@ def deep_search(needles, haystack):
         return found
 
     if isinstance(haystack, list):
-        return [
-            item
-            for node in haystack
-            for item in deep_search(needles, node)
-        ]
+        return [item for node in haystack for item in deep_search(needles, node)]
 
     return []
 

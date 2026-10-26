@@ -30,7 +30,9 @@ def _resolve_duration(item):
 
 
 def _resolve_thumbnail(item):
-    thumbnails = item.get("thumbnails") or item.get("thumbnail", {}).get("thumbnails") or [{}]
+    thumbnails = (
+        item.get("thumbnails") or item.get("thumbnail", {}).get("thumbnails") or [{}]
+    )
     return thumbnails[-1]
 
 

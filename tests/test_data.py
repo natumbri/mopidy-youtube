@@ -16,7 +16,9 @@ def test_default_config_uses_yt_dlp_backend():
 
 def test_extract_video_id_handles_standard_uri_variants():
     assert extract_video_id("youtube:video:nvlTJrNJ5lA") == "nvlTJrNJ5lA"
-    assert extract_video_id("https://www.youtube.com/watch?v=nvlTJrNJ5lA") == "nvlTJrNJ5lA"
+    assert (
+        extract_video_id("https://www.youtube.com/watch?v=nvlTJrNJ5lA") == "nvlTJrNJ5lA"
+    )
     assert extract_video_id("https://youtu.be/nvlTJrNJ5lA") == "nvlTJrNJ5lA"
 
 

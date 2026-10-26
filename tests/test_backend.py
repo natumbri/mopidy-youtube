@@ -163,7 +163,9 @@ def test_music_list_related_videos_submits_playlist_lookup_in_background():
             "mopidy_youtube.apis.youtube_music.youtube_japi.jAPI.list_related_videos",
             return_value={"items": []},
         ):
-            with mock.patch("mopidy_youtube.apis.youtube_music.ytmusic") as ytmusic_mock:
+            with mock.patch(
+                "mopidy_youtube.apis.youtube_music.ytmusic"
+            ) as ytmusic_mock:
                 ytmusic_mock.get_watch_playlist.return_value = {"related": "related-id"}
                 ytmusic_mock.get_song_related.return_value = [
                     {"contents": [{"videoId": "abc123", "title": "Example Track"}]}
@@ -173,7 +175,9 @@ def test_music_list_related_videos_submits_playlist_lookup_in_background():
                         "videoId": "abc123",
                         "title": "Example Track",
                         "lengthSeconds": "42",
-                        "thumbnail": {"thumbnails": [{"url": "https://example.com/thumb.jpg"}]},
+                        "thumbnail": {
+                            "thumbnails": [{"url": "https://example.com/thumb.jpg"}]
+                        },
                         "author": "Example Artist",
                     }
                 }
@@ -209,7 +213,10 @@ def test_ytmusic_item_to_video_uses_song_duration_and_thumbnail_payload():
     converted = ytm_item_to_video(item)
 
     assert converted["contentDetails"]["duration"] == "PT0H03M45S"
-    assert converted["snippet"]["thumbnails"]["default"]["url"] == "https://example.com/thumb.jpg"
+    assert (
+        converted["snippet"]["thumbnails"]["default"]["url"]
+        == "https://example.com/thumb.jpg"
+    )
 
 
 def test_video_track_number_uses_playlist_index_for_album_tracks():
@@ -275,7 +282,9 @@ def test_client_session_preserves_existing_headers_and_adds_configured_ones():
     session = requests.Session()
     session.headers.update({"Accept-Encoding": "gzip"})
 
-    Client._create_session(proxy="http://proxy.example:8080", headers={"x-test": "yes"}, session=session)
+    Client._create_session(
+        proxy="http://proxy.example:8080", headers={"x-test": "yes"}, session=session
+    )
 
     assert session.headers["Accept-Encoding"] == "gzip"
     assert session.headers["x-test"] == "yes"
@@ -297,12 +306,11 @@ def test_video_audio_url_uses_requested_formats_url_when_direct_url_missing():
         "requested_formats": [{"url": "https://example.com/audio.mp4"}],
     }
 
-    with mock.patch("mopidy_youtube.youtube.youtube_dl", None), mock.patch(
-        "mopidy_youtube.youtube.importlib.import_module"
-    ) as import_module, mock.patch(
-        "mopidy_youtube.youtube.os.listdir", return_value=[]
-    ), mock.patch(
-        "mopidy_youtube.youtube.youtube_dl", None, create=True
+    with (
+        mock.patch("mopidy_youtube.youtube.youtube_dl", None),
+        mock.patch("mopidy_youtube.youtube.importlib.import_module") as import_module,
+        mock.patch("mopidy_youtube.youtube.os.listdir", return_value=[]),
+        mock.patch("mopidy_youtube.youtube.youtube_dl", None, create=True),
     ):
         import_module.return_value.YoutubeDL.return_value = fake_ydl
         assert video.audio_url.get() == "https://example.com/audio.mp4"
@@ -313,11 +321,17 @@ def test_video_audio_url_handles_nested_requested_formats_payloads():
         "id": "abc123defgh",
         "title": "Example",
         "requested_formats": [
-            {"format_id": "audio", "formats": [{"url": "https://example.com/nested-audio.mp4"}]}
+            {
+                "format_id": "audio",
+                "formats": [{"url": "https://example.com/nested-audio.mp4"}],
+            }
         ],
     }
 
-    assert backend.youtube.Video._extract_audio_url(info) == "https://example.com/nested-audio.mp4"
+    assert (
+        backend.youtube.Video._extract_audio_url(info)
+        == "https://example.com/nested-audio.mp4"
+    )
 
 
 def test_playback_translate_uri_returns_resolved_audio_url():
@@ -326,11 +340,19 @@ def test_playback_translate_uri_returns_resolved_audio_url():
     video.audio_url.get.return_value = "https://example.com/audio.webm"
 
     with mock.patch("mopidy_youtube.backend.youtube.Video.get", return_value=video):
-        assert provider.translate_uri("youtube:video:testid") == "https://example.com/audio.webm"
+        assert (
+            provider.translate_uri("youtube:video:testid")
+            == "https://example.com/audio.webm"
+        )
 
 
 def test_index_template_uses_event_parameter_for_context_menu_target():
-    html_path = pathlib.Path(__file__).resolve().parents[1] / "mopidy_youtube" / "www" / "index.html"
+    html_path = (
+        pathlib.Path(__file__).resolve().parents[1]
+        / "mopidy_youtube"
+        / "www"
+        / "index.html"
+    )
 
     html = html_path.read_text(encoding="utf-8")
 
@@ -343,11 +365,13 @@ def test_index_handler_handles_current_mopidy_track_metadata_shape(tmp_path):
     root.mkdir()
     (root / "track.jpg").write_bytes(b"fake-jpg")
     (root / "track.json").write_text(
-        json.dumps({
-            "name": "Example Title",
-            "artists": [{"name": "Example Artist"}],
-            "album": {"name": "Example Album"},
-        }),
+        json.dumps(
+            {
+                "name": "Example Title",
+                "artists": [{"name": "Example Artist"}],
+                "album": {"name": "Example Album"},
+            }
+        ),
         encoding="utf-8",
     )
 
@@ -387,7 +411,9 @@ def test_autoplay_uses_mopidy_4_tl_track_object():
         )
     ]
 
-    with mock.patch("mopidy_youtube.frontend.youtube.Video.get", return_value=current_video):
+    with mock.patch(
+        "mopidy_youtube.frontend.youtube.Video.get", return_value=current_video
+    ):
         player.track_playback_started(tl_track)
 
     core.tracklist.add.assert_called_once()
@@ -411,7 +437,9 @@ def test_library_lookup_returns_single_track_for_video_uri():
 
         with mock.patch(
             "mopidy_youtube.library.convert_video_to_track",
-            return_value=mock.Mock(uri="youtube:video:nvlTJrNJ5lA", name="Example Title"),
+            return_value=mock.Mock(
+                uri="youtube:video:nvlTJrNJ5lA", name="Example Title"
+            ),
         ) as convert:
             result = provider.lookup("youtube:video:nvlTJrNJ5lA")
 

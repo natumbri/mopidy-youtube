@@ -8,7 +8,15 @@ from mopidy_youtube.cache import cache_image, cache_metadata, find_cached_audio_
 from mopidy_youtube.media import is_live_info
 
 
-def resolve_audio_url(video, *, ytdl_options, ytdl_extract_info_options, cache_location, youtube_dl, youtube_dl_package):
+def resolve_audio_url(
+    video,
+    *,
+    ytdl_options,
+    ytdl_extract_info_options,
+    cache_location,
+    youtube_dl,
+    youtube_dl_package,
+):
     if cache_location:
         cached_audio = find_cached_audio_path(cache_location, video.id)
         if cached_audio:

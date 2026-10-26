@@ -148,7 +148,9 @@ class YouTubeLibraryProvider(backend.LibraryProvider):
         if not channel_playlists:
             return None
 
-        videos = [video for playlist in channel_playlists for video in playlist.videos.get()]
+        videos = [
+            video for playlist in channel_playlists for video in playlist.videos.get()
+        ]
         return [convert_video_to_track(video) for video in videos]
 
     def lookup(self, uri):
@@ -196,7 +198,8 @@ class YouTubeLibraryProvider(backend.LibraryProvider):
                 uri: [Image(uri=f"/youtube/{video_id}.{ext}")]
                 for uri in uris
                 for video_id in [extract_video_id(uri)]
-                if video_id and (
+                if video_id
+                and (
                     (f"{video_id}.webp" in cached_files and (ext := "webp"))
                     or (f"{video_id}.jpg" in cached_files and (ext := "jpg"))
                 )

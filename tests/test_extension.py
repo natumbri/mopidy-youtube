@@ -4,7 +4,6 @@ from mopidy_youtube import Extension
 from mopidy_youtube import backend as backend_lib
 from mopidy_youtube import frontend as frontend_lib
 
-
 REQUIRED_CONFIG_KEYS = [
     "allow_cache",
     "youtube_api_key",

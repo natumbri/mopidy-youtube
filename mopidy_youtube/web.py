@@ -93,7 +93,9 @@ class IndexHandler(tornado.web.RequestHandler):
             )
 
         else:
-            return self.render("index.html", images=self.uri_generator(), version=__version__)
+            return self.render(
+                "index.html", images=self.uri_generator(), version=__version__
+            )
 
     def get_template_path(self):
         return pathlib.Path(__file__).parent / "www"
@@ -125,8 +127,9 @@ class IndexHandler(tornado.web.RequestHandler):
                 with open(filename[0], encoding="utf-8") as openfile:
                     yield (json.load(openfile), filename[1], filename[2])
             except (OSError, ValueError, TypeError, json.JSONDecodeError) as exc:
-                logger.warning("Skipping malformed cache metadata for %s: %s", filename[0], exc)
-
+                logger.warning(
+                    "Skipping malformed cache metadata for %s: %s", filename[0], exc
+                )
 
 
 class AudioHandler(tornado.web.RequestHandler):

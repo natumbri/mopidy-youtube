@@ -53,7 +53,9 @@ class YouTubeCoreListener(pykka.ThreadingActor, CoreListener):
             try:
                 youtube.Video.get(video_id).audio_url
             except Exception:
-                logger.exception("Failed to prefetch audio for YouTube video %s", video_id)
+                logger.exception(
+                    "Failed to prefetch audio for YouTube video %s", video_id
+                )
 
     def tracklist_changed(self):
         # Keep the actor callback lightweight and move the expensive prefetch work
