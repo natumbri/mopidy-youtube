@@ -543,17 +543,18 @@ class jAPI(Client):
                     logger.info(f"skipping video {videoId}: {title}")
                     continue
 
-                try:
-                    byline = [
-                        bl
-                        for bl in ["longBylineText", "shortBylineText"]
-                        if bl in video
-                    ][0]
-                except Exception as e:
+                byline = next(
+                    (
+                        field
+                        for field in ("longBylineText", "shortBylineText")
+                        if field in video
+                    ),
+                    "unknown",
+                )
+                if byline == "unknown":
                     logger.error(
-                        f"json_to_items: no byline detected for {videoId}; ({e})"
+                        f"json_to_items: no byline detected for {videoId};"
                     )
-                    byline = "unknown"
 
                 try:
                     thumbnails = video["thumbnail"]["thumbnails"][-1]
@@ -680,12 +681,7 @@ class jAPI(Client):
                 }
                 items.append(item)
 
-        deduped = []
-        seen = set()
-        for item in items:
-            key = json.dumps(item, sort_keys=True)
-            if key not in seen:
-                seen.add(key)
-                deduped.append(item)
-
-        return deduped
+        deduped = {
+            json.dumps(item, sort_keys=True): item for item in items
+        }
+        return list(deduped.values())

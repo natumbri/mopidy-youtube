@@ -36,22 +36,16 @@ Install from github by running::
     python3 -m pip install https://github.com/natumbri/mopidy-youtube/archive/develop.zip
 
 
-Install `youtube-dl` (or a compatible package) from PyPI by running, for example::
+Install the modern YouTube extraction backend from PyPI by running::
 
-    python3 -m pip install --upgrade youtube-dl
+    python3 -m pip install --upgrade yt-dlp
 
-For more information about youtube-dl, see https://github.com/ytdl-org/youtube-dl
-Other compatible (and possibly more up-to-date) libraries may include 
-`yt-dlp` (https://github.com/yt-dlp/yt-dlp) and `youtube-dlc`.
-
-If you wish to use an alternate youtube-dl library, in your configuration file
-you must set the `youtube_dl_package` option to the package name of an alternative
-package:: 
+The extension prefers `yt-dlp` for audio extraction and will use it by default.
+If you need to override the package name, set `youtube_dl_package` in the
+configuration file::
 
     [youtube]
-    youtube_dl_package = [name] : package name of an alternative package 
-    				  to replace "youtube_dl", for example 
-				  "yt_dlp"
+    youtube_dl_package = yt_dlp
 
 
 Make sure you already have the GStreamer plugins, especially the "bad"
@@ -74,6 +68,11 @@ If you want to cache files, set allow_cache to true. The cache directory
 will be the one specified for cache_dir in mopidy [core] configuration::
 
     allow_cache = true
+
+You can also disable the playback-history hook if you do not want watched tracks
+recorded in the YouTube history API::
+
+    history_enabled = false
 
 Only tracks (and their related metadata and image) that are added to the
 mopidy track list will be cached.  Search results are not cached.
@@ -115,9 +114,8 @@ mopidy library, you need to::
 You can obtain the musicapi browser authentication file by process 
 mentioned in the `ytmusicapi readme <https://ytmusicapi.readthedocs.io/en/stable/setup/browser.html>`_.
 
-To enable YouTube Premium high quality streaming you must setup the `musicapi_cookiefile`. 
-(You also need to use yt-dlp instead of youtube_dl. See `youtube_dl_package` 
-documentation for how to configure it.) 
+To enable YouTube Premium high quality streaming you must set up the `musicapi_cookiefile`.
+This requires `yt-dlp` and the `youtube_dl_package` setting shown above.
 
 Setup a `cookies.txt` (Netscape HTTP Cookie File) containing YouTube cookies:
 - Download an extension to dump YouTube cookies. For example:  
@@ -189,8 +187,7 @@ Troubleshooting
 If the extension is slow, try setting lower values for threads_max, search_results 
 and playlist_max_videos.
 
-If resolving of URIs stops working, always try to update the youtube-dl library
-first.
+If resolving of URIs stops working, always try updating `yt-dlp` first.
 
 
 Project resources

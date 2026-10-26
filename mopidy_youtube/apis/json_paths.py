@@ -2,26 +2,29 @@
 
 
 def deep_search(needles, haystack):
-    found = []
-
     if not isinstance(needles, list):
         needles = [needles]
 
     if isinstance(haystack, dict):
+        found = []
         for needle in needles:
-            if needle in haystack.keys():
+            if needle in haystack:
                 found.append({needle: haystack[needle]})
-            elif len(haystack.keys()) > 0:
-                for key in haystack.keys():
-                    result = deep_search(needle, haystack[key])
-                    if result:
-                        found.extend(result)
-    elif isinstance(haystack, list):
-        for node in haystack:
-            result = deep_search(needles, node)
-            if result:
-                found.extend(result)
-    return found
+            found.extend(
+                result
+                for key in haystack
+                for result in deep_search(needle, haystack[key])
+            )
+        return found
+
+    if isinstance(haystack, list):
+        return [
+            item
+            for node in haystack
+            for item in deep_search(needles, node)
+        ]
+
+    return []
 
 
 def traverse(input_dict, keys):

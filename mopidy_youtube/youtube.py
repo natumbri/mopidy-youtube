@@ -11,16 +11,12 @@ from cachetools import TTLCache, cached
 
 from mopidy.models import Image
 
-try:
-    # Mopidy < 4.0
-    from mopidy.models import ModelJSONEncoder
-except ImportError:
-    # Mopidy >= 4.0
-    ModelJSONEncoder = None
-
-from mopidy_youtube import logger
+from mopidy_youtube import logger, runtime
+from mopidy_youtube.async_utils import async_property, is_future_set
 from mopidy_youtube.converters import convert_video_to_track
+from mopidy_youtube.media import extract_audio_url, is_live_info, is_live_item
 from mopidy_youtube.data import extract_playlist_id, extract_video_id
+from mopidy_youtube.resolver import get_youtube_dl_module, resolve_audio_url
 from mopidy_youtube.timeformat import ISO8601_to_seconds
 
 api_enabled = False
@@ -29,78 +25,29 @@ cache_location = None
 musicapi_enabled = None
 musicapi_cookiefile = None
 youtube_dl = None
-youtube_dl_package = "youtube_dl"
+youtube_dl_package = "yt_dlp"
 search_lock = threading.Lock()
 search_in_progress = False
 search_last_started = 0.0
 
 
-def async_property(func):
-    """
-    decorator for creating async properties using pykka.ThreadingFuture
+def sync_runtime_module_globals():
+    global api_enabled, channel, cache_location, musicapi_enabled, musicapi_cookiefile
+    global youtube_dl, youtube_dl_package, search_lock, search_in_progress, search_last_started
 
-    A property 'foo' should have a future '_foo'
-    On first call we invoke func() which should create the future
-    On subsequent calls we just return the future
-    """
-
-    _future_name = "_" + func.__name__
-
-    def wrapper(self):
-        if _future_name not in self.__dict__:
-            func(self)  # should create the future
-        return self.__dict__[_future_name]
-
-    return property(wrapper)
+    api_enabled = runtime.api_enabled
+    channel = runtime.channel
+    cache_location = runtime.cache_location
+    musicapi_enabled = runtime.musicapi_enabled
+    musicapi_cookiefile = runtime.musicapi_cookiefile
+    youtube_dl = runtime.youtube_dl
+    youtube_dl_package = runtime.youtube_dl_package
+    search_lock = runtime.search_lock
+    search_in_progress = runtime.search_in_progress
+    search_last_started = runtime.search_last_started
 
 
-def is_live_item(item):
-    if not item:
-        return False
-
-    # jAPI / scrape search results often miss normal duration fields for lives
-    try:
-        if item.get("is_live"):
-            return True
-    except AttributeError:
-        pass
-
-    live_status = item.get("live_status")
-    if live_status in ("is_live", "is_upcoming", "post_live"):
-        return True
-
-    # Search-result heuristic: live results often lack normal duration metadata
-    content_details = item.get("contentDetails") or {}
-    duration = content_details.get("duration")
-    if duration in (None, "", "P0D", "PT0S"):
-        # only treat as suspicious if it's clearly a video search result
-        item_id = item.get("id")
-        if isinstance(item_id, dict) and item_id.get("kind") == "youtube#video":
-            snippet = item.get("snippet") or {}
-            # live search results often do not have channelId/length-like metadata
-            if "liveBroadcastContent" in snippet:
-                if snippet.get("liveBroadcastContent") != "none":
-                    return True
-
-    return False
-
-
-def is_live_info(info):
-    if not info:
-        return False
-
-    if info.get("is_live"):
-        return True
-
-    if info.get("live_status") in ("is_live", "is_upcoming", "post_live"):
-        return True
-
-    if info.get("duration") in (None, 0):
-        # last-resort heuristic
-        if info.get("was_live") or info.get("is_upcoming"):
-            return True
-
-    return False
+sync_runtime_module_globals()
 
 
 class Entry:
@@ -124,6 +71,8 @@ class Entry:
 
     cache_max_len = 4000
     cache_ttl = 21600
+    search_results = 15
+    playlist_max_videos = 50
 
     cache = TTLCache(maxsize=cache_max_len, ttl=cache_ttl)
 
@@ -171,23 +120,21 @@ class Entry:
     def search(cls, q):
         """Search for both videos and playlists using a single API call."""
 
-        global search_in_progress, search_last_started
-
         q = (q or "").strip()
         if not q:
             logger.warning("youtube search skipped: empty query")
             return []
 
-        with search_lock:
-            if search_in_progress:
+        with runtime.search_lock:
+            if runtime.search_in_progress:
                 logger.warning(
                     'youtube search skipped while previous search is still running: "%s"',
                     q,
                 )
                 return []
 
-            search_in_progress = True
-            search_last_started = time.monotonic()
+            runtime.search_in_progress = True
+            runtime.search_last_started = time.monotonic()
 
         try:
             try:
@@ -199,38 +146,56 @@ class Entry:
                 return []
 
             items = data.get("items", [])
-            results = []
 
-            for item in items:
+            def map_item(item):
                 try:
-                    obj = cls.create_object(item)
-                    if obj is not None:
-                        results.append(obj)
+                    return cls.create_object(item)
                 except Exception:
                     logger.exception("map error while processing item: %r", item)
+                    return None
 
-            return results
+            return [obj for obj in (map_item(item) for item in items) if obj is not None]
 
         finally:
-            with search_lock:
-                search_in_progress = False
+            with runtime.search_lock:
+                runtime.search_in_progress = False
+
+    def _ensure_future(self, field_name):
+        future_name = "_" + field_name
+        future = self.__dict__.get(future_name)
+        if future is None:
+            future = self.__dict__[future_name] = pykka.ThreadingFuture()
+        return future
+
+    @staticmethod
+    def _is_future_set(future):
+        return is_future_set(future)
 
     @classmethod
     def _add_futures(cls, futures_list, fields):
-        """
-        Adds futures for the given fields to all objects in list, unless they
-        already exist. Returns objects for which at least one future was added
+        """Create missing future slots for each field on every object.
+
+        An existing future that has not yet been populated is still considered
+        pending, so async properties re-enter their loader instead of silently
+        treating themselves as already resolved.
         """
 
         def add(obj):
+            if obj is None:
+                return False
+
             added = False
-            for k in fields:
-                if "_" + k not in obj.__dict__:
-                    obj.__dict__["_" + k] = pykka.ThreadingFuture()
+            for field in fields:
+                future_name = "_" + field
+                future = obj.__dict__.get(future_name)
+                if future is None:
+                    obj.__dict__[future_name] = pykka.ThreadingFuture()
+                    added = True
+                elif not cls._is_future_set(future):
                     added = True
             return added
 
-        return list(filter(add, futures_list))
+        return [obj for obj in futures_list if add(obj)]
 
     @async_property
     def title(self):
@@ -245,44 +210,32 @@ class Entry:
         self.load_info([self])
 
     def _set_api_data(self, fields, item):
-        """
-        sets the given 'fields' of 'self', based on the 'item'
-        data retrieved through the API
-        """
+        """Populate the async property futures for the given API fields."""
 
-        for k in fields:
-            _k = "_" + k
-            future = self.__dict__.get(_k)
-            if not future:
-                future = self.__dict__[_k] = pykka.ThreadingFuture()
-
-            # # What was this for?  Whatever it was for, it doesn't work
-            # # for pykka v4.3 onwards, since ThreadingFuture uses
-            # # a condition variable instead of a queue
-            # if not future._queue.empty():  # hack, no public is_set()
-            #     continue
+        for field in fields:
+            future = self._ensure_future(field)
 
             if not item:
-                val = None
-            elif k == "title":
-                val = item["snippet"]["title"]
-            elif k == "channel":
-                val = item["snippet"]["channelTitle"]
-            elif k == "owner_channel":
-                val = item["snippet"]["videoOwnerChannelTitle"]
-            elif k == "album":
-                val = item["album"]
-            elif k == "artists":
-                val = item["artists"]
-            elif k == "length":
-                val = ISO8601_to_seconds(item["contentDetails"]["duration"])
-            elif k == "video_count":
-                val = min(
+                value = None
+            elif field == "title":
+                value = item["snippet"]["title"]
+            elif field == "channel":
+                value = item["snippet"]["channelTitle"]
+            elif field == "owner_channel":
+                value = item["snippet"]["videoOwnerChannelTitle"]
+            elif field == "album":
+                value = item["album"]
+            elif field == "artists":
+                value = item["artists"]
+            elif field == "length":
+                value = ISO8601_to_seconds(item["contentDetails"]["duration"])
+            elif field == "video_count":
+                value = min(
                     int(item["contentDetails"]["itemCount"]),
                     int(self.playlist_max_videos),
                 )
-            elif k == "thumbnails":
-                val = [
+            elif field == "thumbnails":
+                value = [
                     Image(
                         uri=details["url"],
                         width=details["width"],
@@ -291,23 +244,19 @@ class Entry:
                     for (quality, details) in item["snippet"]["thumbnails"].items()
                     if quality in ["default", "medium", "high"]
                 ] or None
-            elif k == "channelId":
-                val = item["snippet"]["channelId"]
-            elif k == "track_no":
-                val = item["track_no"]
+            elif field == "channelId":
+                value = item["snippet"]["channelId"]
+            elif field == "track_no":
+                value = item["track_no"]
             else:
                 continue
 
-            # Skip futures that already have a value
-            if hasattr(future, "_queue") and not future._queue.empty():
-                continue
-
             try:
-                future.set(val)
+                future.set(value)
             except Full:
                 logger.debug(
                     "Future already set for field %s on object %s, skipping",
-                    k,
+                    field,
                     getattr(self, "id", None),
                 )
 
@@ -388,7 +337,7 @@ class Video(Entry):
                     )
                     video._set_api_data(extended_item[1], extended_item[0])
                 except Exception as e:
-                    logger.warn(
+                    logger.warning(
                         f"Error {e} setting api data for {video.id}; "
                         f"probably private or deleted"
                     )
@@ -421,18 +370,18 @@ class Video(Entry):
         requiresRelatedVideos = self._add_futures([self], ["related_videos"])
 
         if requiresRelatedVideos:
-            relatedvideos = []
             data = self.api.list_related_videos(self.id)
+            relatedvideos = []
 
-            for item in data["items"]:
-                # why are some results returned without a 'snippet'?
-                if "snippet" in item:
-                    minimum_fields = ["title", "channel"]
-                    item, extended_fields = self.extend_fields(item, minimum_fields)
-                    # extended_fields = minimum_fields
-                    video = Video.get(item["id"]["videoId"])
-                    video._set_api_data(extended_fields, item)
-                    relatedvideos.append(video)
+            for item in data.get("items", []):
+                if "snippet" not in item:
+                    continue
+
+                minimum_fields = ["title", "channel"]
+                item, extended_fields = self.extend_fields(item, minimum_fields)
+                video = Video.get(item["id"]["videoId"])
+                video._set_api_data(extended_fields, item)
+                relatedvideos.append(video)
 
             # start loading video info in the background
             Video.load_info(relatedvideos)
@@ -470,18 +419,48 @@ class Video(Entry):
         requiresTrack_No = self._add_futures([self], ["track_no"])
 
         if requiresTrack_No:
-            album_uri = self.album.get()
-            if album_uri["uri"] and not album_uri["uri"].startswith("PL"):
-                album_id = extract_playlist_id(album_uri)
-                album_tracks = self.api.list_playlistitems(album_id)
-                self._track_no.set(
-                    [track["id"]["videoId"] for track in album_tracks].index[
-                        extract_video_id(self.id)
+            album = self.album.get()
+            album_uri = album.get("uri") if isinstance(album, dict) else None
+            playlist_id = extract_playlist_id(album_uri) if album_uri else ""
+
+            if playlist_id:
+                album_response = self.api.list_playlistitems(playlist_id, "", 50)
+                album_tracks = (
+                    album_response.get("items", [])
+                    if isinstance(album_response, dict)
+                    else album_response or []
+                )
+                video_ids = [
+                    track_id
+                    for track in album_tracks
+                    for track_id in [
+                        (
+                            track["id"].get("videoId")
+                            if isinstance(track.get("id"), dict)
+                            else track.get("id")
+                            if isinstance(track.get("id"), str)
+                            else None
+                        )
                     ]
-                )
-                logger.debug(
-                    f"track no {[track['id']['videoId'] for track in album_tracks].index[extract_video_id(self.id)]}"
-                )
+                    if track_id
+                ]
+                if not video_ids:
+                    video_ids = [
+                        resource_id.get("videoId")
+                        for track in album_tracks
+                        for resource_id in [
+                            (track.get("snippet") or {}).get("resourceId") or {}
+                        ]
+                        if resource_id.get("videoId")
+                    ]
+
+                video_id = self.id
+                try:
+                    track_no = video_ids.index(video_id)
+                except ValueError:
+                    track_no = None
+                self._track_no.set(track_no)
+                logger.debug("track no %s for %s in %s", track_no, self.id, playlist_id)
             else:
                 # ultimate fallback to None? Does this work?
                 self._track_no.set(None)
@@ -497,36 +476,32 @@ class Video(Entry):
                 [{"name": self.channel.get(), "uri": None, "thumbnail": None}]
             )
 
+    @staticmethod
+    def _extract_audio_url(info):
+        return extract_audio_url(info)
+
     @async_property
     def audio_url(self):
         """
-        audio_url is the only property retrived using youtube_dl, it's much more
+        audio_url is the only property retrieved using yt-dlp, and it's much more
         expensive than the rest. If caching is turned on and the track is cached,
-        return a (file) url pointing to the cached file. If caching is turned on, and
-        the track isn't cached, start caching it, and - once 2 percent has been
-        cached - return a (http) url pointing to the cached file. If caching is not
-        turned on, return a url obtained with youtube_dl.
+        return a (file) URL pointing to the cached file. If caching is turned on and
+        the track isn't cached, start caching it and, once 2 percent has been
+        cached, return an (http) URL pointing to the cached file. If caching is not
+        turned on, return a URL obtained with yt-dlp.
         """
 
         # from @blacklight (https://github.com/blacklight/mopidy-youtube)
-        global youtube_dl
-        global youtube_dl_package
+        global youtube_dl, youtube_dl_package
 
-        if youtube_dl is None:
-            if youtube_dl_package == "youtube_dl":
-                try:
-                    youtube_dl = importlib.import_module("yt_dlp")
-                    youtube_dl_package = "yt_dlp"
-                    logger.warning(
-                        "youtube_dl_package is set to youtube_dl, but yt_dlp is available; "
-                        "using yt_dlp to avoid incompatible youtube_dl/yt_dlp internals"
-                    )
-                except ImportError:
-                    youtube_dl = importlib.import_module(youtube_dl_package)
-            else:
-                youtube_dl = importlib.import_module(youtube_dl_package)
-
-            logger.debug(f"using {youtube_dl_package} package for youtube_dl")
+        if runtime.youtube_dl is not None:
+            youtube_dl = runtime.youtube_dl
+            youtube_dl_package = runtime.youtube_dl_package
+        elif youtube_dl is None:
+            youtube_dl, youtube_dl_package = get_youtube_dl_module(youtube_dl_package)
+            runtime.youtube_dl = youtube_dl
+            runtime.youtube_dl_package = youtube_dl_package
+        logger.debug(f"using {youtube_dl_package} package for youtube_dl")
 
         # When caching, is it possible to set the audio_url part-way through
         # a download so audio can start playing quicker?
@@ -590,10 +565,10 @@ class Video(Entry):
                     "nopart": True,
                     "retries": 10,
                 }
-                if musicapi_cookiefile:
-                    ytdl_options["cookiefile"] = musicapi_cookiefile
+                if runtime.musicapi_cookiefile:
+                    ytdl_options["cookiefile"] = runtime.musicapi_cookiefile
                 base_url = "https://www.youtube.com"
-                if musicapi_enabled:
+                if runtime.musicapi_enabled:
                     # High quality music streams are only available to YouTube
                     # Premium users when using YouTube Music.
                     base_url = "https://music.youtube.com"
@@ -606,148 +581,41 @@ class Video(Entry):
                     "force_generic_extractor": False,
                 }
 
-                if youtube_dl_package == "yt_dlp":
+                if runtime.youtube_dl_package == "yt_dlp":
                     ytdl_options["no_color"] = True
 
-                if cache_location:
-                    info = {}
-                    cached = [
-                        cached_file
-                        for cached_file in os.listdir(cache_location)
-                        if cached_file
-                        in [
-                            f"{self.id}.{format}"
-                            for format in ["webm", "m4a", "mp3", "ogg"]
-                        ]
-                    ]
-                    if cached:
-                        fileUri = f"file://{(os.path.join(cache_location, cached[0]))}"
-                        self._audio_url.set(fileUri)
+                if runtime.cache_location:
+                    resolved = resolve_audio_url(
+                        self,
+                        ytdl_options={**ytdl_options, "progress_hooks": [my_hook]},
+                        ytdl_extract_info_options=ytdl_extract_info_options,
+                        cache_location=runtime.cache_location,
+                        youtube_dl=runtime.youtube_dl,
+                        youtube_dl_package=runtime.youtube_dl_package,
+                    )
+                    if resolved is not None:
+                        self._audio_url.set(resolved)
                     else:
-                        with youtube_dl.YoutubeDL(ytdl_options) as ydl:
-                            probe_info = ydl.extract_info(
-                                **ytdl_extract_info_options,
-                                download=False,
-                            )
+                        self._audio_url.set(None)
+                    return
 
-                        if is_live_info(probe_info):
-                            logger.info(
-                                "Skipping YouTube live/upcoming playback resolution: %s",
-                                self.id,
-                            )
-                            self._audio_url.set(None)
-                            return
+                with runtime.youtube_dl.YoutubeDL(ytdl_options) as ydl:
+                    info = ydl.extract_info(
+                        **ytdl_extract_info_options,
+                        download=False,
+                    )
 
-                        logger.debug(f"caching track {self.id}")
-                        ytdl_options["outtmpl"] = os.path.join(
-                            cache_location, "%(id)s.%(ext)s"
-                        )
+                audio_url = self._extract_audio_url(info)
+                if not audio_url:
+                    logger.warning(
+                        "yt-dlp did not provide a direct audio URL for %s; info keys: %s",
+                        self.id,
+                        sorted(info.keys()) if isinstance(info, dict) else type(info).__name__,
+                    )
+                    self._audio_url.set(None)
+                    return
 
-                        ytdl_options["progress_hooks"] = [my_hook]
-
-                        with youtube_dl.YoutubeDL(ytdl_options) as ydl:
-                            info = ydl.extract_info(
-                                **ytdl_extract_info_options,
-                                download=True,
-                            )
-
-                            if is_live_info(info):
-                                logger.info(
-                                    "Skipping YouTube live/upcoming playback resolution: %s",
-                                    self.id,
-                                )
-                                self._audio_url.set(None)
-                                return
-
-                            # get info about audio format, for debugging
-                            logger.debug(
-                                {
-                                    "format_id": info["format_id"],
-                                    "format_note": info["format_note"],
-                                    "bitrate": info["abr"],
-                                    "audio_ext": info["audio_ext"],
-                                }
-                            )
-
-                        # # self._audio_url.set is now done by the progress_hooks
-                        # fileUri = f"file://{ydl.prepare_filename(info)}"
-                        # self._audio_url.set(fileUri)
-
-                    # moved this here, because sometimes the image might go
-                    # missing, even if the audio and the json do not
-                    # and updated to account for jpgs and webps
-                    if not any(
-                        image in os.listdir(cache_location)
-                        for image in (f"{self.id}.webp", f"{self.id}.jpg")
-                    ):
-                        logger.debug(f"caching image {self.id}")
-                        imageUri = self.thumbnails.get()[0].uri
-
-                        response = self.api.session.get(
-                            imageUri,
-                            headers={
-                                "content-length": None,
-                                "host": None,
-                            },
-                            stream=True,
-                        )
-
-                        if response.status_code == 200:
-                            logger.debug(f"caching image {self.id}")
-                            magic = next(response.iter_content(4))
-                            if magic == b"\xff\xd8\xff\xe0":
-                                imageFile = f"{self.id}.jpg"
-                            elif magic == b"\x52\x49\x46\x46":
-                                imageFile = f"{self.id}.webp"
-                            else:
-                                logger.debug(
-                                    f"invlaid image format for {self.id}; magic: {magic}"
-                                )
-                                raise Exception(
-                                    f"Invalid image format for {self.id}; magic: {magic}"
-                                )
-
-                            with open(
-                                os.path.join(cache_location, imageFile),
-                                "wb",
-                            ) as out_file:
-                                out_file.write(magic)
-                                for chunk in response.iter_content():
-                                    out_file.write(chunk)
-                        del response
-
-                    # moved this here, because sometimes the metadata might go
-                    # missing, even if the audio and the image do not
-                    if (
-                        f"{self.id}.json" not in os.listdir(cache_location)
-                        or os.path.getsize(
-                            os.path.join(cache_location, f"{self.id}.json")
-                        )
-                        == 0
-                    ):
-                        logger.debug(f"caching metadata {self.id}")
-                        track = convert_video_to_track(
-                            self, bitrate=int(info.get("tbr", 0))
-                        )
-
-                        with open(
-                            os.path.join(cache_location, f"{self.id}.json"), "w"
-                        ) as outfile:
-                            json.dump(
-                                convert_video_to_track(
-                                    self, bitrate=int(info.get("tbr", 0))
-                                ),
-                                cls=ModelJSONEncoder,
-                                fp=outfile,
-                            )
-                else:
-                    with youtube_dl.YoutubeDL(ytdl_options) as ydl:
-                        info = ydl.extract_info(
-                            **ytdl_extract_info_options,
-                            download=False,
-                        )
-
-                        self._audio_url.set(info["url"])
+                self._audio_url.set(audio_url)
 
             except Exception as e:
                 logger.exception(f"audio_url error {e} (videoId: {self.id})")
@@ -760,6 +628,14 @@ class Video(Entry):
 
 
 class Playlist(Entry):
+    _videos_executor = None
+
+    @classmethod
+    def get_videos_executor(cls):
+        if cls._videos_executor is None:
+            cls._videos_executor = ThreadPoolExecutor(max_workers=1)
+        return cls._videos_executor
+
     @classmethod
     def load_info(cls, listOfPlaylists):
         """
@@ -859,9 +735,7 @@ class Playlist(Entry):
             )
 
         if requiresVideos:
-            executor = ThreadPoolExecutor(max_workers=1)
-            executor.submit(load_items)
-            executor.shutdown(wait=False)
+            self.get_videos_executor().submit(load_items)
             # load_items()
 
     @async_property

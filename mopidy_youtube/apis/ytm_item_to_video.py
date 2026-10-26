@@ -2,55 +2,67 @@ from mopidy_youtube import logger
 from mopidy_youtube.timeformat import convert_Millis, format_duration
 
 
+def _resolve_duration(item):
+    for key in ("duration", "length", "lengthMs", "lengthSeconds", "song_duration"):
+        if key not in item:
+            continue
+
+        value = item[key]
+        if value is None or value == "":
+            continue
+
+        if key in {"lengthSeconds", "song_duration"}:
+            try:
+                return "PT" + format_duration(convert_Millis(int(value) * 1000))
+            except (TypeError, ValueError):
+                continue
+
+        if key == "lengthMs":
+            try:
+                return "PT" + format_duration(convert_Millis(int(value)))
+            except (TypeError, ValueError):
+                continue
+
+        return "PT" + format_duration(value)
+
+    logger.warning("duration missing: %s", item)
+    return "PT0H00M00S"
+
+
+def _resolve_thumbnail(item):
+    thumbnails = item.get("thumbnails") or item.get("thumbnail", {}).get("thumbnails") or [{}]
+    return thumbnails[-1]
+
+
 def ytm_item_to_video(item):
     if "videoDetails" in item:
         item = item["videoDetails"]
 
     try:
-        if "duration" in item and item["duration"]:
-            duration = item["duration"]
-        elif "length" in item:
-            duration = item["length"]
-        elif "lengthMs" in item:
-            duration = convert_Millis(item["lengthMs"])
-        elif "lengthSeconds" in item:
-            duration = convert_Millis(int(item["lengthSeconds"]) * 1000)
-        elif "song_druation" in item:
-            duration = convert_Millis(int(item["song_duration"]) * 1000)
-        else:
-            duration = "00:00:00"
-            logger.warn(f"duration missing: {item}")
+        duration = _resolve_duration(item)
     except Exception as e:
-        logger.error(f"youtube_music yt_item_to_video duration error {e}: {item}")
+        logger.error("youtube_music yt_item_to_video duration error %s: %s", e, item)
+        duration = "PT0H00M00S"
 
     try:
-        duration = "PT" + format_duration(duration)
-    except Exception as e:
-        logger.error(
-            f"youtube_music yt_item_to_video format duration error {e}: {item}"
-        )
-
-    try:
-        if "artists" in item and item["artists"]:
-            if isinstance(item["artists"], list):
-                channelTitle = item["artists"][0]["name"]
-            else:
-                channelTitle = item["artists"]
+        if item.get("artists"):
+            channelTitle = (
+                item["artists"][0]["name"]
+                if isinstance(item["artists"], list)
+                else item["artists"]
+            )
         elif "byline" in item:
-            logger.debug(f'byline: {item["byline"]}')
+            logger.debug("byline: %s", item["byline"])
             channelTitle = item["byline"]
         elif "author" in item:
             channelTitle = item["author"]
         else:
             channelTitle = "unknown"
     except Exception as e:
-        logger.error(f"youtube_music yt_item_to_video artists error {e}: {item}")
+        logger.error("youtube_music yt_item_to_video artists error %s: %s", e, item)
+        channelTitle = "unknown"
 
-    # TODO: full support for thumbnails
-    try:
-        thumbnail = item["thumbnails"][-1]
-    except Exception:
-        thumbnail = item["thumbnail"]["thumbnails"][-1]
+    thumbnail = _resolve_thumbnail(item)
 
     video = {
         "id": {"kind": "youtube#video", "videoId": item["videoId"]},

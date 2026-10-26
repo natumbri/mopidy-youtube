@@ -1,12 +1,19 @@
 import logging
 import pathlib
+from importlib.metadata import PackageNotFoundError, version
 
-import pkg_resources
-from mopidy import config, ext
+from mopidy import config as mopidy_config, ext
 
-__version__ = pkg_resources.get_distribution("Mopidy-YouTube").version
+from mopidy_youtube.config import apply_config_schema
+
+try:
+    __version__ = version("Mopidy-YouTube")
+except PackageNotFoundError:
+    __version__ = "0.0.0+local"
 
 logger = logging.getLogger(__name__)
+
+__all__ = ["Extension", "__version__"]
 
 
 class Extension(ext.Extension):
@@ -15,25 +22,11 @@ class Extension(ext.Extension):
     version = __version__
 
     def get_default_config(self):
-        return config.read(pathlib.Path(__file__).parent / "ext.conf")
+        return mopidy_config.read(pathlib.Path(__file__).parent / "ext.conf")
 
     def get_config_schema(self):
         schema = super().get_config_schema()
-        schema["allow_cache"] = config.String(optional=True)
-        schema["youtube_api_key"] = config.String(optional=True)
-        schema["search_results"] = config.Integer(minimum=1)
-        schema["playlist_max_videos"] = config.Integer(minimum=1)
-        schema["api_enabled"] = config.Boolean(optional=True)
-        schema["channel_id"] = config.String(optional=True)
-        schema["musicapi_enabled"] = config.Boolean(optional=True)
-        schema["musicapi_browser_authentication_file"] = config.String(optional=True)
-        schema["musicapi_cookiefile"] = config.String(optional=True)
-        schema["autoplay_enabled"] = config.Boolean(optional=True)
-        schema["strict_autoplay"] = config.Boolean(optional=True)
-        schema["max_autoplay_length"] = config.Integer(optional=True)
-        schema["max_degrees_of_separation"] = config.Integer()
-        schema["youtube_dl_package"] = config.String(optional=True)
-        return schema
+        return apply_config_schema(schema)
 
     def setup(self, registry):
         from .backend import YouTubeBackend, YouTubeCoreListener

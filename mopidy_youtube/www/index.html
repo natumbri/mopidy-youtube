@@ -31,16 +31,16 @@
     // script to allow for right click to add to track list
     // doing it per img prevents lazy loading
     window.addEventListener("contextmenu", e => {
-        var targetElement = event.target
-        if (targetElement.nodeName === "IMG") {
+        const targetElement = e.target;
+        if (targetElement && targetElement.nodeName === "IMG") {
             e.preventDefault();
-            var imgsrc = targetElement.src.split(".")
-            var ytid = imgsrc[(imgsrc.length)-2].split("/").pop()
-            var new_href = `?url=yt:video:${ytid}`
-            location.href = new_href
+            const imgsrc = targetElement.src.split(".");
+            const ytid = imgsrc[imgsrc.length - 2].split("/").pop();
+            const newHref = `?url=yt:video:${ytid}`;
+            location.href = newHref;
         }
         return false;
-    });    
+    });
   </script>
 
   <div class="box focus">

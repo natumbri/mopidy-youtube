@@ -10,8 +10,6 @@ import tornado.web
 from mopidy_youtube import logger, youtube
 from mopidy_youtube.data import extract_playlist_id, extract_video_id
 
-# from PIL import Image
-
 
 class ImageHandler(tornado.web.StaticFileHandler):
     def get_cache_time(self, *args):
@@ -23,6 +21,24 @@ class IndexHandler(tornado.web.RequestHandler):
         self.root = root
         self.core = core
         self.config = config
+
+    @staticmethod
+    def _track_title(track_json, fallback):
+        if not isinstance(track_json, dict):
+            return fallback
+
+        for key in ("name", "title", "comment"):
+            value = track_json.get(key)
+            if value:
+                return value
+
+        track = track_json.get("track")
+        if isinstance(track, dict):
+            value = track.get("name") or track.get("title")
+            if value:
+                return value
+
+        return fallback
 
     def get(self, path):
         url = self.get_argument("url", None)
@@ -83,8 +99,8 @@ class IndexHandler(tornado.web.RequestHandler):
         return pathlib.Path(__file__).parent / "www"
 
     def uri_generator(self):
-        for json_line in self.data_generator():
-            yield (json_line[0]["comment"], json_line[0]["name"], json_line[2])
+        for metadata, image_id, extension in self.data_generator():
+            yield (image_id, self._track_title(metadata, image_id), extension)
 
     def data_generator(self):
         images = [
@@ -95,34 +111,26 @@ class IndexHandler(tornado.web.RequestHandler):
 
         combo = []
         for filename in json_files:
-            # logger.info(f"{os.path.splitext(os.path.basename(filename))[0]}.jpg")
             if f"{os.path.splitext(os.path.basename(filename))[0]}.jpg" in images:
                 combo.append(
                     (filename, os.path.splitext(os.path.basename(filename))[0], "jpg")
-                )  # ,  self.find_dominant_color(os.path.join(self.root, f"{os.path.splitext(os.path.basename(filename))[0]}.jpg"))))
+                )
             elif f"{os.path.splitext(os.path.basename(filename))[0]}.webp" in images:
                 combo.append(
                     (filename, os.path.splitext(os.path.basename(filename))[0], "webp")
-                )  # ,  self.find_dominant_color(os.path.join(self.root, f"{os.path.splitext(os.path.basename(filename))[0]}.webp"))))
+                )
 
-        # for filename in sorted(combo, key=lambda element: (element[3][0], element[3][1], element[3][2])):
         for filename in combo:
-            with open(filename[0]) as openfile:
-                yield (json.load(openfile), filename[1], filename[2])
+            try:
+                with open(filename[0], encoding="utf-8") as openfile:
+                    yield (json.load(openfile), filename[1], filename[2])
+            except (OSError, ValueError, TypeError, json.JSONDecodeError) as exc:
+                logger.warning("Skipping malformed cache metadata for %s: %s", filename[0], exc)
 
-    # # for arranging images by dominant colour
-    # def find_dominant_color(self, filename):
-    #     img = Image.open(filename)
-    #     img = img.convert("RGBA")
-    #     img = img.resize((1, 1), resample=0)
-    #     dominant_color = img.getpixel((0, 0))
-    #     return dominant_color
 
 
 class AudioHandler(tornado.web.RequestHandler):
-    """Keep reading file until it is all read and written.
-    Allows simultaneous downloading by youtube_dl and playback of file.
-    Is it necessary???"""
+    """Serve a cached file in chunks while it is still being written."""
 
     def initialize(self, cache_dir):
         self.cache_dir = cache_dir
