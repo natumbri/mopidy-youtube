@@ -24,7 +24,7 @@ from mopidy_youtube.apis.youtube_music import Music
 from mopidy_youtube.context import context
 from mopidy_youtube.youtube import Entry, Playlist, Video
 
-from tests.apis.conftest import load_fixture
+from tests.support import load_fixture
 
 if TYPE_CHECKING:
     from collections.abc import Callable, Iterator

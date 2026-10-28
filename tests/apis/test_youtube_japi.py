@@ -20,7 +20,7 @@ import pytest
 from mopidy_youtube.apis.youtube_japi import NoYtDataError, jAPI
 from mopidy_youtube.context import context
 
-from tests.apis.conftest import FakeYouTube, load_fixture, yt_initial_data_page
+from tests.support import FakeYouTube, load_fixture, yt_initial_data_page
 
 if TYPE_CHECKING:
     from collections.abc import Iterator

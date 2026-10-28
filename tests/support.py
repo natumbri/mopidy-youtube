@@ -1,4 +1,4 @@
-"""Helpers for testing the api clients without the network.
+"""Helpers for testing without the network.
 
 `FakeYouTube` replaces a client's HTTP transport: requests are answered from
 canned responses and recorded, and a request nobody planned for fails loudly.
@@ -13,14 +13,13 @@ import json
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
-import pytest
 import requests
 from requests.adapters import BaseAdapter
 
 if TYPE_CHECKING:
     from mopidy_youtube.apis.client import Client
 
-FIXTURES = Path(__file__).parent.parent / "fixtures"
+FIXTURES = Path(__file__).parent / "fixtures"
 
 
 def load_fixture(name: str) -> Any:
@@ -91,8 +90,3 @@ class FakeYouTube(BaseAdapter):
             for r in self.requests
             if r.method == method.upper() and (r.url or "").startswith(url_prefix)
         ]
-
-
-@pytest.fixture
-def youtube_site() -> FakeYouTube:
-    return FakeYouTube()

@@ -13,7 +13,7 @@ import pytest
 
 from mopidy_youtube.apis.ytm_item_to_video import ytm_item_to_video
 
-from tests.apis.conftest import load_fixture
+from tests.support import load_fixture
 
 NO_DURATION = "PT0H00M00S"
 

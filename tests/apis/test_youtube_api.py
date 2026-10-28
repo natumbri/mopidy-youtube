@@ -11,7 +11,7 @@ from mopidy_youtube.context import context
 if TYPE_CHECKING:
     from mopidy_youtube.apis import YouTubeApi
 
-    from tests.apis.conftest import FakeYouTube
+    from tests.support import FakeYouTube
 
 BASE = "https://www.googleapis.com/youtube/v3/"
 
