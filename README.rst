@@ -6,9 +6,9 @@ Mopidy-YouTube
     :target: https://pypi.org/project/Mopidy-YouTube/
     :alt: Latest PyPI version
 
-.. image:: https://img.shields.io/circleci/build/gh/natumbri/mopidy-youtube
-    :target: https://circleci.com/gh/natumbri/mopidy-youtube
-    :alt: CircleCI build status
+.. image:: https://img.shields.io/github/actions/workflow/status/natumbri/mopidy-youtube/ci.yml?branch=develop
+    :target: https://github.com/natumbri/mopidy-youtube/actions/workflows/ci.yml
+    :alt: CI build status
 
 .. image:: https://img.shields.io/codecov/c/gh/natumbri/mopidy-youtube
     :target: https://codecov.io/gh/natumbri/mopidy-youtube

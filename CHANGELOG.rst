@@ -5,7 +5,10 @@ Changelog
 Unreleased
 ========================================
 
-- no unreleased changes; the current tree is released as v4.0.3
+- serve a track over http while it is caching and as a ``file://`` URI once caching is complete
+- add Range/HEAD support to the cached audio handler and abort cleanly when a download stalls
+- move packaging to ``pyproject.toml`` only; replace black/flake8/CircleCI with ruff, tox and GitHub Actions
+- declare ``yt-dlp`` as a dependency, make ``ytmusicapi`` the ``musicapi`` extra and drop the unused ``beautifulsoup4`` and ``setuptools`` dependencies
 
 
 v4.0.3 (2026-10-26)

@@ -1,18 +1,129 @@
+[project]
+name = "Mopidy-YouTube"
+version = "4.0.3"
+description = "Mopidy extension for YouTube"
+readme = "README.rst"
+requires-python = ">= 3.13"
+license = "Apache-2.0"
+license-files = ["LICENSE"]
+authors = [{ name = "nik tumbri", email = "natumbri@gmail.com" }]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Environment :: No Input/Output (Daemon)",
+    "Intended Audience :: End Users/Desktop",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Multimedia :: Sound/Audio :: Players",
+]
+dependencies = [
+    "cachetools >= 5.5",
+    "mopidy >= 4.0.0",
+    "pykka >= 4.1",
+    "requests >= 2.32",
+    "yt-dlp",
+]
+
+[project.optional-dependencies]
+musicapi = ["ytmusicapi >= 1.0"]
+
+[project.urls]
+Homepage = "https://github.com/natumbri/mopidy-youtube"
+
+[project.entry-points."mopidy.ext"]
+youtube = "mopidy_youtube:Extension"
+
+
 [build-system]
-requires = ["setuptools>=61.0"]
+requires = ["setuptools >= 78"]
 build-backend = "setuptools.build_meta"
 
 
-[tool.black]
-target-version = ["py313"]
-line-length = 88
+[dependency-groups]
+dev = [
+    "tox",
+    "tox-uv",
+    { include-group = "ruff" },
+    { include-group = "tests" },
+]
+ruff = ["ruff"]
+tests = ["pytest >= 8.3", "pytest-cov >= 5.0", "ytmusicapi >= 1.0"]
 
 
-[tool.isort]
-multi_line_output = 3
-include_trailing_comma = true
-force_grid_wrap = 0
-use_parentheses = true
-line_length = 88
-known_tests = "tests"
-sections = "FUTURE,STDLIB,THIRDPARTY,FIRSTPARTY,TESTS,LOCALFOLDER"
+[tool.setuptools.packages.find]
+include = ["mopidy_youtube*"]
+
+[tool.setuptools.package-data]
+mopidy_youtube = ["ext.conf", "www/*.html"]
+
+
+[tool.coverage.run]
+source_pkgs = ["mopidy_youtube"]
+
+[tool.coverage.report]
+show_missing = true
+
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+
+[tool.ruff]
+target-version = "py313"
+
+[tool.ruff.lint]
+# A baseline that the current code passes. The goal is to grow this towards
+# `select = ["ALL"]`, as in mopidy-spotify, as the code is typed and cleaned up.
+select = [
+    "B",   # flake8-bugbear
+    "C4",  # flake8-comprehensions
+    "E",   # pycodestyle errors
+    "F",   # pyflakes
+    "I",   # isort
+    "UP",  # pyupgrade
+    "W",   # pycodestyle warnings
+]
+ignore = [
+    "E501",  # line-too-long  # TODO: wrap long log messages and comments
+]
+
+[tool.ruff.lint.isort]
+known-first-party = ["mopidy_youtube"]
+known-local-folder = ["tests"]
+
+
+[tool.tox]
+env_list = [
+    "3.13-lowest",
+    "3.13",
+    "3.14",
+    "ruff-check",
+    "ruff-format",
+]
+
+[tool.tox.env_run_base]
+package = "wheel"
+wheel_build_env = ".pkg"
+dependency_groups = ["tests"]
+commands = [
+    [
+        "pytest",
+        "--cov",
+        "--basetemp={envtmpdir}",
+        { replace = "posargs", extend = true },
+    ],
+]
+
+[tool.tox.env."3.13-lowest"]
+base_python = ["python3.13"]
+uv_resolution = "lowest-direct"
+
+[tool.tox.env.ruff-check]
+skip_install = true
+dependency_groups = ["ruff"]
+commands = [["ruff", "check", "{posargs:.}"]]
+
+[tool.tox.env.ruff-format]
+skip_install = true
+dependency_groups = ["ruff"]
+commands = [["ruff", "format", "--check", "--diff", "{posargs:.}"]]
