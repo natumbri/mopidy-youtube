@@ -599,5 +599,10 @@ class Music(Client):
                 plvideos.append(video)
 
             pl._videos.set(
-                [x for _, x in zip(range(Playlist.playlist_max_videos), plvideos)]
+                [
+                    x
+                    for _, x in zip(
+                        range(Playlist.playlist_max_videos), plvideos, strict=False
+                    )
+                ]
             )

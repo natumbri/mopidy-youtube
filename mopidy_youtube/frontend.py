@@ -83,7 +83,7 @@ class YouTubeAutoplayer(pykka.ThreadingActor, CoreListener):
 
             current_track = youtube.Video.get(current_track_id)
             logger.debug(f"triggered related videos for {current_track.id}")
-            current_track.related_videos
+            current_track.related_videos  # noqa: B018 - starts the background load
             logger.debug("getting related videos")
             related_videos = current_track.related_videos.get()
             logger.debug(

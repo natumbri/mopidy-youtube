@@ -3,11 +3,10 @@ import json
 import pykka
 from mopidy import backend, httpclient
 
-from mopidy_youtube import Extension, logger, youtube
-from mopidy_youtube import runtime
+from mopidy_youtube import Extension, logger, runtime, youtube
 from mopidy_youtube.apis import youtube_japi
-from mopidy_youtube.listener import YouTubeAddToHistoryListener, YouTubeCoreListener
 from mopidy_youtube.library import YouTubeLibraryProvider
+from mopidy_youtube.listener import YouTubeAddToHistoryListener
 from mopidy_youtube.playback import YouTubePlaybackProvider
 
 """

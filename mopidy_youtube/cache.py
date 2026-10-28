@@ -69,7 +69,7 @@ def cache_metadata(video, cache_location, info):
     metadata_path = os.path.join(cache_location, f"{video.id}.json")
     if os.path.exists(metadata_path):
         try:
-            with open(metadata_path, "r", encoding="utf-8") as infile:
+            with open(metadata_path, encoding="utf-8") as infile:
                 json.load(infile)
             return
         except (OSError, TypeError, ValueError, json.JSONDecodeError):

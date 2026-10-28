@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-from typing import Any
-
 import requests
 from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry

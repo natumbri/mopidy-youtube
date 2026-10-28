@@ -2,7 +2,8 @@ import logging
 import pathlib
 from importlib.metadata import PackageNotFoundError, version
 
-from mopidy import config as mopidy_config, ext
+from mopidy import config as mopidy_config
+from mopidy import ext
 
 from mopidy_youtube.config import apply_config_schema
 
@@ -29,8 +30,9 @@ class Extension(ext.Extension):
         return apply_config_schema(schema)
 
     def setup(self, registry):
-        from .backend import YouTubeBackend, YouTubeCoreListener
+        from .backend import YouTubeBackend
         from .frontend import YouTubeAutoplayer
+        from .listener import YouTubeCoreListener
 
         registry.add("backend", YouTubeBackend)
         registry.add("frontend", YouTubeAutoplayer)

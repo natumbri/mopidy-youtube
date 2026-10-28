@@ -306,9 +306,7 @@ class jAPI(Client):
                             "playlistSidebarSecondaryInfoRenderer"
                         ]["videoOwner"]["videoOwnerRenderer"]["thumbnail"][
                             "thumbnails"
-                        ][
-                            -1
-                        ]
+                        ][-1]
 
                         itemCount = int(
                             traverse(
@@ -419,7 +417,7 @@ class jAPI(Client):
             "racyCheckOk": True,
         }
 
-        url = f'{urljoin(cls.endpoint, "youtubei/v1/search")}?{urlencode(query)}'
+        url = f"{urljoin(cls.endpoint, 'youtubei/v1/search')}?{urlencode(query)}"
 
         while len(results) < int(Video.search_results):
             payload = dict(data)

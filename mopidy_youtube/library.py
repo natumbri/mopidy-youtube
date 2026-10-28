@@ -100,7 +100,7 @@ class YouTubeLibraryProvider(backend.LibraryProvider):
         albums = []
         for pl in playlists:
             albums.append(convert_playlist_to_album(pl))
-            pl.videos
+            pl.videos  # noqa: B018 - starts the background load
 
         search_result = SearchResult(
             uri="youtube:search", tracks=tracks, artists=artists, albums=albums
@@ -112,7 +112,7 @@ class YouTubeLibraryProvider(backend.LibraryProvider):
         if runtime.cache_location:
             try:
                 with open(
-                    os.path.join(runtime.cache_location, f"{video_id}.json"), "r"
+                    os.path.join(runtime.cache_location, f"{video_id}.json")
                 ) as infile:
                     track = Track.model_validate(json.load(infile))
                 return track
@@ -212,7 +212,7 @@ class YouTubeLibraryProvider(backend.LibraryProvider):
         images.update(
             {
                 uri: youtube.Video.get(video_id).thumbnails.get()
-                for uri, video_id in zip(uris, video_ids)
+                for uri, video_id in zip(uris, video_ids, strict=False)
                 if video_id and uri not in images
             }
         )
@@ -221,7 +221,7 @@ class YouTubeLibraryProvider(backend.LibraryProvider):
         images.update(
             {
                 uri: youtube.Playlist.get(playlist_id).thumbnails.get()
-                for uri, playlist_id in zip(uris, playlist_ids)
+                for uri, playlist_id in zip(uris, playlist_ids, strict=False)
                 if playlist_id
             }
         )

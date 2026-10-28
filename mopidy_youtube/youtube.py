@@ -1,24 +1,19 @@
-import importlib
-import json
 import os
 import threading
 import time
-from queue import Full
 from concurrent.futures.thread import ThreadPoolExecutor
+from queue import Full
 
 import pykka
 from cachetools import TTLCache, cached
-
 from mopidy.models import Image
 
 from mopidy_youtube import logger, runtime
 from mopidy_youtube.async_utils import async_property, is_future_set, set_once
-from mopidy_youtube.converters import convert_video_to_track
-from mopidy_youtube.media import extract_audio_url, is_live_info, is_live_item
-from mopidy_youtube.data import extract_playlist_id, extract_video_id
+from mopidy_youtube.data import extract_playlist_id
+from mopidy_youtube.media import extract_audio_url, is_live_item
 from mopidy_youtube.resolver import get_youtube_dl_module, resolve_audio_url
 from mopidy_youtube.timeformat import ISO8601_to_seconds
-
 
 api_enabled = False
 channel = None
@@ -34,7 +29,12 @@ search_last_started = 0.0
 
 def sync_runtime_module_globals():
     global api_enabled, channel, cache_location, musicapi_enabled, musicapi_cookiefile
-    global youtube_dl, youtube_dl_package, search_lock, search_in_progress, search_last_started
+    global \
+        youtube_dl, \
+        youtube_dl_package, \
+        search_lock, \
+        search_in_progress, \
+        search_last_started
 
     api_enabled = runtime.api_enabled
     channel = runtime.channel
@@ -142,7 +142,7 @@ class Entry:
                 data = cls.api.search(q)
                 if "error" in data:
                     raise Exception(data["error"])
-            except Exception as e:
+            except Exception:
                 logger.exception('youtube search error for query "%s"', q)
                 return []
 
@@ -293,8 +293,8 @@ class Entry:
         elif "channelTitle" in item["snippet"] and "channelId" in item["snippet"]:
             item["artists"] = [
                 {
-                    "name": f'{item["snippet"]["channelTitle"]} (Channel)',
-                    "uri": f'yt:channel:{item["snippet"]["channelId"]}',
+                    "name": f"{item['snippet']['channelTitle']} (Channel)",
+                    "uri": f"yt:channel:{item['snippet']['channelId']}",
                 }
             ]
             extended_fields.add("artists")
@@ -318,7 +318,7 @@ class Video(Entry):
     total_bytes = 0
     cached_file_uri = None
     _load_executor = None
-    _audio_executor = None    
+    _audio_executor = None
 
     @classmethod
     def get_load_executor(cls):
@@ -518,7 +518,9 @@ class Video(Entry):
                 youtube_dl = runtime.youtube_dl
                 youtube_dl_package = runtime.youtube_dl_package
             elif youtube_dl is None:
-                youtube_dl, youtube_dl_package = get_youtube_dl_module(youtube_dl_package)
+                youtube_dl, youtube_dl_package = get_youtube_dl_module(
+                    youtube_dl_package
+                )
                 runtime.youtube_dl = youtube_dl
                 runtime.youtube_dl_package = youtube_dl_package
             logger.debug(f"using {youtube_dl_package} package for youtube_dl")
@@ -546,7 +548,9 @@ class Video(Entry):
                 if d["status"] == "downloading":
                     p = d["_percent_str"]
                     p = float(p.replace("%", ""))
-                    logger.debug(f"percent cached: {p}%, {os.path.basename(d['filename'])}")
+                    logger.debug(
+                        f"percent cached: {p}%, {os.path.basename(d['filename'])}"
+                    )
 
                     # get 2% before setting audio_url; once self.total_bytes has a value,
                     # audio_url is set, so no need to do again; there seems to be problems
@@ -573,8 +577,8 @@ class Video(Entry):
                         )
                         set_once(self._audio_url, httpUri)
 
-        # requiresUrl = self._add_futures([self], ["audio_url"])
-        # if requiresUrl:
+            # requiresUrl = self._add_futures([self], ["audio_url"])
+            # if requiresUrl:
             ytdl_options = {
                 "format": "bestaudio/ogg/mp3/m4a/best",
                 "proxy": self.proxy,
@@ -613,7 +617,7 @@ class Video(Entry):
                 # if resolved is not None:
                 set_once(self._audio_url, resolved)
                 # else:
-                    # set_once(self._audio_url, None)
+                # set_once(self._audio_url, None)
                 return
 
             with runtime.youtube_dl.YoutubeDL(ytdl_options) as ydl:
@@ -643,7 +647,7 @@ class Video(Entry):
         finally:
             # no-op if already set; releases any waiter if nothing set the future
             set_once(self._audio_url, None)
-    
+
     @property
     def is_video(self):
         return True
@@ -715,7 +719,7 @@ class Playlist(Entry):
                 if "error" in result:
                     logger.error(
                         "error in list playlist items data for "
-                        "playlist {}, page {}".format(self.id, page),
+                        f"playlist {self.id}, page {page}",
                     )
                     break
                 page = result.get("nextPageToken") or None
@@ -724,9 +728,8 @@ class Playlist(Entry):
                 filtered_result = [
                     item
                     for item in result["items"]
-                    if not (
-                        item["snippet"]["title"] in ["Deleted video", "Private video"]
-                    )
+                    if item["snippet"]["title"]
+                    not in ["Deleted video", "Private video"]
                 ]
 
                 data["items"].extend(filtered_result)
@@ -745,11 +748,21 @@ class Playlist(Entry):
 
             # start loading video info in the background
             Video.load_info(
-                [x for _, x in zip(range(self.playlist_max_videos), myvideos)]
+                [
+                    x
+                    for _, x in zip(
+                        range(self.playlist_max_videos), myvideos, strict=False
+                    )
+                ]
             )
 
             self._videos.set(
-                [x for _, x in zip(range(self.playlist_max_videos), myvideos)]
+                [
+                    x
+                    for _, x in zip(
+                        range(self.playlist_max_videos), myvideos, strict=False
+                    )
+                ]
             )
 
         if requiresVideos:
@@ -793,7 +806,7 @@ class Channel(Entry):
                 pl = Playlist.get(item["id"])
                 extended_fields = minimum_fields
                 pl._set_api_data(extended_fields, item)
-                pl.videos
+                pl.videos  # noqa: B018 - starts the background load
                 channel_playlists.append(pl)
             return channel_playlists
         except Exception as e:

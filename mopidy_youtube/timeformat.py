@@ -11,7 +11,7 @@ def convert_Millis(milliseconds):
         return "00:00:00"
     minutes, miliseconds = divmod(miliseconds, 60000)
     seconds = int(miliseconds) / 1000
-    return "%i:%02i:%02i" % (hours, minutes, seconds)
+    return f"{hours}:{minutes:02}:{int(seconds):02}"
 
 
 def format_duration(duration_text):

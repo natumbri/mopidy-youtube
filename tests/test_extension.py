@@ -3,6 +3,7 @@ from unittest import mock
 from mopidy_youtube import Extension
 from mopidy_youtube import backend as backend_lib
 from mopidy_youtube import frontend as frontend_lib
+from mopidy_youtube import listener as listener_lib
 
 REQUIRED_CONFIG_KEYS = [
     "allow_cache",
@@ -48,7 +49,7 @@ def test_setup_registers_backend_and_frontend_services():
 
     registry.add.assert_any_call("backend", backend_lib.YouTubeBackend)
     registry.add.assert_any_call("frontend", frontend_lib.YouTubeAutoplayer)
-    registry.add.assert_any_call("frontend", backend_lib.YouTubeCoreListener)
+    registry.add.assert_any_call("frontend", listener_lib.YouTubeCoreListener)
     registry.add.assert_any_call(
         "http:app", {"name": ext.ext_name, "factory": ext.webapp}
     )

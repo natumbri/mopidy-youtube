@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 import threading
 from queue import Full
 
@@ -33,5 +34,13 @@ def set_once(future, value):
 
 
 def is_future_set(future):
-    return future is not None and getattr(future, "_result", None) is not None
-
+    """Return whether a pykka future already has a value or an exception."""
+    if future is None:
+        return False
+    try:
+        future.get(timeout=0)
+    except pykka.Timeout:
+        return False
+    except Exception:  # noqa: BLE001 - set with an exception, which counts as set
+        return True
+    return True

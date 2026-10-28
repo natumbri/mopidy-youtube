@@ -6,8 +6,8 @@ import re
 
 import tornado.gen
 import tornado.ioloop
-import tornado.web
 import tornado.iostream
+import tornado.web
 
 from mopidy_youtube import __version__, logger, youtube
 from mopidy_youtube.data import extract_playlist_id, extract_video_id
@@ -78,7 +78,7 @@ class IndexHandler(tornado.web.RequestHandler):
             album = ""
 
             if os.path.isfile(json_file):
-                with open(json_file, "r") as openfile:
+                with open(json_file) as openfile:
                     track_json = json.load(openfile)
                     if "artists" in track_json:
                         artists = [artist["name"] for artist in track_json["artists"]]

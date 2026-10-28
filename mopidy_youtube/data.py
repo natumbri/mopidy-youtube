@@ -1,7 +1,6 @@
 import json
 import re
 from urllib.parse import parse_qs, urlparse
-from mopidy_youtube import logger
 
 from mopidy_youtube.apis.ytm_item_to_video import ytm_item_to_video
 

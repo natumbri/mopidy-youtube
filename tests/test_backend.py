@@ -5,12 +5,13 @@ from unittest import mock
 import pykka
 import requests
 from mopidy import backend as backend_api
-from mopidy.models import Track, TlTrack
+from mopidy.models import TlTrack, Track
 
 from mopidy_youtube import backend, frontend, web
-from mopidy_youtube.async_utils import is_future_set
-from mopidy_youtube.apis.ytm_item_to_video import ytm_item_to_video
+from mopidy_youtube import listener as listener_lib
 from mopidy_youtube.apis.youtube_music import Music
+from mopidy_youtube.apis.ytm_item_to_video import ytm_item_to_video
+from mopidy_youtube.async_utils import is_future_set
 from mopidy_youtube.comms import Client
 
 
@@ -85,7 +86,7 @@ def test_core_listener_prefetches_audio_for_every_youtube_video_in_tracklist():
     )
     core.playback.get_current_tl_track.return_value.get.return_value = None
 
-    listener = backend.YouTubeCoreListener(config=config, core=core)
+    listener = listener_lib.YouTubeCoreListener(config=config, core=core)
 
     with mock.patch("mopidy_youtube.backend.youtube.Video.get") as get_video:
         video_one = mock.Mock()
@@ -106,7 +107,7 @@ def test_history_listener_respects_history_enabled_flag():
     core.autoplayed = []
     core.tracklist.get_tracks.return_value.get.return_value = []
 
-    listener = backend.YouTubeCoreListener(config=config, core=core)
+    listener = listener_lib.YouTubeCoreListener(config=config, core=core)
     tl_track = mock.Mock()
     tl_track.track.uri = "youtube:video:nvlTJrNJ5lA"
     tl_track.track.length = 300000
@@ -127,11 +128,11 @@ def test_tracklist_changed_prefetches_youtube_audio_in_background():
     config = make_config()
     core = mock.Mock()
     core.tracklist.get_tracks.return_value.get.return_value = []
-    listener_instance = backend.YouTubeCoreListener(config=config, core=core)
+    listener_instance = listener_lib.YouTubeCoreListener(config=config, core=core)
 
     executor = mock.Mock()
     with mock.patch.object(
-        backend.YouTubeCoreListener,
+        listener_lib.YouTubeCoreListener,
         "_prefetch_executor",
         executor,
         create=True,
@@ -149,7 +150,7 @@ def test_prefetch_limits_queue_work_to_a_small_window():
     tl_tracks = make_tl_tracks(*(f"youtube:video:{video_id}" for video_id in ids))
     core.tracklist.get_tl_tracks.return_value.get.return_value = tl_tracks
     core.playback.get_current_tl_track.return_value.get.return_value = None
-    listener = backend.YouTubeCoreListener(config=config, core=core)
+    listener = listener_lib.YouTubeCoreListener(config=config, core=core)
 
     with mock.patch("mopidy_youtube.listener.youtube.Video.get") as get_video:
         get_video.return_value = mock.Mock(audio_url=None)
@@ -168,7 +169,7 @@ def test_prefetch_window_starts_at_the_current_track():
     tl_tracks = make_tl_tracks(*(f"youtube:video:{video_id}" for video_id in ids))
     core.tracklist.get_tl_tracks.return_value.get.return_value = tl_tracks
     core.playback.get_current_tl_track.return_value.get.return_value = tl_tracks[5]
-    listener = backend.YouTubeCoreListener(config=config, core=core)
+    listener = listener_lib.YouTubeCoreListener(config=config, core=core)
 
     with mock.patch("mopidy_youtube.listener.youtube.Video.get") as get_video:
         get_video.return_value = mock.Mock(audio_url=None)
@@ -285,7 +286,21 @@ def test_async_future_counts_none_as_resolved():
     future = pykka.ThreadingFuture()
     future.set(None)
 
-    assert future._result is not None
+    assert is_future_set(future) is True
+
+
+def test_async_future_is_not_set_until_resolved():
+    assert is_future_set(None) is False
+    assert is_future_set(pykka.ThreadingFuture()) is False
+
+
+def test_async_future_counts_exception_as_resolved():
+    future = pykka.ThreadingFuture()
+    try:
+        raise ValueError("boom")
+    except ValueError:
+        future.set_exception()
+
     assert is_future_set(future) is True
 
 
@@ -332,7 +347,7 @@ def test_video_audio_url_uses_requested_formats_url_when_direct_url_missing():
 
     with (
         mock.patch("mopidy_youtube.youtube.youtube_dl", None),
-        mock.patch("mopidy_youtube.youtube.importlib.import_module") as import_module,
+        mock.patch("mopidy_youtube.resolver.importlib.import_module") as import_module,
         mock.patch("mopidy_youtube.youtube.os.listdir", return_value=[]),
         mock.patch("mopidy_youtube.youtube.youtube_dl", None, create=True),
     ):
