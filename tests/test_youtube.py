@@ -1039,14 +1039,6 @@ def test_a_loaded_video_gets_artists_from_the_channel_of_the_listing(api: FakeAp
     assert len(api.calls_to("list_videos")) == 2
 
 
-@pytest.mark.xfail(
-    strict=True,
-    reason=(
-        "Video.artists sets its future with .set() instead of set_once(): asked "
-        "before the video is loaded, the load fills the artists first (the Data "
-        "API listing has a channelId) and the property raises queue.Full"
-    ),
-)
 def test_artists_asked_before_the_video_is_loaded_come_from_the_listing(api: FakeApi):
     serve_videos(api, listed_video("v1", channel="A band", channelId="UC1"))
 
@@ -1061,13 +1053,6 @@ def test_the_channel_id_of_a_listing(api: FakeApi):
     assert got(Video.get("v1").channelId) == "UC1"
 
 
-@pytest.mark.xfail(
-    strict=True,
-    reason=(
-        "Entry.channelId future never resolves when the api item has no channelId: "
-        "load_info only fills the fields extend_fields finds in the item"
-    ),
-)
 def test_the_channel_id_resolves_even_when_the_listing_has_none(api: FakeApi):
     serve_videos(api, listed_video("v1"))
 
@@ -1203,13 +1188,6 @@ def test_the_track_number_of_a_video_whose_album_is_no_playlist_is_none(api: Fak
     assert api.calls == []
 
 
-@pytest.mark.xfail(
-    strict=True,
-    reason=(
-        "Video.track_no and Video.related_videos run their api call inside the "
-        "property: when it raises, the error escapes and the future never resolves"
-    ),
-)
 @pytest.mark.parametrize("loader", ["track_no", "related_videos"])
 def test_an_api_that_raises_does_not_leave_a_future_unresolved(
     api: FakeApi, loader: str
@@ -1408,14 +1386,6 @@ def test_a_playlist_the_api_cannot_describe_still_resolves(
     assert values == [None] * 4
 
 
-@pytest.mark.xfail(
-    strict=True,
-    reason=(
-        "Playlist.load_info reads data['items'] outside its error handling: an "
-        "error response (quota, bad key) raises in the load job and the futures "
-        "never resolve (Video.load_info copes with the same response)"
-    ),
-)
 def test_a_playlist_resolves_when_the_api_answers_with_an_error(api: FakeApi):
     api.respond("list_playlists", {"error": {"code": 403}})
 
@@ -1670,14 +1640,6 @@ def test_an_api_that_fails_halfway_keeps_what_it_gave(api: FakeApi):
     assert ids_of(got(Playlist.get("PL1").videos)) == ["v00"]
 
 
-@pytest.mark.xfail(
-    strict=True,
-    reason=(
-        "Playlist.videos does not guard _set_api_data: an entry whose thumbnails "
-        "lack a width (jAPI's default thumbnail) raises in the load job and the "
-        "future of the videos never resolves"
-    ),
-)
 def test_a_playlist_resolves_when_an_entry_has_a_thumbnail_without_a_width(
     api: FakeApi,
 ):

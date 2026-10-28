@@ -21,6 +21,7 @@ from mopidy_youtube.cache import (
     cache_image,
     cache_metadata,
     find_cached_audio_path,
+    read_cached_track,
 )
 from mopidy_youtube.context import context
 from mopidy_youtube.converters import convert_video_to_track
@@ -380,18 +381,36 @@ def test_no_metadata_is_cached_without_a_cache_location(
     assert files(tmp_path) == set()
 
 
-@pytest.mark.xfail(
-    strict=True,
-    reason=(
-        "cache_metadata writes Track.model_dump(mode='json'), which (Mopidy 4) has a "
-        "'model' discriminator key per model that Track.model_validate rejects as an "
-        "extra input, so what it writes can never be read back by "
-        "YouTubeLibraryProvider.lookup_video_track"
-    ),
-)
 def test_cached_metadata_can_be_read_back_as_the_track(tmp_path: Path, video: Video):
     timed(cache_metadata, video, tmp_path, {"tbr": 128})
 
     track = Track.model_validate(metadata_of(tmp_path))
 
     assert track == timed(convert_video_to_track, video, bitrate=128)
+
+
+def test_the_cached_track_is_read_back_by_read_cached_track(
+    tmp_path: Path, video: Video
+):
+    timed(cache_metadata, video, tmp_path, {"tbr": 128})
+
+    assert read_cached_track(tmp_path, VIDEO_ID) == timed(
+        convert_video_to_track, video, bitrate=128
+    )
+
+
+def test_metadata_cached_by_older_versions_can_still_be_read(
+    tmp_path: Path, video: Video
+):
+    track = timed(convert_video_to_track, video, bitrate=128)
+    # what versions before the fix wrote: the discriminator was called `model`
+    old_format = track.model_dump(mode="json")
+    assert "model" in old_format
+    (tmp_path / f"{VIDEO_ID}.json").write_text(json.dumps(old_format), encoding="utf-8")
+
+    assert read_cached_track(tmp_path, VIDEO_ID) == track
+
+
+def test_reading_metadata_that_was_never_cached_raises(tmp_path: Path):
+    with pytest.raises(FileNotFoundError):
+        read_cached_track(tmp_path, "nothing")

@@ -6,6 +6,8 @@ import tempfile
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
+from mopidy.models import Track
+
 from mopidy_youtube import logger
 from mopidy_youtube.context import context
 from mopidy_youtube.converters import convert_video_to_track
@@ -99,7 +101,7 @@ def cache_metadata(
 
     logger.debug(f"caching metadata {video.id}")
     track = convert_video_to_track(video, bitrate=int(info.get("tbr", 0)))
-    payload = json.dumps(track.model_dump(mode="json"))
+    payload = json.dumps(track.serialize())
 
     with tempfile.NamedTemporaryFile(
         mode="w",
@@ -112,3 +114,25 @@ def cache_metadata(
         temp_path = tempfile_handle.name
 
     Path(temp_path).replace(metadata_path)
+
+
+def _with_model_alias(value: Any) -> Any:
+    """Rename the `model` keys of the old cache format to `__model__`.
+
+    Older versions cached `Track.model_dump(mode="json")`, which names the
+    discriminator `model` where `Track.model_validate` expects `__model__`.
+    """
+    if isinstance(value, dict):
+        return {
+            ("__model__" if key == "model" else key): _with_model_alias(item)
+            for key, item in value.items()
+        }
+    if isinstance(value, list):
+        return [_with_model_alias(item) for item in value]
+    return value
+
+
+def read_cached_track(cache_location: Path | str, video_id: str) -> Track:
+    """Read the cached metadata of a video as a track; raises if there is none."""
+    with (Path(cache_location) / f"{video_id}.json").open(encoding="utf-8") as infile:
+        return Track.model_validate(_with_model_alias(json.load(infile)))

@@ -736,14 +736,6 @@ def test_the_cache_dir_is_not_used_without_a_cache_location(
     assert [describe(track) for track in tracks] == [RICK_TRACK]
 
 
-@pytest.mark.xfail(
-    strict=True,
-    reason=(
-        "cache_metadata writes Track.model_dump(mode='json'), which (Mopidy 4) has a "
-        "'model' key per model that Track.model_validate rejects, so "
-        "lookup_video_track never reads back what the cache wrote and asks the api"
-    ),
-)
 def test_the_metadata_that_was_cached_is_what_a_later_lookup_returns(
     library: Library, japi: jAPI, tmp_path: Path
 ):

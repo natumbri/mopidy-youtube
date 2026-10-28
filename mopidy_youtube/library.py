@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import json
 from pathlib import Path
 from typing import TYPE_CHECKING, override
 
@@ -10,6 +9,7 @@ from mopidy.models import Image, Ref, SearchResult, Track
 from mopidy.types import Uri
 
 from mopidy_youtube import logger, youtube
+from mopidy_youtube.cache import read_cached_track
 from mopidy_youtube.context import context
 from mopidy_youtube.converters import convert_playlist_to_album, convert_video_to_track
 from mopidy_youtube.data import (
@@ -141,10 +141,7 @@ class YouTubeLibraryProvider(backend.LibraryProvider):
     def lookup_video_track(self, video_id: str) -> Track:
         if context.cache_location:
             try:
-                with (
-                    Path(context.cache_location) / f"{video_id}.json"
-                ).open() as infile:
-                    track = Track.model_validate(json.load(infile))
+                track = read_cached_track(context.cache_location, video_id)
             except Exception as e:
                 logger.debug(f"Did not open {video_id}.json: {e}")
             else:

@@ -70,7 +70,7 @@ class Entry:
         return obj
 
     @classmethod
-    def load_info(cls, entries: list[Any]) -> None:
+    def load_info(cls, entries: list[Any], extra_fields: tuple[str, ...] = ()) -> None:
         raise NotImplementedError
 
     @classmethod
@@ -152,6 +152,11 @@ class Entry:
             future = self.__dict__[future_name] = pykka.ThreadingFuture()
         return future
 
+    def _settle(self, fields: list[str]) -> None:
+        """Resolve the still unset futures of `fields` to None."""
+        for field in fields:
+            set_once(self._ensure_future(field), None)
+
     @staticmethod
     def _is_future_set(future: pykka.ThreadingFuture[Any] | None) -> bool:
         return is_future_set(future)
@@ -192,7 +197,8 @@ class Entry:
 
     @async_property
     def channelId(self) -> None:
-        self.load_info([self])
+        # not loaded with the other fields: it would cost every listing a lookup
+        self.load_info([self], ("channelId",))
 
     def _set_api_data(self, fields: list[str], item: dict[str, Any] | None) -> None:
         """Populate the async property futures for the given API fields."""
@@ -223,14 +229,16 @@ class Entry:
                 value = [
                     Image(
                         uri=details["url"],
-                        width=details["width"],
-                        height=details["height"],
+                        width=details.get("width"),
+                        height=details.get("height"),
                     )
-                    for (quality, details) in item["snippet"]["thumbnails"].items()
+                    for (quality, details) in item["snippet"]
+                    .get("thumbnails", {})
+                    .items()
                     if quality in ["default", "medium", "high"]
                 ] or None
             elif field == "channelId":
-                value = item["snippet"]["channelId"]
+                value = item["snippet"].get("channelId")
             elif field == "track_no":
                 value = item["track_no"]
             else:
@@ -319,15 +327,18 @@ class Video(Entry):
             return cls._load_executor
 
     @classmethod
-    def load_info(cls, entries: list[Video]) -> None:
+    def load_info(
+        cls, entries: list[Video], extra_fields: tuple[str, ...] = ()
+    ) -> None:
         """
         loads title, length, channel of multiple videos using one API call for
-        every 50 videos. API calls are split across a shared executor.
+        every 50 videos. API calls are split across a shared executor. Fields
+        that are not always needed are only loaded when asked for in `extra_fields`.
         """
-        minimum_fields = ["title", "length", "channel"]
+        minimum_fields = ["title", "length", "channel", *extra_fields]
         videos = cls._add_futures(entries, minimum_fields)
 
-        def job(sublist: list[Video]) -> None:
+        def load(sublist: list[Video]) -> None:
             try:
                 data = context.api.list_videos([x.id for x in sublist])
                 item_dict = {item["id"]: item for item in data["items"]}
@@ -356,13 +367,23 @@ class Video(Entry):
                     }
                     video._set_api_data(minimum_fields, error_dict)
 
+        def job(sublist: list[Video]) -> None:
+            try:
+                load(sublist)
+            except Exception:
+                logger.exception(
+                    "Video.load_info failed for %s", [v.id for v in sublist]
+                )
+                for video in sublist:
+                    video._settle(minimum_fields)
+
         executor = cls.get_load_executor()
         executor.map(
             job,
             [videos[i : i + 50] for i in range(0, len(videos), 50)],
         )
 
-    @async_property
+    @async_property(default_factory=list)
     def related_videos(self) -> None:
         """
         loads title, thumbnails, channel (and, optionally, length) of videos
@@ -393,7 +414,7 @@ class Video(Entry):
 
             # start loading video info in the background
             Video.load_info(related_videos)
-            self._related_videos.set(related_videos)
+            set_once(self._related_videos, related_videos)
 
     @async_property
     def length(self) -> None:
@@ -404,7 +425,8 @@ class Video(Entry):
         requires_thumbnail = self._add_futures([self], ["thumbnails"])
 
         if requires_thumbnail:
-            self._thumbnails.set(
+            set_once(
+                self._thumbnails,
                 [
                     Image(
                         uri=Uri(
@@ -412,7 +434,7 @@ class Video(Entry):
                             "/maxresdefault.webp"
                         )
                     )
-                ]
+                ],
             )
 
     @async_property
@@ -420,7 +442,7 @@ class Video(Entry):
         requires_album_name = self._add_futures([self], ["album"])
 
         if requires_album_name:
-            self._album.set({"name": "YouTube Playlist", "uri": None})
+            set_once(self._album, {"name": "YouTube Playlist", "uri": None})
 
     @async_property
     def track_no(self) -> None:
@@ -465,18 +487,19 @@ class Video(Entry):
                     track_no = video_ids.index(video_id)
                 except ValueError:
                     track_no = None
-                self._track_no.set(track_no)
+                set_once(self._track_no, track_no)
                 logger.debug("track no %s for %s in %s", track_no, self.id, playlist_id)
             else:
-                self._track_no.set(None)
+                set_once(self._track_no, None)
 
     @async_property
     def artists(self) -> None:
         requires_artists = self._add_futures([self], ["artists"])
 
         if requires_artists:
-            self._artists.set(
-                [{"name": self.channel.get(), "uri": None, "thumbnail": None}]
+            set_once(
+                self._artists,
+                [{"name": self.channel.get(), "uri": None, "thumbnail": None}],
             )
 
     @staticmethod
@@ -566,17 +589,26 @@ class Playlist(Entry):
         return cls._playlist_videos_executor
 
     @classmethod
-    def load_info(cls, entries: list[Playlist]) -> None:
+    def load_info(
+        cls, entries: list[Playlist], extra_fields: tuple[str, ...] = ()
+    ) -> None:
         """
         loads title, thumbnails, video_count, channel of multiple playlists using
         one API call for every 50 lists. API calls are split in separate threads.
+        Fields that are not always needed are only loaded when asked for in
+        `extra_fields`.
         """
-        minimum_fields = ["title", "video_count", "thumbnails", "channel"]
+        minimum_fields = [
+            "title",
+            "video_count",
+            "thumbnails",
+            "channel",
+            *extra_fields,
+        ]
         playlists = cls._add_futures(entries, minimum_fields)
 
-        def job(sublist: list[Playlist]) -> None:
+        def load(sublist: list[Playlist]) -> None:
             item_dict: dict[str, Any] = {}
-            data = None
 
             try:
                 data = context.api.list_playlists([x.id for x in sublist])
@@ -585,14 +617,30 @@ class Playlist(Entry):
                     f"Playlist.load_info list_playlists error {e}, "
                     f"{[x.id for x in sublist]}"
                 )
+            else:
+                if "error" in data:
+                    logger.error("Playlist.load_info list_playlists: %s", data["error"])
+                item_dict = {item["id"]: item for item in data.get("items", [])}
 
-            if data:
-                item_dict = {item["id"]: item for item in data["items"]}
             for pl in sublist:
-                item_dict[pl.id], extended_fields = cls.extend_fields(
-                    item_dict.get(pl.id), minimum_fields
+                try:
+                    item, extended_fields = cls.extend_fields(
+                        item_dict.get(pl.id), minimum_fields
+                    )
+                    pl._set_api_data(extended_fields, item)
+                except Exception as e:
+                    logger.warning(f"Error {e} setting api data for playlist {pl.id}")
+                    pl._settle(minimum_fields)
+
+        def job(sublist: list[Playlist]) -> None:
+            try:
+                load(sublist)
+            except Exception:
+                logger.exception(
+                    "Playlist.load_info failed for %s", [pl.id for pl in sublist]
                 )
-                pl._set_api_data(extended_fields, item_dict.get(pl.id))
+                for pl in sublist:
+                    pl._settle(minimum_fields)
 
         executor = cls.get_playlist_videos_executor()
         executor.map(
@@ -610,6 +658,14 @@ class Playlist(Entry):
         requires_videos = self._add_futures([self], ["videos"])
 
         def load_items() -> None:
+            try:
+                load_videos()
+            except Exception:
+                logger.exception("Playlist.videos failed for %s", self.id)
+            finally:
+                set_once(self._videos, [])  # no-op once the videos are set
+
+        def load_videos() -> None:
             data: dict[str, Any] = {"items": []}
             page = ""
             while page is not None and len(data["items"]) < context.playlist_max_videos:
@@ -633,7 +689,7 @@ class Playlist(Entry):
                 filtered_result = [
                     item
                     for item in result["items"]
-                    if item["snippet"]["title"]
+                    if item["snippet"].get("title")
                     not in ["Deleted video", "Private video"]
                 ]
 
@@ -649,18 +705,23 @@ class Playlist(Entry):
                 )
                 if extended_item is None:
                     continue
-                video_id = extended_item["snippet"]["resourceId"]["videoId"]
-                if video_id is not None:
+                try:
+                    video_id = extended_item["snippet"]["resourceId"]["videoId"]
+                    if video_id is None:
+                        continue
                     video = Video.get(video_id)
                     video._set_api_data(extended_fields, extended_item)
-                    playlist_videos.append(video)
+                except Exception as e:
+                    logger.warning(f"Skipping a playlist entry of {self.id}: {e!r}")
+                    continue
+                playlist_videos.append(video)
 
             videos = playlist_videos[: context.playlist_max_videos]
 
             # start loading video info in the background
             Video.load_info(videos)
 
-            self._videos.set(videos)
+            set_once(self._videos, videos)
 
         if requires_videos:
             self.get_playlist_videos_executor().submit(load_items)
