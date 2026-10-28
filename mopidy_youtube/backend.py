@@ -8,7 +8,7 @@ import pykka
 from mopidy import backend, httpclient
 from mopidy.types import UriScheme
 
-from mopidy_youtube import Extension, logger, youtube
+from mopidy_youtube import Extension, logger
 from mopidy_youtube.apis import youtube_api, youtube_japi
 from mopidy_youtube.context import context
 from mopidy_youtube.library import YouTubeLibraryProvider
@@ -19,6 +19,7 @@ if TYPE_CHECKING:
     from mopidy.audio import AudioProxy
     from mopidy.config import Config
 
+    from mopidy_youtube.apis import YouTubeApi
     from mopidy_youtube.types import YouTubeConfig
 
 """
@@ -77,31 +78,50 @@ class YouTubeBackend(
             context.cache_location = None
             logger.info("file caching not enabled")
 
+        context.api = self._create_api(proxy, headers)
+
+    @override
+    def on_stop(self) -> None:
+        context.api.close()
+
+    def _create_api(self, proxy: str | None, headers: dict[str, str]) -> YouTubeApi:
+        logger.info("using jAPI")
+        japi = youtube_japi.jAPI(proxy, headers)
+        api: YouTubeApi = japi
+
         if self._api_enabled:
-            self._start_youtube_api(proxy, headers)
-        if not self._api_enabled:
-            logger.info("using jAPI")
-            context.api = youtube_japi.jAPI(proxy, headers)
+            data_api = self._create_data_api(proxy, headers)
+            if data_api is not None:
+                api = data_api
 
         if context.musicapi_enabled:
-            self._start_music_api(proxy, headers)
+            api = self._create_music_api(proxy, headers, fallback=japi)
 
-    def _start_youtube_api(self, proxy: str | None, headers: dict[str, str]) -> None:
+        return api
+
+    def _create_data_api(
+        self, proxy: str | None, headers: dict[str, str]
+    ) -> youtube_api.API | None:
+        if not self._youtube_api_key:
+            logger.error("No YouTube API key provided, disabling API")
+            return None
+
+        api = youtube_api.API(proxy, headers, self._youtube_api_key)
         try:
-            youtube_api.API.youtube_api_key = self._youtube_api_key
+            error = api.search("test").get("error")
         except Exception as e:
-            logger.error(f"No YouTube API key provided, disabling API: {e}")
-            self._api_enabled = False
-            return
+            error = e
+        if error:
+            logger.error(f"Failed to verify YouTube API key, disabling API: {error}")
+            api.close()
+            return None
 
-        context.api = youtube_api.API(proxy, headers)
-        if youtube.Entry.search(q="test") is None:
-            logger.error("Failed to verify YouTube API key, disabling API")
-            self._api_enabled = False
-        else:
-            logger.info("YouTube API key verified")
+        logger.info("YouTube API key verified")
+        return api
 
-    def _start_music_api(self, proxy: str | None, headers: dict[str, str]) -> None:
+    def _create_music_api(
+        self, proxy: str | None, headers: dict[str, str], fallback: YouTubeApi
+    ) -> YouTubeApi:
         # ytmusicapi is an optional dependency (the `musicapi` extra)
         from mopidy_youtube.apis import youtube_music  # noqa: PLC0415
 
@@ -113,7 +133,7 @@ class YouTubeBackend(
             with Path(authentication_file).open(encoding="utf-8") as file:
                 headers = json.load(file)
 
-        context.api = youtube_music.Music(proxy, headers)
+        return youtube_music.Music(proxy, headers, fallback=fallback)
 
     def add_track_to_history(self, bId: str) -> None:
         """Best-effort history update for a track already played."""
@@ -121,15 +141,7 @@ class YouTubeBackend(
         logger.debug(f"adding {bId} to history")
 
         try:
-            from mopidy_youtube.apis import youtube_music  # noqa: PLC0415
-        except Exception as e:
-            logger.debug(
-                f"youtube_music import unavailable, skipping history for {bId}: {e}"
-            )
-            return
-
-        try:
-            ytmusic = youtube_music.Music.client()
+            ytmusic = getattr(context.api, "ytmusic", None)
             if ytmusic is None:
                 logger.debug(f"ytmusic client unavailable, skipping history for {bId}")
                 return

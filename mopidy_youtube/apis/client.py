@@ -1,21 +1,30 @@
 from __future__ import annotations
 
+import os
+from concurrent.futures.thread import ThreadPoolExecutor
+
 import requests
 from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
 
 
 class Client:
-    session: requests.Session | None = None
+    """Base of the api clients: an HTTP session and a thread pool, both per instance."""
 
     def __init__(
         self, proxy: str | None = None, headers: dict[str, str] | None = None
     ) -> None:
         self.session = self._create_session(proxy, headers)
+        self.executor = ThreadPoolExecutor(
+            max_workers=max(2, min(8, (os.cpu_count() or 1) + 2))
+        )
 
-    @classmethod
+    def close(self) -> None:
+        self.executor.shutdown(wait=False, cancel_futures=True)
+        self.session.close()
+
+    @staticmethod
     def _create_session(  # noqa: PLR0913 - tuning parameters are keyword-only
-        cls,
         proxy: str | None = None,
         headers: dict[str, str] | None = None,
         *,
@@ -44,5 +53,4 @@ class Client:
         session.mount("http://", adapter)
         session.mount("https://", adapter)
 
-        cls.session = session
         return session

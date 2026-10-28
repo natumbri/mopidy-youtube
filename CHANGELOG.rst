@@ -11,6 +11,9 @@ Unreleased
 - add type annotations throughout and check them with pyright; enable all ruff rules except a short list of deferred ones
 - fix YouTube Music history updates, which never ran because of a wrong import path
 - replace ``runtime.py``, the module-level mirrors and the class-level settings on ``Entry``/``Video``/``Playlist`` with one typed ``Context``
+- give the api clients (``API``, ``jAPI``, ``Music``) their own session and executors instead of class-level state, declare the interface they share as the ``YouTubeApi`` protocol, and close them when the backend stops
+- make every api return ``{"items": [...]}`` (never ``None`` or a list) when it has nothing to return, which also stops a failed ``jAPI`` playlist request from leaving ``Playlist.videos`` unresolved
+- verify a configured YouTube Data API key properly (the old check could never fail) and fall back to jAPI when it is missing or rejected
 - resolve audio in ``audio.py``: prefetching no longer delays a track that is about to be played, and a failed or interrupted resolution is retried instead of being remembered
 - download to yt-dlp's ``.part`` file and serve it while it grows, so a truncated file is never mistaken for a complete one and an interrupted download resumes
 - fix ``list_related_videos`` raising from its own error handler, and playlists in jAPI results reusing the previous playlist's thumbnail and channel title

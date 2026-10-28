@@ -115,6 +115,9 @@ ignore = [
 ]
 
 [tool.ruff.lint.per-file-ignores]
+"mopidy_youtube/apis/__init__.py" = [
+    "ARG002",  # the placeholder api ignores its arguments
+]
 "tests/*" = [
     "ANN201",  # missing-return-type-undocumented-public-function
     "ANN202",  # missing-return-type-private-function

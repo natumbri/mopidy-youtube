@@ -48,7 +48,8 @@ def cache_image(video: Video, cache_location: Path | str | None) -> None:
     image_uri = video.thumbnails.get()[0].uri
     response = context.api.session.get(
         image_uri,
-        headers={"content-length": None, "host": None},
+        # headers set to None are dropped from the session's headers by requests
+        headers={"content-length": None, "host": None},  # pyright: ignore[reportArgumentType]
         stream=True,
     )
 

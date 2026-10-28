@@ -2,14 +2,12 @@ from __future__ import annotations
 
 import contextlib
 import json
-import os
 import re
-from concurrent.futures.thread import ThreadPoolExecutor
-from typing import Any
+from typing import TYPE_CHECKING, Any
 from urllib.parse import urlencode, urljoin
 
 from mopidy_youtube import logger
-from mopidy_youtube.apis import require_session
+from mopidy_youtube.apis.client import Client
 from mopidy_youtube.apis.json_paths import (
     CONTINUATION_ITEMS_PATH,
     LIST_PLAYLIST_ITEMS_PATH,
@@ -20,9 +18,11 @@ from mopidy_youtube.apis.json_paths import (
     deep_search,
     traverse,
 )
-from mopidy_youtube.comms import Client
 from mopidy_youtube.context import context
 from mopidy_youtube.timeformat import format_duration
+
+if TYPE_CHECKING:
+    from collections.abc import Collection
 
 
 class NoYtDataError(Exception):
@@ -34,16 +34,6 @@ class jAPI(Client):  # noqa: N801 - public class name, used by backend and tests
     Indirect access to YouTube data, without API
     using json where available
     """
-
-    _executor: ThreadPoolExecutor | None = None
-
-    @classmethod
-    def get_executor(cls) -> ThreadPoolExecutor:
-        if cls._executor is None:
-            cls._executor = ThreadPoolExecutor(
-                max_workers=max(2, min(8, (os.cpu_count() or 1) + 2))
-            )
-        return cls._executor
 
     ytdata_regex: tuple[str, ...] = (
         r'window\["ytInitialData"] = ({.*?});',
@@ -123,15 +113,14 @@ class jAPI(Client):  # noqa: N801 - public class name, used by backend and tests
         logger.warning(f"video {video_id} no video-time, possibly live")
         return "PT0S"
 
-    @classmethod
-    def search(cls, q: str, params: list[str] | None = None) -> dict[str, Any]:
+    def search(self, q: str, params: list[str] | None = None) -> dict[str, Any]:
         if not params:
             params = ["EgIQAQ%3D%3D", "EgIQAw%3D%3D"]
 
         result: list[dict[str, Any]] = []
-        executor = cls.get_executor()
+        executor = self.executor
 
-        futures = [executor.submit(cls.run_search, q, param) for param in params]
+        futures = [executor.submit(self.run_search, q, param) for param in params]
         for future in futures:
             try:
                 value = future.result()
@@ -147,8 +136,7 @@ class jAPI(Client):  # noqa: N801 - public class name, used by backend and tests
             )
         )
 
-    @classmethod
-    def list_related_videos(cls, video_id: str) -> dict[str, Any]:
+    def list_related_videos(self, video_id: str) -> dict[str, Any]:
         """
         returns related videos for a given video_id
         """
@@ -158,16 +146,15 @@ class jAPI(Client):  # noqa: N801 - public class name, used by backend and tests
 
         items = []
 
-        result = require_session(cls).get(cls.endpoint + "watch", params=query)
+        result = self.session.get(self.endpoint + "watch", params=query)
         if result.status_code == 200:
-            yt_data = cls._find_yt_data(result.text)
+            yt_data = self._find_yt_data(result.text)
             extracted_json = traverse(yt_data, RELATED_VIDEOS_PATH)
-            items = cls.json_to_items(extracted_json)
+            items = self.json_to_items(extracted_json)
 
         return json.loads(json.dumps({"items": items}, sort_keys=False, indent=1))
 
-    @classmethod
-    def list_videos(cls, ids: list[str]) -> dict[str, Any]:
+    def list_videos(self, ids: list[str]) -> dict[str, Any]:
         """
         list videos - EXPERIMENTAL, using exact search for ids,
         fall back to loading the watch page for the video
@@ -176,7 +163,7 @@ class jAPI(Client):  # noqa: N801 - public class name, used by backend and tests
         items = []
 
         def job(id: str) -> list[dict[str, Any]]:
-            results = cls.pl_run_search(
+            results = self.pl_run_search(
                 {
                     "search_query": '"' + id + '"',
                     "sp": "EgIQAQ%3D%3D",
@@ -197,18 +184,18 @@ class jAPI(Client):  # noqa: N801 - public class name, used by backend and tests
                 return results
 
             logger.debug(f"jAPI 'list_videos' triggered session.get: {id}")
-            result = require_session(cls).get(cls.endpoint + "watch?v=" + id)
+            result = self.session.get(self.endpoint + "watch?v=" + id)
             if result.status_code == 200:
-                yt_data = cls._find_yt_data(result.text)
+                yt_data = self._find_yt_data(result.text)
 
                 if yt_data:
                     try:
                         extracted_json = traverse(yt_data, WATCH_VIDEO_PATH)
-                        title = cls._safe_text(
+                        title = self._safe_text(
                             extracted_json[0]["videoPrimaryInfoRenderer"]["title"],
                             default="unknown",
                         )
-                        channel_title = cls._safe_text(
+                        channel_title = self._safe_text(
                             extracted_json[1]["videoSecondaryInfoRenderer"]["owner"][
                                 "videoOwnerRenderer"
                             ]["title"],
@@ -240,7 +227,7 @@ class jAPI(Client):  # noqa: N801 - public class name, used by backend and tests
         if len(ids) == 1:
             items.extend(job(ids[0]))
         else:
-            executor = cls.get_executor()
+            executor = self.executor
             for result_items in executor.map(job, ids):
                 items.extend(result_items or [])
 
@@ -252,8 +239,7 @@ class jAPI(Client):  # noqa: N801 - public class name, used by backend and tests
             )
         )
 
-    @classmethod
-    def list_playlists(cls, ids: list[str]) -> dict[str, Any]:
+    def list_playlists(self, ids: Collection[str]) -> dict[str, Any]:
         """
         list playlists - EXPERIMENTAL, using exact search for ids
         """
@@ -261,7 +247,7 @@ class jAPI(Client):  # noqa: N801 - public class name, used by backend and tests
         items = []
 
         def job(id: str) -> list[dict[str, Any]]:
-            results = cls.pl_run_search(
+            results = self.pl_run_search(
                 {
                     "search_query": '"' + id + '"',
                     "sp": "EgIQAw%3D%3D",
@@ -279,9 +265,9 @@ class jAPI(Client):  # noqa: N801 - public class name, used by backend and tests
                 return results
 
             logger.debug(f"jAPI 'list_playlists' triggered session.get: {id}")
-            result = require_session(cls).get(cls.endpoint + "playlist?list=" + id)
+            result = self.session.get(self.endpoint + "playlist?list=" + id)
             if result.status_code == 200:
-                yt_data = cls._find_yt_data(result.text)
+                yt_data = self._find_yt_data(result.text)
 
                 if yt_data:
                     extracted_json = yt_data["sidebar"]["playlistSidebarRenderer"][
@@ -332,9 +318,9 @@ class jAPI(Client):  # noqa: N801 - public class name, used by backend and tests
             return []
 
         if len(ids) == 1:
-            items.extend(job(ids[0]))
+            items.extend(job(next(iter(ids))))
         else:
-            executor = cls.get_executor()
+            executor = self.executor
             # make sure order is deterministic so that HTTP requests
             # are replayable in tests
             for result_items in executor.map(job, ids):
@@ -342,26 +328,20 @@ class jAPI(Client):  # noqa: N801 - public class name, used by backend and tests
 
         return json.loads(json.dumps({"items": items}, sort_keys=False, indent=1))
 
-    @classmethod
     def list_playlistitems(
-        cls,
-        id: str,
-        page: str | None,  # noqa: ARG003 - kept for API interface parity
+        self,
+        playlist_id: str,
+        page: str | None,  # noqa: ARG002 - the whole playlist is on one page
         max_results: int,
-    ) -> dict[str, Any] | list[Any]:
-        query = {"list": id, "app": "desktop", "persist_app": 1}
-        logger.debug(f"jAPI 'list_playlistitems' triggered session.get: {id}")
+    ) -> dict[str, Any]:
+        query = {"list": playlist_id, "app": "desktop", "persist_app": 1}
+        logger.debug(f"jAPI 'list_playlistitems' triggered session.get: {playlist_id}")
 
-        items = []
-
-        result = require_session(cls).get(
-            urljoin(cls.endpoint, "playlist"), params=query
-        )
+        result = self.session.get(urljoin(self.endpoint, "playlist"), params=query)
         if result.status_code == 200:
-            yt_data = cls._find_yt_data(result.text)
+            yt_data = self._find_yt_data(result.text)
             extracted_json = traverse(yt_data, LIST_PLAYLIST_ITEMS_PATH)
-            items = cls.json_to_items(extracted_json)
-            items = items[:max_results]
+            items = self.json_to_items(extracted_json)[:max_results]
             return json.loads(
                 json.dumps(
                     {"nextPageToken": None, "items": items},
@@ -370,25 +350,26 @@ class jAPI(Client):  # noqa: N801 - public class name, used by backend and tests
                 )
             )
 
-        return []
+        return {"items": []}
 
-    @classmethod
-    def list_channelplaylists(cls, channel_id: str) -> dict[str, Any]:
+    def list_channelplaylists(self, channel_id: str | None) -> dict[str, Any]:
         """
         list playlists in a channel
         """
+        if channel_id is None:
+            return {"items": []}
         logger.debug(
             f"jAPI 'list_channelplaylists' triggered session.get: {channel_id}"
         )
-        result = require_session(cls).get(
-            cls.endpoint + "channel/" + channel_id + "/playlists"
+        result = self.session.get(
+            self.endpoint + "channel/" + channel_id + "/playlists"
         )
 
-        yt_data = cls._find_yt_data(result.text)
+        yt_data = self._find_yt_data(result.text)
         extracted_json = deep_search(["gridPlaylistRenderer"], yt_data)
 
         try:
-            items = cls.json_to_items(extracted_json)
+            items = self.json_to_items(extracted_json)
             [
                 item.update({"id": item["id"]["playlistId"]})
                 for item in items
@@ -400,8 +381,7 @@ class jAPI(Client):  # noqa: N801 - public class name, used by backend and tests
 
         return json.loads(json.dumps({"items": items}, sort_keys=False, indent=1))
 
-    @classmethod
-    def run_search(cls, search_query: str, sp: str) -> list[dict[str, Any]]:
+    def run_search(self, search_query: str, sp: str) -> list[dict[str, Any]]:
         continuation: str | None = None
         results: list[dict[str, Any]] = []
         headers = {
@@ -424,7 +404,7 @@ class jAPI(Client):  # noqa: N801 - public class name, used by backend and tests
             "racyCheckOk": True,
         }
 
-        url = f"{urljoin(cls.endpoint, 'youtubei/v1/search')}?{urlencode(query)}"
+        url = f"{urljoin(self.endpoint, 'youtubei/v1/search')}?{urlencode(query)}"
 
         while len(results) < context.search_results:
             payload = dict(data)
@@ -433,7 +413,7 @@ class jAPI(Client):  # noqa: N801 - public class name, used by backend and tests
 
             logger.debug(f"jAPI run_search triggered session.post: {search_query}")
 
-            result = require_session(cls).post(
+            result = self.session.post(
                 url=url,
                 data=bytes(json.dumps(payload), encoding="utf-8"),
                 headers=headers,
@@ -467,7 +447,7 @@ class jAPI(Client):  # noqa: N801 - public class name, used by backend and tests
                 for s in sections:
                     if "itemSectionRenderer" in s:
                         extracted_json = s["itemSectionRenderer"]["contents"]
-                        results.extend(cls.json_to_items(extracted_json))
+                        results.extend(self.json_to_items(extracted_json))
                     if "continuationItemRenderer" in s:
                         continuation_renderer = s["continuationItemRenderer"]
 
@@ -480,14 +460,11 @@ class jAPI(Client):  # noqa: N801 - public class name, used by backend and tests
 
         return results
 
-    @classmethod
-    def pl_run_search(cls, query: dict[str, Any]) -> list[dict[str, Any]]:
+    def pl_run_search(self, query: dict[str, Any]) -> list[dict[str, Any]]:
         logger.debug(f"jAPI pl_run_search triggered session.get: {query}")
-        result = require_session(cls).get(
-            urljoin(cls.endpoint, "results"), params=query
-        )
+        result = self.session.get(urljoin(self.endpoint, "results"), params=query)
         if result.status_code == 200:
-            yt_data = cls._find_yt_data(result.text)
+            yt_data = self._find_yt_data(result.text)
             if yt_data:
                 try:
                     sections = traverse(yt_data, SECTION_LIST_RENDERER_CONTENTS_PATH)
@@ -496,7 +473,7 @@ class jAPI(Client):  # noqa: N801 - public class name, used by backend and tests
                             extracted_json = section["itemSectionRenderer"].get(
                                 "contents", []
                             )
-                            return cls.json_to_items(extracted_json)
+                            return self.json_to_items(extracted_json)
                 except Exception as e:
                     logger.warning(f"jAPI pl_run_search parse failed: {e}")
 

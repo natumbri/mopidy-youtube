@@ -12,7 +12,9 @@ from __future__ import annotations
 import importlib
 import threading
 from dataclasses import dataclass, field
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
+
+from mopidy_youtube.apis import UnconfiguredApi, YouTubeApi
 
 if TYPE_CHECKING:
     from pathlib import Path
@@ -30,7 +32,7 @@ class Context:
     """Settings and clients shared by the backend, frontends and web handlers."""
 
     # the data api (jAPI, YouTube Data API or YouTube Music)
-    api: Any = None
+    api: YouTubeApi = field(default_factory=UnconfiguredApi)
     search_results: int = 15
     playlist_max_videos: int = 50
     http_port: int = 6680

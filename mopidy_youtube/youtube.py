@@ -433,11 +433,7 @@ class Video(Entry):
 
             if playlist_id:
                 album_response = context.api.list_playlistitems(playlist_id, "", 50)
-                album_tracks = (
-                    album_response.get("items", [])
-                    if isinstance(album_response, dict)
-                    else album_response or []
-                )
+                album_tracks = album_response.get("items", [])
                 video_ids = [
                     track_id
                     for track in album_tracks
