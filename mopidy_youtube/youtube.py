@@ -12,12 +12,13 @@ from cachetools import TTLCache, cached
 from mopidy.models import Image
 
 from mopidy_youtube import logger, runtime
-from mopidy_youtube.async_utils import async_property, is_future_set
+from mopidy_youtube.async_utils import async_property, is_future_set, set_once
 from mopidy_youtube.converters import convert_video_to_track
 from mopidy_youtube.media import extract_audio_url, is_live_info, is_live_item
 from mopidy_youtube.data import extract_playlist_id, extract_video_id
 from mopidy_youtube.resolver import get_youtube_dl_module, resolve_audio_url
 from mopidy_youtube.timeformat import ISO8601_to_seconds
+
 
 api_enabled = False
 channel = None
@@ -256,11 +257,12 @@ class Entry:
             try:
                 future.set(value)
             except Full:
-                logger.debug(
-                    "Future already set for field %s on object %s, skipping",
-                    field,
-                    getattr(self, "id", None),
-                )
+                # logger.debug(
+                #     "Future already set for field %s on object %s, skipping",
+                #     field,
+                #     getattr(self, "id", None),
+                # )
+                pass
 
     @classmethod
     def extend_fields(self, item, fields):
@@ -314,7 +316,9 @@ class Entry:
 
 class Video(Entry):
     total_bytes = 0
+    cached_file_uri = None
     _load_executor = None
+    _audio_executor = None    
 
     @classmethod
     def get_load_executor(cls):
@@ -486,8 +490,18 @@ class Video(Entry):
     def _extract_audio_url(info):
         return extract_audio_url(info)
 
+    @classmethod
+    def get_audio_executor(cls):
+        # separate from get_load_executor: long downloads must not starve API calls
+        if cls._audio_executor is None:
+            cls._audio_executor = ThreadPoolExecutor(max_workers=4)
+        return cls._audio_executor
+
     @async_property
     def audio_url(self):
+        Video.get_audio_executor().submit(self._load_audio_url)
+
+    def _load_audio_url(self):
         """
         audio_url is the only property retrieved using yt-dlp, and it's much more
         expensive than the rest. If caching is turned on and the track is cached,
@@ -498,140 +512,138 @@ class Video(Entry):
         """
 
         # from @blacklight (https://github.com/blacklight/mopidy-youtube)
-        global youtube_dl, youtube_dl_package
+        global youtube_dl, youtube_dl_package  # keep if your body still uses them
+        try:
+            if runtime.youtube_dl is not None:
+                youtube_dl = runtime.youtube_dl
+                youtube_dl_package = runtime.youtube_dl_package
+            elif youtube_dl is None:
+                youtube_dl, youtube_dl_package = get_youtube_dl_module(youtube_dl_package)
+                runtime.youtube_dl = youtube_dl
+                runtime.youtube_dl_package = youtube_dl_package
+            logger.debug(f"using {youtube_dl_package} package for youtube_dl")
 
-        if runtime.youtube_dl is not None:
-            youtube_dl = runtime.youtube_dl
-            youtube_dl_package = runtime.youtube_dl_package
-        elif youtube_dl is None:
-            youtube_dl, youtube_dl_package = get_youtube_dl_module(youtube_dl_package)
-            runtime.youtube_dl = youtube_dl
-            runtime.youtube_dl_package = youtube_dl_package
-        logger.debug(f"using {youtube_dl_package} package for youtube_dl")
+            # When caching, is it possible to set the audio_url part-way through
+            # a download so audio can start playing quicker?
 
-        # When caching, is it possible to set the audio_url part-way through
-        # a download so audio can start playing quicker?
+            def my_hook(d):
+                if d["status"] == "finished":
+                    # caching is complete: later translate_uri calls get the file
+                    # directly, no need to serve it up with tornado
+                    fileUri = f"file://{d['filename']}"
+                    self.cached_file_uri = fileUri
 
-        def my_hook(d):
-            if d["status"] == "finished" and not self.total_bytes:
-                fileUri = (
-                    # if it is finished, don't need to serve it up with tornado...
-                    f"file://{d['filename']}"
+                    if not self.total_bytes:
+                        logger.debug(
+                            f"audio_url not set during downloading; setting audio_url now:"
+                            f" {fileUri}, {os.path.basename(d['filename'])}"
+                        )
+                        self.total_bytes = d.get(
+                            "total_bytes", d["info_dict"].get("filesize")
+                        )
+                        set_once(self._audio_url, fileUri)
+
+                if d["status"] == "downloading":
+                    p = d["_percent_str"]
+                    p = float(p.replace("%", ""))
+                    logger.debug(f"percent cached: {p}%, {os.path.basename(d['filename'])}")
+
+                    # get 2% before setting audio_url; once self.total_bytes has a value,
+                    # audio_url is set, so no need to do again; there seems to be problems
+                    # with some formats that do not support seeking - limit to .webm
+                    if (
+                        p > 2
+                        and not self.total_bytes
+                        and os.path.splitext(d["filename"])[1] == ".webm"
+                    ):
+                        httpUri = (
+                            f"http://localhost:{self.http_port}/youtube/"
+                            f"{os.path.basename(d['filename'])}"
+                        )
+                        logger.debug(
+                            f"setting cached audio_url: {httpUri}, "
+                            f"{os.path.basename(d['filename'])}"
+                        )
+                        self.total_bytes = d.get(
+                            "total_bytes", d["info_dict"].get("filesize")
+                        )
+                        logger.debug(
+                            f"expected length of {os.path.basename(d['filename'])}: "
+                            f"{self.total_bytes}"
+                        )
+                        set_once(self._audio_url, httpUri)
+
+        # requiresUrl = self._add_futures([self], ["audio_url"])
+        # if requiresUrl:
+            ytdl_options = {
+                "format": "bestaudio/ogg/mp3/m4a/best",
+                "proxy": self.proxy,
+                "cachedir": False,
+                "nopart": True,
+                "retries": 10,
+            }
+            if runtime.musicapi_cookiefile:
+                ytdl_options["cookiefile"] = runtime.musicapi_cookiefile
+            base_url = "https://www.youtube.com"
+            if runtime.musicapi_enabled:
+                # High quality music streams are only available to YouTube
+                # Premium users when using YouTube Music.
+                base_url = "https://music.youtube.com"
+
+            ytdl_extract_info_options = {
+                "url": f"{base_url}/watch?v={self.id}",
+                "ie_key": None,
+                "extra_info": {},
+                "process": True,
+                "force_generic_extractor": False,
+            }
+
+            if runtime.youtube_dl_package == "yt_dlp":
+                ytdl_options["no_color"] = True
+
+            if runtime.cache_location:
+                resolved = resolve_audio_url(
+                    self,
+                    ytdl_options={**ytdl_options, "progress_hooks": [my_hook]},
+                    ytdl_extract_info_options=ytdl_extract_info_options,
+                    cache_location=runtime.cache_location,
+                    youtube_dl=runtime.youtube_dl,
+                    youtube_dl_package=runtime.youtube_dl_package,
                 )
-                logger.debug(
-                    f"audio_url not set during downloading; setting audio_url now:"
-                    f" {fileUri}, {os.path.basename(d['filename'])}"
-                )
-
-                self.total_bytes = d.get("total_bytes", d["info_dict"].get("filesize"))
-
-                logger.debug(
-                    f"expected length of {os.path.basename(d['filename'])}: "
-                    f"{self.total_bytes}"
-                )
-                self._audio_url.set(fileUri)
-
-            if d["status"] == "downloading":
-                p = d["_percent_str"]
-                p = float(p.replace("%", ""))
-                logger.debug(f"percent cached: {p}%, {os.path.basename(d['filename'])}")
-
-                # get 2% before setting audio_url; once self.total_bytes has a value,
-                # audio_url is set, so no need to do again; there seems to be problems
-                # with some formats that do not support seeking - limit to .webm
-                if (
-                    p > 2
-                    and not self.total_bytes
-                    and os.path.splitext(d["filename"])[1] == ".webm"
-                ):
-                    httpUri = (
-                        f"http://localhost:{self.http_port}/youtube/"
-                        f"{os.path.basename(d['filename'])}"
-                    )
-                    logger.debug(
-                        f"setting cached audio_url: {httpUri}, "
-                        f"{os.path.basename(d['filename'])}"
-                    )
-                    self.total_bytes = d.get(
-                        "total_bytes", d["info_dict"].get("filesize")
-                    )
-                    logger.debug(
-                        f"expected length of {os.path.basename(d['filename'])}: "
-                        f"{self.total_bytes}"
-                    )
-                    self._audio_url.set(httpUri)
-
-        requiresUrl = self._add_futures([self], ["audio_url"])
-        if requiresUrl:
-            try:
-                ytdl_options = {
-                    "format": "bestaudio/ogg/mp3/m4a/best",
-                    "proxy": self.proxy,
-                    "cachedir": False,
-                    "nopart": True,
-                    "retries": 10,
-                }
-                if runtime.musicapi_cookiefile:
-                    ytdl_options["cookiefile"] = runtime.musicapi_cookiefile
-                base_url = "https://www.youtube.com"
-                if runtime.musicapi_enabled:
-                    # High quality music streams are only available to YouTube
-                    # Premium users when using YouTube Music.
-                    base_url = "https://music.youtube.com"
-
-                ytdl_extract_info_options = {
-                    "url": f"{base_url}/watch?v={self.id}",
-                    "ie_key": None,
-                    "extra_info": {},
-                    "process": True,
-                    "force_generic_extractor": False,
-                }
-
-                if runtime.youtube_dl_package == "yt_dlp":
-                    ytdl_options["no_color"] = True
-
-                if runtime.cache_location:
-                    resolved = resolve_audio_url(
-                        self,
-                        ytdl_options={**ytdl_options, "progress_hooks": [my_hook]},
-                        ytdl_extract_info_options=ytdl_extract_info_options,
-                        cache_location=runtime.cache_location,
-                        youtube_dl=runtime.youtube_dl,
-                        youtube_dl_package=runtime.youtube_dl_package,
-                    )
-                    if resolved is not None:
-                        self._audio_url.set(resolved)
-                    else:
-                        self._audio_url.set(None)
-                    return
-
-                with runtime.youtube_dl.YoutubeDL(ytdl_options) as ydl:
-                    info = ydl.extract_info(
-                        **ytdl_extract_info_options,
-                        download=False,
-                    )
-
-                audio_url = self._extract_audio_url(info)
-                if not audio_url:
-                    logger.warning(
-                        "yt-dlp did not provide a direct audio URL for %s; info keys: %s",
-                        self.id,
-                        (
-                            sorted(info.keys())
-                            if isinstance(info, dict)
-                            else type(info).__name__
-                        ),
-                    )
-                    self._audio_url.set(None)
-                    return
-
-                self._audio_url.set(audio_url)
-
-            except Exception as e:
-                logger.exception(f"audio_url error {e} (videoId: {self.id})")
-                self._audio_url.set(None)
+                # if resolved is not None:
+                set_once(self._audio_url, resolved)
+                # else:
+                    # set_once(self._audio_url, None)
                 return
 
+            with runtime.youtube_dl.YoutubeDL(ytdl_options) as ydl:
+                info = ydl.extract_info(
+                    **ytdl_extract_info_options,
+                    download=False,
+                )
+
+            audio_url = self._extract_audio_url(info)
+            if not audio_url:
+                logger.warning(
+                    "yt-dlp did not provide a direct audio URL for %s; info keys: %s",
+                    self.id,
+                    (
+                        sorted(info.keys())
+                        if isinstance(info, dict)
+                        else type(info).__name__
+                    ),
+                )
+                set_once(self._audio_url, None)
+                return
+
+            set_once(self._audio_url, audio_url)
+
+        except Exception:
+            logger.exception("audio_url error (videoId: %s)", self.id)
+        finally:
+            # no-op if already set; releases any waiter if nothing set the future
+            set_once(self._audio_url, None)
+    
     @property
     def is_video(self):
         return True

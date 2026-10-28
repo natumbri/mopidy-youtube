@@ -68,14 +68,22 @@ def test_backend_clamps_non_positive_config_limits_to_safe_minimums():
     assert instance.uri_schemes == ("youtube", "yt")
 
 
+def make_tl_tracks(*uris):
+    return [
+        mock.Mock(tlid=tlid, track=mock.Mock(uri=uri))
+        for tlid, uri in enumerate(uris, start=1)
+    ]
+
+
 def test_core_listener_prefetches_audio_for_every_youtube_video_in_tracklist():
     config = make_config()
     core = mock.Mock()
-    core.tracklist.get_tracks.return_value.get.return_value = [
-        mock.Mock(uri="youtube:video:nvlTJrNJ5lA"),
-        mock.Mock(uri="spotify:track:abc123"),
-        mock.Mock(uri="yt:video:LvXoB1S45j0"),
-    ]
+    core.tracklist.get_tl_tracks.return_value.get.return_value = make_tl_tracks(
+        "youtube:video:nvlTJrNJ5lA",
+        "spotify:track:abc123",
+        "yt:video:LvXoB1S45j0",
+    )
+    core.playback.get_current_tl_track.return_value.get.return_value = None
 
     listener = backend.YouTubeCoreListener(config=config, core=core)
 
@@ -138,9 +146,9 @@ def test_prefetch_limits_queue_work_to_a_small_window():
     config = make_config()
     core = mock.Mock()
     ids = [f"{i:011d}" for i in range(20)]
-    core.tracklist.get_tracks.return_value.get.return_value = [
-        mock.Mock(uri=f"youtube:video:{video_id}") for video_id in ids
-    ]
+    tl_tracks = make_tl_tracks(*(f"youtube:video:{video_id}" for video_id in ids))
+    core.tracklist.get_tl_tracks.return_value.get.return_value = tl_tracks
+    core.playback.get_current_tl_track.return_value.get.return_value = None
     listener = backend.YouTubeCoreListener(config=config, core=core)
 
     with mock.patch("mopidy_youtube.listener.youtube.Video.get") as get_video:
@@ -151,6 +159,22 @@ def test_prefetch_limits_queue_work_to_a_small_window():
     get_video.assert_any_call(ids[0])
     get_video.assert_any_call(ids[1])
     get_video.assert_any_call(ids[2])
+
+
+def test_prefetch_window_starts_at_the_current_track():
+    config = make_config()
+    core = mock.Mock()
+    ids = [f"{i:011d}" for i in range(20)]
+    tl_tracks = make_tl_tracks(*(f"youtube:video:{video_id}" for video_id in ids))
+    core.tracklist.get_tl_tracks.return_value.get.return_value = tl_tracks
+    core.playback.get_current_tl_track.return_value.get.return_value = tl_tracks[5]
+    listener = backend.YouTubeCoreListener(config=config, core=core)
+
+    with mock.patch("mopidy_youtube.listener.youtube.Video.get") as get_video:
+        get_video.return_value = mock.Mock(audio_url=None)
+        listener._prefetch_youtube_audio()
+
+    assert [call.args[0] for call in get_video.call_args_list] == ids[5:8]
 
 
 def test_music_list_related_videos_submits_playlist_lookup_in_background():
@@ -336,13 +360,25 @@ def test_video_audio_url_handles_nested_requested_formats_payloads():
 
 def test_playback_translate_uri_returns_resolved_audio_url():
     provider = backend.YouTubePlaybackProvider(audio=None, backend=mock.Mock())
-    video = mock.Mock()
+    video = mock.Mock(cached_file_uri=None)
     video.audio_url.get.return_value = "https://example.com/audio.webm"
 
     with mock.patch("mopidy_youtube.backend.youtube.Video.get", return_value=video):
         assert (
             provider.translate_uri("youtube:video:testid")
             == "https://example.com/audio.webm"
+        )
+
+
+def test_playback_translate_uri_prefers_file_once_caching_has_finished():
+    provider = backend.YouTubePlaybackProvider(audio=None, backend=mock.Mock())
+    video = mock.Mock(cached_file_uri="file:///cache/testid.webm")
+    video.audio_url.get.return_value = "http://localhost:6680/youtube/testid.webm"
+
+    with mock.patch("mopidy_youtube.backend.youtube.Video.get", return_value=video):
+        assert (
+            provider.translate_uri("youtube:video:testid")
+            == "file:///cache/testid.webm"
         )
 
 

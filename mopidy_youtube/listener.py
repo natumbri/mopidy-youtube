@@ -36,15 +36,23 @@ class YouTubeCoreListener(pykka.ThreadingActor, CoreListener):
 
     def _prefetch_youtube_audio(self):
         try:
-            tracks = self.core.tracklist.get_tracks().get()
+            tl_tracks = self.core.tracklist.get_tl_tracks().get()
+            current = self.core.playback.get_current_tl_track().get()
         except Exception:
             logger.exception("Failed to load tracklist while prefetching YouTube audio")
             return
 
+        start = 0
+        if current is not None:
+            for i, tl_track in enumerate(tl_tracks):
+                if tl_track.tlid == current.tlid:
+                    start = i
+                    break
+
         video_ids = [
-            extract_video_id(track.uri)
-            for track in tracks[: self._prefetch_limit]
-            if track.uri.startswith(("youtube:video:", "yt:video:"))
+            extract_video_id(t.track.uri)
+            for t in tl_tracks[start : start + self._prefetch_limit]
+            if t.track.uri.startswith(("youtube:video:", "yt:video:"))
         ]
 
         for video_id in video_ids:
@@ -56,6 +64,10 @@ class YouTubeCoreListener(pykka.ThreadingActor, CoreListener):
                 logger.exception(
                     "Failed to prefetch audio for YouTube video %s", video_id
                 )
+
+    def track_playback_started(self, tl_track):
+        # advance the window as playback moves
+        self.get_prefetch_executor().submit(self._prefetch_youtube_audio)
 
     def tracklist_changed(self):
         # Keep the actor callback lightweight and move the expensive prefetch work
