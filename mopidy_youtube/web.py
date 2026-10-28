@@ -18,6 +18,7 @@ from mopidy_youtube.data import extract_playlist_id, extract_video_id
 if TYPE_CHECKING:
     from collections.abc import Iterator
     from datetime import datetime
+    from typing import BinaryIO
 
     from mopidy.config import Config
     from mopidy.core import CoreProxy
@@ -178,16 +179,26 @@ class AudioHandler(tornado.web.RequestHandler):
     @override
     async def get(self, path: str, *, include_body: bool = True) -> None:
         root = self.cache_dir.resolve()
-        file_path = (root / path).resolve()
-        if root not in file_path.parents or not file_path.is_file():
+        final_path = (root / path).resolve()
+        if root not in final_path.parents:
+            raise tornado.web.HTTPError(404)
+        # While a download is running yt-dlp writes `<name>.part`, and renames it
+        # once it is complete, so a file with the final name is always complete.
+        file_path = (
+            final_path
+            if final_path.is_file()
+            else final_path.with_name(final_path.name + ".part")
+        )
+        if not file_path.is_file():
             raise tornado.web.HTTPError(404)
 
-        # total_bytes is only known on the Video that is downloading; fall back
-        # to the file size (an already cached file, or a re-created Video).
-        total = (
-            youtube.Video.get(str(Path(path).with_suffix(""))).total_bytes
-            or file_path.stat().st_size
-        )
+        # total_bytes is only known on the Video that is downloading.
+        total = youtube.Video.get(str(Path(path).with_suffix(""))).total_bytes
+        if not total:
+            if file_path != final_path:
+                # the length of an unfinished file can't be guessed
+                raise tornado.web.HTTPError(503)
+            total = file_path.stat().st_size
 
         self.set_header("Content-Type", "application/octet-stream")
         self.set_header("Accept-Ranges", "bytes")
@@ -215,7 +226,7 @@ class AudioHandler(tornado.web.RequestHandler):
         idle = 0.0
         known_size = 0
         try:
-            with file_path.open("rb") as fd:
+            with self._open(file_path, final_path) as fd:
                 fd.seek(start)
                 while pos <= end:
                     data = fd.read(min(self.CHUNK_SIZE, end - pos + 1))
@@ -245,6 +256,14 @@ class AudioHandler(tornado.web.RequestHandler):
             return  # client went away
         self.finish()
         logger.debug(f"finished serving {path} [{start}-{end}] to gstreamer")
+
+    @staticmethod
+    def _open(file_path: Path, final_path: Path) -> BinaryIO:
+        try:
+            return file_path.open("rb")
+        except FileNotFoundError:
+            # the download finished, and the file was renamed, since it was found
+            return final_path.open("rb")
 
     @override
     async def head(self, path: str) -> None:

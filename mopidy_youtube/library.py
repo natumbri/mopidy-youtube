@@ -35,9 +35,9 @@ class YouTubeLibraryProvider(backend.LibraryProvider):
     root_directory = Ref.directory(uri=Uri("youtube:browse"), name="YouTube")
 
     """
-    Called when root_directory is set to the URI of the youtube channel ID in the mopidy.conf
-    When enabled makes possible to browse public playlists of the channel as well as browse
-    separate tracks in playlists.
+    Called when root_directory is set to the URI of the youtube channel ID in the
+    mopidy.conf. When enabled makes possible to browse public playlists of the
+    channel as well as browse separate tracks in playlists.
     """
 
     cache_max_len = 4000

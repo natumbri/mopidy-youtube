@@ -18,7 +18,8 @@ class YouTubePlaybackProvider(backend.PlaybackProvider):
     def translate_uri(self, uri: Uri) -> Uri | None:
         """
         Called when a track is ready to play, we need to return the actual url of
-        the audio. uri must be of the form youtube:video/<title>.<id> or youtube:video:<id>
+        the audio. uri must be of the form youtube:video/<title>.<id> or
+        youtube:video:<id>
         (only videos can be played, playlists are expanded into tracks by
         YouTubeLibraryProvider.lookup)
 
@@ -30,7 +31,7 @@ class YouTubePlaybackProvider(backend.PlaybackProvider):
 
         try:
             video = youtube.Video.get(extract_video_id(uri))
-            url = video.audio_url.get(timeout=120)
+            url = video.promote_audio_url().get(timeout=120)
             if url is not None and video.cached_file_uri:
                 url = video.cached_file_uri
             logger.debug('translate_uri "%s" -> %s', uri, url)

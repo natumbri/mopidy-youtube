@@ -102,19 +102,16 @@ ignore = [
     "COM812",  # missing-trailing-comma
     "ISC001",  # single-line-implicit-string-concatenation
     #
-    # Deferred until the module-level state and the large modules are reworked
-    "A001",    # builtin-variable-shadowing  # TODO
+    # Deferred: each needs a judgement call (which exceptions to catch, how to split
+    # the large API-parsing functions, whether to rename public names)
     "A002",    # builtin-argument-shadowing  # TODO
     "BLE001",  # blind-except  # TODO
     "C901",    # complex-structure  # TODO
-    "E501",    # line-too-long  # TODO
     "N802",    # invalid-function-name  # TODO
     "N803",    # invalid-argument-name  # TODO
-    "N805",    # invalid-first-argument-name-for-method  # TODO
     "PLR0912", # too-many-branches  # TODO
     "PLR0915", # too-many-statements  # TODO
     "PLR2004", # magic-value-comparison  # TODO
-    "PLW0603", # global-statement  # TODO
 ]
 
 [tool.ruff.lint.per-file-ignores]

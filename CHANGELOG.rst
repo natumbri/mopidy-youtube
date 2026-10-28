@@ -11,6 +11,9 @@ Unreleased
 - add type annotations throughout and check them with pyright; enable all ruff rules except a short list of deferred ones
 - fix YouTube Music history updates, which never ran because of a wrong import path
 - replace ``runtime.py``, the module-level mirrors and the class-level settings on ``Entry``/``Video``/``Playlist`` with one typed ``Context``
+- resolve audio in ``audio.py``: prefetching no longer delays a track that is about to be played, and a failed or interrupted resolution is retried instead of being remembered
+- download to yt-dlp's ``.part`` file and serve it while it grows, so a truncated file is never mistaken for a complete one and an interrupted download resumes
+- fix ``list_related_videos`` raising from its own error handler, and playlists in jAPI results reusing the previous playlist's thumbnail and channel title
 - make ``Video.get`` / ``Playlist.get`` thread-safe and fix a crash in ``Playlist.load_info`` when the API call fails
 - declare ``yt-dlp`` as a dependency, make ``ytmusicapi`` the ``musicapi`` extra and drop the unused ``beautifulsoup4`` and ``setuptools`` dependencies
 

@@ -267,7 +267,7 @@ def test_music_list_related_videos_submits_playlist_lookup_in_background():
             "mopidy_youtube.apis.youtube_music.youtube_japi.jAPI.list_related_videos",
             return_value={"items": []},
         ),
-        mock.patch("mopidy_youtube.apis.youtube_music.ytmusic") as ytmusic_mock,
+        mock.patch.object(Music, "_ytmusic") as ytmusic_mock,
     ):
         ytmusic_mock.get_watch_playlist.return_value = {"related": "related-id"}
         ytmusic_mock.get_song_related.return_value = [
@@ -287,6 +287,61 @@ def test_music_list_related_videos_submits_playlist_lookup_in_background():
 
     assert executor.submit.call_args[0][0] == Music.list_playlists
     assert isinstance(executor.submit.call_args[0][1], set)
+
+
+def test_music_list_related_videos_survives_a_failing_watch_playlist():
+    with (
+        mock.patch(
+            "mopidy_youtube.apis.youtube_music.youtube_japi.jAPI.list_related_videos",
+            return_value={"items": []},
+        ),
+        mock.patch.object(Music, "_ytmusic") as ytmusic_mock,
+    ):
+        ytmusic_mock.get_watch_playlist.side_effect = RuntimeError("no watch playlist")
+        ytmusic_mock.get_song_related.side_effect = RuntimeError("no related songs")
+
+        result = Music.list_related_videos("video-id")
+
+    assert result["items"] == []
+
+
+def playlist_renderer(playlist_id: str, **missing: bool) -> dict[str, Any]:
+    renderer: dict[str, Any] = {
+        "playlistId": playlist_id,
+        "videoCount": "3",
+        "title": {"simpleText": f"Playlist {playlist_id}"},
+        "thumbnails": [
+            {"thumbnails": [{"url": f"https://i.ytimg.com/{playlist_id}.jpg?x=1"}]}
+        ],
+        "longBylineText": {"runs": [{"text": f"Owner of {playlist_id}"}]},
+    }
+    for key in missing:
+        del renderer[key]
+    return {"playlistRenderer": renderer}
+
+
+def test_japi_skips_a_playlist_without_a_thumbnail_instead_of_reusing_another():
+    items = backend.youtube_japi.jAPI.json_to_items(
+        [
+            playlist_renderer("PL1"),
+            playlist_renderer("PL2", thumbnails=True),
+            playlist_renderer("PL3"),
+        ]
+    )
+
+    assert [item["id"]["playlistId"] for item in items] == ["PL1", "PL3"]
+    assert items[1]["snippet"]["thumbnails"]["default"]["url"].endswith("PL3.jpg")
+
+
+def test_japi_names_the_channel_unknown_instead_of_reusing_the_previous_one():
+    items = backend.youtube_japi.jAPI.json_to_items(
+        [playlist_renderer("PL1"), playlist_renderer("PL2", longBylineText=True)]
+    )
+
+    assert [item["snippet"]["channelTitle"] for item in items] == [
+        "Owner of PL1",
+        "unknown",
+    ]
 
 
 def test_music_rebuilds_ytmusic_client_when_session_changes():
@@ -452,7 +507,9 @@ def test_video_audio_url_handles_nested_requested_formats_payloads():
 def test_playback_translate_uri_returns_resolved_audio_url():
     provider = backend.YouTubePlaybackProvider(audio=None, backend=mock.Mock())
     video = mock.Mock(cached_file_uri=None)
-    video.audio_url.get.return_value = "https://example.com/audio.webm"
+    video.promote_audio_url.return_value.get.return_value = (
+        "https://example.com/audio.webm"
+    )
 
     with mock.patch("mopidy_youtube.backend.youtube.Video.get", return_value=video):
         assert (
@@ -464,7 +521,9 @@ def test_playback_translate_uri_returns_resolved_audio_url():
 def test_playback_translate_uri_prefers_file_once_caching_has_finished():
     provider = backend.YouTubePlaybackProvider(audio=None, backend=mock.Mock())
     video = mock.Mock(cached_file_uri="file:///cache/testid.webm")
-    video.audio_url.get.return_value = "http://localhost:6680/youtube/testid.webm"
+    video.promote_audio_url.return_value.get.return_value = (
+        "http://localhost:6680/youtube/testid.webm"
+    )
 
     with mock.patch("mopidy_youtube.backend.youtube.Video.get", return_value=video):
         assert (

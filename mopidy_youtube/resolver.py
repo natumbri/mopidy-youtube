@@ -13,14 +13,13 @@ if TYPE_CHECKING:
     from mopidy_youtube.youtube import Video
 
 
-def resolve_audio_url(  # noqa: PLR0913 - keyword-only API used by youtube.Video
+def resolve_audio_url(
     video: Video,
     *,
     ytdl_options: dict[str, Any],
     ytdl_extract_info_options: dict[str, Any],
     cache_location: Path | str | None,
     youtube_dl: ModuleType,
-    youtube_dl_package: str,  # noqa: ARG001 - kept for the caller's keyword API
 ) -> str | None:
     if cache_location:
         cached_audio = find_cached_audio_path(cache_location, video.id)

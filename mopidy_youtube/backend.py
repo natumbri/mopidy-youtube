@@ -106,7 +106,6 @@ class YouTubeBackend(
         from mopidy_youtube.apis import youtube_music  # noqa: PLC0415
 
         logger.info("Using YouTube Music API")
-        youtube_music.own_channel_id = context.channel
 
         authentication_file = context.musicapi_browser_authentication_file
         if authentication_file:
@@ -130,7 +129,7 @@ class YouTubeBackend(
             return
 
         try:
-            ytmusic = getattr(youtube_music, "ytmusic", None)
+            ytmusic = youtube_music.Music.client()
             if ytmusic is None:
                 logger.debug(f"ytmusic client unavailable, skipping history for {bId}")
                 return

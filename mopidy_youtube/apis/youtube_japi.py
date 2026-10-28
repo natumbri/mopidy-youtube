@@ -110,7 +110,8 @@ class jAPI(Client):  # noqa: N801 - public class name, used by backend and tests
             lowered = candidate.lower()
             if lowered in {"live", "upcoming", "premiere", "shorts"}:
                 logger.info(
-                    f"video {video_id} marked as {candidate}; treating as non-playable duration"
+                    f"video {video_id} marked as {candidate}; "
+                    "treating as non-playable duration"
                 )
                 return "PT0S"
 
@@ -455,7 +456,8 @@ class jAPI(Client):  # noqa: N801 - public class name, used by backend and tests
                         sections = traverse(yt_data, CONTINUATION_ITEMS_PATH)
                     except KeyError:
                         logger.warning(
-                            f"jAPI run_search could not find search sections for query {search_query}"
+                            "jAPI run_search could not find search sections "
+                            f"for query {search_query}"
                         )
                         return results
 
@@ -635,6 +637,7 @@ class jAPI(Client):  # noqa: N801 - public class name, used by backend and tests
                     thumbnails["url"] = thumbnails["url"].split("?", 1)[0]
                 except Exception as e:
                     logger.error(f"thumbnail exception {e}, {playlist['playlistId']}")
+                    continue
 
                 try:
                     channel_title = traverse(playlist["longBylineText"], TEXT_PATH)
@@ -642,6 +645,7 @@ class jAPI(Client):  # noqa: N801 - public class name, used by backend and tests
                     logger.error(
                         f"channelTitle exception {e}, {playlist['playlistId']}"
                     )
+                    channel_title = "unknown"
 
                 item = {
                     "id": {
@@ -651,10 +655,8 @@ class jAPI(Client):  # noqa: N801 - public class name, used by backend and tests
                     "contentDetails": {"itemCount": int(playlist["videoCount"])},
                     "snippet": {
                         "title": playlist["title"]["simpleText"],
-                        "thumbnails": {
-                            "default": thumbnails  # pyright: ignore[reportPossiblyUnboundVariable]
-                        },
-                        "channelTitle": channel_title,  # pyright: ignore[reportPossiblyUnboundVariable]
+                        "thumbnails": {"default": thumbnails},
+                        "channelTitle": channel_title,
                     },
                 }
                 items.append(item)

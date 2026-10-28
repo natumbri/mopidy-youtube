@@ -2,9 +2,9 @@ from __future__ import annotations
 
 import os
 import threading
+import time
 from concurrent.futures.thread import ThreadPoolExecutor
-from pathlib import Path
-from typing import Any, ClassVar, Self
+from typing import TYPE_CHECKING, Any, ClassVar, Self
 
 import pykka
 from cachetools import TTLCache
@@ -14,11 +14,16 @@ from mopidy.types import Uri
 
 from mopidy_youtube import logger
 from mopidy_youtube.async_utils import async_property, is_future_set, set_once
+from mopidy_youtube.audio import AudioResolver
 from mopidy_youtube.context import context
 from mopidy_youtube.data import extract_playlist_id
 from mopidy_youtube.media import extract_audio_url, is_live_item
-from mopidy_youtube.resolver import resolve_audio_url
 from mopidy_youtube.timeformat import ISO8601_to_seconds
+
+if TYPE_CHECKING:
+    from concurrent.futures import Future
+
+PREFETCH_RETRY_DELAY = 60  # seconds before a failed prefetch is tried again
 
 
 class Entry:
@@ -290,6 +295,12 @@ class Video(Entry):
     cached_file_uri: str | None = None
     _load_executor: ClassVar[ThreadPoolExecutor | None] = None
     _audio_executor: ClassVar[ThreadPoolExecutor | None] = None
+    _prefetch_audio_executor: ClassVar[ThreadPoolExecutor | None] = None
+    _executor_lock: ClassVar[threading.Lock] = threading.Lock()
+
+    _audio_job: Future[None] | None = None
+    _audio_is_prefetch: bool = False
+    _audio_failed_at: float | None = None
 
     _audio_url: pykka.ThreadingFuture[str | None]
     _related_videos: pykka.ThreadingFuture[list[Video]]
@@ -300,11 +311,12 @@ class Video(Entry):
 
     @classmethod
     def get_load_executor(cls) -> ThreadPoolExecutor:
-        if cls._load_executor is None:
-            cls._load_executor = ThreadPoolExecutor(
-                max_workers=max(2, min(8, (os.cpu_count() or 1) + 2))
-            )
-        return cls._load_executor
+        with cls._executor_lock:
+            if cls._load_executor is None:
+                cls._load_executor = ThreadPoolExecutor(
+                    max_workers=max(2, min(8, (os.cpu_count() or 1) + 2))
+                )
+            return cls._load_executor
 
     @classmethod
     def load_info(cls, entries: list[Video]) -> None:
@@ -476,138 +488,70 @@ class Video(Entry):
         return extract_audio_url(info)
 
     @classmethod
-    def get_audio_executor(cls) -> ThreadPoolExecutor:
-        # separate from get_load_executor: long downloads must not starve API calls
-        if cls._audio_executor is None:
-            cls._audio_executor = ThreadPoolExecutor(max_workers=4)
-        return cls._audio_executor
+    def _audio_pool(cls, *, prefetch: bool) -> ThreadPoolExecutor:
+        # separate from get_load_executor: long downloads must not starve API calls,
+        # and prefetching must not starve the track that is about to be played
+        with cls._executor_lock:
+            if prefetch:
+                if cls._prefetch_audio_executor is None:
+                    cls._prefetch_audio_executor = ThreadPoolExecutor(max_workers=2)
+                return cls._prefetch_audio_executor
+            if cls._audio_executor is None:
+                cls._audio_executor = ThreadPoolExecutor(max_workers=4)
+            return cls._audio_executor
 
     @async_property
     def audio_url(self) -> None:
-        Video.get_audio_executor().submit(self._load_audio_url)
+        pool = self._audio_pool(prefetch=self._audio_is_prefetch)
+        self._audio_job = pool.submit(self._load_audio_url)
+
+    def prefetch_audio_url(self) -> None:
+        """Start resolving the audio url in the background, behind interactive plays."""
+        failed_at = self._audio_failed_at
+        if (
+            failed_at is not None
+            and time.monotonic() - failed_at < PREFETCH_RETRY_DELAY
+        ):
+            return
+        self._audio_is_prefetch = True
+        self.audio_url  # noqa: B018 - starts the background load
+
+    def promote_audio_url(self) -> pykka.ThreadingFuture[str | None]:
+        """Return the audio url future of a track about to be played.
+
+        If the load was only prefetched and has not started yet, it moves to the
+        interactive pool so it doesn't wait behind other prefetches.
+        """
+        future = self.audio_url
+        job = self._audio_job
+        if self._audio_is_prefetch and job is not None and job.cancel():
+            self._audio_job = self._audio_pool(prefetch=False).submit(
+                self._load_audio_url
+            )
+        return future
 
     def _load_audio_url(self) -> None:
-        """
-        audio_url is the only property retrieved using yt-dlp, and it's much more
-        expensive than the rest. If caching is turned on and the track is cached,
-        return a (file) URL pointing to the cached file. If caching is turned on and
-        the track isn't cached, start caching it and, once 2 percent has been
-        cached, return an (http) URL pointing to the cached file. If caching is not
-        turned on, return a URL obtained with yt-dlp.
-        """
-
-        # from @blacklight (https://github.com/blacklight/mopidy-youtube)
+        succeeded = False
         try:
-            ytdl_module = context.youtube_dl()
-            logger.debug(f"using {context.youtube_dl_package} package for youtube_dl")
-
-            # When caching, is it possible to set the audio_url part-way through
-            # a download so audio can start playing quicker?
-
-            def my_hook(d: dict[str, Any]) -> None:
-                filename = Path(d["filename"])
-                if d["status"] == "finished":
-                    # caching is complete: later translate_uri calls get the file
-                    # directly, no need to serve it up with tornado
-                    file_uri = f"file://{d['filename']}"
-                    self.cached_file_uri = file_uri
-
-                    if not self.total_bytes:
-                        logger.debug(
-                            f"audio_url not set during downloading; setting audio_url now:"
-                            f" {file_uri}, {filename.name}"
-                        )
-                        self.total_bytes = (
-                            d.get("total_bytes") or d["info_dict"].get("filesize") or 0
-                        )
-                        set_once(self._audio_url, file_uri)
-
-                if d["status"] == "downloading":
-                    p = d["_percent_str"]
-                    p = float(p.replace("%", ""))
-                    logger.debug(f"percent cached: {p}%, {filename.name}")
-
-                    # get 2% before setting audio_url; once self.total_bytes has a value,
-                    # audio_url is set, so no need to do again; there seems to be problems
-                    # with some formats that do not support seeking - limit to .webm
-                    if p > 2 and not self.total_bytes and filename.suffix == ".webm":
-                        http_uri = f"http://localhost:{context.http_port}/youtube/{filename.name}"
-                        logger.debug(
-                            f"setting cached audio_url: {http_uri}, {filename.name}"
-                        )
-                        self.total_bytes = (
-                            d.get("total_bytes") or d["info_dict"].get("filesize") or 0
-                        )
-                        logger.debug(
-                            f"expected length of {filename.name}: {self.total_bytes}"
-                        )
-                        set_once(self._audio_url, http_uri)
-
-            ytdl_options: dict[str, Any] = {
-                "format": "bestaudio/ogg/mp3/m4a/best",
-                "proxy": context.proxy,
-                "cachedir": False,
-                "nopart": True,
-                "retries": 10,
-            }
-            if context.musicapi_cookiefile:
-                ytdl_options["cookiefile"] = context.musicapi_cookiefile
-            base_url = "https://www.youtube.com"
-            if context.musicapi_enabled:
-                # High quality music streams are only available to YouTube
-                # Premium users when using YouTube Music.
-                base_url = "https://music.youtube.com"
-
-            ytdl_extract_info_options: dict[str, Any] = {
-                "url": f"{base_url}/watch?v={self.id}",
-                "ie_key": None,
-                "extra_info": {},
-                "process": True,
-                "force_generic_extractor": False,
-            }
-
-            if context.youtube_dl_package == "yt_dlp":
-                ytdl_options["no_color"] = True
-
-            if context.cache_location:
-                resolved = resolve_audio_url(
-                    self,
-                    ytdl_options={**ytdl_options, "progress_hooks": [my_hook]},
-                    ytdl_extract_info_options=ytdl_extract_info_options,
-                    cache_location=context.cache_location,
-                    youtube_dl=ytdl_module,
-                    youtube_dl_package=context.youtube_dl_package,
-                )
-                set_once(self._audio_url, resolved)
-                return
-
-            with ytdl_module.YoutubeDL(ytdl_options) as ydl:
-                info = ydl.extract_info(
-                    **ytdl_extract_info_options,
-                    download=False,
-                )
-
-            audio_url = self._extract_audio_url(info)
-            if not audio_url:
-                logger.warning(
-                    "yt-dlp did not provide a direct audio URL for %s; info keys: %s",
-                    self.id,
-                    (
-                        sorted(info.keys())
-                        if isinstance(info, dict)
-                        else type(info).__name__
-                    ),
-                )
-                set_once(self._audio_url, None)
-                return
-
-            set_once(self._audio_url, audio_url)
-
+            AudioResolver(self).run()
+            succeeded = True
         except Exception:
             logger.exception("audio_url error (videoId: %s)", self.id)
         finally:
-            # no-op if already set; releases any waiter if nothing set the future
-            set_once(self._audio_url, None)
+            self._finish_audio_load(succeeded=succeeded)
+
+    def _finish_audio_load(self, *, succeeded: bool) -> None:
+        future = self._audio_url
+        has_url = is_future_set(future) and future.get(timeout=0) is not None
+        set_once(future, None)  # releases any waiter if nothing was published
+        if succeeded and has_url:
+            return
+        # Don't keep a failure (or a url for a download that died) for the lifetime
+        # of this object: forget the future so the next request tries again.
+        self._audio_failed_at = time.monotonic()
+        self.total_bytes = 0
+        self.cached_file_uri = None
+        self.__dict__.pop("_audio_url", None)
 
     @property
     def is_video(self) -> bool:
@@ -642,7 +586,8 @@ class Playlist(Entry):
                 data = context.api.list_playlists([x.id for x in sublist])
             except Exception as e:
                 logger.error(
-                    f"Playlist.load_info list_playlists error {e}, {[x.id for x in sublist]}"
+                    f"Playlist.load_info list_playlists error {e}, "
+                    f"{[x.id for x in sublist]}"
                 )
 
             if data:

@@ -23,16 +23,13 @@ if TYPE_CHECKING:
 
     import requests
 
-ytmusic: YTMusic | None = None
-own_channel_id: str | None = None
-
 
 def _client() -> YTMusic:
-    """Return the module-level YTMusic client (set by Music._ensure_ytmusic)."""
-    if ytmusic is None:
+    """Return the YTMusic client (set by Music._ensure_ytmusic)."""
+    if Music._ytmusic is None:
         msg = "YTMusic client is not initialised"
         raise RuntimeError(msg)
-    return ytmusic
+    return Music._ytmusic
 
 
 # Access to YouTube Music API through ytmusicapi package
@@ -43,6 +40,7 @@ class Music(Client):
     endpoint: str | None = None
     _executor: ThreadPoolExecutor | None = None
     _playlist_lookup_executor: ThreadPoolExecutor | None = None
+    _ytmusic: YTMusic | None = None
     _ytmusic_session: requests.Session | None = None
 
     @classmethod
@@ -55,19 +53,23 @@ class Music(Client):
 
     @classmethod
     def _ensure_ytmusic(cls) -> YTMusic:
-        global ytmusic
         session = getattr(cls, "session", None)
-        if ytmusic is None or cls._ytmusic_session is not session:
+        if cls._ytmusic is None or cls._ytmusic_session is not session:
             try:
-                ytmusic = (
+                cls._ytmusic = (
                     YTMusic(requests_session=session)
                     if session is not None
                     else YTMusic()
                 )
             except Exception:
-                ytmusic = YTMusic()
+                cls._ytmusic = YTMusic()
             cls._ytmusic_session = session
-        return ytmusic
+        return cls._ytmusic
+
+    @classmethod
+    def client(cls) -> YTMusic | None:
+        """The YTMusic client, or None if the API has not been started."""
+        return cls._ytmusic
 
     @classmethod
     def get_playlist_lookup_executor(cls) -> ThreadPoolExecutor:
@@ -82,9 +84,8 @@ class Music(Client):
         *args: Any,
         **kwargs: Any,
     ) -> None:
-        global ytmusic
         self.__class__._ytmusic_session = None
-        ytmusic = None
+        self.__class__._ytmusic = None
         super().__init__(proxy, headers, *args, **kwargs)
         auth = (
             None
@@ -92,10 +93,10 @@ class Music(Client):
             else json.dumps(headers)
         )
         try:
-            ytmusic = YTMusic(auth=auth, requests_session=self.session)
+            self.__class__._ytmusic = YTMusic(auth=auth, requests_session=self.session)
         except Exception as e:
             logger.error("YTMusic init error: %s", str(e))
-            ytmusic = YTMusic()
+            self.__class__._ytmusic = YTMusic()
         self.__class__._ytmusic_session = self.session
 
     @classmethod
@@ -128,6 +129,7 @@ class Music(Client):
         cls._ensure_ytmusic()
 
         get_watch_playlist: dict[str, Any] = {}
+        related_browse_id = "none"
 
         try:
             logger.debug(
@@ -149,11 +151,11 @@ class Music(Client):
         try:
             logger.debug(
                 f"youtube_music list_related_videos triggered "
-                f"ytmusic.get_song_related ({related_browse_id})"  # pyright: ignore[reportPossiblyUnboundVariable]
+                f"ytmusic.get_song_related ({related_browse_id})"
             )
-            get_song_related_tracks = _client().get_song_related(
-                related_browse_id  # pyright: ignore[reportPossiblyUnboundVariable]
-            )[0]["contents"]
+            get_song_related_tracks = _client().get_song_related(related_browse_id)[0][
+                "contents"
+            ]
 
             logger.debug(
                 f"youtube_music list_related_videos triggered "
@@ -167,7 +169,7 @@ class Music(Client):
         except Exception as e:
             logger.error(
                 f"youtube_music list_related_videos error:{e} "
-                f"Related_browseId: {related_browse_id}"  # pyright: ignore[reportPossiblyUnboundVariable]
+                f"Related_browseId: {related_browse_id}"
             )
 
         if len(related_videos) < 10:
@@ -247,7 +249,8 @@ class Music(Client):
                 result["thumbnail"] = {
                     "thumbnails": [
                         {
-                            "url": f"https:{traverse(result, YTM_ERROR_THUMBNAIL_PATH)['url']}",
+                            "url": "https:"
+                            + traverse(result, YTM_ERROR_THUMBNAIL_PATH)["url"],
                             "width": traverse(result, YTM_ERROR_THUMBNAIL_PATH)[
                                 "width"
                             ],
@@ -296,7 +299,10 @@ class Music(Client):
         )
 
         executor = cls.get_executor()
-        futures = {executor.submit(cls._get_playlist_or_album, id): id for id in ids}
+        futures = {
+            executor.submit(cls._get_playlist_or_album, playlist_id): playlist_id
+            for playlist_id in ids
+        }
         for future in as_completed(futures):
             try:
                 results.append(future.result())
@@ -368,7 +374,7 @@ class Music(Client):
         # first check if the channel is a proper artist channel, in which case, return
         # albums (and playlists?)
         try:
-            target_channel_id = channel_id or own_channel_id
+            target_channel_id = channel_id or context.channel
             # None is rejected by ytmusicapi and handled by the except below
             artist = _client().get_artist(
                 target_channel_id  # pyright: ignore[reportArgumentType]
@@ -381,7 +387,7 @@ class Music(Client):
             logger.debug(f"youtube_music.list_channelplaylists exception {e}")
             # if channel_id is None or own_channel_id then try to retrieve
             # public and private playlists
-            if channel_id in (None, own_channel_id):
+            if channel_id in (None, context.channel):
                 try:
                     logger.debug(
                         f"youtube_music list_channelplaylists triggered "
@@ -447,8 +453,8 @@ class Music(Client):
         [item.update({"id": item["id"]["playlistId"]}) for item in items]
         return json.loads(json.dumps({"items": items}, sort_keys=False, indent=1))
 
-    # methods below are mostly internal, for use by the api methods above (which replicate
-    # the methods from the youtube API)
+    # methods below are mostly internal, for use by the api methods above (which
+    # replicate the methods from the youtube API)
 
     @classmethod
     def search_songs(cls, q: str) -> list[dict[str, Any]]:
@@ -496,7 +502,8 @@ class Music(Client):
                 albums.append(future.result())
             except Exception as e:
                 logger.error(
-                    f"youtube_music process_albums get_album error {e}, {futures[future]}"
+                    "youtube_music process_albums get_album error "
+                    f"{e}, {futures[future]}"
                 )
 
         # given we're calling _client().get_album, which returns tracks, we might
@@ -579,28 +586,30 @@ class Music(Client):
         return playlist
 
     @staticmethod
-    def _get_playlist_or_album(id: str) -> dict[str, Any]:
+    def _get_playlist_or_album(playlist_id: str) -> dict[str, Any]:
         # OLAK5uy_lUNm1YMm972Rvy0LpDg3ORQFjtN_8oBtc
-        if id.startswith("OLAK5uy_"):
-            id = YTMusic.get_album_browse_id(YTMusic(), id)  # pyright: ignore[reportAssignmentType]
+        if playlist_id.startswith("OLAK5uy_"):
+            playlist_id = YTMusic.get_album_browse_id(YTMusic(), playlist_id)  # pyright: ignore[reportAssignmentType]
 
-        if id.startswith("PL"):
+        if playlist_id.startswith("PL"):
             logger.debug(
-                f"youtube_music _get_playlist_or_album triggered ytmusic.get_playlist: {id}"
+                "youtube_music _get_playlist_or_album triggered "
+                f"ytmusic.get_playlist: {playlist_id}"
             )
-            result = _client().get_playlist(id)
+            result = _client().get_playlist(playlist_id)
             result["playlistId"] = result["id"]
             result["artists"] = [result["author"]]
 
         else:
             logger.debug(
-                f"youtube_music _get_playlist_or_album triggered ytmusic.get_album: {id}"
+                "youtube_music _get_playlist_or_album triggered "
+                f"ytmusic.get_album: {playlist_id}"
             )
-            result = _client().get_album(id)
+            result = _client().get_album(playlist_id)
             if "artists" not in result:
                 result["artists"] = result["artist"]
             if "playlistId" not in result:
-                result["playlistId"] = id
+                result["playlistId"] = playlist_id
 
         return result
 

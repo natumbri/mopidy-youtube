@@ -70,7 +70,7 @@ class YouTubeCoreListener(pykka.ThreadingActor, CoreListener):
             if not video_id:
                 continue
             try:
-                youtube.Video.get(video_id).audio_url  # noqa: B018 - starts loading
+                youtube.Video.get(video_id).prefetch_audio_url()
             except Exception:
                 logger.exception(
                     "Failed to prefetch audio for YouTube video %s", video_id
