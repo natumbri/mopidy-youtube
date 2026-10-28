@@ -1,0 +1,39 @@
+{
+ "name": "Imagine Dragons",
+ "channelId": "UCT9zcQNlyht7fRlcjmflRSA",
+ "albums": {
+  "browseId": null,
+  "results": [
+   {
+    "title": "Reflections (From The Vault Of Smoke + Mirrors)",
+    "artists": [],
+    "browseId": "MPREb_WOqUMNyA4PV",
+    "audioPlaylistId": "OLAK5uy_lfYWpSWk2YbKYQNQEliW8tfYv4wU7IfMI",
+    "thumbnails": [
+     {
+      "url": "https://yt3.googleusercontent.com/PIKNFbDt_DDc2uPWMvrGBPzztr4W6i7n0of6BPRHwe6dM_fiDNm1tmvE-lKjfs8mXnKG5_FL9GbTbG4=w544-h544-l90-rj",
+      "width": 544,
+      "height": 544
+     }
+    ],
+    "isExplicit": false,
+    "year": "2025"
+   },
+   {
+    "title": "LOOM",
+    "artists": [],
+    "browseId": "MPREb_i3rlVrZLqb7",
+    "audioPlaylistId": "OLAK5uy_mAWpL2_R3tGLfDvxDyydWDnpdyANSoJJU",
+    "thumbnails": [
+     {
+      "url": "https://yt3.googleusercontent.com/HXl1-8EFmkheZcYoPiFgDe1HCeaBaZDWY4yxjJsaZqSasbompkowFh7UC7vxIIARnXh_5uTBLAkHs_qz=w544-h544-l90-rj",
+      "width": 544,
+      "height": 544
+     }
+    ],
+    "isExplicit": false,
+    "year": "2024"
+   }
+  ]
+ }
+}

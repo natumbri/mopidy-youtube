@@ -1,0 +1,60 @@
+[
+ {
+  "category": "Albums",
+  "resultType": "album",
+  "title": "A Night At The Opera",
+  "type": "Album",
+  "playlistId": "OLAK5uy_mQGa-V4qspfisNHu1kXthY1w93yJNT0rw",
+  "duration": null,
+  "year": "1975",
+  "artists": [
+   {
+    "name": "Queen",
+    "id": "UCEPMVbUzImPl4p8k4LkGevA"
+   }
+  ],
+  "browseId": "MPREb_eEpQf8QskKl",
+  "isExplicit": false,
+  "thumbnails": [
+   {
+    "url": "https://yt3.googleusercontent.com/nLn1gxvYiZqzXOY9HyUXVXbFtmR5nhY8sDpbvBT1aw-Ejjsz__Nz90sZoc4nZgff2sf8WjowuVRVBlBTww=w226-h226-l90-rj",
+    "width": 226,
+    "height": 226
+   },
+   {
+    "url": "https://yt3.googleusercontent.com/nLn1gxvYiZqzXOY9HyUXVXbFtmR5nhY8sDpbvBT1aw-Ejjsz__Nz90sZoc4nZgff2sf8WjowuVRVBlBTww=w544-h544-l90-rj",
+    "width": 544,
+    "height": 544
+   }
+  ]
+ },
+ {
+  "category": "Albums",
+  "resultType": "album",
+  "title": "A Night At The Opera",
+  "type": "Album",
+  "playlistId": "OLAK5uy_nkyz8Kw10VZOtXbh5Owus0BOUOYQyS1AQ",
+  "duration": null,
+  "year": "2002",
+  "artists": [
+   {
+    "name": "Blind Guardian",
+    "id": "UCevshEcA1yKVc0uucxo4dfg"
+   }
+  ],
+  "browseId": "MPREb_ppvh6pdaiCc",
+  "isExplicit": false,
+  "thumbnails": [
+   {
+    "url": "https://yt3.googleusercontent.com/DFgnMisS9wVXeMWzOG59X-em7C1A2YU198Du0w2fR6laX3HePLyjvM2dkLpPmp3H-Qmrbx1avNoMdEyo=w226-h226-l90-rj",
+    "width": 226,
+    "height": 226
+   },
+   {
+    "url": "https://yt3.googleusercontent.com/DFgnMisS9wVXeMWzOG59X-em7C1A2YU198Du0w2fR6laX3HePLyjvM2dkLpPmp3H-Qmrbx1avNoMdEyo=w544-h544-l90-rj",
+    "width": 544,
+    "height": 544
+   }
+  ]
+ }
+]

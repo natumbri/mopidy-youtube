@@ -1,0 +1,470 @@
+{
+ "contents": {
+  "twoColumnWatchNextResults": {
+   "results": {
+    "results": {
+     "contents": [
+      {
+       "videoPrimaryInfoRenderer": {
+        "title": {
+         "runs": [
+          {
+           "text": "Me at the zoo"
+          }
+         ]
+        }
+       }
+      },
+      {
+       "videoSecondaryInfoRenderer": {
+        "owner": {
+         "videoOwnerRenderer": {
+          "thumbnail": {
+           "thumbnails": [
+            {
+             "url": "https://yt3.ggpht.com/uI3VE4PVqvCy0xnWLqMJnEzyBUm3T8VHOCp4ee-1RxdHqKXCdUE_qXYQnpf9AfuEoIPactVyDhM=s48-c-k-c0x00ffffff-no-rj",
+             "width": 48,
+             "height": 48
+            },
+            {
+             "url": "https://yt3.ggpht.com/uI3VE4PVqvCy0xnWLqMJnEzyBUm3T8VHOCp4ee-1RxdHqKXCdUE_qXYQnpf9AfuEoIPactVyDhM=s88-c-k-c0x00ffffff-no-rj",
+             "width": 88,
+             "height": 88
+            },
+            {
+             "url": "https://yt3.ggpht.com/uI3VE4PVqvCy0xnWLqMJnEzyBUm3T8VHOCp4ee-1RxdHqKXCdUE_qXYQnpf9AfuEoIPactVyDhM=s176-c-k-c0x00ffffff-no-rj",
+             "width": 176,
+             "height": 176
+            }
+           ]
+          },
+          "title": {
+           "runs": [
+            {
+             "text": "jawed",
+             "navigationEndpoint": {
+              "clickTrackingParams": "COQBEOE5IhMI0vPX-d3blwMVNIp9BB1IoCgYygEEVnAZfg==",
+              "commandMetadata": {
+               "webCommandMetadata": {
+                "url": "/@jawed",
+                "webPageType": "WEB_PAGE_TYPE_CHANNEL",
+                "rootVe": 3611,
+                "apiUrl": "/youtubei/v1/browse"
+               }
+              },
+              "browseEndpoint": {
+               "browseId": "UC4QobU6STFB0P71PMvOGN5A",
+               "canonicalBaseUrl": "/@jawed"
+              }
+             }
+            }
+           ]
+          }
+         }
+        }
+       }
+      }
+     ]
+    }
+   },
+   "secondaryResults": {
+    "secondaryResults": {
+     "results": [
+      {
+       "itemSectionRenderer": {
+        "contents": [
+         {
+          "lockupViewModel": {
+           "contentImage": {
+            "thumbnailViewModel": {
+             "image": {
+              "sources": [
+               {
+                "url": "https://i.ytimg.com/vi/P4Ex2AafR1U/hqdefault.jpg?sqp=-oaymwEiCKgBEF5IWvKriqkDFQgBFQAAAAAYASUAAMhCPQCAokN4AaLzl_8DDgi0hPbWBhjg6gQg4KgB&rs=AOn4CLDcyiIroo-LZ7JOAcBHNgFzRUIIwA&usqp=CBU",
+                "width": 168,
+                "height": 94
+               },
+               {
+                "url": "https://i.ytimg.com/vi/P4Ex2AafR1U/hqdefault.jpg?sqp=-oaymwEjCNACELwBSFryq4qpAxUIARUAAAAAGAElAADIQj0AgKJDeAGi85f_Aw4ItIT21gYY4OoEIOCoAQ==&rs=AOn4CLCKQu2HvTt8eWGS5S9nAJUKHQjeQg&usqp=CBU",
+                "width": 336,
+                "height": 188
+               }
+              ]
+             },
+             "overlays": [
+              {
+               "thumbnailBottomOverlayViewModel": {
+                "badges": [
+                 {
+                  "thumbnailBadgeViewModel": {
+                   "text": "2:00:00",
+                   "badgeStyle": "THUMBNAIL_OVERLAY_BADGE_STYLE_DEFAULT",
+                   "animationActivationTargetId": "P4Ex2AafR1U",
+                   "animationActivationEntityKey": "Eh8veW91dHViZS9hcHAvd2F0Y2gvcGxheWVyX3N0YXRlIMMCKAE%3D",
+                   "animatedText": "Now playing",
+                   "animationActivationEntitySelectorType": "THUMBNAIL_BADGE_ANIMATION_ENTITY_SELECTOR_TYPE_PLAYER_STATE"
+                  }
+                 }
+                ]
+               }
+              }
+             ]
+            }
+           },
+           "metadata": {
+            "lockupMetadataViewModel": {
+             "title": {
+              "content": "Turn Your Screen Into a Soft Warm Light (Instant Fix For Video Lighting)"
+             },
+             "image": {
+              "decoratedAvatarViewModel": {
+               "avatar": {
+                "avatarViewModel": {
+                 "image": {
+                  "sources": [
+                   {
+                    "url": "https://yt3.ggpht.com/xQSswta1YpD9_6qKaIS9Bod05LpVB3UQFXujw699G6gRte6tc59JxeT3urh68FENCVwUIQw9DQ=s68-c-k-c0x00ffffff-no-rj",
+                    "width": 68,
+                    "height": 68
+                   }
+                  ]
+                 },
+                 "avatarImageSize": "AVATAR_SIZE_M"
+                }
+               },
+               "a11yLabel": "Go to channel Use Your Screen As Light"
+              }
+             },
+             "metadata": {
+              "contentMetadataViewModel": {
+               "metadataRows": [
+                {
+                 "metadataParts": [
+                  {
+                   "text": {
+                    "content": "Use Your Screen As Light"
+                   }
+                  }
+                 ]
+                },
+                {
+                 "metadataParts": [
+                  {
+                   "text": {
+                    "content": "219K"
+                   },
+                   "accessibilityLabel": "219 thousand views",
+                   "leadingIcon": {
+                    "name": "PLAY_ARROW_OUTLINED",
+                    "height": 12,
+                    "width": 12,
+                    "marginEndToken": {
+                     "spacing": 2
+                    }
+                   }
+                  },
+                  {
+                   "text": {
+                    "content": "8mo ago"
+                   },
+                   "accessibilityLabel": "8 months ago"
+                  }
+                 ]
+                }
+               ],
+               "delimiter": " "
+              }
+             }
+            }
+           },
+           "contentId": "P4Ex2AafR1U",
+           "contentType": "LOCKUP_CONTENT_TYPE_VIDEO"
+          }
+         },
+         {
+          "lockupViewModel": {
+           "contentImage": {
+            "thumbnailViewModel": {
+             "image": {
+              "sources": [
+               {
+                "url": "https://i.ytimg.com/vi/Y_BCuvEcISY/hqdefault.jpg?sqp=-oaymwEiCKgBEF5IWvKriqkDFQgBFQAAAAAYASUAAMhCPQCAokN4AaLzl_8DDgjWnYXWBhjg6gQg4KgB&rs=AOn4CLA7-QnjAK_FIMsmW_m7eVoJSaRqHw&usqp=CBU",
+                "width": 168,
+                "height": 94
+               },
+               {
+                "url": "https://i.ytimg.com/vi/Y_BCuvEcISY/hqdefault.jpg?sqp=-oaymwEjCNACELwBSFryq4qpAxUIARUAAAAAGAElAADIQj0AgKJDeAGi85f_Aw4I1p2F1gYY4OoEIOCoAQ==&rs=AOn4CLA6CP06KmjKIaDRd22idiQDjT0Cww&usqp=CBU",
+                "width": 336,
+                "height": 188
+               }
+              ]
+             },
+             "overlays": [
+              {
+               "thumbnailBottomOverlayViewModel": {
+                "badges": [
+                 {
+                  "thumbnailBadgeViewModel": {
+                   "icon": {
+                    "sources": [
+                     {
+                      "clientResource": {
+                       "imageName": "MUSIC"
+                      }
+                     }
+                    ]
+                   },
+                   "text": "4:47:59",
+                   "badgeStyle": "THUMBNAIL_OVERLAY_BADGE_STYLE_DEFAULT",
+                   "animationActivationTargetId": "Y_BCuvEcISY",
+                   "animationActivationEntityKey": "Eh8veW91dHViZS9hcHAvd2F0Y2gvcGxheWVyX3N0YXRlIMMCKAE%3D",
+                   "animatedText": "Now playing",
+                   "animationActivationEntitySelectorType": "THUMBNAIL_BADGE_ANIMATION_ENTITY_SELECTOR_TYPE_PLAYER_STATE",
+                   "inlinePlaybackBadgeData": {
+                    "replicateAsTimestamp": true
+                   }
+                  }
+                 }
+                ]
+               }
+              }
+             ]
+            }
+           },
+           "metadata": {
+            "lockupMetadataViewModel": {
+             "title": {
+              "content": "𝐏𝐥𝐚𝐲𝐥𝐢𝐬𝐭 | A Little Tea House in Kyoto, Black Tea-Scented Jazz ☕🎧"
+             },
+             "image": {
+              "decoratedAvatarViewModel": {
+               "avatar": {
+                "avatarViewModel": {
+                 "image": {
+                  "sources": [
+                   {
+                    "url": "https://yt3.ggpht.com/2HHS67vw9V1uh2g2D0Ay79dEbl0nD6LbiNoBK99evZz4je8tPtBXl7i9duIhkmJ7h8F6wRkHDQ=s68-c-k-c0x00ffffff-no-rj",
+                    "width": 68,
+                    "height": 68
+                   }
+                  ]
+                 },
+                 "avatarImageSize": "AVATAR_SIZE_M"
+                }
+               },
+               "a11yLabel": "Go to channel 아오링고 잡화점 AORINGGO"
+              }
+             },
+             "metadata": {
+              "contentMetadataViewModel": {
+               "metadataRows": [
+                {
+                 "metadataParts": [
+                  {
+                   "text": {
+                    "content": "아오링고 잡화점 AORINGGO"
+                   }
+                  }
+                 ]
+                },
+                {
+                 "metadataParts": [
+                  {
+                   "text": {
+                    "content": "566K"
+                   },
+                   "accessibilityLabel": "566 thousand views",
+                   "leadingIcon": {
+                    "name": "PLAY_ARROW_OUTLINED",
+                    "height": 12,
+                    "width": 12,
+                    "marginEndToken": {
+                     "spacing": 2
+                    }
+                   }
+                  },
+                  {
+                   "text": {
+                    "content": "3w ago"
+                   },
+                   "accessibilityLabel": "3 weeks ago"
+                  }
+                 ]
+                }
+               ],
+               "delimiter": " "
+              }
+             }
+            }
+           },
+           "contentId": "Y_BCuvEcISY",
+           "contentType": "LOCKUP_CONTENT_TYPE_VIDEO"
+          }
+         },
+         {
+          "lockupViewModel": {
+           "contentImage": {
+            "thumbnailViewModel": {
+             "image": {
+              "sources": [
+               {
+                "url": "https://i.ytimg.com/vi/fu0mb3PmOoE/hqdefault.jpg?sqp=-oaymwEiCKgBEF5IWvKriqkDFQgBFQAAAAAYASUAAMhCPQCAokN4AaLzl_8DDgibuIPXBhjg6gQg4KgB&rs=AOn4CLDK-Cd87mLtkG1rrwG9tbZPQs6Q_Q&usqp=CBU",
+                "width": 168,
+                "height": 94
+               },
+               {
+                "url": "https://i.ytimg.com/vi/fu0mb3PmOoE/hqdefault.jpg?sqp=-oaymwEjCNACELwBSFryq4qpAxUIARUAAAAAGAElAADIQj0AgKJDeAGi85f_Aw4Im7iD1wYY4OoEIOCoAQ==&rs=AOn4CLBEGbvaq50VTTwitfApXe5AnH8EwA&usqp=CBU",
+                "width": 336,
+                "height": 188
+               }
+              ]
+             },
+             "overlays": [
+              {
+               "thumbnailBottomOverlayViewModel": {
+                "badges": [
+                 {
+                  "thumbnailBadgeViewModel": {
+                   "text": "1:07:05",
+                   "badgeStyle": "THUMBNAIL_OVERLAY_BADGE_STYLE_DEFAULT",
+                   "animationActivationTargetId": "fu0mb3PmOoE",
+                   "animationActivationEntityKey": "Eh8veW91dHViZS9hcHAvd2F0Y2gvcGxheWVyX3N0YXRlIMMCKAE%3D",
+                   "animatedText": "Now playing",
+                   "animationActivationEntitySelectorType": "THUMBNAIL_BADGE_ANIMATION_ENTITY_SELECTOR_TYPE_PLAYER_STATE"
+                  }
+                 }
+                ]
+               }
+              },
+              {
+               "thumbnailOverlayBadgeViewModel": {
+                "thumbnailBadges": [
+                 {
+                  "thumbnailBadgeViewModel": {
+                   "text": "New",
+                   "badgeStyle": "THUMBNAIL_OVERLAY_BADGE_STYLE_SPECIAL"
+                  }
+                 }
+                ],
+                "position": "THUMBNAIL_OVERLAY_BADGE_POSITION_TOP_START"
+               }
+              }
+             ]
+            }
+           },
+           "metadata": {
+            "lockupMetadataViewModel": {
+             "title": {
+              "content": "Every Movie I Would BARELY Survive 2"
+             },
+             "image": {
+              "avatarStackViewModel": {
+               "avatars": [
+                {
+                 "avatarViewModel": {
+                  "image": {
+                   "sources": [
+                    {
+                     "url": "https://yt3.ggpht.com/XF8JqElIEyYmh-rpZzfyRNznIJpQJnZGMVMDUlgvk7EtQycn9dZ3j6MkSE_0Bx0xlHS3e3S0oQ=s68-c-k-c0x00ffffff-no-rj",
+                     "width": 68,
+                     "height": 68
+                    }
+                   ]
+                  }
+                 }
+                },
+                {
+                 "avatarViewModel": {
+                  "image": {
+                   "sources": [
+                    {
+                     "url": "https://yt3.ggpht.com/fnmxwUOA3NjL7z7zftiVGwgUJyQGgPt5lbjpQq4ACN5t5TiO75X2RC832jqWR3h25Ycl2T_Zjw=s88-c-k-c0x00ffffff-no-rj"
+                    }
+                   ]
+                  }
+                 }
+                },
+                {
+                 "avatarViewModel": {
+                  "image": {
+                   "sources": [
+                    {
+                     "url": "https://yt3.ggpht.com/FoOBk4BuWAkglYwN_2q335opCCYU_isgk95O3jrQn1n_yw3pADQ1maTaFvxNJn-UuylyiXKM=s88-c-k-c0x00ffffff-no-rj"
+                    }
+                   ]
+                  }
+                 }
+                }
+               ],
+               "avatarClusterSize": "AVATAR_SIZE_S",
+               "layoutType": "AVATAR_STACK_LAYOUT_CLUSTER"
+              }
+             },
+             "metadata": {
+              "contentMetadataViewModel": {
+               "metadataRows": [
+                {
+                 "metadataParts": [
+                  {
+                   "text": {
+                    "content": "Tyler Vitelli 3"
+                   },
+                   "icon": {
+                    "name": "CHECK_CIRCLE_FILLED",
+                    "height": 14,
+                    "width": 14,
+                    "accessibilityLabel": "Verified",
+                    "marginEndToken": {
+                     "spacing": 2
+                    }
+                   }
+                  },
+                  {
+                   "text": {
+                    "content": "and 2 more"
+                   }
+                  }
+                 ]
+                },
+                {
+                 "metadataParts": [
+                  {
+                   "text": {
+                    "content": "209K"
+                   },
+                   "accessibilityLabel": "209 thousand views",
+                   "leadingIcon": {
+                    "name": "PLAY_ARROW_OUTLINED",
+                    "height": 12,
+                    "width": 12,
+                    "marginEndToken": {
+                     "spacing": 2
+                    }
+                   }
+                  },
+                  {
+                   "text": {
+                    "content": "12h ago"
+                   },
+                   "accessibilityLabel": "12 hours ago"
+                  }
+                 ]
+                }
+               ]
+              }
+             }
+            }
+           },
+           "contentId": "fu0mb3PmOoE",
+           "contentType": "LOCKUP_CONTENT_TYPE_VIDEO"
+          }
+         }
+        ]
+       }
+      }
+     ]
+    }
+   }
+  }
+ }
+}

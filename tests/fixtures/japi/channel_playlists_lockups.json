@@ -1,0 +1,545 @@
+{
+ "contents": {
+  "twoColumnBrowseResultsRenderer": {
+   "tabs": [
+    {
+     "tabRenderer": {
+      "title": "Playlists",
+      "selected": true,
+      "content": {
+       "sectionListRenderer": {
+        "contents": [
+         {
+          "itemSectionRenderer": {
+           "contents": [
+            {
+             "gridRenderer": {
+              "items": [
+               {
+                "lockupViewModel": {
+                 "contentImage": {
+                  "collectionThumbnailViewModel": {
+                   "primaryThumbnail": {
+                    "thumbnailViewModel": {
+                     "image": {
+                      "sources": [
+                       {
+                        "url": "https://i.ytimg.com/vi/PXC_PYeB6F8/hqdefault.jpg?sqp=-oaymwEXCOADEI4CSFryq4qpAwkIARUAAIhCGAE=&rs=AOn4CLA_XxBpjZPBAbBTTuMudhKwQrrHDA",
+                        "width": 480,
+                        "height": 270
+                       }
+                      ]
+                     },
+                     "overlays": [
+                      {
+                       "thumbnailOverlayBadgeViewModel": {
+                        "thumbnailBadges": [
+                         {
+                          "thumbnailBadgeViewModel": {
+                           "icon": {
+                            "sources": [
+                             {
+                              "clientResource": {
+                               "imageName": "PLAYLISTS"
+                              }
+                             }
+                            ]
+                           },
+                           "text": "3 videos",
+                           "badgeStyle": "THUMBNAIL_OVERLAY_BADGE_STYLE_DEFAULT",
+                           "backgroundColor": {
+                            "lightTheme": 1775923,
+                            "darkTheme": 1775923
+                           }
+                          }
+                         }
+                        ],
+                        "position": "THUMBNAIL_OVERLAY_BADGE_POSITION_BOTTOM_END"
+                       }
+                      },
+                      {
+                       "thumbnailHoverOverlayViewModel": {
+                        "icon": {
+                         "sources": [
+                          {
+                           "clientResource": {
+                            "imageName": "PLAY_ALL"
+                           }
+                          }
+                         ]
+                        },
+                        "text": {
+                         "content": "Play all",
+                         "styleRuns": [
+                          {
+                           "startIndex": 0,
+                           "length": 8
+                          }
+                         ]
+                        },
+                        "style": "THUMBNAIL_HOVER_OVERLAY_STYLE_COVER"
+                       }
+                      }
+                     ],
+                     "backgroundColor": {
+                      "lightTheme": 3157081,
+                      "darkTheme": 3157081
+                     }
+                    }
+                   },
+                   "stackColor": {
+                    "lightTheme": 7236505,
+                    "darkTheme": 8289435
+                   }
+                  }
+                 },
+                 "metadata": {
+                  "lockupMetadataViewModel": {
+                   "title": {
+                    "content": "Rick Astley Live at The O2"
+                   },
+                   "metadata": {
+                    "contentMetadataViewModel": {
+                     "metadataRows": [
+                      {
+                       "metadataParts": [
+                        {
+                         "text": {
+                          "content": "Playlist",
+                          "commandRuns": [
+                           {
+                            "startIndex": 0,
+                            "length": 8,
+                            "onTap": {
+                             "innertubeCommand": {
+                              "commandMetadata": {
+                               "webCommandMetadata": {
+                                "url": "/channel/UCuAXFkgsw1L7xaCfnd5JJOw",
+                                "webPageType": "WEB_PAGE_TYPE_CHANNEL",
+                                "rootVe": 3611,
+                                "apiUrl": "/youtubei/v1/browse"
+                               }
+                              },
+                              "browseEndpoint": {
+                               "browseId": "UCuAXFkgsw1L7xaCfnd5JJOw",
+                               "canonicalBaseUrl": "/channel/UCuAXFkgsw1L7xaCfnd5JJOw"
+                              }
+                             }
+                            }
+                           }
+                          ],
+                          "styleRuns": [
+                           {
+                            "startIndex": 0,
+                            "length": 8,
+                            "weightLabel": "FONT_WEIGHT_NORMAL"
+                           }
+                          ]
+                         }
+                        }
+                       ]
+                      },
+                      {
+                       "metadataParts": [
+                        {
+                         "text": {
+                          "content": "View full playlist",
+                          "commandRuns": [
+                           {
+                            "startIndex": 0,
+                            "length": 18,
+                            "onTap": {
+                             "innertubeCommand": {
+                              "commandMetadata": {
+                               "webCommandMetadata": {
+                                "url": "/playlist?list=PLlaN88a7y2_qHDbY9eQbuNTAuEJUSEeuu",
+                                "webPageType": "WEB_PAGE_TYPE_PLAYLIST",
+                                "rootVe": 5754,
+                                "apiUrl": "/youtubei/v1/browse"
+                               }
+                              },
+                              "browseEndpoint": {
+                               "browseId": "VLPLlaN88a7y2_qHDbY9eQbuNTAuEJUSEeuu"
+                              }
+                             }
+                            }
+                           }
+                          ],
+                          "styleRuns": [
+                           {
+                            "startIndex": 0,
+                            "length": 18,
+                            "weightLabel": "FONT_WEIGHT_MEDIUM"
+                           }
+                          ]
+                         }
+                        }
+                       ]
+                      }
+                     ],
+                     "delimiter": " "
+                    }
+                   }
+                  }
+                 },
+                 "contentId": "PLlaN88a7y2_qHDbY9eQbuNTAuEJUSEeuu",
+                 "contentType": "LOCKUP_CONTENT_TYPE_PLAYLIST"
+                }
+               },
+               {
+                "lockupViewModel": {
+                 "contentImage": {
+                  "collectionThumbnailViewModel": {
+                   "primaryThumbnail": {
+                    "thumbnailViewModel": {
+                     "image": {
+                      "sources": [
+                       {
+                        "url": "https://i.ytimg.com/vi/RrESvSRNpeo/hqdefault.jpg?sqp=-oaymwEXCOADEI4CSFryq4qpAwkIARUAAIhCGAE=&rs=AOn4CLDgM1g-VEAcM6cMpr5yZs9CtVXFqw",
+                        "width": 480,
+                        "height": 270
+                       }
+                      ]
+                     },
+                     "overlays": [
+                      {
+                       "thumbnailOverlayBadgeViewModel": {
+                        "thumbnailBadges": [
+                         {
+                          "thumbnailBadgeViewModel": {
+                           "icon": {
+                            "sources": [
+                             {
+                              "clientResource": {
+                               "imageName": "PLAYLISTS"
+                              }
+                             }
+                            ]
+                           },
+                           "text": "5 videos",
+                           "badgeStyle": "THUMBNAIL_OVERLAY_BADGE_STYLE_DEFAULT",
+                           "backgroundColor": {
+                            "lightTheme": 1647155,
+                            "darkTheme": 1647155
+                           }
+                          }
+                         }
+                        ],
+                        "position": "THUMBNAIL_OVERLAY_BADGE_POSITION_BOTTOM_END"
+                       }
+                      },
+                      {
+                       "thumbnailHoverOverlayViewModel": {
+                        "icon": {
+                         "sources": [
+                          {
+                           "clientResource": {
+                            "imageName": "PLAY_ALL"
+                           }
+                          }
+                         ]
+                        },
+                        "text": {
+                         "content": "Play all",
+                         "styleRuns": [
+                          {
+                           "startIndex": 0,
+                           "length": 8
+                          }
+                         ]
+                        },
+                        "style": "THUMBNAIL_HOVER_OVERLAY_STYLE_COVER"
+                       }
+                      }
+                     ],
+                     "backgroundColor": {
+                      "lightTheme": 2438220,
+                      "darkTheme": 2438220
+                     }
+                    }
+                   },
+                   "stackColor": {
+                    "lightTheme": 7044249,
+                    "darkTheme": 7766419
+                   }
+                  }
+                 },
+                 "metadata": {
+                  "lockupMetadataViewModel": {
+                   "title": {
+                    "content": "Rick Astley (リック・アストリー) － 名曲ミュージックビデオ（日本語字幕）"
+                   },
+                   "metadata": {
+                    "contentMetadataViewModel": {
+                     "metadataRows": [
+                      {
+                       "metadataParts": [
+                        {
+                         "text": {
+                          "content": "Playlist",
+                          "commandRuns": [
+                           {
+                            "startIndex": 0,
+                            "length": 8,
+                            "onTap": {
+                             "innertubeCommand": {
+                              "commandMetadata": {
+                               "webCommandMetadata": {
+                                "url": "/channel/UCuAXFkgsw1L7xaCfnd5JJOw",
+                                "webPageType": "WEB_PAGE_TYPE_CHANNEL",
+                                "rootVe": 3611,
+                                "apiUrl": "/youtubei/v1/browse"
+                               }
+                              },
+                              "browseEndpoint": {
+                               "browseId": "UCuAXFkgsw1L7xaCfnd5JJOw",
+                               "canonicalBaseUrl": "/channel/UCuAXFkgsw1L7xaCfnd5JJOw"
+                              }
+                             }
+                            }
+                           }
+                          ],
+                          "styleRuns": [
+                           {
+                            "startIndex": 0,
+                            "length": 8,
+                            "weightLabel": "FONT_WEIGHT_NORMAL"
+                           }
+                          ]
+                         }
+                        }
+                       ]
+                      },
+                      {
+                       "metadataParts": [
+                        {
+                         "text": {
+                          "content": "View full playlist",
+                          "commandRuns": [
+                           {
+                            "startIndex": 0,
+                            "length": 18,
+                            "onTap": {
+                             "innertubeCommand": {
+                              "commandMetadata": {
+                               "webCommandMetadata": {
+                                "url": "/playlist?list=PLlaN88a7y2_oK0nKMjZSwdU_njxUYWykm",
+                                "webPageType": "WEB_PAGE_TYPE_PLAYLIST",
+                                "rootVe": 5754,
+                                "apiUrl": "/youtubei/v1/browse"
+                               }
+                              },
+                              "browseEndpoint": {
+                               "browseId": "VLPLlaN88a7y2_oK0nKMjZSwdU_njxUYWykm"
+                              }
+                             }
+                            }
+                           }
+                          ],
+                          "styleRuns": [
+                           {
+                            "startIndex": 0,
+                            "length": 18,
+                            "weightLabel": "FONT_WEIGHT_MEDIUM"
+                           }
+                          ]
+                         }
+                        }
+                       ]
+                      }
+                     ],
+                     "delimiter": " "
+                    }
+                   }
+                  }
+                 },
+                 "contentId": "PLlaN88a7y2_oK0nKMjZSwdU_njxUYWykm",
+                 "contentType": "LOCKUP_CONTENT_TYPE_PLAYLIST"
+                }
+               },
+               {
+                "lockupViewModel": {
+                 "contentImage": {
+                  "collectionThumbnailViewModel": {
+                   "primaryThumbnail": {
+                    "thumbnailViewModel": {
+                     "image": {
+                      "sources": [
+                       {
+                        "url": "https://i.ytimg.com/vi/QJjrf9RkzGo/hqdefault.jpg?sqp=-oaymwEXCOADEI4CSFryq4qpAwkIARUAAIhCGAE=&rs=AOn4CLDL9YxVzxaeAQzXgbPeO5YWkalCsA",
+                        "width": 480,
+                        "height": 270
+                       }
+                      ]
+                     },
+                     "overlays": [
+                      {
+                       "thumbnailOverlayBadgeViewModel": {
+                        "thumbnailBadges": [
+                         {
+                          "thumbnailBadgeViewModel": {
+                           "icon": {
+                            "sources": [
+                             {
+                              "clientResource": {
+                               "imageName": "PLAYLISTS"
+                              }
+                             }
+                            ]
+                           },
+                           "text": "2 videos",
+                           "badgeStyle": "THUMBNAIL_OVERLAY_BADGE_STYLE_DEFAULT",
+                           "backgroundColor": {
+                            "lightTheme": 1977139,
+                            "darkTheme": 1977139
+                           }
+                          }
+                         }
+                        ],
+                        "position": "THUMBNAIL_OVERLAY_BADGE_POSITION_BOTTOM_END"
+                       }
+                      },
+                      {
+                       "thumbnailHoverOverlayViewModel": {
+                        "icon": {
+                         "sources": [
+                          {
+                           "clientResource": {
+                            "imageName": "PLAY_ALL"
+                           }
+                          }
+                         ]
+                        },
+                        "text": {
+                         "content": "Play all",
+                         "styleRuns": [
+                          {
+                           "startIndex": 0,
+                           "length": 8
+                          }
+                         ]
+                        },
+                        "style": "THUMBNAIL_HOVER_OVERLAY_STYLE_COVER"
+                       }
+                      }
+                     ],
+                     "backgroundColor": {
+                      "lightTheme": 2438719,
+                      "darkTheme": 2438719
+                     }
+                    }
+                   },
+                   "stackColor": {
+                    "lightTheme": 7047321,
+                    "darkTheme": 7768467
+                   }
+                  }
+                 },
+                 "metadata": {
+                  "lockupMetadataViewModel": {
+                   "title": {
+                    "content": "Forever and More"
+                   },
+                   "metadata": {
+                    "contentMetadataViewModel": {
+                     "metadataRows": [
+                      {
+                       "metadataParts": [
+                        {
+                         "text": {
+                          "content": "Playlist",
+                          "commandRuns": [
+                           {
+                            "startIndex": 0,
+                            "length": 8,
+                            "onTap": {
+                             "innertubeCommand": {
+                              "commandMetadata": {
+                               "webCommandMetadata": {
+                                "url": "/channel/UCuAXFkgsw1L7xaCfnd5JJOw",
+                                "webPageType": "WEB_PAGE_TYPE_CHANNEL",
+                                "rootVe": 3611,
+                                "apiUrl": "/youtubei/v1/browse"
+                               }
+                              },
+                              "browseEndpoint": {
+                               "browseId": "UCuAXFkgsw1L7xaCfnd5JJOw",
+                               "canonicalBaseUrl": "/channel/UCuAXFkgsw1L7xaCfnd5JJOw"
+                              }
+                             }
+                            }
+                           }
+                          ],
+                          "styleRuns": [
+                           {
+                            "startIndex": 0,
+                            "length": 8,
+                            "weightLabel": "FONT_WEIGHT_NORMAL"
+                           }
+                          ]
+                         }
+                        }
+                       ]
+                      },
+                      {
+                       "metadataParts": [
+                        {
+                         "text": {
+                          "content": "View full playlist",
+                          "commandRuns": [
+                           {
+                            "startIndex": 0,
+                            "length": 18,
+                            "onTap": {
+                             "innertubeCommand": {
+                              "commandMetadata": {
+                               "webCommandMetadata": {
+                                "url": "/playlist?list=PLlaN88a7y2_pVVkl4fGdTny21_LRyT85E",
+                                "webPageType": "WEB_PAGE_TYPE_PLAYLIST",
+                                "rootVe": 5754,
+                                "apiUrl": "/youtubei/v1/browse"
+                               }
+                              },
+                              "browseEndpoint": {
+                               "browseId": "VLPLlaN88a7y2_pVVkl4fGdTny21_LRyT85E"
+                              }
+                             }
+                            }
+                           }
+                          ],
+                          "styleRuns": [
+                           {
+                            "startIndex": 0,
+                            "length": 18,
+                            "weightLabel": "FONT_WEIGHT_MEDIUM"
+                           }
+                          ]
+                         }
+                        }
+                       ]
+                      }
+                     ],
+                     "delimiter": " "
+                    }
+                   }
+                  }
+                 },
+                 "contentId": "PLlaN88a7y2_pVVkl4fGdTny21_LRyT85E",
+                 "contentType": "LOCKUP_CONTENT_TYPE_PLAYLIST"
+                }
+               }
+              ]
+             }
+            }
+           ]
+          }
+         }
+        ]
+       }
+      }
+     }
+    }
+   ]
+  }
+ }
+}

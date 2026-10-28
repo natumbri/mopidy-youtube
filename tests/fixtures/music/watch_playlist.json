@@ -1,0 +1,96 @@
+{
+ "tracks": [
+  {
+   "videoId": "fJ9rUzIMcZQ",
+   "title": "Bohemian Rhapsody (Live At Milton Keynes Bowl / June 1982)",
+   "length": "6:00",
+   "thumbnail": [
+    {
+     "url": "https://i.ytimg.com/vi/fJ9rUzIMcZQ/hqdefault.jpg?sqp=-oaymwEWCJADEOEBIAQqCggAEOADGC0guwJIWg&rs=AMzJL3lsQhmUoD8y1EjuRw739pQAHDsUjw",
+     "width": 400,
+     "height": 225
+    },
+    {
+     "url": "https://i.ytimg.com/vi/fJ9rUzIMcZQ/hqdefault.jpg?sqp=-oaymwEWCOADEI4CIAQqCggAEOADGC0guwJIWg&rs=AMzJL3lNhrufpvOldx4x5cwA_KHNquseEg",
+     "width": 480,
+     "height": 270
+    }
+   ],
+   "likeStatus": null,
+   "videoType": "MUSIC_VIDEO_TYPE_OMV",
+   "inLibrary": false,
+   "feedbackTokens": null,
+   "pinnedToListenAgain": false,
+   "listenAgainFeedbackTokens": null,
+   "artists": [
+    {
+     "name": "Queen",
+     "id": "UCEPMVbUzImPl4p8k4LkGevA"
+    }
+   ],
+   "views": "14M"
+  },
+  {
+   "videoId": "04854XqcfCY",
+   "title": "We Are the Champions",
+   "length": "3:05",
+   "thumbnail": [
+    {
+     "url": "https://i.ytimg.com/vi/04854XqcfCY/hq720.jpg?sqp=-oaymwEKCKAGEMIDIABIWg&rs=AMzJL3kFCfcWdISfdbo9d0oLA0AyO_pKCg",
+     "width": 800,
+     "height": 450
+    },
+    {
+     "url": "https://i.ytimg.com/vi/04854XqcfCY/hq720.jpg?sqp=-oaymwEKCNUGEN8DIABIWg&rs=AMzJL3nYlkTZiAyervqzu5x4uApbFFA5Ow",
+     "width": 853,
+     "height": 479
+    }
+   ],
+   "likeStatus": null,
+   "videoType": "MUSIC_VIDEO_TYPE_OMV",
+   "inLibrary": false,
+   "feedbackTokens": null,
+   "pinnedToListenAgain": false,
+   "listenAgainFeedbackTokens": null,
+   "artists": [
+    {
+     "name": "Queen",
+     "id": "UCEPMVbUzImPl4p8k4LkGevA"
+    }
+   ],
+   "views": "2.1M"
+  },
+  {
+   "videoId": "kR4zpS-ky9o",
+   "title": "Dream On (2024 Mix)",
+   "length": "4:26",
+   "thumbnail": [
+    {
+     "url": "https://i.ytimg.com/vi/kR4zpS-ky9o/hq720.jpg?sqp=-oaymwEKCKAGEMIDIABIWg&rs=AMzJL3lwxNElEA8CKAicNHvLwUMFw6JTiQ",
+     "width": 800,
+     "height": 450
+    },
+    {
+     "url": "https://i.ytimg.com/vi/kR4zpS-ky9o/hq720.jpg?sqp=-oaymwEKCNUGEN8DIABIWg&rs=AMzJL3k4xesZCSmnIdaZkKpgNBDipSQEow",
+     "width": 853,
+     "height": 479
+    }
+   ],
+   "likeStatus": null,
+   "videoType": "MUSIC_VIDEO_TYPE_OMV",
+   "inLibrary": false,
+   "feedbackTokens": null,
+   "pinnedToListenAgain": false,
+   "listenAgainFeedbackTokens": null,
+   "artists": [
+    {
+     "name": "Aerosmith",
+     "id": "UCYuinPfuhK_rSlrJXvZQrng"
+    }
+   ],
+   "views": "70K"
+  }
+ ],
+ "playlistId": "RDAMVMfJ9rUzIMcZQ",
+ "related": "MPTRt_wUbiMNbaE6O"
+}
