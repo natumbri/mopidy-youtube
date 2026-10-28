@@ -1,14 +1,21 @@
+from __future__ import annotations
+
+from typing import override
+
 from mopidy import backend
+from mopidy.types import Uri
 
 from mopidy_youtube import logger, youtube
 from mopidy_youtube.data import extract_video_id
 
 
 class YouTubePlaybackProvider(backend.PlaybackProvider):
-    def should_download(self, uri):
+    @override
+    def should_download(self, uri: Uri) -> bool:
         return True
 
-    def translate_uri(self, uri):
+    @override
+    def translate_uri(self, uri: Uri) -> Uri | None:
         """
         Called when a track is ready to play, we need to return the actual url of
         the audio. uri must be of the form youtube:video/<title>.<id> or youtube:video:<id>
@@ -27,7 +34,8 @@ class YouTubePlaybackProvider(backend.PlaybackProvider):
             if url is not None and video.cached_file_uri:
                 url = video.cached_file_uri
             logger.debug('translate_uri "%s" -> %s', uri, url)
-            return url
         except Exception as e:
             logger.error('translate_uri error "%s"', e)
             return None
+        else:
+            return Uri(url) if url is not None else None

@@ -3,7 +3,9 @@ from __future__ import annotations
 from mopidy import config as mopidy_config
 
 
-def apply_config_schema(schema):
+def apply_config_schema(
+    schema: mopidy_config.ConfigSchema,
+) -> mopidy_config.ConfigSchema:
     schema["enabled"] = mopidy_config.Boolean()
     schema["allow_cache"] = mopidy_config.Boolean(optional=True)
     schema["youtube_api_key"] = mopidy_config.String(optional=True)

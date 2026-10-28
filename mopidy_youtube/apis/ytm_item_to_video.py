@@ -1,8 +1,12 @@
+from __future__ import annotations
+
+from typing import Any
+
 from mopidy_youtube import logger
 from mopidy_youtube.timeformat import convert_Millis, format_duration
 
 
-def _resolve_duration(item):
+def _resolve_duration(item: dict[str, Any]) -> str:
     for key in ("duration", "length", "lengthMs", "lengthSeconds", "song_duration"):
         if key not in item:
             continue
@@ -29,14 +33,14 @@ def _resolve_duration(item):
     return "PT0H00M00S"
 
 
-def _resolve_thumbnail(item):
+def _resolve_thumbnail(item: dict[str, Any]) -> dict[str, Any]:
     thumbnails = (
         item.get("thumbnails") or item.get("thumbnail", {}).get("thumbnails") or [{}]
     )
     return thumbnails[-1]
 
 
-def ytm_item_to_video(item):
+def ytm_item_to_video(item: dict[str, Any]) -> dict[str, Any]:
     if "videoDetails" in item:
         item = item["videoDetails"]
 
@@ -48,32 +52,32 @@ def ytm_item_to_video(item):
 
     try:
         if item.get("artists"):
-            channelTitle = (
+            channel_title = (
                 item["artists"][0]["name"]
                 if isinstance(item["artists"], list)
                 else item["artists"]
             )
         elif "byline" in item:
             logger.debug("byline: %s", item["byline"])
-            channelTitle = item["byline"]
+            channel_title = item["byline"]
         elif "author" in item:
-            channelTitle = item["author"]
+            channel_title = item["author"]
         else:
-            channelTitle = "unknown"
+            channel_title = "unknown"
     except Exception as e:
         logger.error("youtube_music yt_item_to_video artists error %s: %s", e, item)
-        channelTitle = "unknown"
+        channel_title = "unknown"
 
     thumbnail = _resolve_thumbnail(item)
 
-    video = {
+    video: dict[str, Any] = {
         "id": {"kind": "youtube#video", "videoId": item["videoId"]},
         "contentDetails": {"duration": duration},
         "snippet": {
             "title": item["title"],
             "resourceId": {"kind": "youtube#video", "videoId": item["videoId"]},
             "thumbnails": {"default": thumbnail},
-            "channelTitle": channelTitle,
+            "channelTitle": channel_title,
         },
         "track_no": item.get("track_no"),
     }
@@ -89,7 +93,6 @@ def ytm_item_to_video(item):
             {
                 "name": artist["name"],
                 "uri": f"yt:channel:{artist.get('id')}",
-                # "thumbnail": ytmusic.get_artist(artist["id"])["thumbnails"][-1]
             }
             for artist in item["artists"]
             if artist["name"] not in ["Album", "Song"]
@@ -99,7 +102,6 @@ def ytm_item_to_video(item):
             {
                 "name": item["author"],
                 "uri": f"yt:channel:{item['channelId']}",
-                # "thumbnail": ytmusic.get_artist(item['channelId'])["thumbnails"][-1]
             }
         ]
 

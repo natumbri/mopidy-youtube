@@ -1,4 +1,7 @@
+from __future__ import annotations
+
 import random
+from typing import TYPE_CHECKING, override
 
 import pykka
 from mopidy.core import CoreListener
@@ -6,9 +9,14 @@ from mopidy.core import CoreListener
 from mopidy_youtube import logger, runtime, youtube
 from mopidy_youtube.data import extract_video_id, format_video_uri
 
+if TYPE_CHECKING:
+    from mopidy.config import Config
+    from mopidy.core import CoreProxy
+    from mopidy.models import TlTrack
+
 
 class YouTubeAutoplayer(pykka.ThreadingActor, CoreListener):
-    def __init__(self, config, core):
+    def __init__(self, config: Config, core: CoreProxy) -> None:
         super().__init__()
         self.config = config
         self.core = core
@@ -26,15 +34,16 @@ class YouTubeAutoplayer(pykka.ThreadingActor, CoreListener):
 
     """Autoplay the next related YouTube video when the queue is exhausted."""
 
-    def track_playback_started(self, tl_track):
+    @override
+    def track_playback_started(self, tl_track: TlTrack) -> None:  # noqa: PLR0911 - early exits keep the autoplay checks flat
         if not self.autoplay_enabled:
-            return None
+            return
 
         track = tl_track.track
         tl_track_id = tl_track.tlid
 
         if not track.uri.startswith(("youtube:", "yt:")):
-            return None
+            return
         try:
             tl = self.core.tracklist
 
@@ -42,7 +51,7 @@ class YouTubeAutoplayer(pykka.ThreadingActor, CoreListener):
                 logger.warning(
                     "Autoplayer: will not add tracks when repeat is enabled."
                 )
-                return None
+                return
 
             if tl.get_random().get() is True:
                 logger.warning(
@@ -54,14 +63,14 @@ class YouTubeAutoplayer(pykka.ThreadingActor, CoreListener):
                 if tl_tracks:
                     if tl_track_id != tl_tracks[-1].tlid:
                         logger.debug("Autoplayer: called not at end of track list.")
-                        return None
+                        return
                     if tl.get_consume().get() is True:
                         logger.warning(
                             "Autoplayer: when having consume track enabled, "
                             'try with "strict_autoplay" option enabled for '
                             "better results"
                         )
-                        return None
+                        return
             logger.debug(f"getting current track id for {track.uri}")
             current_track_id = extract_video_id(track.uri)
             logger.debug(f"track id {current_track_id}")
@@ -118,14 +127,13 @@ class YouTubeAutoplayer(pykka.ThreadingActor, CoreListener):
                     f"could not get videos related to"
                     f"{current_track.title.get()}: ending autoplay"
                 )
-                return None
+                return
 
-            next_video = random.choice(related_videos)
+            next_video = random.choice(related_videos)  # noqa: S311 - not security sensitive
             logger.debug(f"next video {next_video.id}")
             self.autoplayed.append(next_video.id)
             uri = [format_video_uri(next_video.id)]
             tl.add(uris=uri).get()
-            return None
         except Exception as e:
             logger.error('Autoplayer error "%s"', e)
-            return None
+            return

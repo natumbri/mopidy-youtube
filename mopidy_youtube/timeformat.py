@@ -1,9 +1,11 @@
+from __future__ import annotations
+
 import re
 
 from mopidy_youtube import logger
 
 
-def convert_Millis(milliseconds):
+def convert_Millis(milliseconds: float | str) -> str:
     try:
         hours, miliseconds = divmod(int(milliseconds), 3600000)
     except Exception as e:
@@ -14,7 +16,7 @@ def convert_Millis(milliseconds):
     return f"{hours}:{minutes:02}:{int(seconds):02}"
 
 
-def format_duration(duration_text):
+def format_duration(duration_text: str) -> str:
     time_regex = (
         r"(?:(?:(?P<durationHours>[0-9]+)\:)?"
         r"(?P<durationMinutes>[0-9]+)\:"
@@ -22,6 +24,9 @@ def format_duration(duration_text):
     )
 
     match = re.match(time_regex, duration_text)
+    if match is None:
+        msg = f"Invalid duration text: {duration_text!r}"
+        raise ValueError(msg)
 
     duration = ""
     if match.group("durationHours") is not None:
@@ -34,23 +39,23 @@ def format_duration(duration_text):
     return duration
 
 
-def ISO8601_to_seconds(iso_duration):
+def ISO8601_to_seconds(iso_duration: str) -> int:
     # convert PT1H2M10S to 3730
-    m = re.search(
+    match = re.search(
         r"P((?P<weeks>\d+)W)?"
-        + r"((?P<days>\d+)D)?"
-        + r"T((?P<hours>\d+)H)?"
-        + r"((?P<minutes>\d+)M)?"
-        + r"((?P<seconds>\d+)S)?",
+        r"((?P<days>\d+)D)?"
+        r"T((?P<hours>\d+)H)?"
+        r"((?P<minutes>\d+)M)?"
+        r"((?P<seconds>\d+)S)?",
         iso_duration,
     )
-    if m:
+    if match:
         val = (
-            int(m.group("weeks") or 0) * 604800
-            + int(m.group("days") or 0) * 86400
-            + int(m.group("hours") or 0) * 3600
-            + int(m.group("minutes") or 0) * 60
-            + int(m.group("seconds") or 0)
+            int(match.group("weeks") or 0) * 604800
+            + int(match.group("days") or 0) * 86400
+            + int(match.group("hours") or 0) * 3600
+            + int(match.group("minutes") or 0) * 60
+            + int(match.group("seconds") or 0)
         )
     else:
         val = 0

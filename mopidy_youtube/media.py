@@ -1,15 +1,16 @@
 from __future__ import annotations
 
+import contextlib
+from typing import Any
 
-def is_live_item(item):
+
+def is_live_item(item: Any) -> bool:
     if not item:
         return False
 
-    try:
+    with contextlib.suppress(AttributeError):
         if item.get("is_live"):
             return True
-    except AttributeError:
-        pass
 
     live_status = item.get("live_status")
     if live_status in ("is_live", "is_upcoming", "post_live"):
@@ -21,14 +22,16 @@ def is_live_item(item):
         item_id = item.get("id")
         if isinstance(item_id, dict) and item_id.get("kind") == "youtube#video":
             snippet = item.get("snippet") or {}
-            if "liveBroadcastContent" in snippet:
-                if snippet.get("liveBroadcastContent") != "none":
-                    return True
+            if (
+                "liveBroadcastContent" in snippet
+                and snippet.get("liveBroadcastContent") != "none"
+            ):
+                return True
 
     return False
 
 
-def is_live_info(info):
+def is_live_info(info: Any) -> bool:
     if not info:
         return False
 
@@ -38,18 +41,16 @@ def is_live_info(info):
     if info.get("live_status") in ("is_live", "is_upcoming", "post_live"):
         return True
 
-    if info.get("duration") in (None, 0):
-        if info.get("was_live") or info.get("is_upcoming"):
-            return True
-
-    return False
+    return info.get("duration") in (None, 0) and bool(
+        info.get("was_live") or info.get("is_upcoming")
+    )
 
 
-def extract_audio_url(info):
+def extract_audio_url(info: Any) -> str | None:
     if not isinstance(info, dict):
         return None
 
-    def find_audio_url(node):
+    def find_audio_url(node: Any) -> str | None:
         if isinstance(node, dict):
             for key in ("url", "manifest_url"):
                 value = node.get(key)
@@ -73,7 +74,6 @@ def extract_audio_url(info):
                 result = find_audio_url(item)
                 if result:
                     return result
-            return None
 
         return None
 

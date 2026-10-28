@@ -1,22 +1,28 @@
 from __future__ import annotations
 
 import importlib
-import os
+from pathlib import Path
+from typing import TYPE_CHECKING, Any
 
 from mopidy_youtube import logger
 from mopidy_youtube.cache import cache_image, cache_metadata, find_cached_audio_path
 from mopidy_youtube.media import is_live_info
 
+if TYPE_CHECKING:
+    from types import ModuleType
 
-def resolve_audio_url(
-    video,
+    from mopidy_youtube.youtube import Video
+
+
+def resolve_audio_url(  # noqa: PLR0913 - keyword-only API used by youtube.Video
+    video: Video,
     *,
-    ytdl_options,
-    ytdl_extract_info_options,
-    cache_location,
-    youtube_dl,
-    youtube_dl_package,
-):
+    ytdl_options: dict[str, Any],
+    ytdl_extract_info_options: dict[str, Any],
+    cache_location: Path | str | None,
+    youtube_dl: ModuleType,
+    youtube_dl_package: str,  # noqa: ARG001 - kept for the caller's keyword API
+) -> str | None:
     if cache_location:
         cached_audio = find_cached_audio_path(cache_location, video.id)
         if cached_audio:
@@ -36,7 +42,7 @@ def resolve_audio_url(
             return None
 
         logger.debug(f"caching track {video.id}")
-        ytdl_options["outtmpl"] = os.path.join(cache_location, "%(id)s.%(ext)s")
+        ytdl_options["outtmpl"] = str(Path(cache_location) / "%(id)s.%(ext)s")
 
         with youtube_dl.YoutubeDL(ytdl_options) as ydl:
             info = ydl.extract_info(
@@ -73,7 +79,7 @@ def resolve_audio_url(
     return audio_url
 
 
-def get_youtube_dl_module(package_name):
+def get_youtube_dl_module(package_name: str) -> tuple[ModuleType, str]:
     normalized_name = "yt_dlp" if package_name == "youtube_dl" else package_name
     module = importlib.import_module(normalized_name)
     return module, normalized_name

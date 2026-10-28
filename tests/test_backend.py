@@ -1,5 +1,6 @@
 import json
 import pathlib
+from typing import Any
 from unittest import mock
 
 import pykka
@@ -15,9 +16,12 @@ from mopidy_youtube.async_utils import is_future_set
 from mopidy_youtube.comms import Client
 
 
-def make_config():
+def make_config(tmp_path: pathlib.Path) -> dict[str, Any]:
     return {
-        "core": {"cache_dir": "/tmp/mopidy-cache", "data_dir": "/tmp/mopidy-data"},
+        "core": {
+            "cache_dir": str(tmp_path / "mopidy-cache"),
+            "data_dir": str(tmp_path / "mopidy-data"),
+        },
         "http": {"enabled": True, "hostname": "::", "port": 6680},
         "youtube": {
             "enabled": True,
@@ -42,10 +46,10 @@ def make_config():
     }
 
 
-def test_backend_initializes_expected_provider_objects():
-    instance = backend.YouTubeBackend(config=make_config(), audio=None)
+def test_backend_initializes_expected_provider_objects(tmp_path: pathlib.Path):
+    instance = backend.YouTubeBackend(config=make_config(tmp_path), audio=None)
 
-    assert instance.uri_schemes == ("youtube", "yt")
+    assert instance.uri_schemes == ["youtube", "yt"]
     assert isinstance(instance.library, backend.YouTubeLibraryProvider)
     assert isinstance(instance.library, backend_api.LibraryProvider)
     assert isinstance(instance.playback, backend.YouTubePlaybackProvider)
@@ -57,8 +61,10 @@ def test_video_uses_safe_default_search_limits_before_backend_config_runs():
     assert backend.youtube.Playlist.playlist_max_videos >= 1
 
 
-def test_backend_clamps_non_positive_config_limits_to_safe_minimums():
-    config = make_config()
+def test_backend_clamps_non_positive_config_limits_to_safe_minimums(
+    tmp_path: pathlib.Path,
+):
+    config = make_config(tmp_path)
     config["youtube"]["search_results"] = 0
     config["youtube"]["playlist_max_videos"] = -5
 
@@ -66,18 +72,20 @@ def test_backend_clamps_non_positive_config_limits_to_safe_minimums():
 
     assert backend.youtube.Video.search_results == 1
     assert backend.youtube.Playlist.playlist_max_videos == 1
-    assert instance.uri_schemes == ("youtube", "yt")
+    assert instance.uri_schemes == ["youtube", "yt"]
 
 
-def make_tl_tracks(*uris):
+def make_tl_tracks(*uris: str):
     return [
         mock.Mock(tlid=tlid, track=mock.Mock(uri=uri))
         for tlid, uri in enumerate(uris, start=1)
     ]
 
 
-def test_core_listener_prefetches_audio_for_every_youtube_video_in_tracklist():
-    config = make_config()
+def test_core_listener_prefetches_audio_for_every_youtube_video_in_tracklist(
+    tmp_path: pathlib.Path,
+):
+    config = make_config(tmp_path)
     core = mock.Mock()
     core.tracklist.get_tl_tracks.return_value.get.return_value = make_tl_tracks(
         "youtube:video:nvlTJrNJ5lA",
@@ -100,8 +108,8 @@ def test_core_listener_prefetches_audio_for_every_youtube_video_in_tracklist():
     get_video.assert_any_call("LvXoB1S45j0")
 
 
-def test_history_listener_respects_history_enabled_flag():
-    config = make_config()
+def test_history_listener_respects_history_enabled_flag(tmp_path: pathlib.Path):
+    config = make_config(tmp_path)
     config["youtube"]["history_enabled"] = False
     core = mock.Mock()
     core.autoplayed = []
@@ -124,8 +132,10 @@ def test_history_listener_respects_history_enabled_flag():
     send.assert_called_once()
 
 
-def test_tracklist_changed_prefetches_youtube_audio_in_background():
-    config = make_config()
+def test_tracklist_changed_prefetches_youtube_audio_in_background(
+    tmp_path: pathlib.Path,
+):
+    config = make_config(tmp_path)
     core = mock.Mock()
     core.tracklist.get_tracks.return_value.get.return_value = []
     listener_instance = listener_lib.YouTubeCoreListener(config=config, core=core)
@@ -143,8 +153,8 @@ def test_tracklist_changed_prefetches_youtube_audio_in_background():
     core.tracklist.get_tracks.assert_not_called()
 
 
-def test_prefetch_limits_queue_work_to_a_small_window():
-    config = make_config()
+def test_prefetch_limits_queue_work_to_a_small_window(tmp_path: pathlib.Path):
+    config = make_config(tmp_path)
     core = mock.Mock()
     ids = [f"{i:011d}" for i in range(20)]
     tl_tracks = make_tl_tracks(*(f"youtube:video:{video_id}" for video_id in ids))
@@ -162,8 +172,8 @@ def test_prefetch_limits_queue_work_to_a_small_window():
     get_video.assert_any_call(ids[2])
 
 
-def test_prefetch_window_starts_at_the_current_track():
-    config = make_config()
+def test_prefetch_window_starts_at_the_current_track(tmp_path: pathlib.Path):
+    config = make_config(tmp_path)
     core = mock.Mock()
     ids = [f"{i:011d}" for i in range(20)]
     tl_tracks = make_tl_tracks(*(f"youtube:video:{video_id}" for video_id in ids))
@@ -180,34 +190,32 @@ def test_prefetch_window_starts_at_the_current_track():
 
 def test_music_list_related_videos_submits_playlist_lookup_in_background():
     executor = mock.Mock()
-    with mock.patch(
-        "mopidy_youtube.apis.youtube_music.ThreadPoolExecutor",
-        return_value=executor,
-    ):
-        with mock.patch(
+    with (
+        mock.patch(
+            "mopidy_youtube.apis.youtube_music.ThreadPoolExecutor",
+            return_value=executor,
+        ),
+        mock.patch(
             "mopidy_youtube.apis.youtube_music.youtube_japi.jAPI.list_related_videos",
             return_value={"items": []},
-        ):
-            with mock.patch(
-                "mopidy_youtube.apis.youtube_music.ytmusic"
-            ) as ytmusic_mock:
-                ytmusic_mock.get_watch_playlist.return_value = {"related": "related-id"}
-                ytmusic_mock.get_song_related.return_value = [
-                    {"contents": [{"videoId": "abc123", "title": "Example Track"}]}
-                ]
-                ytmusic_mock.get_song.return_value = {
-                    "videoDetails": {
-                        "videoId": "abc123",
-                        "title": "Example Track",
-                        "lengthSeconds": "42",
-                        "thumbnail": {
-                            "thumbnails": [{"url": "https://example.com/thumb.jpg"}]
-                        },
-                        "author": "Example Artist",
-                    }
-                }
+        ),
+        mock.patch("mopidy_youtube.apis.youtube_music.ytmusic") as ytmusic_mock,
+    ):
+        ytmusic_mock.get_watch_playlist.return_value = {"related": "related-id"}
+        ytmusic_mock.get_song_related.return_value = [
+            {"contents": [{"videoId": "abc123", "title": "Example Track"}]}
+        ]
+        ytmusic_mock.get_song.return_value = {
+            "videoDetails": {
+                "videoId": "abc123",
+                "title": "Example Track",
+                "lengthSeconds": "42",
+                "thumbnail": {"thumbnails": [{"url": "https://example.com/thumb.jpg"}]},
+                "author": "Example Artist",
+            }
+        }
 
-                Music.list_related_videos("video-id")
+        Music.list_related_videos("video-id")
 
     assert executor.submit.call_args[0][0] == Music.list_playlists
     assert isinstance(executor.submit.call_args[0][1], set)
@@ -262,8 +270,10 @@ def test_video_track_number_uses_playlist_index_for_album_tracks():
     video.api.list_playlistitems.assert_called_once_with("PL1234567890", "", 50)
 
 
-def test_autoplayer_keeps_autoplay_history_on_the_actor_instance():
-    config = make_config()
+def test_autoplayer_keeps_autoplay_history_on_the_actor_instance(
+    tmp_path: pathlib.Path,
+):
+    config = make_config(tmp_path)
     config["youtube"]["autoplay_enabled"] = True
     core = mock.Mock()
     core.autoplayed = pykka.ThreadingFuture()
@@ -294,10 +304,15 @@ def test_async_future_is_not_set_until_resolved():
     assert is_future_set(pykka.ThreadingFuture()) is False
 
 
+def _raise_boom() -> None:
+    msg = "boom"
+    raise ValueError(msg)
+
+
 def test_async_future_counts_exception_as_resolved():
     future = pykka.ThreadingFuture()
     try:
-        raise ValueError("boom")
+        _raise_boom()
     except ValueError:
         future.set_exception()
 
@@ -411,7 +426,9 @@ def test_index_template_uses_event_parameter_for_context_menu_target():
     assert "event.target" not in html
 
 
-def test_index_handler_handles_current_mopidy_track_metadata_shape(tmp_path):
+def test_index_handler_handles_current_mopidy_track_metadata_shape(
+    tmp_path: pathlib.Path,
+):
     root = tmp_path / "webcache"
     root.mkdir()
     (root / "track.jpg").write_bytes(b"fake-jpg")
@@ -427,14 +444,14 @@ def test_index_handler_handles_current_mopidy_track_metadata_shape(tmp_path):
     )
 
     handler = web.IndexHandler.__new__(web.IndexHandler)
-    handler.root = str(root)
+    handler.root = root
     entries = list(handler.uri_generator())
 
     assert entries == [("track", "Example Title", "jpg")]
 
 
-def test_autoplay_uses_mopidy_4_tl_track_object():
-    config = make_config()
+def test_autoplay_uses_mopidy_4_tl_track_object(tmp_path: pathlib.Path):
+    config = make_config(tmp_path)
     config["youtube"]["autoplay_enabled"] = True
     config["youtube"]["strict_autoplay"] = False
     config["youtube"]["max_autoplay_length"] = 600

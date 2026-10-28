@@ -1,31 +1,47 @@
-import glob
+from __future__ import annotations
+
 import json
 import os
-import pathlib
 import re
+from pathlib import Path
+from typing import TYPE_CHECKING, Any, cast, override
 
 import tornado.gen
 import tornado.ioloop
 import tornado.iostream
 import tornado.web
+from mopidy.types import Uri
 
 from mopidy_youtube import __version__, logger, youtube
 from mopidy_youtube.data import extract_playlist_id, extract_video_id
 
+if TYPE_CHECKING:
+    from collections.abc import Iterator
+    from datetime import datetime
+
+    from mopidy.config import Config
+    from mopidy.core import CoreProxy
+    from tornado.concurrent import Future
+    from tornado.http1connection import HTTP1Connection
+
 
 class ImageHandler(tornado.web.StaticFileHandler):
-    def get_cache_time(self, *args):
+    @override
+    def get_cache_time(
+        self, path: str, modified: datetime | None, mime_type: str
+    ) -> int:
         return self.CACHE_MAX_AGE
 
 
 class IndexHandler(tornado.web.RequestHandler):
-    def initialize(self, root, core, config):
-        self.root = root
+    @override
+    def initialize(self, root: Path | str, core: CoreProxy, config: Config) -> None:
+        self.root = Path(root)
         self.core = core
         self.config = config
 
     @staticmethod
-    def _track_title(track_json, fallback):
+    def _track_title(track_json: Any, fallback: str) -> str:
         if not isinstance(track_json, dict):
             return fallback
 
@@ -42,21 +58,22 @@ class IndexHandler(tornado.web.RequestHandler):
 
         return fallback
 
-    def get(self, path):
+    @override
+    def get(self, path: str) -> Future[None] | None:
         url = self.get_argument("url", None)
         image = self.get_argument("image", None)
         if url is not None:
             video_id = extract_video_id(url)
             playlist_id = extract_playlist_id(url)
             if video_id:
-                self.core.tracklist.add(uris=[f"yt:video:{video_id}"])
+                self.core.tracklist.add(uris=[Uri(f"yt:video:{video_id}")])
                 self.write(
                     "<!DOCTYPE html><html><head><title>Video Added</title><script>"
                     "alert('Video has been added.');window.history.back()</script>"
                     "</head></html>"
                 )
             elif playlist_id:
-                self.core.tracklist.add(uris=[f"yt:playlist:{playlist_id}"])
+                self.core.tracklist.add(uris=[Uri(f"yt:playlist:{playlist_id}")])
                 self.write(
                     "<!DOCTYPE html><html><head><title>Playlist Added</title><script>"
                     "alert('Playlist has been added.');window.history.back()</script>"
@@ -68,17 +85,18 @@ class IndexHandler(tornado.web.RequestHandler):
                     f"alert('Invalid URL: {url}');window.history.back()</script>"
                     f"</head></html>"
                 )
+            return None
 
-        elif image is not None:
+        if image is not None:
             ext = self.get_argument("ext")
             track = self.get_argument("track", None)
-            json_file = os.path.join(self.root, f"{image}.json")
+            json_file = self.root / f"{image}.json"
 
-            artists = ""
+            artists: list[str] | str = ""
             album = ""
 
-            if os.path.isfile(json_file):
-                with open(json_file) as openfile:
+            if json_file.is_file():
+                with json_file.open() as openfile:
                     track_json = json.load(openfile)
                     if "artists" in track_json:
                         artists = [artist["name"] for artist in track_json["artists"]]
@@ -94,43 +112,37 @@ class IndexHandler(tornado.web.RequestHandler):
                 album=album,
             )
 
-        else:
-            return self.render(
-                "index.html", images=self.uri_generator(), version=__version__
-            )
+        return self.render(
+            "index.html", images=self.uri_generator(), version=__version__
+        )
 
-    def get_template_path(self):
-        return pathlib.Path(__file__).parent / "www"
+    @override
+    def get_template_path(self) -> str:
+        return str(Path(__file__).parent / "www")
 
-    def uri_generator(self):
+    def uri_generator(self) -> Iterator[tuple[str, str, str]]:
         for metadata, image_id, extension in self.data_generator():
             yield (image_id, self._track_title(metadata, image_id), extension)
 
-    def data_generator(self):
-        images = [
-            os.path.basename(x) for x in glob.glob(os.path.join(self.root, "*.jpg"))
-        ] + [os.path.basename(x) for x in glob.glob(os.path.join(self.root, "*.webp"))]
+    def data_generator(self) -> Iterator[tuple[Any, str, str]]:
+        images = [path.name for path in self.root.glob("*.jpg")] + [
+            path.name for path in self.root.glob("*.webp")
+        ]
 
-        json_files = glob.glob(os.path.join(self.root, "*.json"))
+        combo: list[tuple[Path, str, str]] = []
+        for json_path in self.root.glob("*.json"):
+            if f"{json_path.stem}.jpg" in images:
+                combo.append((json_path, json_path.stem, "jpg"))
+            elif f"{json_path.stem}.webp" in images:
+                combo.append((json_path, json_path.stem, "webp"))
 
-        combo = []
-        for filename in json_files:
-            if f"{os.path.splitext(os.path.basename(filename))[0]}.jpg" in images:
-                combo.append(
-                    (filename, os.path.splitext(os.path.basename(filename))[0], "jpg")
-                )
-            elif f"{os.path.splitext(os.path.basename(filename))[0]}.webp" in images:
-                combo.append(
-                    (filename, os.path.splitext(os.path.basename(filename))[0], "webp")
-                )
-
-        for filename in combo:
+        for json_path, image_id, extension in combo:
             try:
-                with open(filename[0], encoding="utf-8") as openfile:
-                    yield (json.load(openfile), filename[1], filename[2])
+                with json_path.open(encoding="utf-8") as openfile:
+                    yield (json.load(openfile), image_id, extension)
             except (OSError, ValueError, TypeError, json.JSONDecodeError) as exc:
                 logger.warning(
-                    "Skipping malformed cache metadata for %s: %s", filename[0], exc
+                    "Skipping malformed cache metadata for %s: %s", json_path, exc
                 )
 
 
@@ -140,11 +152,12 @@ class AudioHandler(tornado.web.RequestHandler):
     CHUNK_SIZE = 65536
     STALL_TIMEOUT = 30  # seconds without new data before giving up
 
-    def initialize(self, cache_dir):
-        self.cache_dir = cache_dir
+    @override
+    def initialize(self, cache_dir: Path | str) -> None:
+        self.cache_dir = Path(cache_dir)
 
     @staticmethod
-    def _parse_range(header, total):
+    def _parse_range(header: str | None, total: int) -> tuple[int, int] | None:
         """Return (start, end) for a single satisfiable byte range, None if the
         header is absent or unsupported (serve the whole file), and raise
         ValueError if the range is unsatisfiable."""
@@ -158,20 +171,23 @@ class AudioHandler(tornado.web.RequestHandler):
             start = max(total - int(match[2]), 0)
             end = total - 1
         if start >= total or start > end:
-            raise ValueError("unsatisfiable range")
+            msg = "unsatisfiable range"
+            raise ValueError(msg)
         return start, end
 
-    async def get(self, path, include_body=True):
-        root = os.path.realpath(self.cache_dir)
-        file_path = os.path.realpath(os.path.join(root, path))
-        if not file_path.startswith(root + os.sep) or not os.path.isfile(file_path):
+    @override
+    async def get(self, path: str, *, include_body: bool = True) -> None:
+        root = self.cache_dir.resolve()
+        file_path = (root / path).resolve()
+        if root not in file_path.parents or not file_path.is_file():
             raise tornado.web.HTTPError(404)
 
         # total_bytes is only known on the Video that is downloading; fall back
         # to the file size (an already cached file, or a re-created Video).
-        total = youtube.Video.get(
-            os.path.splitext(path)[0]
-        ).total_bytes or os.path.getsize(file_path)
+        total = (
+            youtube.Video.get(str(Path(path).with_suffix(""))).total_bytes
+            or file_path.stat().st_size
+        )
 
         self.set_header("Content-Type", "application/octet-stream")
         self.set_header("Accept-Ranges", "bytes")
@@ -199,7 +215,7 @@ class AudioHandler(tornado.web.RequestHandler):
         idle = 0.0
         known_size = 0
         try:
-            with open(file_path, "rb") as fd:
+            with file_path.open("rb") as fd:
                 fd.seek(start)
                 while pos <= end:
                     data = fd.read(min(self.CHUNK_SIZE, end - pos + 1))
@@ -221,7 +237,7 @@ class AudioHandler(tornado.web.RequestHandler):
                         )
                         # a short body can't be finished cleanly; drop the connection
                         self._auto_finish = False
-                        self.request.connection.close()
+                        cast("HTTP1Connection", self.request.connection).close()
                         return
                     await tornado.gen.sleep(0.05)
                     idle += 0.05
@@ -230,5 +246,6 @@ class AudioHandler(tornado.web.RequestHandler):
         self.finish()
         logger.debug(f"finished serving {path} [{start}-{end}] to gstreamer")
 
-    async def head(self, path):
+    @override
+    async def head(self, path: str) -> None:
         await self.get(path, include_body=False)

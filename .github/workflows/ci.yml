@@ -41,6 +41,9 @@ jobs:
             python: "3.14"
             tox: "3.14"
             coverage: true
+          - name: "pyright"
+            python: "3.14"
+            tox: "pyright"
           - name: "ruff check"
             python: "3.14"
             tox: "ruff-check"

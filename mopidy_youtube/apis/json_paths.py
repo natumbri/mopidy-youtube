@@ -1,12 +1,20 @@
 # https://stackoverflow.com/a/14049167
+from __future__ import annotations
+
+from typing import TYPE_CHECKING, Any, cast
+
+if TYPE_CHECKING:
+    from collections.abc import Sequence
+
+type JsonPath = list[str | int]
 
 
-def deep_search(needles, haystack):
+def deep_search(needles: str | list[str], haystack: Any) -> list[dict[str, Any]]:
     if not isinstance(needles, list):
         needles = [needles]
 
     if isinstance(haystack, dict):
-        found = []
+        found: list[dict[str, Any]] = []
         for needle in needles:
             if needle in haystack:
                 found.append({needle: haystack[needle]})
@@ -23,11 +31,11 @@ def deep_search(needles, haystack):
     return []
 
 
-def traverse(input_dict, keys):
+def traverse(input_dict: Any, keys: Sequence[str | int]) -> Any:
     internal_dict_value = input_dict
     for key in keys:
         if isinstance(internal_dict_value, list):
-            internal_dict_value = internal_dict_value[key]
+            internal_dict_value = internal_dict_value[cast("int", key)]
         else:
             internal_dict_value = internal_dict_value.get(key, None)
         if internal_dict_value is None:
@@ -37,7 +45,7 @@ def traverse(input_dict, keys):
 
 # json paths
 
-sectionListRendererContentsPath = [
+SECTION_LIST_RENDERER_CONTENTS_PATH: JsonPath = [
     "contents",
     "twoColumnSearchResultsRenderer",
     "primaryContents",
@@ -45,14 +53,14 @@ sectionListRendererContentsPath = [
     "contents",
 ]
 
-continuationItemsPath = [
+CONTINUATION_ITEMS_PATH: JsonPath = [
     "onResponseReceivedCommands",
     0,
     "appendContinuationItemsAction",
     "continuationItems",
 ]
 
-watchVideoPath = [
+WATCH_VIDEO_PATH: JsonPath = [
     "contents",
     "twoColumnWatchNextResults",
     "results",
@@ -60,7 +68,7 @@ watchVideoPath = [
     "contents",
 ]
 
-relatedVideosPath = [
+RELATED_VIDEOS_PATH: JsonPath = [
     "contents",
     "twoColumnWatchNextResults",
     "secondaryResults",
@@ -68,7 +76,7 @@ relatedVideosPath = [
     "results",
 ]
 
-playlistBasePath = [
+PLAYLIST_BASE_PATH: JsonPath = [
     "contents",
     "twoColumnBrowseResultsRenderer",
     "tabs",
@@ -83,16 +91,21 @@ playlistBasePath = [
     0,
 ]
 
-listPlaylistItemsPath = playlistBasePath + [
+LIST_PLAYLIST_ITEMS_PATH: JsonPath = [
+    *PLAYLIST_BASE_PATH,
     "playlistVideoListRenderer",
     "contents",
 ]
 
-listChannelPlaylistsPath = playlistBasePath + ["shelfRenderer", "content"]
+LIST_CHANNEL_PLAYLISTS_PATH: JsonPath = [
+    *PLAYLIST_BASE_PATH,
+    "shelfRenderer",
+    "content",
+]
 
-textPath = ["runs", 0, "text"]
+TEXT_PATH: JsonPath = ["runs", 0, "text"]
 
-ytmErrorThumbnailPath = [
+YTM_ERROR_THUMBNAIL_PATH: JsonPath = [
     "playabilityStatus",
     "errorScreen",
     "playerErrorMessageRenderer",

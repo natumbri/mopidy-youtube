@@ -1,4 +1,7 @@
+from __future__ import annotations
+
 from concurrent.futures.thread import ThreadPoolExecutor
+from typing import TYPE_CHECKING, ClassVar, override
 
 import pykka
 from mopidy import listener
@@ -7,34 +10,41 @@ from mopidy.core import CoreListener
 from mopidy_youtube import logger, runtime, youtube
 from mopidy_youtube.data import extract_video_id
 
+if TYPE_CHECKING:
+    from mopidy.config import Config
+    from mopidy.core import CoreProxy
+    from mopidy.models import TlTrack
+    from mopidy.types import DurationMs
+
 
 class YouTubeCoreListener(pykka.ThreadingActor, CoreListener):
-    _prefetch_executor = None
+    _prefetch_executor: ClassVar[ThreadPoolExecutor | None] = None
     _prefetch_limit = 3
 
-    def __init__(self, config, core):
+    def __init__(self, config: Config, core: CoreProxy) -> None:
         super().__init__()
         self.config = config
         self.core = core
         self.autoplayed = runtime.autoplayed
 
     @classmethod
-    def get_prefetch_executor(cls):
+    def get_prefetch_executor(cls) -> ThreadPoolExecutor:
         if cls._prefetch_executor is None:
             cls._prefetch_executor = ThreadPoolExecutor(max_workers=1)
         return cls._prefetch_executor
 
     @classmethod
-    def shutdown_prefetch_executor(cls):
+    def shutdown_prefetch_executor(cls) -> None:
         executor = cls._prefetch_executor
         cls._prefetch_executor = None
         if executor is not None:
             executor.shutdown(wait=False, cancel_futures=True)
 
-    def on_stop(self):
+    @override
+    def on_stop(self) -> None:
         self.shutdown_prefetch_executor()
 
-    def _prefetch_youtube_audio(self):
+    def _prefetch_youtube_audio(self) -> None:
         try:
             tl_tracks = self.core.tracklist.get_tl_tracks().get()
             current = self.core.playback.get_current_tl_track().get()
@@ -65,25 +75,30 @@ class YouTubeCoreListener(pykka.ThreadingActor, CoreListener):
                     "Failed to prefetch audio for YouTube video %s", video_id
                 )
 
-    def track_playback_started(self, tl_track):
+    @override
+    def track_playback_started(self, tl_track: TlTrack) -> None:
         # advance the window as playback moves
         self.get_prefetch_executor().submit(self._prefetch_youtube_audio)
 
-    def tracklist_changed(self):
+    @override
+    def tracklist_changed(self) -> None:
         # Keep the actor callback lightweight and move the expensive prefetch work
         # to the shared background executor instead of blocking Mopidy's actor loop.
         self.get_prefetch_executor().submit(self._prefetch_youtube_audio)
 
-    def track_playback_ended(self, tl_track, time_position):
+    @override
+    def track_playback_ended(
+        self, tl_track: TlTrack, time_position: DurationMs
+    ) -> None:
         if not self.config.get("youtube", {}).get("history_enabled", False):
             return
 
         track = tl_track.track
         if track.uri.startswith(("youtube:video:", "yt:video:")):
             duration = track.length // 1000 if track.length else 0
-            time_position = time_position // 1000
+            position = time_position // 1000
 
-            if time_position < duration // 2 and time_position < 120:
+            if position < duration // 2 and position < 120:
                 logger.debug(
                     "Track not played long enough to add to history. (50% or 120s)"
                 )
@@ -104,5 +119,5 @@ class YouTubeCoreListener(pykka.ThreadingActor, CoreListener):
 
 
 class YouTubeAddToHistoryListener(listener.Listener):
-    def add_track_to_history(self, bId):
+    def add_track_to_history(self, bId: str) -> None:  # noqa: ARG002 - no-op event hook
         return
