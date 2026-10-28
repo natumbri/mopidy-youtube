@@ -10,6 +10,7 @@ Unreleased
 - move packaging to ``pyproject.toml`` only; replace black/flake8/CircleCI with ruff, tox and GitHub Actions
 - add type annotations throughout and check them with pyright; enable all ruff rules except a short list of deferred ones
 - fix YouTube Music history updates, which never ran because of a wrong import path
+- replace ``runtime.py``, the module-level mirrors and the class-level settings on ``Entry``/``Video``/``Playlist`` with one typed ``Context``
 - make ``Video.get`` / ``Playlist.get`` thread-safe and fix a crash in ``Playlist.load_info`` when the API call fails
 - declare ``yt-dlp`` as a dependency, make ``ytmusicapi`` the ``musicapi`` extra and drop the unused ``beautifulsoup4`` and ``setuptools`` dependencies
 

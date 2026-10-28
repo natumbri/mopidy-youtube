@@ -21,8 +21,8 @@ from mopidy_youtube.apis.json_paths import (
     traverse,
 )
 from mopidy_youtube.comms import Client
+from mopidy_youtube.context import context
 from mopidy_youtube.timeformat import format_duration
-from mopidy_youtube.youtube import Video
 
 
 class NoYtDataError(Exception):
@@ -134,7 +134,7 @@ class jAPI(Client):  # noqa: N801 - public class name, used by backend and tests
         for future in futures:
             try:
                 value = future.result()
-                result.extend(value[: int(Video.search_results)])
+                result.extend(value[: context.search_results])
             except Exception as e:
                 logger.error(f"youtube search branch failed for query {q!r}: {e}")
 
@@ -425,7 +425,7 @@ class jAPI(Client):  # noqa: N801 - public class name, used by backend and tests
 
         url = f"{urljoin(cls.endpoint, 'youtubei/v1/search')}?{urlencode(query)}"
 
-        while len(results) < int(Video.search_results):
+        while len(results) < context.search_results:
             payload = dict(data)
             if continuation:
                 payload.update({"continuation": continuation})

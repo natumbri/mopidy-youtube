@@ -2,10 +2,9 @@ from __future__ import annotations
 
 import os
 import threading
-import time
 from concurrent.futures.thread import ThreadPoolExecutor
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, ClassVar, Self, cast
+from typing import Any, ClassVar, Self
 
 import pykka
 from cachetools import TTLCache
@@ -13,51 +12,13 @@ from cachetools.keys import hashkey
 from mopidy.models import Image
 from mopidy.types import Uri
 
-from mopidy_youtube import logger, runtime
+from mopidy_youtube import logger
 from mopidy_youtube.async_utils import async_property, is_future_set, set_once
+from mopidy_youtube.context import context
 from mopidy_youtube.data import extract_playlist_id
 from mopidy_youtube.media import extract_audio_url, is_live_item
-from mopidy_youtube.resolver import get_youtube_dl_module, resolve_audio_url
+from mopidy_youtube.resolver import resolve_audio_url
 from mopidy_youtube.timeformat import ISO8601_to_seconds
-
-if TYPE_CHECKING:
-    from types import ModuleType
-
-api_enabled: bool = False
-channel: str | None = None
-cache_location: Path | None = None
-musicapi_enabled: bool | None = None
-musicapi_cookiefile: str | None = None
-musicapi_browser_authentication_file: str | None = None
-youtube_dl: ModuleType | None = None
-youtube_dl_package: str = "yt_dlp"
-search_lock = threading.Lock()
-search_in_progress: bool = False
-search_last_started: float = 0.0
-
-
-def sync_runtime_module_globals() -> None:
-    global api_enabled, channel, cache_location, musicapi_enabled, musicapi_cookiefile
-    global \
-        youtube_dl, \
-        youtube_dl_package, \
-        search_lock, \
-        search_in_progress, \
-        search_last_started
-
-    api_enabled = runtime.api_enabled
-    channel = runtime.channel
-    cache_location = runtime.cache_location
-    musicapi_enabled = runtime.musicapi_enabled
-    musicapi_cookiefile = runtime.musicapi_cookiefile
-    youtube_dl = runtime.youtube_dl
-    youtube_dl_package = runtime.youtube_dl_package
-    search_lock = runtime.search_lock
-    search_in_progress = runtime.search_in_progress
-    search_last_started = runtime.search_last_started
-
-
-sync_runtime_module_globals()
 
 
 class Entry:
@@ -81,14 +42,9 @@ class Entry:
 
     cache_max_len = 4000
     cache_ttl = 21600
-    search_results = 15
-    playlist_max_videos = 50
 
     cache: ClassVar[TTLCache[Any, Any]] = TTLCache(maxsize=cache_max_len, ttl=cache_ttl)
     _cache_lock: ClassVar[threading.Lock] = threading.Lock()
-
-    # the data api (jAPI, YouTube Data API or YouTube Music), set by the backend
-    api: ClassVar[Any]
 
     id: str
 
@@ -149,20 +105,16 @@ class Entry:
             logger.warning("youtube search skipped: empty query")
             return []
 
-        with runtime.search_lock:
-            if runtime.search_in_progress:
-                logger.warning(
-                    'youtube search skipped while previous search is still running: "%s"',
-                    q,
-                )
-                return []
-
-            runtime.search_in_progress = True
-            runtime.search_last_started = time.monotonic()
+        if not context.begin_search():
+            logger.warning(
+                'youtube search skipped while previous search is still running: "%s"',
+                q,
+            )
+            return []
 
         try:
             try:
-                data = cls.api.search(q)
+                data = context.api.search(q)
             except Exception:
                 logger.exception('youtube search error for query "%s"', q)
                 return []
@@ -186,8 +138,7 @@ class Entry:
             ]
 
         finally:
-            with runtime.search_lock:
-                runtime.search_in_progress = False
+            context.end_search()
 
     def _ensure_future(self, field_name: str) -> pykka.ThreadingFuture[Any]:
         future_name = "_" + field_name
@@ -261,7 +212,7 @@ class Entry:
             elif field == "video_count":
                 value = min(
                     int(item["contentDetails"]["itemCount"]),
-                    int(self.playlist_max_videos),
+                    context.playlist_max_videos,
                 )
             elif field == "thumbnails":
                 value = [
@@ -337,8 +288,6 @@ class Entry:
 class Video(Entry):
     total_bytes: int = 0
     cached_file_uri: str | None = None
-    http_port: ClassVar[int]
-    proxy: ClassVar[str | None]
     _load_executor: ClassVar[ThreadPoolExecutor | None] = None
     _audio_executor: ClassVar[ThreadPoolExecutor | None] = None
 
@@ -368,7 +317,7 @@ class Video(Entry):
 
         def job(sublist: list[Video]) -> None:
             try:
-                data = cls.api.list_videos([x.id for x in sublist])
+                data = context.api.list_videos([x.id for x in sublist])
                 item_dict = {item["id"]: item for item in data["items"]}
             except Exception as e:
                 logger.error('list_videos error "%s"', e)
@@ -413,7 +362,7 @@ class Video(Entry):
         requires_related_videos = self._add_futures([self], ["related_videos"])
 
         if requires_related_videos:
-            data = self.api.list_related_videos(self.id)
+            data = context.api.list_related_videos(self.id)
             related_videos = []
 
             for item in data.get("items", []):
@@ -471,7 +420,7 @@ class Video(Entry):
             playlist_id = extract_playlist_id(album_uri) if album_uri else ""
 
             if playlist_id:
-                album_response = self.api.list_playlistitems(playlist_id, "", 50)
+                album_response = context.api.list_playlistitems(playlist_id, "", 50)
                 album_tracks = (
                     album_response.get("items", [])
                     if isinstance(album_response, dict)
@@ -548,19 +497,9 @@ class Video(Entry):
         """
 
         # from @blacklight (https://github.com/blacklight/mopidy-youtube)
-        global youtube_dl, youtube_dl_package
         try:
-            if runtime.youtube_dl is not None:
-                youtube_dl = runtime.youtube_dl
-                youtube_dl_package = runtime.youtube_dl_package
-            elif youtube_dl is None:
-                youtube_dl, youtube_dl_package = get_youtube_dl_module(
-                    youtube_dl_package
-                )
-                runtime.youtube_dl = youtube_dl
-                runtime.youtube_dl_package = youtube_dl_package
-            logger.debug(f"using {youtube_dl_package} package for youtube_dl")
-            ytdl_module = cast("ModuleType", runtime.youtube_dl)
+            ytdl_module = context.youtube_dl()
+            logger.debug(f"using {context.youtube_dl_package} package for youtube_dl")
 
             # When caching, is it possible to set the audio_url part-way through
             # a download so audio can start playing quicker?
@@ -592,9 +531,7 @@ class Video(Entry):
                     # audio_url is set, so no need to do again; there seems to be problems
                     # with some formats that do not support seeking - limit to .webm
                     if p > 2 and not self.total_bytes and filename.suffix == ".webm":
-                        http_uri = (
-                            f"http://localhost:{self.http_port}/youtube/{filename.name}"
-                        )
+                        http_uri = f"http://localhost:{context.http_port}/youtube/{filename.name}"
                         logger.debug(
                             f"setting cached audio_url: {http_uri}, {filename.name}"
                         )
@@ -608,15 +545,15 @@ class Video(Entry):
 
             ytdl_options: dict[str, Any] = {
                 "format": "bestaudio/ogg/mp3/m4a/best",
-                "proxy": self.proxy,
+                "proxy": context.proxy,
                 "cachedir": False,
                 "nopart": True,
                 "retries": 10,
             }
-            if runtime.musicapi_cookiefile:
-                ytdl_options["cookiefile"] = runtime.musicapi_cookiefile
+            if context.musicapi_cookiefile:
+                ytdl_options["cookiefile"] = context.musicapi_cookiefile
             base_url = "https://www.youtube.com"
-            if runtime.musicapi_enabled:
+            if context.musicapi_enabled:
                 # High quality music streams are only available to YouTube
                 # Premium users when using YouTube Music.
                 base_url = "https://music.youtube.com"
@@ -629,17 +566,17 @@ class Video(Entry):
                 "force_generic_extractor": False,
             }
 
-            if runtime.youtube_dl_package == "yt_dlp":
+            if context.youtube_dl_package == "yt_dlp":
                 ytdl_options["no_color"] = True
 
-            if runtime.cache_location:
+            if context.cache_location:
                 resolved = resolve_audio_url(
                     self,
                     ytdl_options={**ytdl_options, "progress_hooks": [my_hook]},
                     ytdl_extract_info_options=ytdl_extract_info_options,
-                    cache_location=runtime.cache_location,
+                    cache_location=context.cache_location,
                     youtube_dl=ytdl_module,
-                    youtube_dl_package=runtime.youtube_dl_package,
+                    youtube_dl_package=context.youtube_dl_package,
                 )
                 set_once(self._audio_url, resolved)
                 return
@@ -702,7 +639,7 @@ class Playlist(Entry):
             data = None
 
             try:
-                data = cls.api.list_playlists([x.id for x in sublist])
+                data = context.api.list_playlists([x.id for x in sublist])
             except Exception as e:
                 logger.error(
                     f"Playlist.load_info list_playlists error {e}, {[x.id for x in sublist]}"
@@ -734,12 +671,12 @@ class Playlist(Entry):
         def load_items() -> None:
             data: dict[str, Any] = {"items": []}
             page = ""
-            while page is not None and len(data["items"]) < self.playlist_max_videos:
+            while page is not None and len(data["items"]) < context.playlist_max_videos:
                 try:
                     max_results = min(
-                        int(self.playlist_max_videos) - len(data["items"]), 50
+                        context.playlist_max_videos - len(data["items"]), 50
                     )
-                    result = self.api.list_playlistitems(self.id, page, max_results)
+                    result = context.api.list_playlistitems(self.id, page, max_results)
                 except Exception as e:
                     logger.error('Playlist.videos list_playlistitems error "%s"', e)
                     break
@@ -761,7 +698,7 @@ class Playlist(Entry):
 
                 data["items"].extend(filtered_result)
 
-            del data["items"][int(self.playlist_max_videos) :]
+            del data["items"][context.playlist_max_videos :]
 
             playlist_videos = []
             for item in data["items"]:
@@ -777,7 +714,7 @@ class Playlist(Entry):
                     video._set_api_data(extended_fields, extended_item)
                     playlist_videos.append(video)
 
-            videos = playlist_videos[: self.playlist_max_videos]
+            videos = playlist_videos[: context.playlist_max_videos]
 
             # start loading video info in the background
             Video.load_info(videos)
@@ -808,11 +745,11 @@ class Channel(Entry):
         """
         minimum_fields = ["title", "video_count"]
         if channel_id == "root":
-            channel_id = channel
+            channel_id = context.channel
         if channel_id is None:
             return None
         try:
-            data = cls.api.list_channelplaylists(channel_id)
+            data = context.api.list_channelplaylists(channel_id)
         except Exception as e:
             logger.error('Channel.playlists list_channelplaylists error "%s"', e)
             return None

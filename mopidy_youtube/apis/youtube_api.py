@@ -5,7 +5,7 @@ from typing import Any
 from mopidy_youtube import logger
 from mopidy_youtube.apis import require_session
 from mopidy_youtube.comms import Client
-from mopidy_youtube.youtube import Video
+from mopidy_youtube.context import context
 
 
 class API(Client):
@@ -27,7 +27,7 @@ class API(Client):
         query = {
             "part": "id, snippet",
             "fields": "items(id, snippet(title, thumbnails(default), channelTitle))",
-            "maxResults": Video.search_results,
+            "maxResults": context.search_results,
             "type": "video,playlist",
             "q": q,
             "key": cls.youtube_api_key,

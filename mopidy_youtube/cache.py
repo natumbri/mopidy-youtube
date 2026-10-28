@@ -7,6 +7,7 @@ from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
 from mopidy_youtube import logger
+from mopidy_youtube.context import context
 from mopidy_youtube.converters import convert_video_to_track
 
 if TYPE_CHECKING:
@@ -45,7 +46,7 @@ def cache_image(video: Video, cache_location: Path | str | None) -> None:
 
     logger.debug(f"caching image {video.id}")
     image_uri = video.thumbnails.get()[0].uri
-    response = video.api.session.get(
+    response = context.api.session.get(
         image_uri,
         headers={"content-length": None, "host": None},
         stream=True,

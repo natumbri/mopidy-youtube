@@ -7,7 +7,8 @@ import pykka
 from mopidy import listener
 from mopidy.core import CoreListener
 
-from mopidy_youtube import logger, runtime, youtube
+from mopidy_youtube import logger, youtube
+from mopidy_youtube.context import context
 from mopidy_youtube.data import extract_video_id
 
 if TYPE_CHECKING:
@@ -25,7 +26,7 @@ class YouTubeCoreListener(pykka.ThreadingActor, CoreListener):
         super().__init__()
         self.config = config
         self.core = core
-        self.autoplayed = runtime.autoplayed
+        self.autoplayed = context.autoplayed
 
     @classmethod
     def get_prefetch_executor(cls) -> ThreadPoolExecutor:

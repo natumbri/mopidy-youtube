@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import importlib
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
@@ -77,9 +76,3 @@ def resolve_audio_url(  # noqa: PLR0913 - keyword-only API used by youtube.Video
         return None
 
     return audio_url
-
-
-def get_youtube_dl_module(package_name: str) -> tuple[ModuleType, str]:
-    normalized_name = "yt_dlp" if package_name == "youtube_dl" else package_name
-    module = importlib.import_module(normalized_name)
-    return module, normalized_name

@@ -15,6 +15,7 @@ from mopidy_youtube.apis import youtube_japi
 from mopidy_youtube.apis.json_paths import YTM_ERROR_THUMBNAIL_PATH, traverse
 from mopidy_youtube.apis.ytm_item_to_video import ytm_item_to_video
 from mopidy_youtube.comms import Client
+from mopidy_youtube.context import context
 from mopidy_youtube.youtube import Playlist, Video
 
 if TYPE_CHECKING:
@@ -113,7 +114,7 @@ class Music(Client):
 
         futures = executor.map(lambda x, y: x(y), search_functions, repeat(q))
         result = [
-            item for values in futures for item in values[: int(Video.search_results)]
+            item for values in futures for item in values[: context.search_results]
         ]
 
         return json.loads(json.dumps({"items": result}))
@@ -453,7 +454,9 @@ class Music(Client):
     def search_songs(cls, q: str) -> list[dict[str, Any]]:
         cls._ensure_ytmusic()
         logger.debug(f"youtube_music search_songs triggered ytmusic.search: {q}")
-        results = _client().search(query=q, filter="songs", limit=Video.search_results)
+        results = _client().search(
+            query=q, filter="songs", limit=context.search_results
+        )
 
         return [
             ytm_item_to_video(track)
@@ -466,7 +469,9 @@ class Music(Client):
         cls._ensure_ytmusic()
         logger.debug(f"youtube_music search_albums triggered ytmusic.search: {q}")
 
-        results = _client().search(query=q, filter="albums", limit=Video.search_results)
+        results = _client().search(
+            query=q, filter="albums", limit=context.search_results
+        )
         return cls.process_albums(results)
 
     @classmethod
@@ -636,7 +641,7 @@ class Music(Client):
                 [
                     x
                     for _, x in zip(
-                        range(Playlist.playlist_max_videos), plvideos, strict=False
+                        range(context.playlist_max_videos), plvideos, strict=False
                     )
                 ]
             )

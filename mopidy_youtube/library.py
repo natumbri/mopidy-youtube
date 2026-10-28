@@ -9,7 +9,8 @@ from mopidy import backend
 from mopidy.models import Image, Ref, SearchResult, Track
 from mopidy.types import Uri
 
-from mopidy_youtube import logger, runtime, youtube
+from mopidy_youtube import logger, youtube
+from mopidy_youtube.context import context
 from mopidy_youtube.converters import convert_playlist_to_album, convert_video_to_track
 from mopidy_youtube.data import (
     extract_channel_id,
@@ -138,10 +139,10 @@ class YouTubeLibraryProvider(backend.LibraryProvider):
         )
 
     def lookup_video_track(self, video_id: str) -> Track:
-        if runtime.cache_location:
+        if context.cache_location:
             try:
                 with (
-                    Path(runtime.cache_location) / f"{video_id}.json"
+                    Path(context.cache_location) / f"{video_id}.json"
                 ).open() as infile:
                     track = Track.model_validate(json.load(infile))
             except Exception as e:
@@ -221,11 +222,11 @@ class YouTubeLibraryProvider(backend.LibraryProvider):
         uri_list: list[Uri] = [Uri(uris)] if isinstance(uris, str) else list(uris)
         video_ids = [extract_video_id(uri) for uri in uri_list]
 
-        if runtime.cache_location and (self.backend.config.get("http") or {}).get(
+        if context.cache_location and (self.backend.config.get("http") or {}).get(
             "enabled"
         ):
             cached_files = {
-                path.name for path in Path(runtime.cache_location).iterdir()
+                path.name for path in Path(context.cache_location).iterdir()
             }
             for uri in uri_list:
                 video_id = extract_video_id(uri)

@@ -14,6 +14,7 @@ from mopidy_youtube.apis.youtube_music import Music
 from mopidy_youtube.apis.ytm_item_to_video import ytm_item_to_video
 from mopidy_youtube.async_utils import is_future_set
 from mopidy_youtube.comms import Client
+from mopidy_youtube.context import context
 
 
 def make_config(tmp_path: pathlib.Path) -> dict[str, Any]:
@@ -57,8 +58,8 @@ def test_backend_initializes_expected_provider_objects(tmp_path: pathlib.Path):
 
 
 def test_video_uses_safe_default_search_limits_before_backend_config_runs():
-    assert backend.youtube.Video.search_results >= 1
-    assert backend.youtube.Playlist.playlist_max_videos >= 1
+    assert context.search_results >= 1
+    assert context.playlist_max_videos >= 1
 
 
 def test_backend_clamps_non_positive_config_limits_to_safe_minimums(
@@ -70,9 +71,76 @@ def test_backend_clamps_non_positive_config_limits_to_safe_minimums(
 
     instance = backend.YouTubeBackend(config=config, audio=None)
 
-    assert backend.youtube.Video.search_results == 1
-    assert backend.youtube.Playlist.playlist_max_videos == 1
+    assert context.search_results == 1
+    assert context.playlist_max_videos == 1
     assert instance.uri_schemes == ["youtube", "yt"]
+
+
+def test_backend_publishes_its_settings_to_the_shared_context(
+    tmp_path: pathlib.Path,
+):
+    config = make_config(tmp_path)
+    config["youtube"]["channel_id"] = "UC123"
+    config["youtube"]["youtube_dl_package"] = None
+    config["http"]["port"] = 7777
+
+    backend.YouTubeBackend(config=config, audio=None)
+
+    assert context.channel == "UC123"
+    assert context.http_port == 7777
+    assert context.youtube_dl_package == "yt_dlp"
+    assert context.musicapi_enabled is False
+
+
+def test_on_start_uses_japi_and_the_cache_dir_when_the_data_api_is_disabled(
+    tmp_path: pathlib.Path,
+):
+    config = make_config(tmp_path)
+    config["youtube"]["allow_cache"] = True
+    instance = backend.YouTubeBackend(config=config, audio=None)
+
+    with mock.patch("mopidy_youtube.backend.youtube_japi.jAPI") as japi:
+        instance.on_start()
+
+    assert context.api is japi.return_value
+    assert context.cache_location == tmp_path / "mopidy-cache" / "youtube"
+
+
+def test_on_start_disables_the_data_api_when_the_key_cannot_be_verified(
+    tmp_path: pathlib.Path,
+):
+    config = make_config(tmp_path)
+    config["youtube"]["api_enabled"] = True
+    instance = backend.YouTubeBackend(config=config, audio=None)
+
+    with (
+        mock.patch("mopidy_youtube.backend.youtube_api.API"),
+        mock.patch("mopidy_youtube.backend.youtube_japi.jAPI") as japi,
+        mock.patch("mopidy_youtube.backend.youtube.Entry.search", return_value=None),
+    ):
+        instance.on_start()
+
+    assert context.api is japi.return_value
+
+
+def test_on_start_uses_the_music_api_with_cookies_from_the_authentication_file(
+    tmp_path: pathlib.Path,
+):
+    auth_file = tmp_path / "auth.json"
+    auth_file.write_text('{"cookie": "x"}')
+    config = make_config(tmp_path)
+    config["youtube"]["musicapi_enabled"] = True
+    config["youtube"]["musicapi_browser_authentication_file"] = str(auth_file)
+    instance = backend.YouTubeBackend(config=config, audio=None)
+
+    with (
+        mock.patch("mopidy_youtube.backend.youtube_japi.jAPI"),
+        mock.patch("mopidy_youtube.apis.youtube_music.Music") as music,
+    ):
+        instance.on_start()
+
+    assert context.api is music.return_value
+    assert music.call_args.args[1] == {"cookie": "x"}
 
 
 def make_tl_tracks(*uris: str):
@@ -257,8 +325,8 @@ def test_video_track_number_uses_playlist_index_for_album_tracks():
     video.id = "abc123defgh"
     video.__dict__["_album"] = pykka.ThreadingFuture()
     video._album.set({"name": "Example Album", "uri": "youtube:playlist:PL1234567890"})
-    video.api = mock.Mock()
-    video.api.list_playlistitems.return_value = {
+    context.api = mock.Mock()
+    context.api.list_playlistitems.return_value = {
         "items": [
             {"id": {"videoId": "zzz99988877"}},
             {"id": {"videoId": "abc123defgh"}},
@@ -267,7 +335,7 @@ def test_video_track_number_uses_playlist_index_for_album_tracks():
     }
 
     assert video.track_no.get() == 1
-    video.api.list_playlistitems.assert_called_once_with("PL1234567890", "", 50)
+    context.api.list_playlistitems.assert_called_once_with("PL1234567890", "", 50)
 
 
 def test_autoplayer_keeps_autoplay_history_on_the_actor_instance(
@@ -348,9 +416,7 @@ def test_client_session_preserves_existing_headers_and_adds_configured_ones():
 def test_video_audio_url_uses_requested_formats_url_when_direct_url_missing():
     video = backend.youtube.Video()
     video.id = "abc123defgh"
-    video.proxy = None
-    video.api = mock.Mock()
-    video.api.session = mock.Mock()
+    context.api = mock.Mock()
 
     fake_ydl = mock.MagicMock()
     fake_ydl.__enter__.return_value = fake_ydl
@@ -360,12 +426,7 @@ def test_video_audio_url_uses_requested_formats_url_when_direct_url_missing():
         "requested_formats": [{"url": "https://example.com/audio.mp4"}],
     }
 
-    with (
-        mock.patch("mopidy_youtube.youtube.youtube_dl", None),
-        mock.patch("mopidy_youtube.resolver.importlib.import_module") as import_module,
-        mock.patch("mopidy_youtube.youtube.os.listdir", return_value=[]),
-        mock.patch("mopidy_youtube.youtube.youtube_dl", None, create=True),
-    ):
+    with mock.patch("mopidy_youtube.context.importlib.import_module") as import_module:
         import_module.return_value.YoutubeDL.return_value = fake_ydl
         assert video.audio_url.get() == "https://example.com/audio.mp4"
 

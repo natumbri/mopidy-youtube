@@ -8,8 +8,9 @@ import pykka
 from mopidy import backend, httpclient
 from mopidy.types import UriScheme
 
-from mopidy_youtube import Extension, logger, runtime, youtube
+from mopidy_youtube import Extension, logger, youtube
 from mopidy_youtube.apis import youtube_api, youtube_japi
+from mopidy_youtube.context import context
 from mopidy_youtube.library import YouTubeLibraryProvider
 from mopidy_youtube.listener import YouTubeAddToHistoryListener
 from mopidy_youtube.playback import YouTubePlaybackProvider
@@ -40,99 +41,80 @@ class YouTubeBackend(
         self.config = config
         self.library = YouTubeLibraryProvider(backend=self)
         self.playback = YouTubePlaybackProvider(audio=audio, backend=self)
-
-        youtube_config = cast("YouTubeConfig", config["youtube"])
-        self._configure_youtube_api(youtube_config)
-        self._configure_music_api(youtube_config)
-        self._configure_limits(youtube_config)
-
-        runtime.channel = youtube_config["channel_id"]
-        youtube.channel = youtube_config["channel_id"]
-        youtube.Video.http_port = config["http"]["port"]
-        youtube_dl_package = youtube_config["youtube_dl_package"] or "yt_dlp"
-        runtime.youtube_dl_package = youtube_dl_package
-        youtube.youtube_dl_package = youtube_dl_package
         self.user_agent = f"{Extension.dist_name}/{Extension.version}"
 
-    def _configure_limits(self, youtube_config: YouTubeConfig) -> None:
-        youtube.Video.search_results = max(1, int(youtube_config["search_results"]))
-        youtube.Playlist.playlist_max_videos = max(
-            1, int(youtube_config["playlist_max_videos"])
-        )
+        youtube_config = cast("YouTubeConfig", config["youtube"])
+        self._api_enabled = bool(youtube_config["api_enabled"])
+        self._youtube_api_key = youtube_config["youtube_api_key"]
 
-    def _configure_youtube_api(self, youtube_config: YouTubeConfig) -> None:
-        runtime.api_enabled = bool(youtube_config["api_enabled"])
-        if not runtime.api_enabled:
-            return
-
-        try:
-            youtube_api.API.youtube_api_key = youtube_config["youtube_api_key"]
-        except Exception as e:
-            logger.error(f"No YouTube API key provided, disabling API: {e}")
-            runtime.api_enabled = False
-
-    def _configure_music_api(self, youtube_config: YouTubeConfig) -> None:
-        runtime.musicapi_enabled = bool(youtube_config["musicapi_enabled"])
-        if not runtime.musicapi_enabled:
-            return
-
-        # ytmusicapi is an optional dependency (the `musicapi` extra)
-        from mopidy_youtube.apis import youtube_music  # noqa: PLC0415
-
-        youtube.musicapi_browser_authentication_file = youtube_config.get(
-            "musicapi_browser_authentication_file"
-        )
-        runtime.musicapi_cookiefile = youtube_config.get("musicapi_cookiefile")
-        youtube_music.own_channel_id = runtime.channel
+        context.search_results = max(1, int(youtube_config["search_results"]))
+        context.playlist_max_videos = max(1, int(youtube_config["playlist_max_videos"]))
+        context.channel = youtube_config["channel_id"]
+        context.http_port = config["http"]["port"]
+        context.youtube_dl_package = youtube_config["youtube_dl_package"] or "yt_dlp"
+        context.musicapi_enabled = bool(youtube_config["musicapi_enabled"])
+        if context.musicapi_enabled:
+            context.musicapi_browser_authentication_file = youtube_config[
+                "musicapi_browser_authentication_file"
+            ]
+            context.musicapi_cookiefile = youtube_config["musicapi_cookiefile"]
 
     @override
     def on_start(self) -> None:
-        youtube_config = cast("YouTubeConfig", self.config["youtube"])
         proxy = httpclient.format_proxy(self.config["proxy"])
-        youtube.Video.proxy = proxy
+        context.proxy = proxy
         headers = {
             "user-agent": httpclient.format_user_agent(self.user_agent),
             "Cookie": "PREF=hl=en; CONSENT=YES+20210329;",
             "Accept-Language": "en;q=0.8",
         }
 
+        youtube_config = cast("YouTubeConfig", self.config["youtube"])
         if youtube_config["allow_cache"]:
-            runtime.cache_location = Extension.get_cache_dir(self.config)
-            youtube.cache_location = runtime.cache_location
-            logger.info(f"file caching enabled (at {runtime.cache_location})")
+            context.cache_location = Extension.get_cache_dir(self.config)
+            logger.info(f"file caching enabled (at {context.cache_location})")
         else:
-            runtime.cache_location = None
-            youtube.cache_location = None
+            context.cache_location = None
             logger.info("file caching not enabled")
 
-        if runtime.api_enabled:
-            youtube.Entry.api = youtube_api.API(proxy, headers)
-            if youtube.Entry.search(q="test") is None:
-                logger.error("Failed to verify YouTube API key, disabling API")
-                runtime.api_enabled = False
-            else:
-                logger.info("YouTube API key verified")
-
-        if not runtime.api_enabled:
+        if self._api_enabled:
+            self._start_youtube_api(proxy, headers)
+        if not self._api_enabled:
             logger.info("using jAPI")
-            youtube.Entry.api = youtube_japi.jAPI(proxy, headers)
+            context.api = youtube_japi.jAPI(proxy, headers)
 
-        if runtime.musicapi_enabled:
-            # ytmusicapi is an optional dependency (the `musicapi` extra)
-            from mopidy_youtube.apis import youtube_music  # noqa: PLC0415
+        if context.musicapi_enabled:
+            self._start_music_api(proxy, headers)
 
-            logger.info("Using YouTube Music API")
+    def _start_youtube_api(self, proxy: str | None, headers: dict[str, str]) -> None:
+        try:
+            youtube_api.API.youtube_api_key = self._youtube_api_key
+        except Exception as e:
+            logger.error(f"No YouTube API key provided, disabling API: {e}")
+            self._api_enabled = False
+            return
 
-            if youtube.musicapi_browser_authentication_file:
-                logger.info(
-                    f"Reading cookies from {youtube.musicapi_browser_authentication_file}"
-                )
-                with Path(youtube.musicapi_browser_authentication_file).open(
-                    encoding="utf-8"
-                ) as browser_authentication_file:
-                    headers = json.load(browser_authentication_file)
+        context.api = youtube_api.API(proxy, headers)
+        if youtube.Entry.search(q="test") is None:
+            logger.error("Failed to verify YouTube API key, disabling API")
+            self._api_enabled = False
+        else:
+            logger.info("YouTube API key verified")
 
-            youtube.Entry.api = youtube_music.Music(proxy, headers)
+    def _start_music_api(self, proxy: str | None, headers: dict[str, str]) -> None:
+        # ytmusicapi is an optional dependency (the `musicapi` extra)
+        from mopidy_youtube.apis import youtube_music  # noqa: PLC0415
+
+        logger.info("Using YouTube Music API")
+        youtube_music.own_channel_id = context.channel
+
+        authentication_file = context.musicapi_browser_authentication_file
+        if authentication_file:
+            logger.info(f"Reading cookies from {authentication_file}")
+            with Path(authentication_file).open(encoding="utf-8") as file:
+                headers = json.load(file)
+
+        context.api = youtube_music.Music(proxy, headers)
 
     def add_track_to_history(self, bId: str) -> None:
         """Best-effort history update for a track already played."""

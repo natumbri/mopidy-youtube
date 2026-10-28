@@ -6,7 +6,8 @@ from typing import TYPE_CHECKING, override
 import pykka
 from mopidy.core import CoreListener
 
-from mopidy_youtube import logger, runtime, youtube
+from mopidy_youtube import logger, youtube
+from mopidy_youtube.context import context
 from mopidy_youtube.data import extract_video_id, format_video_uri
 
 if TYPE_CHECKING:
@@ -20,8 +21,8 @@ class YouTubeAutoplayer(pykka.ThreadingActor, CoreListener):
         super().__init__()
         self.config = config
         self.core = core
-        runtime.autoplayed = []
-        self.autoplayed = runtime.autoplayed
+        context.autoplayed.clear()
+        self.autoplayed = context.autoplayed
         self.autoplay_enabled = config["youtube"]["autoplay_enabled"]
         self.strict_autoplay = config["youtube"]["strict_autoplay"]
         self.max_degrees_of_separation = config["youtube"]["max_degrees_of_separation"]
