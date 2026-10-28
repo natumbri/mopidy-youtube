@@ -167,14 +167,22 @@ def test_artists_become_channel_links_without_the_type_labels():
     ]
 
 
-@pytest.mark.xfail(
-    strict=True,
-    reason="an artist without an id gets the uri 'yt:channel:None' instead of None",
-)
 def test_an_artist_without_an_id_has_no_uri():
     video = convert(artists=[{"name": "Lex Fridman", "id": None}])
 
     assert video["artists"] == [{"name": "Lex Fridman", "uri": None}]
+
+
+@pytest.mark.parametrize("artists", [[{"id": "UC1"}], ["Queen"]])
+def test_artists_that_cannot_be_read_leave_the_channel_title_unknown(
+    artists: list[Any], caplog: pytest.LogCaptureFixture
+):
+    with caplog.at_level(logging.ERROR, logger="mopidy_youtube"):
+        video = convert(artists=artists)
+
+    assert video["snippet"]["channelTitle"] == "unknown"
+    assert video["artists"] == []
+    assert "artists error" in caplog.text
 
 
 def test_an_artist_given_as_plain_text_is_only_the_channel_title():

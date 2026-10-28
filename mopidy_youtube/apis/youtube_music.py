@@ -141,10 +141,11 @@ class Music(Client):
         for item in related_videos:
             for related_track in get_song_related_tracks:
                 if item["videoId"] == related_track["videoId"]:
-                    if "album" in related_track:
-                        item["album"] = related_track["album"]
-                        if "id" in related_track["album"]:
-                            related_albums.add(related_track["album"]["id"])
+                    album = related_track.get("album")
+                    if album:  # a song without an album has `album: None`
+                        item["album"] = album
+                        if album.get("id"):
+                            related_albums.add(album["id"])
                     if "artists" in related_track:
                         item["artists"] = related_track["artists"]
 
@@ -181,14 +182,21 @@ class Music(Client):
 
         executor = self.executor
         futures = executor.map(self.ytmusic.get_song, ids)
-        results = [value for value in futures if value is not None]
+        # keep each response together with the id that was asked for
+        requested = [
+            (video_id, value)
+            for video_id, value in zip(ids, futures, strict=True)
+            if value is not None
+        ]
+        results = [value for _, value in requested]
 
-        for result in results:
+        for video_id, result in requested:
             if result["playabilityStatus"]["status"] == "ERROR":
                 result["title"] = result["playabilityStatus"]["reason"]
                 result["lengthMs"] = 0
                 result["channel"] = result["playabilityStatus"]["reason"]
-                result["videoId"] = result["playabilityStatus"]["contextParams"][:11]
+                # contextParams does not contain the video id
+                result["videoId"] = video_id
                 result["thumbnail"] = {
                     "thumbnails": [
                         {
@@ -245,7 +253,12 @@ class Music(Client):
         }
         for future in as_completed(futures):
             try:
-                results.append(future.result())
+                result = future.result()
+                if result:
+                    # callers look the result up by the id they asked for, which
+                    # differs from the resolved id for an OLAK5uy_ audio playlist
+                    result["playlistId"] = futures[future]
+                results.append(result)
             except Exception as e:
                 logger.error(
                     f"youtube_music list_playlists "
@@ -556,7 +569,7 @@ class Music(Client):
                     track.update(
                         {
                             "album": {
-                                "name": item["title"],
+                                "name": item["snippet"]["title"],
                                 "id": item["id"]["playlistId"],
                             }
                         }

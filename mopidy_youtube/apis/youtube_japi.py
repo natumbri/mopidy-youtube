@@ -10,13 +10,14 @@ from mopidy_youtube import logger
 from mopidy_youtube.apis.client import Client
 from mopidy_youtube.apis.json_paths import (
     CONTINUATION_ITEMS_PATH,
-    LIST_PLAYLIST_ITEMS_PATH,
+    PLAYLIST_SECTION_CONTENTS_PATH,
     RELATED_VIDEOS_PATH,
     SECTION_LIST_RENDERER_CONTENTS_PATH,
     TEXT_PATH,
     WATCH_VIDEO_PATH,
     deep_search,
     traverse,
+    traverse_or_none,
 )
 from mopidy_youtube.context import context
 from mopidy_youtube.timeformat import format_duration
@@ -29,6 +30,195 @@ class NoYtDataError(Exception):
     """Raised when a YouTube page contains no ytInitialData payload."""
 
 
+LOCKUP_VIDEO = "LOCKUP_CONTENT_TYPE_VIDEO"
+LOCKUP_PLAYLIST = "LOCKUP_CONTENT_TYPE_PLAYLIST"
+MIX_PLAYLIST_PREFIX = "RD"  # auto-generated mixes, the old radioRenderer
+
+
+def _duration_from_candidates(candidates: list[str], video_id: str) -> str:
+    """The first usable duration text as ISO8601, `PT0S` when there is none."""
+    for raw_candidate in candidates:
+        candidate = (raw_candidate or "").strip()
+        if not candidate:
+            continue
+
+        lowered = candidate.lower()
+        if lowered in {"live", "upcoming", "premiere", "shorts"}:
+            logger.info(
+                f"video {video_id} marked as {candidate}; "
+                "treating as non-playable duration"
+            )
+            return "PT0S"
+
+        if re.fullmatch(r"\d+:\d{2}(:\d{2})?", candidate):
+            duration = "PT" + format_duration(candidate)
+            logger.debug(f"video {video_id} duration: {duration}")
+            return duration
+
+    logger.warning(f"video {video_id} no video-time, possibly live")
+    return "PT0S"
+
+
+def _find_renderer(nodes: list[dict[str, Any]], key: str) -> dict[str, Any]:
+    """The `key` renderer among `nodes`, wherever YouTube put it."""
+    for node in nodes:
+        if isinstance(node, dict) and key in node:
+            return node[key]
+    raise KeyError(key)
+
+
+def _lockup_thumbnail(image_holder: Any) -> dict[str, Any] | None:
+    """The largest image of a `thumbnailViewModel`, without tracking parameters."""
+    sources = traverse_or_none(image_holder, ["image", "sources"])
+    if not isinstance(sources, list) or not sources:
+        return None
+    best = sources[-1]
+    if not isinstance(best, dict) or not isinstance(best.get("url"), str):
+        return None
+    return {**best, "url": best["url"].split("?", 1)[0]}
+
+
+def _lockup_badges(lockup: dict[str, Any]) -> list[str]:
+    """The texts of the badges on the thumbnail: duration, video count, ..."""
+    return [
+        text
+        for found in deep_search("thumbnailBadgeViewModel", lockup.get("contentImage"))
+        if isinstance(text := found["thumbnailBadgeViewModel"].get("text"), str)
+    ]
+
+
+def _lockup_byline(meta: dict[str, Any]) -> tuple[list[str], str | None]:
+    """The texts of the first metadata row, and the channel id found in it."""
+    row = traverse_or_none(
+        meta, ["metadata", "contentMetadataViewModel", "metadataRows", 0]
+    )
+    parts = (row or {}).get("metadataParts", [])
+    texts = [
+        text
+        for part in parts
+        if isinstance(text := (part.get("text") or {}).get("content"), str)
+    ]
+    channel_id = next(
+        (
+            browse_id
+            for found in deep_search("browseEndpoint", [row, meta.get("image")])
+            if str(browse_id := found["browseEndpoint"].get("browseId")).startswith(
+                "UC"
+            )
+        ),
+        None,
+    )
+    return texts, channel_id
+
+
+def _lockup_video_to_item(
+    lockup: dict[str, Any], video_id: str
+) -> dict[str, Any] | None:
+    meta = lockup.get("metadata", {}).get("lockupMetadataViewModel", {})
+    title = traverse_or_none(meta, ["title", "content"])
+    if not title:
+        logger.error(f"lockup: no title detected for {video_id}")
+        title = "unknown"
+    if title in ["[Private video]", "[Deleted video]"]:
+        logger.info(f"skipping video {video_id}: {title}")
+        return None
+
+    thumbnail = _lockup_thumbnail(
+        traverse_or_none(lockup, ["contentImage", "thumbnailViewModel"])
+    )
+    if thumbnail is None:
+        logger.error(f"lockup: no thumbnails detected for {video_id}")
+        thumbnail = {"url": f"https://i.ytimg.com/vi/{video_id}/default.jpg"}
+
+    byline, channel_id = _lockup_byline(meta)
+    if not byline:
+        logger.error(f"lockup: no channelTitle detected for {video_id}")
+
+    snippet = {
+        "title": title,
+        "resourceId": {"videoId": video_id},
+        "thumbnails": {"default": thumbnail},
+        "channelTitle": byline[0] if byline else "unknown",
+    }
+    if channel_id:
+        snippet["channelId"] = channel_id
+
+    return {
+        "id": {"kind": "youtube#video", "videoId": video_id},
+        "snippet": snippet,
+        "contentDetails": {
+            "duration": _duration_from_candidates(_lockup_badges(lockup), video_id)
+        },
+    }
+
+
+def _lockup_playlist_to_item(
+    lockup: dict[str, Any], playlist_id: str
+) -> dict[str, Any] | None:
+    if playlist_id.startswith(MIX_PLAYLIST_PREFIX):
+        logger.debug(f"lockup: skipping mix {playlist_id}")
+        return None
+
+    meta = lockup.get("metadata", {}).get("lockupMetadataViewModel", {})
+    title = traverse_or_none(meta, ["title", "content"])
+    if not title:
+        logger.error(f"lockup: no title detected for {playlist_id}")
+        title = "unknown"
+
+    thumbnail = _lockup_thumbnail(
+        traverse_or_none(
+            lockup,
+            [
+                "contentImage",
+                "collectionThumbnailViewModel",
+                "primaryThumbnail",
+                "thumbnailViewModel",
+            ],
+        )
+    )
+    item_count = next(
+        (
+            int(match.group().replace(",", ""))
+            for badge in _lockup_badges(lockup)
+            if (match := re.match(r"\d[\d,]*", badge))
+        ),
+        0,
+    )
+
+    # "<owner> · Playlist"; on a channel's own tab the owner is left out
+    byline, channel_id = _lockup_byline(meta)
+    snippet: dict[str, Any] = {
+        "title": title,
+        "thumbnails": {"default": thumbnail} if thumbnail else {},
+        "channelTitle": byline[0] if len(byline) > 1 else "unknown",
+    }
+    if channel_id:
+        snippet["channelId"] = channel_id
+
+    return {
+        "id": {"kind": "youtube#playlist", "playlistId": playlist_id},
+        "contentDetails": {"itemCount": item_count},
+        "snippet": snippet,
+    }
+
+
+def _lockup_to_item(lockup: dict[str, Any]) -> dict[str, Any] | None:
+    """A `lockupViewModel` as the Data API item the older renderers give."""
+    content_id = lockup.get("contentId")
+    content_type = lockup.get("contentType")
+    if not isinstance(content_id, str) or not content_id:
+        logger.error("json_to_items: lockup without contentId, unable to process")
+        return None
+
+    if content_type == LOCKUP_VIDEO:
+        return _lockup_video_to_item(lockup, content_id)
+    if content_type == LOCKUP_PLAYLIST:
+        return _lockup_playlist_to_item(lockup, content_id)
+
+    logger.debug(f"json_to_items: skipping lockup {content_id} ({content_type})")
+    return None
+
+
 class jAPI(Client):  # noqa: N801 - public class name, used by backend and tests
     """
     Indirect access to YouTube data, without API
@@ -36,8 +226,8 @@ class jAPI(Client):  # noqa: N801 - public class name, used by backend and tests
     """
 
     ytdata_regex: tuple[str, ...] = (
-        r'window\["ytInitialData"] = ({.*?});',
-        r"ytInitialData = ({.*?});",
+        r'window\["ytInitialData"] = (?={)',
+        r"ytInitialData = (?={)",
     )
 
     endpoint: str = "https://www.youtube.com/"
@@ -92,26 +282,7 @@ class jAPI(Client):  # noqa: N801 - public class name, used by backend and tests
                     else:
                         candidates.append(traverse(txt, TEXT_PATH))
 
-        for raw_candidate in candidates:
-            candidate = (raw_candidate or "").strip()
-            if not candidate:
-                continue
-
-            lowered = candidate.lower()
-            if lowered in {"live", "upcoming", "premiere", "shorts"}:
-                logger.info(
-                    f"video {video_id} marked as {candidate}; "
-                    "treating as non-playable duration"
-                )
-                return "PT0S"
-
-            if re.fullmatch(r"\d+:\d{2}(:\d{2})?", candidate):
-                duration = "PT" + format_duration(candidate)
-                logger.debug(f"video {video_id} duration: {duration}")
-                return duration
-
-        logger.warning(f"video {video_id} no video-time, possibly live")
-        return "PT0S"
+        return _duration_from_candidates(candidates, video_id)
 
     def search(self, q: str, params: list[str] | None = None) -> dict[str, Any]:
         if not params:
@@ -149,8 +320,18 @@ class jAPI(Client):  # noqa: N801 - public class name, used by backend and tests
         result = self.session.get(self.endpoint + "watch", params=query)
         if result.status_code == 200:
             yt_data = self._find_yt_data(result.text)
-            extracted_json = traverse(yt_data, RELATED_VIDEOS_PATH)
-            items = self.json_to_items(extracted_json)
+            sections = traverse_or_none(yt_data, RELATED_VIDEOS_PATH) or []
+            extracted_json = [
+                entry
+                for section in sections
+                for entry in section.get("itemSectionRenderer", {}).get("contents", [])
+            ]
+            # the callers want videos, not the playlists YouTube mixes in
+            items = [
+                item
+                for item in self.json_to_items(extracted_json)
+                if "videoId" in item["id"]
+            ]
 
         return json.loads(json.dumps({"items": items}, sort_keys=False, indent=1))
 
@@ -191,19 +372,18 @@ class jAPI(Client):  # noqa: N801 - public class name, used by backend and tests
                 if yt_data:
                     try:
                         extracted_json = traverse(yt_data, WATCH_VIDEO_PATH)
-                        title = self._safe_text(
-                            extracted_json[0]["videoPrimaryInfoRenderer"]["title"],
-                            default="unknown",
+                        primary = _find_renderer(
+                            extracted_json, "videoPrimaryInfoRenderer"
                         )
+                        secondary = _find_renderer(
+                            extracted_json, "videoSecondaryInfoRenderer"
+                        )
+                        owner = secondary["owner"]["videoOwnerRenderer"]
+                        title = self._safe_text(primary["title"], default="unknown")
                         channel_title = self._safe_text(
-                            extracted_json[1]["videoSecondaryInfoRenderer"]["owner"][
-                                "videoOwnerRenderer"
-                            ]["title"],
-                            default="unknown",
+                            owner["title"], default="unknown"
                         )
-                        thumbnails = extracted_json[1]["videoSecondaryInfoRenderer"][
-                            "owner"
-                        ]["videoOwnerRenderer"]["thumbnail"]["thumbnails"][-1]
+                        thumbnails = owner["thumbnail"]["thumbnails"][-1]
 
                         item = {
                             "id": id,
@@ -256,9 +436,11 @@ class jAPI(Client):  # noqa: N801 - public class name, used by backend and tests
                 }
             )
 
-            for result in results:
-                result.update({"id": result["id"]["playlistId"]})
-
+            results = [
+                {**result, "id": result["id"]["playlistId"]}
+                for result in results
+                if "playlistId" in result["id"]
+            ]
             results = [result for result in results if result["id"] == id]
 
             if results:
@@ -267,52 +449,8 @@ class jAPI(Client):  # noqa: N801 - public class name, used by backend and tests
             logger.debug(f"jAPI 'list_playlists' triggered session.get: {id}")
             result = self.session.get(self.endpoint + "playlist?list=" + id)
             if result.status_code == 200:
-                yt_data = self._find_yt_data(result.text)
-
-                if yt_data:
-                    extracted_json = yt_data["sidebar"]["playlistSidebarRenderer"][
-                        "items"
-                    ]
-
-                    title = traverse(
-                        extracted_json[0]["playlistSidebarPrimaryInfoRenderer"][
-                            "title"
-                        ],
-                        TEXT_PATH,
-                    )
-
-                    channel_title = traverse(
-                        extracted_json[1]["playlistSidebarSecondaryInfoRenderer"][
-                            "videoOwner"
-                        ]["videoOwnerRenderer"]["title"],
-                        TEXT_PATH,
-                    )
-
-                    thumbnails = extracted_json[1][
-                        "playlistSidebarSecondaryInfoRenderer"
-                    ]["videoOwner"]["videoOwnerRenderer"]["thumbnail"]["thumbnails"][-1]
-
-                    item_count = int(
-                        traverse(
-                            extracted_json[0]["playlistSidebarPrimaryInfoRenderer"][
-                                "stats"
-                            ][0],
-                            TEXT_PATH,
-                        )
-                        .split(" ", 1)[0]
-                        .replace(",", "")
-                    )
-
-                    item = {
-                        "contentDetails": {"itemCount": item_count},
-                        "id": id,
-                        "snippet": {
-                            "channelTitle": channel_title,
-                            "thumbnails": {"default": thumbnails},
-                            "title": title,
-                        },
-                    }
-
+                item = self._playlist_from_sidebar(id, self._find_yt_data(result.text))
+                if item:
                     return [item]
 
             return []
@@ -328,6 +466,38 @@ class jAPI(Client):  # noqa: N801 - public class name, used by backend and tests
 
         return json.loads(json.dumps({"items": items}, sort_keys=False, indent=1))
 
+    @staticmethod
+    def _playlist_from_sidebar(
+        playlist_id: str, yt_data: dict[str, Any]
+    ) -> dict[str, Any] | None:
+        """A playlist described by the sidebar of its page, None if it has none."""
+        try:
+            sidebar = yt_data["sidebar"]["playlistSidebarRenderer"]["items"]
+            primary = _find_renderer(sidebar, "playlistSidebarPrimaryInfoRenderer")
+            secondary = _find_renderer(sidebar, "playlistSidebarSecondaryInfoRenderer")
+            owner = secondary["videoOwner"]["videoOwnerRenderer"]
+
+            item_count = int(
+                traverse(primary["stats"][0], TEXT_PATH)
+                .split(" ", 1)[0]
+                .replace(",", "")
+            )
+            return {
+                "contentDetails": {"itemCount": item_count},
+                "id": playlist_id,
+                "snippet": {
+                    "channelTitle": traverse(owner["title"], TEXT_PATH),
+                    "thumbnails": {"default": owner["thumbnail"]["thumbnails"][-1]},
+                    "title": traverse(primary["title"], TEXT_PATH),
+                },
+            }
+        except (KeyError, IndexError, TypeError, ValueError, AttributeError) as e:
+            logger.warning(
+                f"jAPI 'list_playlists' found no playlist {playlist_id} on its page: "
+                f"{e!r}"
+            )
+            return None
+
     def list_playlistitems(
         self,
         playlist_id: str,
@@ -340,8 +510,15 @@ class jAPI(Client):  # noqa: N801 - public class name, used by backend and tests
         result = self.session.get(urljoin(self.endpoint, "playlist"), params=query)
         if result.status_code == 200:
             yt_data = self._find_yt_data(result.text)
-            extracted_json = traverse(yt_data, LIST_PLAYLIST_ITEMS_PATH)
-            items = self.json_to_items(extracted_json)[:max_results]
+            contents = traverse_or_none(yt_data, PLAYLIST_SECTION_CONTENTS_PATH)
+            if not contents:
+                logger.warning(
+                    f"jAPI 'list_playlistitems' found no videos for {playlist_id}"
+                )
+                return {"items": []}
+            if "playlistVideoListRenderer" in contents[0]:  # the older layout
+                contents = contents[0]["playlistVideoListRenderer"]["contents"]
+            items = self.json_to_items(contents)[:max_results]
             return json.loads(
                 json.dumps(
                     {"nextPageToken": None, "items": items},
@@ -366,15 +543,19 @@ class jAPI(Client):  # noqa: N801 - public class name, used by backend and tests
         )
 
         yt_data = self._find_yt_data(result.text)
-        extracted_json = deep_search(["gridPlaylistRenderer"], yt_data)
+        extracted_json = deep_search(
+            ["gridPlaylistRenderer", "lockupViewModel"], yt_data
+        )
 
         try:
-            items = self.json_to_items(extracted_json)
-            [
-                item.update({"id": item["id"]["playlistId"]})
-                for item in items
+            # the channel page lists videos next to the playlists
+            items = [
+                item
+                for item in self.json_to_items(extracted_json)
                 if "playlistId" in item["id"]
             ]
+            for item in items:
+                item.update({"id": item["id"]["playlistId"]})
         except Exception as e:
             logger.error(f"jAPI 'list_channelplaylists' exception {e}")
             items = []
@@ -428,35 +609,38 @@ class jAPI(Client):  # noqa: N801 - public class name, used by backend and tests
                 logger.error(f"jAPI run_search invalid JSON for {search_query}: {e}")
                 return results
 
-            if yt_data:
+            if not yt_data:
+                logger.warning(f"jAPI run_search got an empty response: {search_query}")
+                return results
+
+            try:
+                sections = traverse(yt_data, SECTION_LIST_RENDERER_CONTENTS_PATH)
+            except KeyError:
                 try:
-                    sections = traverse(yt_data, SECTION_LIST_RENDERER_CONTENTS_PATH)
+                    sections = traverse(yt_data, CONTINUATION_ITEMS_PATH)
                 except KeyError:
-                    try:
-                        sections = traverse(yt_data, CONTINUATION_ITEMS_PATH)
-                    except KeyError:
-                        logger.warning(
-                            "jAPI run_search could not find search sections "
-                            f"for query {search_query}"
-                        )
-                        return results
-
-                extracted_json = None
-                continuation_renderer = None
-
-                for s in sections:
-                    if "itemSectionRenderer" in s:
-                        extracted_json = s["itemSectionRenderer"]["contents"]
-                        results.extend(self.json_to_items(extracted_json))
-                    if "continuationItemRenderer" in s:
-                        continuation_renderer = s["continuationItemRenderer"]
-
-                if continuation_renderer:
-                    continuation = continuation_renderer["continuationEndpoint"][
-                        "continuationCommand"
-                    ]["token"]
-                else:
+                    logger.warning(
+                        "jAPI run_search could not find search sections "
+                        f"for query {search_query}"
+                    )
                     return results
+
+            extracted_json = None
+            continuation_renderer = None
+
+            for s in sections:
+                if "itemSectionRenderer" in s:
+                    extracted_json = s["itemSectionRenderer"]["contents"]
+                    results.extend(self.json_to_items(extracted_json))
+                if "continuationItemRenderer" in s:
+                    continuation_renderer = s["continuationItemRenderer"]
+
+            if not continuation_renderer:
+                return results
+
+            continuation = continuation_renderer["continuationEndpoint"][
+                "continuationCommand"
+            ]["token"]
 
         return results
 
@@ -481,16 +665,20 @@ class jAPI(Client):  # noqa: N801 - public class name, used by backend and tests
 
     @staticmethod
     def _find_yt_data(text: str) -> dict[str, Any]:
+        decoder = json.JSONDecoder()
         for r in jAPI.ytdata_regex:
             result = re.search(r, text)
             if not result:
                 continue
 
             try:
-                return json.loads(result.group(1))
+                # raw_decode ignores whatever follows the object, and knows
+                # that a `};` inside a string is not the end of it
+                data, _ = decoder.raw_decode(text, result.end())
             except json.JSONDecodeError as e:
-                logger.debug(f"_find_yt_data exception {e}; probably ok")
-                return json.loads(result.group(1)[: e.pos])
+                logger.debug(f"_find_yt_data exception {e}; trying the next pattern")
+                continue
+            return data
 
         msg = "No data found on page"
         logger.error(msg)
@@ -637,6 +825,11 @@ class jAPI(Client):  # noqa: N801 - public class name, used by backend and tests
                     },
                 }
                 items.append(item)
+
+            elif "lockupViewModel" in content:
+                item = _lockup_to_item(content["lockupViewModel"])
+                if item:
+                    items.append(item)
 
             elif "gridPlaylistRenderer" in content:
                 playlist = content["gridPlaylistRenderer"]

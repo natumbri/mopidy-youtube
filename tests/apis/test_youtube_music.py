@@ -443,13 +443,6 @@ def test_a_related_album_without_an_id_is_not_looked_up(
     )
 
 
-@pytest.mark.xfail(
-    strict=True,
-    reason=(
-        "a related track whose album is None (a song without an album) makes "
-        "list_related_videos raise a TypeError at `'id' in related_track['album']`"
-    ),
-)
 def test_a_related_track_without_an_album_is_still_returned(
     music: Music, ytmusic: mock.MagicMock
 ):
@@ -610,13 +603,6 @@ def test_an_unavailable_video_is_described_by_the_reason(
     }
 
 
-@pytest.mark.xfail(
-    strict=True,
-    reason=(
-        "the id of an unavailable video is taken from playabilityStatus."
-        "contextParams (base64 that does not contain it) instead of the requested id"
-    ),
-)
 def test_an_unavailable_video_keeps_its_requested_id(
     music: Music, ytmusic: mock.MagicMock
 ):
@@ -701,13 +687,6 @@ def test_list_playlists_looks_albums_up_by_the_browse_id_of_their_audio_playlist
     assert item["tracks"][0]["album"]["name"] == ALBUM_TITLE
 
 
-@pytest.mark.xfail(
-    strict=True,
-    reason=(
-        "an album requested by its OLAK5uy_ id is returned with the MPREb_ id it was "
-        "resolved to, so the caller (Playlist.load_info) cannot find it by its own id"
-    ),
-)
 def test_list_playlists_returns_an_album_under_the_requested_id(
     music: Music, ytmusic: mock.MagicMock, ytm_class: mock.MagicMock
 ):
@@ -741,7 +720,7 @@ def test_list_playlists_returns_what_it_found_of_a_mixed_request(
     titles = {item["id"]["playlistId"]: item["snippet"]["title"] for item in items}
     assert titles == {
         PLAYLIST_ID: "Top 100 Songs South Korea",
-        ALBUM_ID: ALBUM_TITLE,
+        OLAK_ID: ALBUM_TITLE,
     }
     assert "playlist does not exist, PLgone" in caplog.text
 
@@ -1238,13 +1217,6 @@ def test_a_playlist_without_tracks_has_an_empty_video_list():
     assert playlist_value(PLAYLIST_ID, "videos") == []
 
 
-@pytest.mark.xfail(
-    strict=True,
-    reason=(
-        "a track without an album is given the playlist title through "
-        "item['title'], but the converted playlist keeps its title in snippet.title"
-    ),
-)
 def test_a_track_without_an_album_belongs_to_the_playlist():
     playlist = Music.yt_listitem_to_playlist(album_item())
     for track in playlist["tracks"]:

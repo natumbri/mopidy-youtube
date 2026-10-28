@@ -43,6 +43,14 @@ def traverse(input_dict: Any, keys: Sequence[str | int]) -> Any:
     return internal_dict_value
 
 
+def traverse_or_none(input_dict: Any, keys: Sequence[str | int]) -> Any:
+    """Like `traverse`, but None when any step is missing or of the wrong type."""
+    try:
+        return traverse(input_dict, keys)
+    except (KeyError, IndexError, TypeError, AttributeError):
+        return None
+
+
 # json paths
 
 SECTION_LIST_RENDERER_CONTENTS_PATH: JsonPath = [
@@ -76,7 +84,9 @@ RELATED_VIDEOS_PATH: JsonPath = [
     "results",
 ]
 
-PLAYLIST_BASE_PATH: JsonPath = [
+# The videos of a playlist page: `lockupViewModel` entries directly in this
+# list (current layout), or one `playlistVideoListRenderer` holding them (old).
+PLAYLIST_SECTION_CONTENTS_PATH: JsonPath = [
     "contents",
     "twoColumnBrowseResultsRenderer",
     "tabs",
@@ -88,8 +98,9 @@ PLAYLIST_BASE_PATH: JsonPath = [
     0,
     "itemSectionRenderer",
     "contents",
-    0,
 ]
+
+PLAYLIST_BASE_PATH: JsonPath = [*PLAYLIST_SECTION_CONTENTS_PATH, 0]
 
 LIST_PLAYLIST_ITEMS_PATH: JsonPath = [
     *PLAYLIST_BASE_PATH,

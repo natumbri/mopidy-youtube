@@ -92,10 +92,12 @@ def ytm_item_to_video(item: dict[str, Any]) -> dict[str, Any]:
         video["artists"] = [
             {
                 "name": artist["name"],
-                "uri": f"yt:channel:{artist.get('id')}",
+                "uri": f"yt:channel:{artist['id']}" if artist.get("id") else None,
             }
             for artist in item["artists"]
-            if artist["name"] not in ["Album", "Song"]
+            if isinstance(artist, dict)
+            and "name" in artist
+            and artist["name"] not in ["Album", "Song"]
         ]
     elif "author" in item and "channelId" in item:
         video["artists"] = [

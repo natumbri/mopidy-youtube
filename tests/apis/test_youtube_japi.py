@@ -2,10 +2,10 @@
 
 The fixtures in `tests/fixtures/japi/` are real responses, trimmed to the parts
 the client reads. YouTube has since moved most renderers to `lockupViewModel`,
-which jAPI does not understand: the tests that feed such a response and expect
-items back are marked `xfail`. The renderer layout jAPI was written for
-(`compactVideoRenderer`, `playlistVideoRenderer`, `gridPlaylistRenderer`, ...)
-is built by the helpers below.
+which jAPI reads next to the renderer layout it was written for
+(`compactVideoRenderer`, `playlistVideoRenderer`, `gridPlaylistRenderer`, ...).
+The older layout is built by the helpers below; the current one comes from the
+fixtures.
 """
 
 from __future__ import annotations
@@ -396,11 +396,6 @@ def test_find_yt_data_raises_when_the_page_has_no_data(
     assert "No data found on page" in caplog.text
 
 
-@pytest.mark.xfail(
-    strict=True,
-    reason="the regex stops at the first '};', even inside a JSON string, so a "
-    "title or description containing '};' makes the whole page unreadable",
-)
 def test_find_yt_data_survives_a_semicolon_brace_in_a_string():
     data = {"title": "int main() { return 0; };", "n": 1}
 
@@ -965,11 +960,6 @@ def test_run_search_returns_nothing_for_a_response_without_sections(
     assert len(search_site.requests) == 1
 
 
-@pytest.mark.xfail(
-    strict=True,
-    reason="an empty (falsy) json response is neither parsed nor treated as the "
-    "end, so run_search posts the same request forever",
-)
 def test_run_search_gives_up_on_an_empty_response(japi: jAPI, search_site: SearchSite):
     search_site.pages = {(VIDEO_SP, False): search_site.ok({})}
 
@@ -1058,18 +1048,15 @@ def test_search_returns_plain_json_data(japi: jAPI, search_site: SearchSite):
     assert list(result) == ["items"]
 
 
-@pytest.mark.xfail(
-    strict=True,
-    reason="playlists are now returned as lockupViewModel, which json_to_items "
-    "does not understand, so a search never finds playlists",
-)
 def test_search_finds_playlists_in_current_youtube_responses(
     japi: jAPI, search_site: SearchSite
 ):
     search_site.pages = {
         (PLAYLIST_SP, False): search_site.ok(
             load_fixture("japi/search_playlists_lockups.json")
-        )
+        ),
+        # the recorded page ends with a continuation token
+        (PLAYLIST_SP, True): search_site.ok(continuation_doc([])),
     }
 
     result = japi.search("never gonna give you up", params=[PLAYLIST_SP])
@@ -1120,11 +1107,6 @@ def test_list_related_videos_returns_nothing_for_a_failed_request(
     assert japi.list_related_videos(VIDEO_ID) == {"items": []}
 
 
-@pytest.mark.xfail(
-    strict=True,
-    reason="related videos are now lockupViewModel entries, which json_to_items "
-    "does not understand, so there are never any related videos",
-)
 def test_list_related_videos_finds_them_on_a_current_watch_page(
     japi: jAPI, youtube_site: FakeYouTube
 ):
@@ -1279,11 +1261,6 @@ def test_list_videos_skips_a_video_whose_page_cannot_be_loaded(
     assert japi.list_videos([MISSING_VIDEO_ID]) == {"items": []}
 
 
-@pytest.mark.xfail(
-    strict=True,
-    reason="the watch page fallback reads the title and the owner from fixed "
-    "positions, but YouTube may put a ticketShelfRenderer (tour dates) in front",
-)
 def test_list_videos_fallback_copes_with_extra_renderers_on_the_watch_page(
     japi: jAPI, youtube_site: FakeYouTube
 ):
@@ -1407,11 +1384,6 @@ def test_list_playlists_skips_a_playlist_whose_page_cannot_be_loaded(
     assert japi.list_playlists(["PL1"]) == {"items": []}
 
 
-@pytest.mark.xfail(
-    strict=True,
-    reason="a playlist that no longer exists is a 200 page without a sidebar; "
-    "list_playlists lets the resulting KeyError escape instead of returning nothing",
-)
 def test_list_playlists_returns_nothing_for_a_playlist_that_does_not_exist(
     japi: jAPI, youtube_site: FakeYouTube
 ):
@@ -1491,12 +1463,6 @@ def test_list_playlistitems_returns_nothing_for_a_failed_request(
     assert japi.list_playlistitems("PL1", None, 50) == {"items": []}
 
 
-@pytest.mark.xfail(
-    strict=True,
-    reason="a current playlist page lists its videos as lockupViewModel under a "
-    "different path, so list_playlistitems raises KeyError instead of "
-    "returning the videos",
-)
 def test_list_playlistitems_reads_a_current_playlist_page(
     japi: jAPI, youtube_site: FakeYouTube
 ):
@@ -1596,11 +1562,6 @@ def test_list_channelplaylists_returns_nothing_when_a_playlist_cannot_be_read(
     assert "list_channelplaylists' exception" in caplog.text
 
 
-@pytest.mark.xfail(
-    strict=True,
-    reason="the playlists tab now lists playlists as lockupViewModel, which "
-    "json_to_items does not understand, so no channel has any playlists",
-)
 def test_list_channelplaylists_reads_a_current_channel_page(
     japi: jAPI, youtube_site: FakeYouTube
 ):
@@ -1618,3 +1579,353 @@ def test_list_channelplaylists_reads_a_current_channel_page(
         "PLlaN88a7y2_pVVkl4fGdTny21_LRyT85E",
     ]
     assert titles_of(result)[0] == "Rick Astley Live at The O2"
+
+
+# -- lockupViewModel ----------------------------------------------------------
+#
+# The current layout. The lockups below are cut out of the recorded pages.
+
+PLAYLIST_ID_SEARCHED = "PLl8RNOyzcwBjjIajUplE6oV8Vi5Od65H2"
+CHANNEL_PLAYLIST_ID = "PLlaN88a7y2_qHDbY9eQbuNTAuEJUSEeuu"
+STATION_ID = "RDCLAK5uy_kmPRjHDECIcuVwnKsx2Ng7fyNgFKWNJFs"
+
+
+def find_lockup(fixture: str, content_id: str) -> dict[str, Any]:
+    """The `lockupViewModel` with `content_id` from a fixture (a fresh copy)."""
+
+    def search(node: Any) -> dict[str, Any] | None:
+        if isinstance(node, dict):
+            if node.get("lockupViewModel", {}).get("contentId") == content_id:
+                return node["lockupViewModel"]
+            node = list(node.values())
+        for child in node if isinstance(node, list) else []:
+            if found := search(child):
+                return found
+        return None
+
+    lockup = search(load_fixture(f"japi/{fixture}"))
+    assert lockup, f"no lockup {content_id} in {fixture}"
+    return lockup
+
+
+def zoo_lockup() -> dict[str, Any]:
+    return find_lockup("watch_zoo.json", "P4Ex2AafR1U")
+
+
+def playlist_page_lockup() -> dict[str, Any]:
+    return find_lockup("playlist_page.json", "fOT0BUpITw8")
+
+
+def search_playlist_lockup() -> dict[str, Any]:
+    return find_lockup("search_playlists_lockups.json", PLAYLIST_ID_SEARCHED)
+
+
+def channel_playlist_lockup() -> dict[str, Any]:
+    return find_lockup("channel_playlists_lockups.json", CHANNEL_PLAYLIST_ID)
+
+
+def convert(*lockups: dict[str, Any]) -> list[dict[str, Any]]:
+    return jAPI.json_to_items([{"lockupViewModel": lockup} for lockup in lockups])
+
+
+def test_a_video_lockup_becomes_a_video_item():
+    assert convert(zoo_lockup()) == [
+        {
+            "id": {"kind": "youtube#video", "videoId": "P4Ex2AafR1U"},
+            "snippet": {
+                "title": "Turn Your Screen Into a Soft Warm Light "
+                "(Instant Fix For Video Lighting)",
+                "resourceId": {"videoId": "P4Ex2AafR1U"},
+                "thumbnails": {
+                    "default": {
+                        "url": "https://i.ytimg.com/vi/P4Ex2AafR1U/hqdefault.jpg",
+                        "width": 336,
+                        "height": 188,
+                    }
+                },
+                "channelTitle": "Use Your Screen As Light",
+            },
+            "contentDetails": {"duration": "PT2H00M00S"},
+        }
+    ]
+
+
+def test_a_video_lockup_in_a_playlist_names_its_channel():
+    (item,) = convert(playlist_page_lockup())
+
+    assert item["snippet"]["channelTitle"] == "Peso Pluma"
+    assert item["snippet"]["channelId"] == "UCzrM_068Odho89mTRrrxqbA"
+    assert item["contentDetails"] == {"duration": "PT3M55S"}
+
+
+def test_a_video_lockup_finds_the_channel_id_in_the_avatar():
+    """On a watch page only the avatar links to the channel."""
+    lockup = zoo_lockup()
+    lockup["metadata"]["lockupMetadataViewModel"]["image"] = {
+        "decoratedAvatarViewModel": {
+            "rendererContext": {
+                "commandContext": {
+                    "onTap": {
+                        "innertubeCommand": {
+                            "browseEndpoint": {"browseId": "UC-ZK_AD388lNwLicR6j4umw"}
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    (item,) = convert(lockup)
+
+    assert item["snippet"]["channelId"] == "UC-ZK_AD388lNwLicR6j4umw"
+
+
+def test_a_video_lockup_without_details_still_gives_a_usable_item():
+    lockup = zoo_lockup()
+    del lockup["contentImage"]
+    del lockup["metadata"]
+
+    assert convert(lockup) == [
+        {
+            "id": {"kind": "youtube#video", "videoId": "P4Ex2AafR1U"},
+            "snippet": {
+                "title": "unknown",
+                "resourceId": {"videoId": "P4Ex2AafR1U"},
+                "thumbnails": {
+                    "default": {"url": "https://i.ytimg.com/vi/P4Ex2AafR1U/default.jpg"}
+                },
+                "channelTitle": "unknown",
+            },
+            "contentDetails": {"duration": "PT0S"},
+        }
+    ]
+
+
+@pytest.mark.parametrize("badge", ["LIVE", "UPCOMING", "Shorts"])
+def test_a_video_lockup_that_is_not_a_recording_has_no_duration(badge: str):
+    lockup = zoo_lockup()
+    (found,) = time_badges(lockup)
+    found["text"] = badge
+
+    (item,) = convert(lockup)
+
+    assert item["contentDetails"] == {"duration": "PT0S"}
+
+
+def time_badges(lockup: dict[str, Any]) -> list[dict[str, Any]]:
+    badges = lockup["contentImage"]["thumbnailViewModel"]["overlays"][0][
+        "thumbnailBottomOverlayViewModel"
+    ]["badges"]
+    return [badge["thumbnailBadgeViewModel"] for badge in badges]
+
+
+@pytest.mark.parametrize("title", ["[Private video]", "[Deleted video]"])
+def test_a_video_lockup_of_a_removed_video_is_skipped(title: str):
+    lockup = zoo_lockup()
+    lockup["metadata"]["lockupMetadataViewModel"]["title"] = {"content": title}
+
+    assert convert(lockup) == []
+
+
+def test_lockups_without_an_id_or_of_another_kind_are_skipped():
+    no_id = zoo_lockup()
+    del no_id["contentId"]
+    podcast = zoo_lockup()
+    podcast["contentType"] = "LOCKUP_CONTENT_TYPE_PODCAST"
+    station = find_lockup("channel_playlists_rich_grid.json", STATION_ID)
+
+    assert convert(no_id, podcast, station, zoo_lockup()) == convert(zoo_lockup())
+
+
+def test_a_playlist_lockup_from_a_search_names_its_owner():
+    assert convert(search_playlist_lockup()) == [
+        {
+            "id": {"kind": "youtube#playlist", "playlistId": PLAYLIST_ID_SEARCHED},
+            "contentDetails": {"itemCount": 56},
+            "snippet": {
+                "title": "Rick Astley - Never Gonna Give You Up",
+                "thumbnails": {
+                    "default": {
+                        "url": "https://i.ytimg.com/vi/dQw4w9WgXcQ/hq720.jpg",
+                        "width": 720,
+                        "height": 404,
+                    }
+                },
+                "channelTitle": "Seh",
+                "channelId": "UCXhPrL3sla_Iaabtx5X5CAw",
+            },
+        }
+    ]
+
+
+def test_a_playlist_lockup_on_a_channel_has_no_owner_but_a_channel_id():
+    (item,) = convert(channel_playlist_lockup())
+
+    assert item["id"]["playlistId"] == CHANNEL_PLAYLIST_ID
+    assert item["contentDetails"] == {"itemCount": 3}
+    assert item["snippet"]["channelTitle"] == "unknown"
+    assert item["snippet"]["channelId"] == "UCuAXFkgsw1L7xaCfnd5JJOw"
+
+
+def test_a_playlist_lockup_without_details_still_gives_a_usable_item():
+    lockup = channel_playlist_lockup()
+    del lockup["contentImage"]
+    del lockup["metadata"]
+
+    assert convert(lockup) == [
+        {
+            "id": {"kind": "youtube#playlist", "playlistId": CHANNEL_PLAYLIST_ID},
+            "contentDetails": {"itemCount": 0},
+            "snippet": {
+                "title": "unknown",
+                "thumbnails": {},
+                "channelTitle": "unknown",
+            },
+        }
+    ]
+
+
+def test_a_mix_is_not_a_playlist():
+    lockup = channel_playlist_lockup()
+    lockup["contentId"] = "RDdQw4w9WgXcQ"
+
+    assert convert(lockup) == []
+
+
+def test_lockups_and_renderers_can_share_a_page():
+    items = jAPI.json_to_items(
+        [
+            video_renderer("old", kind="compactVideoRenderer"),
+            {"lockupViewModel": zoo_lockup()},
+            playlist_renderer("PL1"),
+            {"lockupViewModel": search_playlist_lockup()},
+        ]
+    )
+
+    assert [item["id"] for item in items] == [
+        {"kind": "youtube#video", "videoId": "old"},
+        {"kind": "youtube#video", "videoId": "P4Ex2AafR1U"},
+        {"kind": "youtube#playlist", "playlistId": "PL1"},
+        {"kind": "youtube#playlist", "playlistId": PLAYLIST_ID_SEARCHED},
+    ]
+
+
+def test_list_related_videos_leaves_out_the_playlists_among_them(
+    japi: jAPI, youtube_site: FakeYouTube
+):
+    doc = {
+        "contents": {
+            "twoColumnWatchNextResults": {
+                "secondaryResults": {
+                    "secondaryResults": {
+                        "results": [
+                            {
+                                "itemSectionRenderer": {
+                                    "contents": [
+                                        {"lockupViewModel": search_playlist_lockup()},
+                                        {"lockupViewModel": zoo_lockup()},
+                                    ]
+                                }
+                            }
+                        ]
+                    }
+                }
+            }
+        }
+    }
+    youtube_site.add("GET", BASE + "watch", body=yt_initial_data_page(doc))
+
+    result = japi.list_related_videos(ZOO_VIDEO_ID)
+
+    assert video_ids_of(result["items"]) == ["P4Ex2AafR1U"]
+
+
+def test_list_related_videos_returns_nothing_for_a_page_without_any(
+    japi: jAPI, youtube_site: FakeYouTube
+):
+    youtube_site.add("GET", BASE + "watch", body=page("watch_unavailable.json"))
+
+    assert japi.list_related_videos(ZOO_VIDEO_ID) == {"items": []}
+
+
+def test_list_playlistitems_respects_max_results_on_a_current_playlist_page(
+    japi: jAPI, youtube_site: FakeYouTube
+):
+    youtube_site.add("GET", BASE + "playlist", body=page("playlist_page.json"))
+
+    result = japi.list_playlistitems(PLAYLIST_ID, None, 2)
+
+    assert video_ids_of(result["items"]) == ["fOT0BUpITw8", "NFvDHYMzj9U"]
+    assert result["nextPageToken"] is None
+
+
+def test_list_playlistitems_returns_nothing_for_a_playlist_that_does_not_exist(
+    japi: jAPI, youtube_site: FakeYouTube
+):
+    youtube_site.add("GET", BASE + "playlist", body=page("playlist_unavailable.json"))
+
+    assert japi.list_playlistitems(PLAYLIST_ID, None, 50) == {"items": []}
+
+
+def test_list_channelplaylists_finds_only_the_playlists_in_a_rich_grid(
+    japi: jAPI, youtube_site: FakeYouTube
+):
+    """The channel of YouTube Music lists a mix, a video and two playlists."""
+    youtube_site.add(
+        "GET",
+        BASE + f"channel/{CHANNEL_ID}/playlists",
+        body=page("channel_playlists_rich_grid.json"),
+    )
+
+    result = japi.list_channelplaylists(CHANNEL_ID)
+
+    assert ids_of(result) == [
+        "PL4fGSI1pDJn7xvYy-bP6UFeG5tITQgScd",
+        "PL4fGSI1pDJn44PMHPLYatj8rta8WYtZ8_",
+    ]
+    assert result["items"][0]["contentDetails"] == {"itemCount": 100}
+    assert result["items"][0]["snippet"]["channelTitle"] == (
+        "YouTube Music Global Charts"
+    )
+
+
+def test_list_playlists_ignores_videos_among_the_search_results(
+    japi: jAPI, youtube_site: FakeYouTube
+):
+    youtube_site.add(
+        "GET",
+        BASE + "results",
+        body=yt_initial_data_page(search_doc([video_renderer("v1")])),
+    )
+    youtube_site.add("GET", BASE + "playlist", body=page("playlist_unavailable.json"))
+
+    assert japi.list_playlists(["PL1"]) == {"items": []}
+
+
+def test_list_playlists_logs_the_playlist_that_does_not_exist(
+    japi: jAPI, youtube_site: FakeYouTube, caplog: pytest.LogCaptureFixture
+):
+    youtube_site.add("GET", BASE + "results", body=yt_initial_data_page(search_doc([])))
+    youtube_site.add("GET", BASE + "playlist", body=page("playlist_unavailable.json"))
+
+    japi.list_playlists(["PL1"])
+
+    assert "found no playlist PL1" in caplog.text
+
+
+def test_list_playlists_reads_the_sidebar_of_a_current_playlist_page(
+    japi: jAPI, youtube_site: FakeYouTube
+):
+    youtube_site.add("GET", BASE + "results", body=yt_initial_data_page(search_doc([])))
+    youtube_site.add("GET", BASE + "playlist", body=page("playlist_page.json"))
+
+    (item,) = japi.list_playlists([PLAYLIST_ID])["items"]
+
+    assert item["id"] == PLAYLIST_ID
+    assert item["snippet"]["title"] == "Popular Music Videos"
+    assert item["contentDetails"] == {"itemCount": 182}
+
+
+def test_find_yt_data_gives_up_on_data_that_is_not_json():
+    with pytest.raises(NoYtDataError, match="No data found"):
+        jAPI._find_yt_data("var ytInitialData = {not json};")

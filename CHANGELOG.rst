@@ -12,6 +12,8 @@ Unreleased
 - fix YouTube Music history updates, which never ran because of a wrong import path
 - replace ``runtime.py``, the module-level mirrors and the class-level settings on ``Entry``/``Video``/``Playlist`` with one typed ``Context``
 - give the api clients (``API``, ``jAPI``, ``Music``) their own session and executors instead of class-level state, declare the interface they share as the ``YouTubeApi`` protocol, and close them when the backend stops
+- fix jAPI against the current YouTube site: related videos (and so autoplay), playlist items, channel playlists and playlist search results use the new ``lockupViewModel`` layout; also fix ``list_playlists`` failing for a missing playlist, ``run_search`` never ending on an empty response, page data containing ``};`` and the watch-page fallback breaking on a leading shelf
+- fix several YouTube Music results: related tracks without an album, unavailable videos, audio playlists (``OLAK5uy_``) being returned under the wrong id, tracks without an album and artists without an id
 - make every api return ``{"items": [...]}`` (never ``None`` or a list) when it has nothing to return, which also stops a failed ``jAPI`` playlist request from leaving ``Playlist.videos`` unresolved
 - verify a configured YouTube Data API key properly (the old check could never fail) and fall back to jAPI when it is missing or rejected
 - resolve audio in ``audio.py``: prefetching no longer delays a track that is about to be played, and a failed or interrupted resolution is retried instead of being remembered
