@@ -4,7 +4,7 @@ version = "4.0.3"
 description = "Mopidy extension for YouTube"
 readme = "README.rst"
 requires-python = ">= 3.13"
-license = { text = "Apache-2.0"}
+license = "Apache-2.0"
 license-files = ["LICENSE"]
 authors = [{ name = "nik tumbri", email = "natumbri@gmail.com" }]
 classifiers = [
@@ -35,7 +35,7 @@ youtube = "mopidy_youtube:Extension"
 
 
 [build-system]
-requires = ["setuptools >= 75"]
+requires = ["setuptools >= 78"]
 build-backend = "setuptools.build_meta"
 
 
