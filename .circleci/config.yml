@@ -20,7 +20,7 @@ jobs:
 
       # 2. Install Python dependencies from requirements.txt using pip
       - python/install-packages:
-          pkg-manager: pip
+          pkg-manager: pip-dist
           # Uncomment and adjust if your requirements file is named differently or located in a subfolder:
           # pip-dependency-file: requirements.txt
 
