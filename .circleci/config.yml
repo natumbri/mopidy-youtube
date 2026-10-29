@@ -8,9 +8,14 @@ jobs:
   build-and-test:
     executor: python/default
     steps:
-      # 1. Checkout code from GitHub
-      - checkout:
-          force_https: true
+      - run:
+          name: Force Git to use HTTPS
+          command: |
+            # Forces git to translate any ssh/git URLs into secure HTTPS URLs
+            git config --global url."https://github.com/".insteadOf "git@github.com:"
+            git config --global url."https://".insteadOf "git://"
+      
+      - checkout
 
 
       # 2. Install Python dependencies from requirements.txt using pip
