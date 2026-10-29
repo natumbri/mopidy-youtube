@@ -1,13 +1,11 @@
 version: 2.1
 
 orbs:
-  # Pulls in the official CircleCI Python Orb
   python: circleci/python@4.0.0
 
 jobs:
-  test-app:
+  build-and-test:
     docker:
-      # Specifies the official CircleCI Python 3.13 convenience image
       - image: cimg/python:3.13
     steps:
       - run:
@@ -16,17 +14,24 @@ jobs:
             # Forces git to translate any ssh/git URLs into secure HTTPS URLs
             git config --global url."https://github.com/".insteadOf "git@github.com:"
             git config --global url."https://".insteadOf "git://"
-          
+
       - checkout
-      # Install dependencies automatically using the orb's smart caching
+      
+      # For Poetry projects
       - python/install-packages:
-          pkg-manager: pip
-      # Run your application's test suite via the orb
+          pkg-manager: poetry
+      
+      # OR for UV projects (fast modern installer)
+      # - run:
+      #     name: Install dependencies with uv
+      #     command: pip install uv && uv sync
+
       - run:
-          name: Run Tests
-          command: python -m unittest discover
-          
+          name: Run tests with pytest
+          command: poetry run pytest # or 'uv run pytest' or 'pytest'
+
 workflows:
-  main-workflow:
-    jobs:
-      - test-app
+    version: 2.1
+    test-workflow:
+      jobs:
+        - build-and-test
