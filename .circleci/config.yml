@@ -20,6 +20,8 @@ jobs:
       # For Poetry projects
       - python/install-packages:
           pkg-manager: poetry
+          cache-key-override: "poetry-{{ checksum \"pyproject.toml\" }}"
+
       
       # OR for UV projects (fast modern installer)
       # - run:
