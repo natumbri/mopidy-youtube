@@ -10,6 +10,13 @@ jobs:
       # Specifies the official CircleCI Python 3.13 convenience image
       - image: cimg/python:3.13
     steps:
+      - run:
+          name: Force Git to use HTTPS
+          command: |
+            # Forces git to translate any ssh/git URLs into secure HTTPS URLs
+            git config --global url."https://github.com/".insteadOf "git@github.com:"
+            git config --global url."https://".insteadOf "git://"
+          
       - checkout
       # Install dependencies automatically using the orb's smart caching
       - python/install-packages:
