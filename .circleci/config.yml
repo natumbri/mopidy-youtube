@@ -9,6 +9,11 @@ jobs:
       - image: cimg/python:3.13
     steps:
       - run:
+        name: Install System Dependencies for Cairo
+        command: |
+          sudo apt-get update
+          sudo apt-get install -y libcairo2-dev pkg-config
+      - run:
           name: Force Git to use HTTPS
           command: |
             # Forces git to translate any ssh/git URLs into secure HTTPS URLs
