@@ -9,7 +9,9 @@ jobs:
     executor: python/default
     steps:
       # 1. Checkout code from GitHub
-      - checkout
+      - checkout:
+          force_https: true
+
 
       # 2. Install Python dependencies from requirements.txt using pip
       - python/install-packages:
