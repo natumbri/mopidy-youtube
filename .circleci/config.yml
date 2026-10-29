@@ -17,17 +17,27 @@ jobs:
       
       - checkout
 
+      - run:
+          name: Install dependencies
+          command: |
+            python -m venv venv
+            . venv/bin/activate
+            pip install --upgrade pip
+            pip install .
+            # Or install with optional/dev dependencies:
+            # pip install .[dev]
 
-      # 2. Install Python dependencies from requirements.txt using pip
-      - python/install-packages:
-          pkg-manager: pip-dist
-          # Uncomment and adjust if your requirements file is named differently or located in a subfolder:
-          # pip-dependency-file: requirements.txt
+      # # 2. Install Python dependencies from requirements.txt using pip
+      # - python/install-packages:
+      #     pkg-manager: pip-dist
+      #     # Uncomment and adjust if your requirements file is named differently or located in a subfolder:
+      #     # pip-dependency-file: requirements.txt
 
       # 3. Run pytest and store test results
       - run:
           name: Run pytest
           command: |
+            . venv/bin/activate
             pytest --junitxml=test-results/junit.xml
 
       # 4. Upload test results to CircleCI UI (Optional but recommended)
