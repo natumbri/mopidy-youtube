@@ -2,7 +2,7 @@
 Changelog
 *********
 
-Unreleased
+v4.0.4 (2026-11-03)
 ========================================
 
 - serve a track over http while it is caching and as a ``file://`` URI once caching is complete
