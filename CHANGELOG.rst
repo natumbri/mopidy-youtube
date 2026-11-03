@@ -2,6 +2,39 @@
 Changelog
 *********
 
+Unreleased
+========================================
+
+- serve a track over http while it is caching and as a ``file://`` URI once caching is complete
+- add Range/HEAD support to the cached audio handler and abort cleanly when a download stalls
+- move packaging to ``pyproject.toml`` only; replace black/flake8/CircleCI with ruff, tox and GitHub Actions
+- add type annotations throughout and check them with pyright; enable all ruff rules except a short list of deferred ones
+- fix YouTube Music history updates, which never ran because of a wrong import path
+- replace ``runtime.py``, the module-level mirrors and the class-level settings on ``Entry``/``Video``/``Playlist`` with one typed ``Context``
+- give the api clients (``API``, ``jAPI``, ``Music``) their own session and executors instead of class-level state, declare the interface they share as the ``YouTubeApi`` protocol, and close them when the backend stops
+- fix jAPI against the current YouTube site: related videos (and so autoplay), playlist items, channel playlists and playlist search results use the new ``lockupViewModel`` layout; also fix ``list_playlists`` failing for a missing playlist, ``run_search`` never ending on an empty response, page data containing ``};`` and the watch-page fallback breaking on a leading shelf
+- fix several YouTube Music results: related tracks without an album, unavailable videos, audio playlists (``OLAK5uy_``) being returned under the wrong id, tracks without an album and artists without an id
+- fix the cached track metadata, which could never be read back (the file used the key ``model`` where Mopidy expects ``__model__``); metadata cached by earlier versions is now read too, so cached tracks are looked up without asking the api
+- make sure the data of a video or playlist always resolves: loaders that fail, an error response for a playlist, a thumbnail without a width, or a listing without a ``channelId`` no longer leave a caller waiting forever, and ``Video.artists`` no longer raises when the listing arrives first
+- make every api return ``{"items": [...]}`` (never ``None`` or a list) when it has nothing to return, which also stops a failed ``jAPI`` playlist request from leaving ``Playlist.videos`` unresolved
+- verify a configured YouTube Data API key properly (the old check could never fail) and fall back to jAPI when it is missing or rejected
+- resolve audio in ``audio.py``: prefetching no longer delays a track that is about to be played, and a failed or interrupted resolution is retried instead of being remembered
+- download to yt-dlp's ``.part`` file and serve it while it grows, so a truncated file is never mistaken for a complete one and an interrupted download resumes
+- fix ``list_related_videos`` raising from its own error handler, and playlists in jAPI results reusing the previous playlist's thumbnail and channel title
+- make ``Video.get`` / ``Playlist.get`` thread-safe and fix a crash in ``Playlist.load_info`` when the API call fails
+- declare ``yt-dlp`` as a dependency, make ``ytmusicapi`` the ``musicapi`` extra and drop the unused ``beautifulsoup4`` and ``setuptools`` dependencies
+
+
+v4.0.3 (2026-10-26)
+========================================
+
+- modernize the extension for Mopidy 4 and Python 3.13 only
+- fix runtime queue/autoplay semantics and reduce blocking during track switching
+- tighten actor and background-thread behavior around prefetch and media resolution
+- harden API session handling and remove unnecessary executor churn
+- streamline stale comments and ambiguous helper naming while keeping the code light
+
+
 v4.0.2 (2024-05-04)
 ========================================
 

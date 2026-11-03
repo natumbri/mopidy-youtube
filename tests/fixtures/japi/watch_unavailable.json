@@ -1,0 +1,63 @@
+{
+ "contents": {
+  "twoColumnWatchNextResults": {
+   "results": {
+    "results": {
+     "contents": [
+      {
+       "itemSectionRenderer": {
+        "contents": [
+         {
+          "backgroundPromoRenderer": {
+           "title": {
+            "runs": [
+             {
+              "text": "This video isn't available anymore"
+             }
+            ]
+           },
+           "thumbnail": {
+            "thumbnails": [
+             {
+              "url": "https://www.youtube.com/img/desktop/unavailable/unavailable_video.png",
+              "width": 278,
+              "height": 161
+             }
+            ]
+           },
+           "ctaButton": {
+            "buttonRenderer": {
+             "style": "STYLE_SUGGESTIVE",
+             "size": "SIZE_SMALL",
+             "text": {
+              "simpleText": "GO TO HOME"
+             },
+             "navigationEndpoint": {
+              "commandMetadata": {
+               "webCommandMetadata": {
+                "url": "/",
+                "webPageType": "WEB_PAGE_TYPE_BROWSE",
+                "rootVe": 3854,
+                "apiUrl": "/youtubei/v1/browse"
+               }
+              },
+              "browseEndpoint": {
+               "browseId": "FEwhat_to_watch"
+              }
+             }
+            }
+           },
+           "style": {
+            "value": "BACKGROUND_PROMO_STYLE_TYPE_FULL_HEIGHT"
+           }
+          }
+         }
+        ]
+       }
+      }
+     ]
+    }
+   }
+  }
+ }
+}

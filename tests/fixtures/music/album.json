@@ -1,0 +1,131 @@
+{
+ "title": "A Night At The Opera",
+ "type": "Album",
+ "thumbnails": [
+  {
+   "url": "https://yt3.googleusercontent.com/nLn1gxvYiZqzXOY9HyUXVXbFtmR5nhY8sDpbvBT1aw-Ejjsz__Nz90sZoc4nZgff2sf8WjowuVRVBlBTww=w226-h226-l90-rj",
+   "width": 226,
+   "height": 226
+  },
+  {
+   "url": "https://yt3.googleusercontent.com/nLn1gxvYiZqzXOY9HyUXVXbFtmR5nhY8sDpbvBT1aw-Ejjsz__Nz90sZoc4nZgff2sf8WjowuVRVBlBTww=w544-h544-l90-rj",
+   "width": 544,
+   "height": 544
+  }
+ ],
+ "isExplicit": false,
+ "year": "1975",
+ "artists": [
+  {
+   "name": "Queen",
+   "id": "UCEPMVbUzImPl4p8k4LkGevA"
+  }
+ ],
+ "trackCount": 12,
+ "duration": "43 minutes",
+ "audioPlaylistId": "OLAK5uy_mQGa-V4qspfisNHu1kXthY1w93yJNT0rw",
+ "likeStatus": "INDIFFERENT",
+ "tracks": [
+  {
+   "videoId": "kqVpk0qxmfA",
+   "title": "Death On Two Legs (Dedicated To...)",
+   "artists": [
+    {
+     "name": "Queen",
+     "id": "UCEPMVbUzImPl4p8k4LkGevA"
+    }
+   ],
+   "album": "A Night At The Opera",
+   "likeStatus": "INDIFFERENT",
+   "inLibrary": false,
+   "pinnedToListenAgain": false,
+   "feedbackTokens": null,
+   "thumbnails": null,
+   "isAvailable": true,
+   "isExplicit": false,
+   "videoType": "MUSIC_VIDEO_TYPE_OMV",
+   "views": "11M plays",
+   "communityVoteStatus": null,
+   "trackNumber": 1,
+   "duration": "3:44",
+   "duration_seconds": 224,
+   "creditsBrowseId": "MPTCFJNGJZPlkmw"
+  },
+  {
+   "videoId": "OU6EyXcFBxA",
+   "title": "Lazing On A Sunday Afternoon",
+   "artists": [
+    {
+     "name": "Queen",
+     "id": "UCEPMVbUzImPl4p8k4LkGevA"
+    }
+   ],
+   "album": "A Night At The Opera",
+   "likeStatus": "INDIFFERENT",
+   "inLibrary": false,
+   "pinnedToListenAgain": false,
+   "feedbackTokens": null,
+   "thumbnails": null,
+   "isAvailable": true,
+   "isExplicit": false,
+   "videoType": "MUSIC_VIDEO_TYPE_OMV",
+   "views": "5.6M plays",
+   "communityVoteStatus": null,
+   "trackNumber": 2,
+   "duration": "1:08",
+   "duration_seconds": 68,
+   "creditsBrowseId": "MPTCuLc8MNNxP-s"
+  },
+  {
+   "videoId": "oaEM4JYFPfw",
+   "title": "I'm In Love With My Car",
+   "artists": [
+    {
+     "name": "Queen",
+     "id": "UCEPMVbUzImPl4p8k4LkGevA"
+    }
+   ],
+   "album": "A Night At The Opera",
+   "likeStatus": "INDIFFERENT",
+   "inLibrary": false,
+   "pinnedToListenAgain": false,
+   "feedbackTokens": null,
+   "thumbnails": null,
+   "isAvailable": true,
+   "isExplicit": false,
+   "videoType": "MUSIC_VIDEO_TYPE_OMV",
+   "views": "15M plays",
+   "communityVoteStatus": null,
+   "trackNumber": 3,
+   "duration": "3:05",
+   "duration_seconds": 185,
+   "creditsBrowseId": "MPTCZKq2DsMZwdo"
+  },
+  {
+   "videoId": "HaZpZQG2z10",
+   "title": "You're My Best Friend",
+   "artists": [
+    {
+     "name": "Queen",
+     "id": "UCEPMVbUzImPl4p8k4LkGevA"
+    }
+   ],
+   "album": "A Night At The Opera",
+   "likeStatus": "INDIFFERENT",
+   "inLibrary": false,
+   "pinnedToListenAgain": false,
+   "feedbackTokens": null,
+   "thumbnails": null,
+   "isAvailable": true,
+   "isExplicit": false,
+   "videoType": "MUSIC_VIDEO_TYPE_OMV",
+   "views": "97M plays",
+   "communityVoteStatus": null,
+   "trackNumber": 4,
+   "duration": "2:51",
+   "duration_seconds": 171,
+   "creditsBrowseId": "MPTCir2Wo-jYnL4"
+  }
+ ],
+ "duration_seconds": 2591
+}

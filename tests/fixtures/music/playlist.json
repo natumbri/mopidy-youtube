@@ -1,0 +1,157 @@
+{
+ "owned": false,
+ "id": "PL4fGSI1pDJn6jXS_Tv_N9B8Z0HTRVJE0m",
+ "privacy": "PUBLIC",
+ "views": null,
+ "duration": "6 hours, 4 minutes",
+ "trackCount": 100,
+ "title": "Top 100 Songs South Korea",
+ "thumbnails": [
+  {
+   "url": "https://yt3.googleusercontent.com/egwpHcAUdcaX2hLfyYfJeTiQhJVSopxUZRXUM_gkw6bO-V7P9ALjLc7y0oDbPTXiP9JQGtqk4g=s576",
+   "width": 576,
+   "height": 576
+  },
+  {
+   "url": "https://yt3.googleusercontent.com/egwpHcAUdcaX2hLfyYfJeTiQhJVSopxUZRXUM_gkw6bO-V7P9ALjLc7y0oDbPTXiP9JQGtqk4g=s1200",
+   "width": 1200,
+   "height": 1200
+  }
+ ],
+ "author": {
+  "name": "YouTube Charts",
+  "id": "FEmusic_charts"
+ },
+ "year": "2026",
+ "tracks": [
+  {
+   "videoId": "D968qfUZMUE",
+   "title": "NEON",
+   "artists": [
+    {
+     "name": "A2O LITE",
+     "id": "UCCa_4FfbVdc6zhWmRndKwfQ"
+    },
+    {
+     "name": "A2O",
+     "id": "UCcy9NwrIzmzITEqiVstaN1A"
+    }
+   ],
+   "album": null,
+   "likeStatus": "INDIFFERENT",
+   "inLibrary": false,
+   "pinnedToListenAgain": false,
+   "thumbnails": [
+    {
+     "url": "https://i.ytimg.com/vi/D968qfUZMUE/hqdefault.jpg?sqp=-oaymwEWCJADEOEBIAQqCggAEOADGC0guwJIWg&rs=AMzJL3kMvQdQFKG8povVs4yHCAgiIaa98w",
+     "width": 400,
+     "height": 225
+    }
+   ],
+   "isAvailable": true,
+   "isExplicit": false,
+   "videoType": "MUSIC_VIDEO_TYPE_OMV",
+   "views": null,
+   "communityVoteStatus": null,
+   "duration": "3:43",
+   "duration_seconds": 223,
+   "feedbackTokens": null
+  },
+  {
+   "videoId": "GxChUrrY4bc",
+   "title": "꿈꾸던 어른이 되었나요?",
+   "artists": [
+    {
+     "name": "MEOMURU",
+     "id": "UCumxj48bP-H_YusbCXi7vkQ"
+    }
+   ],
+   "album": null,
+   "likeStatus": "INDIFFERENT",
+   "inLibrary": false,
+   "pinnedToListenAgain": false,
+   "thumbnails": [
+    {
+     "url": "https://i.ytimg.com/vi/GxChUrrY4bc/hqdefault.jpg?sqp=-oaymwEWCJADEOEBIAQqCggAEOADGC0guwJIWg&rs=AMzJL3kSMe9ZBm40IxOMPZMGERUQExd80Q",
+     "width": 400,
+     "height": 225
+    }
+   ],
+   "isAvailable": true,
+   "isExplicit": false,
+   "videoType": "MUSIC_VIDEO_TYPE_OMV",
+   "views": null,
+   "communityVoteStatus": null,
+   "duration": "3:25",
+   "duration_seconds": 205,
+   "feedbackTokens": null
+  },
+  {
+   "videoId": "7mDDM0eBWR0",
+   "title": "소연 (SOYEON) '퇴사할게여 (Narr. 기안84)' Official Music Video",
+   "artists": [
+    {
+     "name": "i-dle (아이들)",
+     "id": "UCritGVo7pLJLUS8wEu32vow"
+    }
+   ],
+   "album": null,
+   "likeStatus": "INDIFFERENT",
+   "inLibrary": false,
+   "pinnedToListenAgain": false,
+   "thumbnails": [
+    {
+     "url": "https://i.ytimg.com/vi/7mDDM0eBWR0/hqdefault.jpg?sqp=-oaymwEWCJADEOEBIAQqCggAEOADGC0guwJIWg&rs=AMzJL3mcd8GfbY8WH3gLA6AY_V9W2yxTHQ",
+     "width": 400,
+     "height": 225
+    }
+   ],
+   "isAvailable": true,
+   "isExplicit": false,
+   "videoType": "MUSIC_VIDEO_TYPE_OMV",
+   "views": null,
+   "communityVoteStatus": null,
+   "duration": "3:32",
+   "duration_seconds": 212,
+   "feedbackTokens": null
+  },
+  {
+   "videoId": "F_EGihOgXsg",
+   "title": "Mise en scène",
+   "artists": [
+    {
+     "name": "EPIK HIGH",
+     "id": "UCoNq-kohNtB6l7ChNheqW0g"
+    },
+    {
+     "name": "DAVICHI",
+     "id": "UCACsUruxumQoyZq08UB9RVw"
+    }
+   ],
+   "album": {
+    "name": "Mise en scène",
+    "id": "MPREb_aA0FuCfnGxu"
+   },
+   "likeStatus": "INDIFFERENT",
+   "inLibrary": false,
+   "pinnedToListenAgain": false,
+   "feedbackTokens": null,
+   "thumbnails": [
+    {
+     "url": "https://yt3.googleusercontent.com/QyfTHAJ798VN7xLKv-3e3hgSpwcmWYmHcnMkAm1sWF8Q9_R2IK7JSw8rMilntcn7WHEIenlu1XGBpWf7Hg=w120-h120-l90-rj",
+     "width": 120,
+     "height": 120
+    }
+   ],
+   "isAvailable": true,
+   "isExplicit": false,
+   "videoType": "MUSIC_VIDEO_TYPE_ATV",
+   "views": null,
+   "communityVoteStatus": null,
+   "duration": "2:59",
+   "duration_seconds": 179,
+   "creditsBrowseId": "MPTCF_EGihOgXsg"
+  }
+ ],
+ "duration_seconds": 21896
+}

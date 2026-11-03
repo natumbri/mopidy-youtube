@@ -1,50 +1,43 @@
 version: 2.1
 
 orbs:
-  codecov: codecov/codecov@1.0.5
-
-workflows:
-  version: 2
-  test:
-    jobs:
-      - py38
-      - black
-      - check-manifest
-      - flake8
+  python: circleci/python@4.0.0
 
 jobs:
-  py38: &test-template
+  build-and-test:
     docker:
-      - image: mopidy/ci-python:3.8
+      - image: cimg/python:3.13
     steps:
-      - checkout
-      - restore_cache:
-          name: Restoring tox cache
-          key: tox-v1-{{ .Environment.CIRCLE_JOB }}-{{ checksum "setup.cfg" }}
+      - run: |
+          sudo apt-get update
+          sudo apt-get install -y libcairo2-dev pkg-config libgirepository-2.0-dev python3-dev gobject-introspection
+
       - run:
-          name: Run tests
+          name: Force Git to use HTTPS
           command: |
-            tox -e $CIRCLE_JOB -- \
-              --junit-xml=test-results/pytest/results.xml \
-              --cov-report=xml
-      - save_cache:
-          name: Saving tox cache
-          key: tox-v1-{{ .Environment.CIRCLE_JOB }}-{{ checksum "setup.cfg" }}
-          paths:
-            - ./.tox
-            - ~/.cache/pip
-      - codecov/upload:
-          file: coverage.xml
-      - store_test_results:
-          path: test-results
+            # Forces git to translate any ssh/git URLs into secure HTTPS URLs
+            git config --global url."https://github.com/".insteadOf "git@github.com:"
+            git config --global url."https://".insteadOf "git://"
 
-  py37:
-    <<: *test-template
-    docker:
-      - image: mopidy/ci-python:3.7
+      - checkout
+      
+      # For Poetry projects
+      - python/install-packages:
+          pkg-manager: poetry
+          cache-key-override: 'poetry-{{ checksum "pyproject.toml" }}'
 
-  black: *test-template
+      
+      # OR for UV projects (fast modern installer)
+      # - run:
+      #     name: Install dependencies with uv
+      #     command: pip install uv && uv sync
 
-  check-manifest: *test-template
+      - run:
+          name: Run tests with pytest
+          command: poetry run pytest # or 'uv run pytest' or 'pytest'
 
-  flake8: *test-template
+workflows:
+    version: 2.1
+    test-workflow:
+      jobs:
+        - build-and-test

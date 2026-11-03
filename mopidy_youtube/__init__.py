@@ -1,12 +1,27 @@
+from __future__ import annotations
+
 import logging
 import pathlib
+from importlib.metadata import PackageNotFoundError, version
+from typing import TYPE_CHECKING, Any, override
 
-import pkg_resources
-from mopidy import config, ext
+from mopidy import config as mopidy_config
+from mopidy import ext
 
-__version__ = pkg_resources.get_distribution("Mopidy-YouTube").version
+from mopidy_youtube.config import apply_config_schema
+
+if TYPE_CHECKING:
+    from mopidy.core import CoreProxy
+    from tornado.web import RequestHandler
+
+try:
+    __version__ = version("Mopidy-YouTube")
+except PackageNotFoundError:
+    __version__ = "0.0.0+local"
 
 logger = logging.getLogger(__name__)
+
+__all__ = ["Extension", "__version__"]
 
 
 class Extension(ext.Extension):
@@ -14,38 +29,30 @@ class Extension(ext.Extension):
     ext_name = "youtube"
     version = __version__
 
-    def get_default_config(self):
-        return config.read(pathlib.Path(__file__).parent / "ext.conf")
+    @override
+    def get_default_config(self) -> str:
+        return mopidy_config.read(pathlib.Path(__file__).parent / "ext.conf")
 
-    def get_config_schema(self):
+    @override
+    def get_config_schema(self) -> mopidy_config.ConfigSchema:
         schema = super().get_config_schema()
-        schema["allow_cache"] = config.String(optional=True)
-        schema["youtube_api_key"] = config.String(optional=True)
-        schema["search_results"] = config.Integer(minimum=1)
-        schema["playlist_max_videos"] = config.Integer(minimum=1)
-        schema["api_enabled"] = config.Boolean(optional=True)
-        schema["channel_id"] = config.String(optional=True)
-        schema["musicapi_enabled"] = config.Boolean(optional=True)
-        schema["musicapi_browser_authentication_file"] = config.String(optional=True)
-        schema["musicapi_cookiefile"] = config.String(optional=True)
-        schema["autoplay_enabled"] = config.Boolean(optional=True)
-        schema["strict_autoplay"] = config.Boolean(optional=True)
-        schema["max_autoplay_length"] = config.Integer(optional=True)
-        schema["max_degrees_of_separation"] = config.Integer()
-        schema["youtube_dl_package"] = config.String(optional=True)
-        return schema
+        return apply_config_schema(schema)
 
-    def setup(self, registry):
-        from .backend import YouTubeBackend, YouTubeCoreListener
-        from .frontend import YouTubeAutoplayer
+    @override
+    def setup(self, registry: ext.Registry) -> None:
+        from .backend import YouTubeBackend  # noqa: PLC0415 - keep import light
+        from .frontend import YouTubeAutoplayer  # noqa: PLC0415
+        from .listener import YouTubeCoreListener  # noqa: PLC0415
 
         registry.add("backend", YouTubeBackend)
         registry.add("frontend", YouTubeAutoplayer)
         registry.add("frontend", YouTubeCoreListener)
         registry.add("http:app", {"name": self.ext_name, "factory": self.webapp})
 
-    def webapp(self, config, core):
-        from .web import AudioHandler, ImageHandler, IndexHandler
+    def webapp(
+        self, config: mopidy_config.Config, core: CoreProxy
+    ) -> list[tuple[str, type[RequestHandler], dict[str, Any]]]:
+        from .web import AudioHandler, ImageHandler, IndexHandler  # noqa: PLC0415
 
         cache_dir = self.get_cache_dir(config)
 

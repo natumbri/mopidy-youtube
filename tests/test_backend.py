@@ -1,199 +1,710 @@
+import json
+import pathlib
+from typing import Any
+from unittest import mock
+
+import pykka
 import pytest
+import requests
 from mopidy import backend as backend_api
-from mopidy.core import CoreListener as CoreListener_api
-from mopidy.models import Album, Image, Ref, SearchResult, Track
+from mopidy.models import TlTrack, Track
 
-from mopidy_youtube import backend, youtube  # , data, youtube
-from mopidy_youtube.backend import (
-    YouTubeCoreListener,
-    YouTubeLibraryProvider,
-    YouTubePlaybackProvider,
-)
-
-from tests import apis, channel_uris, get_backend, my_vcr, playlist_uris, video_uris
-from tests.test_api import setup_entry_api
+from mopidy_youtube import backend, frontend, web, youtube
+from mopidy_youtube import listener as listener_lib
+from mopidy_youtube.apis.client import Client
+from mopidy_youtube.apis.youtube_music import Music
+from mopidy_youtube.apis.ytm_item_to_video import ytm_item_to_video
+from mopidy_youtube.async_utils import is_future_set
+from mopidy_youtube.context import context
 
 
-def get_corelistener(config):
-    obj = backend.YouTubeCoreListener(config=config, core=None)
-    return obj
+def make_config(tmp_path: pathlib.Path) -> dict[str, Any]:
+    return {
+        "core": {
+            "cache_dir": str(tmp_path / "mopidy-cache"),
+            "data_dir": str(tmp_path / "mopidy-data"),
+        },
+        "http": {"enabled": True, "hostname": "::", "port": 6680},
+        "youtube": {
+            "enabled": True,
+            "allow_cache": True,
+            "youtube_api_key": None,
+            "channel_id": None,
+            "search_results": 15,
+            "playlist_max_videos": 20,
+            "api_enabled": False,
+            "musicapi_enabled": False,
+            "musicapi_cookie": None,
+            "musicapi_browser_authentication_file": None,
+            "musicapi_cookiefile": None,
+            "history_enabled": False,
+            "autoplay_enabled": False,
+            "strict_autoplay": False,
+            "max_autoplay_length": 600,
+            "max_degrees_of_separation": 3,
+            "youtube_dl_package": "yt_dlp",
+        },
+        "proxy": {},
+    }
 
 
-def test_uri_schemes(config):
-    backend = get_backend(config, {})
+def test_backend_initializes_expected_provider_objects(tmp_path: pathlib.Path):
+    instance = backend.YouTubeBackend(config=make_config(tmp_path), audio=None)
 
-    assert "youtube" in backend.uri_schemes
-    assert "yt" in backend.uri_schemes
-
-
-def test_init_sets_up_the_providers(config):
-    backend = get_backend(config, {})
-
-    assert isinstance(backend.library, YouTubeLibraryProvider)
-    assert isinstance(backend.library, backend_api.LibraryProvider)
-
-    assert isinstance(backend.playback, YouTubePlaybackProvider)
-    assert isinstance(backend.playback, backend_api.PlaybackProvider)
-
-    core = get_corelistener(config)
-
-    assert isinstance(core, YouTubeCoreListener)
-    assert isinstance(core, CoreListener_api)
+    assert instance.uri_schemes == ["youtube", "yt"]
+    assert isinstance(instance.library, backend.YouTubeLibraryProvider)
+    assert isinstance(instance.library, backend_api.LibraryProvider)
+    assert isinstance(instance.playback, backend.YouTubePlaybackProvider)
+    assert isinstance(instance.playback, backend_api.PlaybackProvider)
 
 
-@pytest.mark.parametrize("api", apis)
-def test_on_start_configures_the_api(api, config, headers):
-    with my_vcr.use_cassette(f"tests/fixtures/{api['name']}/backend_on_start.yaml"):
-        backend_inst = get_backend(config=config, api_config=api["config"])
-        backend_inst.on_start()
-        assert isinstance(youtube.Entry.api, api["class"])
+def test_video_uses_safe_default_search_limits_before_backend_config_runs():
+    assert context.search_results >= 1
+    assert context.playlist_max_videos >= 1
 
 
-@pytest.mark.parametrize("api", apis)
-@pytest.mark.parametrize("playlist_uri", playlist_uris)
-def test_backend_browse_playlist(api, config, headers, playlist_uri):
-    with my_vcr.use_cassette(
-        f"tests/fixtures/{api['name']}/backend_browse_playlist.yaml"
-    ):
-        setup_entry_api(api, config, headers)
-
-        backend_inst = get_backend(config=config, api_config=api["config"])
-
-        playlist = backend_inst.library.browse(playlist_uri)
-        assert isinstance(playlist, list)
-        assert isinstance(playlist[0], Ref)
-
-
-@pytest.mark.parametrize("api", apis)
-@pytest.mark.parametrize("channel_uri", channel_uris)
-def test_backend_browse_channel(api, config, headers, channel_uri):
-    with my_vcr.use_cassette(
-        f"tests/fixtures/{api['name']}/backend_browse_channel.yaml"
-    ):
-        setup_entry_api(api, config, headers)
-
-        backend_inst = get_backend(config=config, api_config=api["config"])
-
-        channel = backend_inst.library.browse(channel_uri)
-        assert isinstance(channel, list)
-        assert isinstance(channel[0], Ref)
-
-
-@pytest.mark.parametrize("api", apis)
-def test_backend_search(api, config, headers):
-    with my_vcr.use_cassette(f"tests/fixtures/{api['name']}/backend_search.yaml"):
-        setup_entry_api(api, config, headers)
-
-        backend_inst = get_backend(config=config, api_config=api["config"])
-
-        search_result = backend_inst.library.search(query={"omit-any": ["chvrches"]})
-        assert search_result is None
-
-        search_result = backend_inst.library.search(query={"any": ["chvrches"]})
-
-        # assert len(videos.tracks) == 18
-
-        assert isinstance(search_result, SearchResult)
-        # assert isinstance(search_result.tracks, list)
-        assert isinstance(search_result.tracks[0], Track)
-        # assert isinstance(search_result.albums, list)
-
-        # does the youtube API return albums??
-        if search_result.albums:
-            assert isinstance(search_result.albums[0], Album)
-        # assert isinstance(search_result.artists, list)
-
-
-# this test fails for music api for more than one video; the first
-# video works, the second video hangs.
-# @pytest.mark.parametrize("api", apis)
-# @pytest.mark.parametrize("video_uri", video_uris)
-# def test_backend_lookup_video(api, config, headers, video_uri):
-
-#     with my_vcr.use_cassette(f"tests/fixtures/{api['name']}/backend_lookup_video.yaml"):
-
-#         setup_entry_api(api, config, headers)
-
-#         backend_inst = get_backend(config=config, api_config=api["config"])
-
-#         video = backend_inst.library.lookup(video_uri)
-#         assert len(video) == 1
-
-
-@pytest.mark.parametrize("api", apis)
-@pytest.mark.parametrize("pl_uri", playlist_uris)
-def test_backend_lookup_playlist(api, config, headers, pl_uri):
-    with my_vcr.use_cassette(
-        f"tests/fixtures/{api['name']}/backend_lookup_playlist.yaml"
-    ):
-        setup_entry_api(api, config, headers)
-
-        backend_inst = get_backend(config=config, api_config=api["config"])
-
-        pl = backend_inst.library.lookup(pl_uri)
-        assert pl  # len(pl) == 16
-
-
-@pytest.mark.parametrize("api", apis)
-@pytest.mark.parametrize("video_uri", video_uris)
-def test_backend_get_video_image(api, config, headers, video_uri):
-    with my_vcr.use_cassette(
-        f"tests/fixtures/{api['name']}/backend_get_video_image.yaml"
-    ):
-        setup_entry_api(api, config, headers)
-        backend_inst = get_backend(config=config, api_config=api["config"])
-        images = backend_inst.library.get_images(video_uri)
-        assert isinstance(images, dict)
-        assert isinstance(images[video_uri], list)
-        assert isinstance(images[video_uri][0], Image)
-
-
-@pytest.mark.parametrize("api", apis)
-def test_backend_get_video_images(api, config, headers, video_uris):
-    with my_vcr.use_cassette(
-        f"tests/fixtures/{api['name']}/backend_get_video_images.yaml"
-    ):
-        setup_entry_api(api, config, headers)
-
-        backend_inst = get_backend(config=config, api_config=api["config"])
-        setup_entry_api(api, config, headers)
-        images = backend_inst.library.get_images(video_uris)
-        assert isinstance(images, dict)
-        assert isinstance(images[video_uris[0]], list)
-        assert isinstance(images[video_uris[0]][0], Image)
-        for video_uri in video_uris:
-            for video_Image in images[video_uri]:
-                assert isinstance(video_Image, Image)
-
-        assert len(images) == 9
-
-
-@pytest.mark.parametrize("api", apis)
-@pytest.mark.parametrize("playlist_uri", playlist_uris)
-def test_backend_get_playlist_image(api, config, headers, playlist_uri):
-    with my_vcr.use_cassette(
-        f"tests/fixtures/{api['name']}/backend_get_playlist_image.yaml"
-    ):
-        setup_entry_api(api, config, headers)
-        backend_inst = get_backend(config=config, api_config=api["config"])
-        images = backend_inst.library.get_images(playlist_uri)
-        assert isinstance(images, dict)
-        assert isinstance(images[playlist_uri], list)
-        for playlist_Image in images[playlist_uri]:
-            assert isinstance(playlist_Image, Image)
-
-
-@pytest.mark.parametrize("api", apis)
-@pytest.mark.parametrize("video_uri", video_uris)
-def test_backend_playback_translate_uri(
-    api, config, headers, video_uri, youtube_dl_mock_with_video
+def test_backend_clamps_non_positive_config_limits_to_safe_minimums(
+    tmp_path: pathlib.Path,
 ):
-    with my_vcr.use_cassette(
-        f"tests/fixtures/{api['name']}/backend_playback_translate_uri.yaml"
+    config = make_config(tmp_path)
+    config["youtube"]["search_results"] = 0
+    config["youtube"]["playlist_max_videos"] = -5
+
+    instance = backend.YouTubeBackend(config=config, audio=None)
+
+    assert context.search_results == 1
+    assert context.playlist_max_videos == 1
+    assert instance.uri_schemes == ["youtube", "yt"]
+
+
+def test_backend_publishes_its_settings_to_the_shared_context(
+    tmp_path: pathlib.Path,
+):
+    config = make_config(tmp_path)
+    config["youtube"]["channel_id"] = "UC123"
+    config["youtube"]["youtube_dl_package"] = None
+    config["http"]["port"] = 7777
+
+    backend.YouTubeBackend(config=config, audio=None)
+
+    assert context.channel == "UC123"
+    assert context.http_port == 7777
+    assert context.youtube_dl_package == "yt_dlp"
+    assert context.musicapi_enabled is False
+
+
+def test_on_start_uses_japi_and_the_cache_dir_when_the_data_api_is_disabled(
+    tmp_path: pathlib.Path,
+):
+    config = make_config(tmp_path)
+    config["youtube"]["allow_cache"] = True
+    instance = backend.YouTubeBackend(config=config, audio=None)
+
+    with mock.patch("mopidy_youtube.backend.youtube_japi.jAPI") as japi:
+        instance.on_start()
+
+    assert context.api is japi.return_value
+    assert context.cache_location == tmp_path / "mopidy-cache" / "youtube"
+
+
+def start_backend_with_data_api(
+    tmp_path: pathlib.Path, *, key: str | None, search_result: Any
+) -> mock.Mock:
+    config = make_config(tmp_path)
+    config["youtube"]["api_enabled"] = True
+    config["youtube"]["youtube_api_key"] = key
+    instance = backend.YouTubeBackend(config=config, audio=None)
+
+    with (
+        mock.patch("mopidy_youtube.backend.youtube_api.API") as data_api,
+        mock.patch("mopidy_youtube.backend.youtube_japi.jAPI"),
     ):
-        setup_entry_api(api, config, headers)
-        backend_inst = get_backend(config=config, api_config=api["config"])
-        youtube.Video.proxy = None
-        audio_url = backend_inst.playback.translate_uri(video_uri)
-        # How to test this?
-        assert audio_url
+        data_api.return_value.search.return_value = search_result
+        instance.on_start()
+
+    return data_api
+
+
+def test_on_start_uses_the_data_api_once_the_key_is_verified(tmp_path: pathlib.Path):
+    data_api = start_backend_with_data_api(
+        tmp_path, key="secret", search_result={"items": []}
+    )
+
+    assert context.api is data_api.return_value
+    assert data_api.call_args.args[2] == "secret"
+
+
+def test_on_start_falls_back_to_japi_when_the_key_is_rejected(tmp_path: pathlib.Path):
+    data_api = start_backend_with_data_api(
+        tmp_path, key="bad", search_result={"error": {"message": "API key not valid"}}
+    )
+
+    assert context.api is not data_api.return_value
+    data_api.return_value.close.assert_called_once_with()
+
+
+def test_on_start_falls_back_to_japi_without_a_key(tmp_path: pathlib.Path):
+    data_api = start_backend_with_data_api(tmp_path, key=None, search_result={})
+
+    data_api.assert_not_called()
+
+
+def test_on_start_uses_the_music_api_with_cookies_from_the_authentication_file(
+    tmp_path: pathlib.Path,
+):
+    auth_file = tmp_path / "auth.json"
+    auth_file.write_text('{"cookie": "x"}')
+    config = make_config(tmp_path)
+    config["youtube"]["musicapi_enabled"] = True
+    config["youtube"]["musicapi_browser_authentication_file"] = str(auth_file)
+    instance = backend.YouTubeBackend(config=config, audio=None)
+
+    with (
+        mock.patch("mopidy_youtube.backend.youtube_japi.jAPI") as japi,
+        mock.patch("mopidy_youtube.apis.youtube_music.Music") as music,
+    ):
+        instance.on_start()
+
+    assert context.api is music.return_value
+    assert music.call_args.args[1] == {"cookie": "x"}
+    assert music.call_args.kwargs["fallback"] is japi.return_value
+
+
+def make_tl_tracks(*uris: str):
+    return [
+        mock.Mock(tlid=tlid, track=mock.Mock(uri=uri))
+        for tlid, uri in enumerate(uris, start=1)
+    ]
+
+
+def test_core_listener_prefetches_audio_for_every_youtube_video_in_tracklist(
+    tmp_path: pathlib.Path,
+):
+    config = make_config(tmp_path)
+    core = mock.Mock()
+    core.tracklist.get_tl_tracks.return_value.get.return_value = make_tl_tracks(
+        "youtube:video:nvlTJrNJ5lA",
+        "spotify:track:abc123",
+        "yt:video:LvXoB1S45j0",
+    )
+    core.playback.get_current_tl_track.return_value.get.return_value = None
+
+    listener = listener_lib.YouTubeCoreListener(config=config, core=core)
+
+    with mock.patch("mopidy_youtube.youtube.Video.get") as get_video:
+        video_one = mock.Mock()
+        video_two = mock.Mock()
+        get_video.side_effect = [video_one, video_two]
+
+        listener.tracklist_changed()
+
+    assert get_video.call_count == 2
+    get_video.assert_any_call("nvlTJrNJ5lA")
+    get_video.assert_any_call("LvXoB1S45j0")
+
+
+def test_history_listener_respects_history_enabled_flag(tmp_path: pathlib.Path):
+    config = make_config(tmp_path)
+    config["youtube"]["history_enabled"] = False
+    core = mock.Mock()
+    core.autoplayed = []
+    core.tracklist.get_tracks.return_value.get.return_value = []
+
+    listener = listener_lib.YouTubeCoreListener(config=config, core=core)
+    tl_track = mock.Mock()
+    tl_track.track.uri = "youtube:video:nvlTJrNJ5lA"
+    tl_track.track.length = 300000
+
+    with mock.patch("mopidy_youtube.listener.listener.send") as send:
+        listener.track_playback_ended(tl_track, 200000)
+
+    send.assert_not_called()
+
+    config["youtube"]["history_enabled"] = True
+    with mock.patch("mopidy_youtube.listener.listener.send") as send:
+        listener.track_playback_ended(tl_track, 200000)
+
+    send.assert_called_once()
+
+
+def test_tracklist_changed_prefetches_youtube_audio_in_background(
+    tmp_path: pathlib.Path,
+):
+    config = make_config(tmp_path)
+    core = mock.Mock()
+    core.tracklist.get_tracks.return_value.get.return_value = []
+    listener_instance = listener_lib.YouTubeCoreListener(config=config, core=core)
+
+    executor = mock.Mock()
+    with mock.patch.object(
+        listener_lib.YouTubeCoreListener,
+        "_prefetch_executor",
+        executor,
+        create=True,
+    ):
+        listener_instance.tracklist_changed()
+
+    executor.submit.assert_called_once_with(listener_instance._prefetch_youtube_audio)
+    core.tracklist.get_tracks.assert_not_called()
+
+
+def test_prefetch_limits_queue_work_to_a_small_window(tmp_path: pathlib.Path):
+    config = make_config(tmp_path)
+    core = mock.Mock()
+    ids = [f"{i:011d}" for i in range(20)]
+    tl_tracks = make_tl_tracks(*(f"youtube:video:{video_id}" for video_id in ids))
+    core.tracklist.get_tl_tracks.return_value.get.return_value = tl_tracks
+    core.playback.get_current_tl_track.return_value.get.return_value = None
+    listener = listener_lib.YouTubeCoreListener(config=config, core=core)
+
+    with mock.patch("mopidy_youtube.listener.youtube.Video.get") as get_video:
+        get_video.return_value = mock.Mock(audio_url=None)
+        listener._prefetch_youtube_audio()
+
+    assert get_video.call_count == listener._prefetch_limit
+    get_video.assert_any_call(ids[0])
+    get_video.assert_any_call(ids[1])
+    get_video.assert_any_call(ids[2])
+
+
+def test_prefetch_window_starts_at_the_current_track(tmp_path: pathlib.Path):
+    config = make_config(tmp_path)
+    core = mock.Mock()
+    ids = [f"{i:011d}" for i in range(20)]
+    tl_tracks = make_tl_tracks(*(f"youtube:video:{video_id}" for video_id in ids))
+    core.tracklist.get_tl_tracks.return_value.get.return_value = tl_tracks
+    core.playback.get_current_tl_track.return_value.get.return_value = tl_tracks[5]
+    listener = listener_lib.YouTubeCoreListener(config=config, core=core)
+
+    with mock.patch("mopidy_youtube.listener.youtube.Video.get") as get_video:
+        get_video.return_value = mock.Mock(audio_url=None)
+        listener._prefetch_youtube_audio()
+
+    assert [call.args[0] for call in get_video.call_args_list] == ids[5:8]
+
+
+def make_music(fallback: Any = None) -> Music:
+    with mock.patch("mopidy_youtube.apis.youtube_music.YTMusic"):
+        return Music(None, {"Cookie": "PREF=hl=en; CONSENT=YES+20210329;"}, fallback)
+
+
+def test_music_list_related_videos_submits_playlist_lookup_in_background():
+    executor = mock.Mock()
+    with mock.patch(
+        "mopidy_youtube.apis.youtube_music.ThreadPoolExecutor", return_value=executor
+    ):
+        music = make_music(
+            fallback=mock.Mock(**{"list_related_videos.return_value": {"items": []}})
+        )
+
+    ytmusic = music.ytmusic
+    ytmusic.get_watch_playlist.return_value = {"related": "related-id"}
+    ytmusic.get_song_related.return_value = [
+        {"contents": [{"videoId": "abc123", "title": "Example Track"}]}
+    ]
+    ytmusic.get_song.return_value = {
+        "videoDetails": {
+            "videoId": "abc123",
+            "title": "Example Track",
+            "lengthSeconds": "42",
+            "thumbnail": {"thumbnails": [{"url": "https://example.com/thumb.jpg"}]},
+            "author": "Example Artist",
+        }
+    }
+
+    music.list_related_videos("video-id")
+
+    assert executor.submit.call_args[0][0] == music.list_playlists
+    assert isinstance(executor.submit.call_args[0][1], set)
+
+
+def test_music_list_related_videos_survives_a_failing_watch_playlist():
+    music = make_music(
+        fallback=mock.Mock(**{"list_related_videos.return_value": {"items": []}})
+    )
+    music.ytmusic.get_watch_playlist.side_effect = RuntimeError("no watch playlist")
+    music.ytmusic.get_song_related.side_effect = RuntimeError("no related songs")
+
+    assert music.list_related_videos("video-id")["items"] == []
+
+
+def test_music_asks_the_fallback_api_when_it_finds_few_related_videos():
+    fallback = mock.Mock()
+    fallback.list_related_videos.return_value = {
+        "items": [{"id": {"videoId": "zzz"}, "snippet": {}}]
+    }
+    music = make_music(fallback)
+    music.ytmusic.get_watch_playlist.return_value = {"related": "r", "tracks": []}
+    music.ytmusic.get_song_related.return_value = [{"contents": []}]
+
+    result = music.list_related_videos("video-id")
+
+    fallback.list_related_videos.assert_called_once_with("video-id")
+    assert result["items"][0]["id"]["videoId"] == "zzz"
+
+
+def test_music_returns_an_empty_result_for_an_unknown_playlist():
+    music = make_music()
+
+    with mock.patch.object(music, "_get_playlist_or_album", return_value={}):
+        assert music.list_playlistitems("PL1", None, 50) == {"items": []}
+
+
+def test_music_client_uses_its_own_session_and_credentials():
+    with mock.patch("mopidy_youtube.apis.youtube_music.YTMusic") as ytmusic_factory:
+        music = Music(None, {"Cookie": "secret"}, mock.Mock())
+
+    assert music.ytmusic is ytmusic_factory.return_value
+    kwargs = ytmusic_factory.call_args.kwargs
+    assert kwargs["requests_session"] is music.session
+    assert json.loads(kwargs["auth"]) == {"Cookie": "secret"}
+
+
+def test_music_close_shuts_down_both_executors():
+    music = make_music()
+    music._lookup_executor = mock.Mock()
+    music.executor = mock.Mock()
+
+    music.close()
+
+    music._lookup_executor.shutdown.assert_called_once()
+    music.executor.shutdown.assert_called_once()
+
+
+def test_japi_returns_an_empty_result_when_a_playlist_cannot_be_fetched():
+    japi = backend.youtube_japi.jAPI(None, {})
+    japi.session = mock.Mock()
+    japi.session.get.return_value.status_code = 500
+
+    assert japi.list_playlistitems("PL1", None, 50) == {"items": []}
+
+
+def test_the_api_is_unconfigured_until_the_backend_starts():
+    with pytest.raises(RuntimeError, match="has not been started"):
+        context.api.search("anything")
+
+
+def playlist_renderer(playlist_id: str, **missing: bool) -> dict[str, Any]:
+    renderer: dict[str, Any] = {
+        "playlistId": playlist_id,
+        "videoCount": "3",
+        "title": {"simpleText": f"Playlist {playlist_id}"},
+        "thumbnails": [
+            {"thumbnails": [{"url": f"https://i.ytimg.com/{playlist_id}.jpg?x=1"}]}
+        ],
+        "longBylineText": {"runs": [{"text": f"Owner of {playlist_id}"}]},
+    }
+    for key in missing:
+        del renderer[key]
+    return {"playlistRenderer": renderer}
+
+
+def test_japi_skips_a_playlist_without_a_thumbnail_instead_of_reusing_another():
+    items = backend.youtube_japi.jAPI.json_to_items(
+        [
+            playlist_renderer("PL1"),
+            playlist_renderer("PL2", thumbnails=True),
+            playlist_renderer("PL3"),
+        ]
+    )
+
+    assert [item["id"]["playlistId"] for item in items] == ["PL1", "PL3"]
+    assert items[1]["snippet"]["thumbnails"]["default"]["url"].endswith("PL3.jpg")
+
+
+def test_japi_names_the_channel_unknown_instead_of_reusing_the_previous_one():
+    items = backend.youtube_japi.jAPI.json_to_items(
+        [playlist_renderer("PL1"), playlist_renderer("PL2", longBylineText=True)]
+    )
+
+    assert [item["snippet"]["channelTitle"] for item in items] == [
+        "Owner of PL1",
+        "unknown",
+    ]
+
+
+def test_ytmusic_item_to_video_uses_song_duration_and_thumbnail_payload():
+    item = {
+        "videoId": "abc123defgh",
+        "title": "Example Track",
+        "song_duration": "225",
+        "artists": [{"name": "Example Artist", "id": "artist-1"}],
+        "thumbnail": {"thumbnails": [{"url": "https://example.com/thumb.jpg"}]},
+    }
+
+    converted = ytm_item_to_video(item)
+
+    assert converted["contentDetails"]["duration"] == "PT0H03M45S"
+    assert (
+        converted["snippet"]["thumbnails"]["default"]["url"]
+        == "https://example.com/thumb.jpg"
+    )
+
+
+def test_video_track_number_uses_playlist_index_for_album_tracks():
+    video = youtube.Video()
+    video.id = "abc123defgh"
+    video.__dict__["_album"] = pykka.ThreadingFuture()
+    video._album.set({"name": "Example Album", "uri": "youtube:playlist:PL1234567890"})
+    context.api = mock.Mock()
+    context.api.list_playlistitems.return_value = {
+        "items": [
+            {"id": {"videoId": "zzz99988877"}},
+            {"id": {"videoId": "abc123defgh"}},
+            {"id": {"videoId": "yyy55544433"}},
+        ]
+    }
+
+    assert video.track_no.get() == 1
+    context.api.list_playlistitems.assert_called_once_with("PL1234567890", "", 50)
+
+
+def test_autoplayer_keeps_autoplay_history_on_the_actor_instance(
+    tmp_path: pathlib.Path,
+):
+    config = make_config(tmp_path)
+    config["youtube"]["autoplay_enabled"] = True
+    core = mock.Mock()
+    core.autoplayed = pykka.ThreadingFuture()
+    core.autoplayed.set([])
+    core.tracklist.get_repeat.return_value.get.return_value = False
+    core.tracklist.get_random.return_value.get.return_value = False
+    core.tracklist.get_consume.return_value.get.return_value = False
+    core.tracklist.get_tl_tracks.return_value.get.return_value = [
+        TlTrack(tlid=1, track=Track(uri="youtube:video:dQw4w9WgXcQ", name="Current"))
+    ]
+
+    player = frontend.YouTubeAutoplayer(config=config, core=core)
+
+    assert player.autoplayed == []
+    player.autoplayed.append("abc123")
+    assert player.autoplayed == ["abc123"]
+
+
+def test_async_future_counts_none_as_resolved():
+    future = pykka.ThreadingFuture()
+    future.set(None)
+
+    assert is_future_set(future) is True
+
+
+def test_async_future_is_not_set_until_resolved():
+    assert is_future_set(None) is False
+    assert is_future_set(pykka.ThreadingFuture()) is False
+
+
+def _raise_boom() -> None:
+    msg = "boom"
+    raise ValueError(msg)
+
+
+def test_async_future_counts_exception_as_resolved():
+    future = pykka.ThreadingFuture()
+    try:
+        _raise_boom()
+    except ValueError:
+        future.set_exception()
+
+    assert is_future_set(future) is True
+
+
+def test_client_instances_do_not_share_a_single_session_state():
+    first = Client(proxy="http://proxy-a.example:8080", headers={"x-test": "first"})
+    second = Client(proxy="http://proxy-b.example:8080", headers={"x-test": "second"})
+
+    assert first.session is not second.session
+    assert first.session.proxies["http"] == "http://proxy-a.example:8080"
+    assert second.session.proxies["http"] == "http://proxy-b.example:8080"
+    assert first.session.headers["x-test"] == "first"
+    assert second.session.headers["x-test"] == "second"
+
+
+def test_client_close_shuts_down_its_executor_and_session():
+    client = Client()
+    client.executor = mock.Mock()
+    client.session = mock.Mock()
+
+    client.close()
+
+    client.executor.shutdown.assert_called_once()
+    client.session.close.assert_called_once_with()
+
+
+def test_client_session_preserves_existing_headers_and_adds_configured_ones():
+    session = requests.Session()
+    session.headers.update({"Accept-Encoding": "gzip"})
+
+    Client._create_session(
+        proxy="http://proxy.example:8080", headers={"x-test": "yes"}, session=session
+    )
+
+    assert session.headers["Accept-Encoding"] == "gzip"
+    assert session.headers["x-test"] == "yes"
+    assert session.proxies["http"] == "http://proxy.example:8080"
+
+
+def test_video_audio_url_uses_requested_formats_url_when_direct_url_missing():
+    video = youtube.Video()
+    video.id = "abc123defgh"
+    context.api = mock.Mock()
+
+    fake_ydl = mock.MagicMock()
+    fake_ydl.__enter__.return_value = fake_ydl
+    fake_ydl.extract_info.return_value = {
+        "id": "abc123defgh",
+        "title": "Example",
+        "requested_formats": [{"url": "https://example.com/audio.mp4"}],
+    }
+
+    with mock.patch("mopidy_youtube.context.importlib.import_module") as import_module:
+        import_module.return_value.YoutubeDL.return_value = fake_ydl
+        assert video.audio_url.get() == "https://example.com/audio.mp4"
+
+
+def test_video_audio_url_handles_nested_requested_formats_payloads():
+    info = {
+        "id": "abc123defgh",
+        "title": "Example",
+        "requested_formats": [
+            {
+                "format_id": "audio",
+                "formats": [{"url": "https://example.com/nested-audio.mp4"}],
+            }
+        ],
+    }
+
+    assert (
+        youtube.Video._extract_audio_url(info) == "https://example.com/nested-audio.mp4"
+    )
+
+
+def test_playback_translate_uri_returns_resolved_audio_url():
+    provider = backend.YouTubePlaybackProvider(audio=None, backend=mock.Mock())
+    video = mock.Mock(cached_file_uri=None)
+    video.promote_audio_url.return_value.get.return_value = (
+        "https://example.com/audio.webm"
+    )
+
+    with mock.patch("mopidy_youtube.youtube.Video.get", return_value=video):
+        assert (
+            provider.translate_uri("youtube:video:testid")
+            == "https://example.com/audio.webm"
+        )
+
+
+def test_playback_translate_uri_prefers_file_once_caching_has_finished():
+    provider = backend.YouTubePlaybackProvider(audio=None, backend=mock.Mock())
+    video = mock.Mock(cached_file_uri="file:///cache/testid.webm")
+    video.promote_audio_url.return_value.get.return_value = (
+        "http://localhost:6680/youtube/testid.webm"
+    )
+
+    with mock.patch("mopidy_youtube.youtube.Video.get", return_value=video):
+        assert (
+            provider.translate_uri("youtube:video:testid")
+            == "file:///cache/testid.webm"
+        )
+
+
+def test_index_template_uses_event_parameter_for_context_menu_target():
+    html_path = (
+        pathlib.Path(__file__).resolve().parents[1]
+        / "mopidy_youtube"
+        / "www"
+        / "index.html"
+    )
+
+    html = html_path.read_text(encoding="utf-8")
+
+    assert "const target = e.target;" in html
+    assert "event.target" not in html
+
+
+def test_index_handler_handles_current_mopidy_track_metadata_shape(
+    tmp_path: pathlib.Path,
+):
+    root = tmp_path / "webcache"
+    root.mkdir()
+    (root / "track.jpg").write_bytes(b"fake-jpg")
+    (root / "track.json").write_text(
+        json.dumps(
+            {
+                "name": "Example Title",
+                "artists": [{"name": "Example Artist"}],
+                "album": {"name": "Example Album"},
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    handler = web.IndexHandler.__new__(web.IndexHandler)
+    handler.root = root
+    entries = list(handler.uri_generator())
+
+    assert entries == [("track", "Example Title", "jpg")]
+
+
+def test_autoplay_uses_mopidy_4_tl_track_object(tmp_path: pathlib.Path):
+    config = make_config(tmp_path)
+    config["youtube"]["autoplay_enabled"] = True
+    config["youtube"]["strict_autoplay"] = False
+    config["youtube"]["max_autoplay_length"] = 600
+
+    core = mock.Mock()
+    core.autoplayed = []
+    core.tracklist.get_repeat.return_value.get.return_value = False
+    core.tracklist.get_random.return_value.get.return_value = False
+    core.tracklist.get_consume.return_value.get.return_value = False
+    core.tracklist.get_tl_tracks.return_value.get.return_value = [
+        TlTrack(tlid=1, track=Track(uri="youtube:video:current", name="Current"))
+    ]
+
+    player = frontend.YouTubeAutoplayer(config=config, core=core)
+    tl_track = TlTrack(tlid=1, track=Track(uri="youtube:video:current", name="Current"))
+
+    current_video = mock.Mock()
+    current_video.id = "current"
+    current_video.title.get.return_value = "Current"
+    current_video.related_videos.get.return_value = [
+        mock.Mock(
+            id="next-video",
+            title=mock.Mock(get=mock.Mock(return_value="Next")),
+            length=mock.Mock(get=mock.Mock(return_value=180000)),
+        )
+    ]
+
+    with mock.patch(
+        "mopidy_youtube.frontend.youtube.Video.get", return_value=current_video
+    ):
+        player.track_playback_started(tl_track)
+
+    core.tracklist.add.assert_called_once()
+    assert player.max_autoplay_length == 600000
+    assert core.tracklist.add.call_args.kwargs["uris"] == ["youtube:video:next-video"]
+
+
+def test_library_lookup_returns_single_track_for_video_uri():
+    provider = backend.YouTubeLibraryProvider(backend=mock.Mock())
+
+    with mock.patch("mopidy_youtube.youtube.Video.get") as get_video:
+        video = mock.Mock()
+        video.title.get.return_value = "Example Title"
+        video.length.get.return_value = 123456
+        video.channel = mock.Mock()
+        video.channel.name = "Example Channel"
+        video.artist = None
+        video.uri = "youtube:video:nvlTJrNJ5lA"
+        video.id = "nvlTJrNJ5lA"
+        get_video.return_value = video
+
+        with mock.patch(
+            "mopidy_youtube.library.convert_video_to_track",
+            return_value=mock.Mock(
+                uri="youtube:video:nvlTJrNJ5lA", name="Example Title"
+            ),
+        ) as convert:
+            result = provider.lookup("youtube:video:nvlTJrNJ5lA")
+
+    assert len(result) == 1
+    assert result[0].uri == "youtube:video:nvlTJrNJ5lA"
+    convert.assert_called_once_with(video)

@@ -1,0 +1,16 @@
+{
+ "alerts": [
+  {
+   "alertRenderer": {
+    "type": "ERROR",
+    "text": {
+     "runs": [
+      {
+       "text": "The playlist does not exist."
+      }
+     ]
+    }
+   }
+  }
+ ]
+}

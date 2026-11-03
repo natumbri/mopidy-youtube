@@ -1,0 +1,30 @@
+{
+ "playabilityStatus": {
+  "status": "ERROR",
+  "reason": "Video unavailable",
+  "errorScreen": {
+   "playerErrorMessageRenderer": {
+    "reason": {
+     "runs": [
+      {
+       "text": "Video unavailable"
+      }
+     ]
+    },
+    "thumbnail": {
+     "thumbnails": [
+      {
+       "url": "//s.ytimg.com/yts/img/meh7-vflGevej7.png",
+       "width": 140,
+       "height": 100
+      }
+     ]
+    },
+    "icon": {
+     "iconType": "ERROR_OUTLINE"
+    }
+   }
+  },
+  "contextParams": "Q0FBU0FnZ0E="
+ }
+}

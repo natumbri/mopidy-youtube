@@ -1,0 +1,40 @@
+{
+ "name": "Queen",
+ "channelId": "UCiMhD4jzUqG-IgPzUmmytRQ",
+ "albums": {
+  "browseId": "MPADUCEPMVbUzImPl4p8k4LkGevA",
+  "results": [
+   {
+    "title": "Queen Budapest",
+    "artists": [],
+    "browseId": "MPREb_gEXfEPkLxFU",
+    "audioPlaylistId": "OLAK5uy_kol_swyj7Jpirgq7d5UnCAghTEX4wLdUg",
+    "thumbnails": [
+     {
+      "url": "https://yt3.googleusercontent.com/jVdzyx4P1P7raiZ8pvRGJGuvy5i0AMGSv2mDAPdQgxZekqsl9jyV1okLB4IpBfXAeMOiqcyl3LuZ4tI=w544-h544-l90-rj",
+      "width": 544,
+      "height": 544
+     }
+    ],
+    "isExplicit": false,
+    "type": "Upcoming Album"
+   },
+   {
+    "title": "Queen II (2026 Mix)",
+    "artists": [],
+    "browseId": "MPREb_oTnLqslA3Pk",
+    "audioPlaylistId": "OLAK5uy_mo3flQUFtMFqJlzckSzj63duhUMS6gv5Q",
+    "thumbnails": [
+     {
+      "url": "https://yt3.googleusercontent.com/1MkJcwgwGRMhwztMGRxWkV-Z9krRbRaIZyI8dJ7QvIPYtgtsm0E6y51HrlH7JSZ3KTQo9330HBd_F3NR=w544-h544-l90-rj",
+      "width": 544,
+      "height": 544
+     }
+    ],
+    "isExplicit": false,
+    "year": "2026"
+   }
+  ],
+  "params": "ggMIegYIARoCAQI%3D"
+ }
+}

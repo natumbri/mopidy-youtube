@@ -1,0 +1,119 @@
+[
+ {
+  "title": "You might also like",
+  "contents": [
+   {
+    "title": "Somewhere Over The Rainbow/What A Wonderful World",
+    "videoId": "U-Ooxpz0Eqk",
+    "videoType": "MUSIC_VIDEO_TYPE_ATV",
+    "thumbnails": [
+     {
+      "url": "https://yt3.googleusercontent.com/V6aqK9ikMDh-RVRYCy1A_9SRlAcxLYAiOK9cF6WqAMgDFRFDS5FpPFtYRhPf_-fnZqCleDSXs5-WX-EZ=w60-h60-s-l90-rj",
+      "width": 60,
+      "height": 60
+     },
+     {
+      "url": "https://yt3.googleusercontent.com/V6aqK9ikMDh-RVRYCy1A_9SRlAcxLYAiOK9cF6WqAMgDFRFDS5FpPFtYRhPf_-fnZqCleDSXs5-WX-EZ=w120-h120-s-l90-rj",
+      "width": 120,
+      "height": 120
+     }
+    ],
+    "isExplicit": false,
+    "artists": [
+     {
+      "name": "Israel Kamakawiwo'ole",
+      "id": "UCDrbjok3kk04f-SByjhpLYg"
+     }
+    ],
+    "album": {
+     "name": "Facing Future",
+     "id": "MPREb_4EH1Eo0cgGr"
+    }
+   },
+   {
+    "title": "Every Breath You Take",
+    "videoId": "-SaUrDhp034",
+    "videoType": "MUSIC_VIDEO_TYPE_ATV",
+    "thumbnails": [
+     {
+      "url": "https://yt3.googleusercontent.com/Evml9zWq0msFXoyxZlyF6OLs7Wc9jliiAsSZi8ObmP5i0FJyiTr2-GI-rQDaAD6vDsEaK-28vJJPMQA=w60-h60-l90-rj",
+      "width": 60,
+      "height": 60
+     },
+     {
+      "url": "https://yt3.googleusercontent.com/Evml9zWq0msFXoyxZlyF6OLs7Wc9jliiAsSZi8ObmP5i0FJyiTr2-GI-rQDaAD6vDsEaK-28vJJPMQA=w120-h120-l90-rj",
+      "width": 120,
+      "height": 120
+     }
+    ],
+    "isExplicit": false,
+    "artists": [
+     {
+      "name": "The Police",
+      "id": "UCbsRGw640UF_F7AIwHW-zmg"
+     }
+    ],
+    "album": {
+     "name": "Synchronicity (Remastered 2003)",
+     "id": "MPREb_8lrA5KA4Gfv"
+    }
+   },
+   {
+    "title": "Sweet Child O' Mine",
+    "videoId": "oMfMUfgjiLg",
+    "videoType": "MUSIC_VIDEO_TYPE_ATV",
+    "thumbnails": [
+     {
+      "url": "https://yt3.googleusercontent.com/Z2zgZT7ICWRL7ACDERnWaGA3nBmLSK3fqOXDg-EQuhSnwvNV_i5pEQ6-z_m_v4S44HuNKyFjwtmSghqJ=w60-h60-l90-rj",
+      "width": 60,
+      "height": 60
+     },
+     {
+      "url": "https://yt3.googleusercontent.com/Z2zgZT7ICWRL7ACDERnWaGA3nBmLSK3fqOXDg-EQuhSnwvNV_i5pEQ6-z_m_v4S44HuNKyFjwtmSghqJ=w120-h120-l90-rj",
+      "width": 120,
+      "height": 120
+     }
+    ],
+    "isExplicit": false,
+    "artists": [
+     {
+      "name": "Guns N' Roses",
+      "id": "UCSLbbBoUqpin6BE34whSOvA"
+     }
+    ],
+    "album": {
+     "name": "Appetite For Destruction",
+     "id": "MPREb_fN7uwe7VDV6"
+    }
+   },
+   {
+    "title": "Wake Me up When September Ends",
+    "videoId": "ulRXvH8VOl8",
+    "videoType": "MUSIC_VIDEO_TYPE_ATV",
+    "thumbnails": [
+     {
+      "url": "https://yt3.googleusercontent.com/UXFGtBhmxZd0cWbwgJCsaUvLH59uZe_T_9E1plQPi_zHBuPAHTuhzz_h8I-uIYaXJMKvVfRB7gcRJFI=w60-h60-l90-rj",
+      "width": 60,
+      "height": 60
+     },
+     {
+      "url": "https://yt3.googleusercontent.com/UXFGtBhmxZd0cWbwgJCsaUvLH59uZe_T_9E1plQPi_zHBuPAHTuhzz_h8I-uIYaXJMKvVfRB7gcRJFI=w120-h120-l90-rj",
+      "width": 120,
+      "height": 120
+     }
+    ],
+    "isExplicit": false,
+    "artists": [
+     {
+      "name": "Green Day",
+      "id": "UC4JNeITH4P7G51C1hJoG6vQ"
+     }
+    ],
+    "album": {
+     "name": "American Idiot",
+     "id": "MPREb_jnYA50rlu4H"
+    }
+   }
+  ]
+ }
+]

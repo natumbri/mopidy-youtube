@@ -1,0 +1,773 @@
+{
+ "contents": {
+  "twoColumnWatchNextResults": {
+   "results": {
+    "results": {
+     "contents": [
+      {
+       "ticketShelfRenderer": {
+        "title": "Nearest event · London, United Kingdom",
+        "events": [
+         {
+          "ticketEventRenderer": {
+           "title": "Rick Astley - Event Tickets",
+           "timeMonth": "Dec",
+           "timeDay": "9",
+           "linkText": "Bandsintown",
+           "buttonText": "VIEW TICKETS",
+           "buttonCommand": {
+            "commandMetadata": {
+             "webCommandMetadata": {
+              "url": "https://www.youtube.com/redirect?event=ticket_shelf&redir_token=QUlxb01IYU1KVzhETl81ODVHT2VFLUN6OHQtMHxBSTVJdTV1ZjZPSGRBeFRVSlhtQW1MZVl1LUZIeXVTSG9Tdm9tOHUzSzZJbzU1elVIS1ZybVM5RGd6aHR2YUNFZlQxdGtmb1Zfa3hjOHpPVjZwcGN0LXpzUTJqYkEwZDdTMnVo&q=https%3A%2F%2Fwww.bandsintown.com%2Fe%2F109062003%3Fapp_id%3Dyt_feed%26came_from%3D286%26utm_medium%3Dweb%26utm_source%3Dyt_feed%26utm_campaign%3Devent",
+              "webPageType": "WEB_PAGE_TYPE_UNKNOWN",
+              "rootVe": 83769
+             }
+            },
+            "urlEndpoint": {
+             "url": "https://www.youtube.com/redirect?event=ticket_shelf&redir_token=QUlxb01IYU1KVzhETl81ODVHT2VFLUN6OHQtMHxBSTVJdTV1ZjZPSGRBeFRVSlhtQW1MZVl1LUZIeXVTSG9Tdm9tOHUzSzZJbzU1elVIS1ZybVM5RGd6aHR2YUNFZlQxdGtmb1Zfa3hjOHpPVjZwcGN0LXpzUTJqYkEwZDdTMnVo&q=https%3A%2F%2Fwww.bandsintown.com%2Fe%2F109062003%3Fapp_id%3Dyt_feed%26came_from%3D286%26utm_medium%3Dweb%26utm_source%3Dyt_feed%26utm_campaign%3Devent",
+             "target": "TARGET_NEW_WINDOW",
+             "nofollow": true
+            }
+           },
+           "subtitle1": "Wed 6:45 PM · Royal Albert Hall",
+           "subtitle2": "Dec 9, Wed 6:45 PM",
+           "timeDate": "Dec 9",
+           "timeTime": "6:45 PM",
+           "timeWeekday": "Wed",
+           "buttonAccessibilityText": "Find tickets on Bandsintown",
+           "hasMultipleOffers": false
+          }
+         },
+         {
+          "ticketEventRenderer": {
+           "timeMonth": "May",
+           "timeDay": "28",
+           "linkText": "View tickets",
+           "buttonText": "VIEW TICKETS",
+           "buttonCommand": {
+            "openPopupAction": {
+             "popup": {
+              "menuPopupRenderer": {
+               "items": [
+                {
+                 "menuCustomIconItemRenderer": {
+                  "actionText": {
+                   "simpleText": "Find on Ticketmaster"
+                  },
+                  "command": {
+                   "commandMetadata": {
+                    "webCommandMetadata": {
+                     "url": "https://www.youtube.com/redirect?event=ticket_shelf&redir_token=QUlxb01IYWVBQnAzS1J5anM4NmJnNGhuSFlySHxBSTVJdTVzei1nYjFkV2VMcmZTTGRSYTM5S0ZjNEljRnoteGRCY2p1aDlJTTJvbEVsM2pfRDZNWWFEODRINHhQemVydEdhc3RBVVhyNmFFREFDLXVSZUtULUZ2d2xaZEJ1TXVk&q=https%3A%2F%2Fwww.bandsintown.com%2Ft%2F108962497%3Fticket_id%3D2054859846%26app_id%3Dyt_feed%26came_from%3D286%26utm_medium%3Dweb%26utm_source%3Dyt_feed%26utm_campaign%3Dticket",
+                     "webPageType": "WEB_PAGE_TYPE_UNKNOWN",
+                     "rootVe": 83769
+                    }
+                   },
+                   "urlEndpoint": {
+                    "url": "https://www.youtube.com/redirect?event=ticket_shelf&redir_token=QUlxb01IYWVBQnAzS1J5anM4NmJnNGhuSFlySHxBSTVJdTVzei1nYjFkV2VMcmZTTGRSYTM5S0ZjNEljRnoteGRCY2p1aDlJTTJvbEVsM2pfRDZNWWFEODRINHhQemVydEdhc3RBVVhyNmFFREFDLXVSZUtULUZ2d2xaZEJ1TXVk&q=https%3A%2F%2Fwww.bandsintown.com%2Ft%2F108962497%3Fticket_id%3D2054859846%26app_id%3Dyt_feed%26came_from%3D286%26utm_medium%3Dweb%26utm_source%3Dyt_feed%26utm_campaign%3Dticket",
+                    "target": "TARGET_NEW_WINDOW",
+                    "nofollow": true
+                   }
+                  }
+                 }
+                },
+                {
+                 "menuCustomIconItemRenderer": {
+                  "actionText": {
+                   "simpleText": "Find on Gigantic"
+                  },
+                  "command": {
+                   "commandMetadata": {
+                    "webCommandMetadata": {
+                     "url": "https://www.youtube.com/redirect?event=ticket_shelf&redir_token=QUlxb01IWlNPeXNtZEVVbjBGd2l3N2FIVEdSMnxBSTVJdTV0ajFmc2g5amlQWm42anZidzlwQnpMcE13QWJsVWlsbjVBajdSRkVZVjgzQ0xURnpCampPUDR2WmpFMGFvNzAyaFUwZFZnVXpKYVpzRWJfLTVKR3hBNnc3VWExZXlB&q=https%3A%2F%2Fwww.bandsintown.com%2Ft%2F108962497%3Fticket_id%3D1092510066%26app_id%3Dyt_feed%26came_from%3D286%26utm_medium%3Dweb%26utm_source%3Dyt_feed%26utm_campaign%3Dticket",
+                     "webPageType": "WEB_PAGE_TYPE_UNKNOWN",
+                     "rootVe": 83769
+                    }
+                   },
+                   "urlEndpoint": {
+                    "url": "https://www.youtube.com/redirect?event=ticket_shelf&redir_token=QUlxb01IWlNPeXNtZEVVbjBGd2l3N2FIVEdSMnxBSTVJdTV0ajFmc2g5amlQWm42anZidzlwQnpMcE13QWJsVWlsbjVBajdSRkVZVjgzQ0xURnpCampPUDR2WmpFMGFvNzAyaFUwZFZnVXpKYVpzRWJfLTVKR3hBNnc3VWExZXlB&q=https%3A%2F%2Fwww.bandsintown.com%2Ft%2F108962497%3Fticket_id%3D1092510066%26app_id%3Dyt_feed%26came_from%3D286%26utm_medium%3Dweb%26utm_source%3Dyt_feed%26utm_campaign%3Dticket",
+                    "target": "TARGET_NEW_WINDOW",
+                    "nofollow": true
+                   }
+                  }
+                 }
+                },
+                {
+                 "menuCustomIconItemRenderer": {
+                  "actionText": {
+                   "simpleText": "Find on See Tickets"
+                  },
+                  "command": {
+                   "commandMetadata": {
+                    "webCommandMetadata": {
+                     "url": "https://www.youtube.com/redirect?event=ticket_shelf&redir_token=QUlxb01IWU1mbm9aRDU5Yk0yZWMwVDU3QXhhS3xBSTVJdTV0cXhNajdpWVBubk9KbWhuM2lvYS1MSlpNNnc3NmdEY0tuNllBRk1fcDhfOWxWNEIxRHZFX1ZLUjMxMEV4azNWbVNBQXBJb1VEbWRHemlwOXM2SlFZUnBLZTlvd0Vv&q=https%3A%2F%2Fwww.bandsintown.com%2Ft%2F108962497%3Fticket_id%3D2034674982%26app_id%3Dyt_feed%26came_from%3D286%26utm_medium%3Dweb%26utm_source%3Dyt_feed%26utm_campaign%3Dticket",
+                     "webPageType": "WEB_PAGE_TYPE_UNKNOWN",
+                     "rootVe": 83769
+                    }
+                   },
+                   "urlEndpoint": {
+                    "url": "https://www.youtube.com/redirect?event=ticket_shelf&redir_token=QUlxb01IWU1mbm9aRDU5Yk0yZWMwVDU3QXhhS3xBSTVJdTV0cXhNajdpWVBubk9KbWhuM2lvYS1MSlpNNnc3NmdEY0tuNllBRk1fcDhfOWxWNEIxRHZFX1ZLUjMxMEV4azNWbVNBQXBJb1VEbWRHemlwOXM2SlFZUnBLZTlvd0Vv&q=https%3A%2F%2Fwww.bandsintown.com%2Ft%2F108962497%3Fticket_id%3D2034674982%26app_id%3Dyt_feed%26came_from%3D286%26utm_medium%3Dweb%26utm_source%3Dyt_feed%26utm_campaign%3Dticket",
+                    "target": "TARGET_NEW_WINDOW",
+                    "nofollow": true
+                   }
+                  }
+                 }
+                },
+                {
+                 "menuCustomIconItemRenderer": {
+                  "actionText": {
+                   "simpleText": "Find on Eventim"
+                  },
+                  "command": {
+                   "commandMetadata": {
+                    "webCommandMetadata": {
+                     "url": "https://www.youtube.com/redirect?event=ticket_shelf&redir_token=QUlxb01IWVFhZ0dIUmhLU1o2eGttX3ZaeDdRX3xBSTVJdTV0U0JfSzRsVklobFFpcVhITmNsUUZDRERiSHVsWXZTSnFZQmxraGg1N3ljVmswRUZWQXNZWFFSWHlQOFhWWS1SN3Vrd0lIR2VvZmdSQXJOTTZod0JyNmJIVDNpSm9V&q=https%3A%2F%2Fwww.bandsintown.com%2Ft%2F108962497%3Fticket_id%3D918764537%26app_id%3Dyt_feed%26came_from%3D286%26utm_medium%3Dweb%26utm_source%3Dyt_feed%26utm_campaign%3Dticket",
+                     "webPageType": "WEB_PAGE_TYPE_UNKNOWN",
+                     "rootVe": 83769
+                    }
+                   },
+                   "urlEndpoint": {
+                    "url": "https://www.youtube.com/redirect?event=ticket_shelf&redir_token=QUlxb01IWVFhZ0dIUmhLU1o2eGttX3ZaeDdRX3xBSTVJdTV0U0JfSzRsVklobFFpcVhITmNsUUZDRERiSHVsWXZTSnFZQmxraGg1N3ljVmswRUZWQXNZWFFSWHlQOFhWWS1SN3Vrd0lIR2VvZmdSQXJOTTZod0JyNmJIVDNpSm9V&q=https%3A%2F%2Fwww.bandsintown.com%2Ft%2F108962497%3Fticket_id%3D918764537%26app_id%3Dyt_feed%26came_from%3D286%26utm_medium%3Dweb%26utm_source%3Dyt_feed%26utm_campaign%3Dticket",
+                    "target": "TARGET_NEW_WINDOW",
+                    "nofollow": true
+                   }
+                  }
+                 }
+                }
+               ]
+              }
+             },
+             "popupType": "DROPDOWN"
+            }
+           },
+           "subtitle1": "May 28, Fri 6:00 PM",
+           "subtitle2": "Halifax, United Kingdom · The Piece Hall",
+           "timeDate": "May 28",
+           "timeTime": "6:00 PM",
+           "timeWeekday": "Fri",
+           "buttonAccessibilityText": "View ticket options",
+           "hasMultipleOffers": true
+          }
+         },
+         {
+          "ticketEventRenderer": {
+           "timeMonth": "May",
+           "timeDay": "29",
+           "linkText": "View tickets",
+           "buttonText": "VIEW TICKETS",
+           "buttonCommand": {
+            "openPopupAction": {
+             "popup": {
+              "menuPopupRenderer": {
+               "items": [
+                {
+                 "menuCustomIconItemRenderer": {
+                  "actionText": {
+                   "simpleText": "Find on Ticketmaster"
+                  },
+                  "command": {
+                   "commandMetadata": {
+                    "webCommandMetadata": {
+                     "url": "https://www.youtube.com/redirect?event=ticket_shelf&redir_token=QUlxb01IWk5TemFJQUFWWkQyNFNXODhOQWZRUnxBSTVJdTV2WlBWYktqaUhKX0hXYkRRdjRlX0xQVVJmVk45cW96Rk5zeDB5YzJma1JsZG1XLVUwRWJaZzNGMEdycUZEczk2djdUckEwWkkyRmFoaGplWTZxbFlWbHU0VXVZTlVP&q=https%3A%2F%2Fwww.bandsintown.com%2Ft%2F1040098067%3Fticket_id%3D526877989%26app_id%3Dyt_feed%26came_from%3D286%26utm_medium%3Dweb%26utm_source%3Dyt_feed%26utm_campaign%3Dticket",
+                     "webPageType": "WEB_PAGE_TYPE_UNKNOWN",
+                     "rootVe": 83769
+                    }
+                   },
+                   "urlEndpoint": {
+                    "url": "https://www.youtube.com/redirect?event=ticket_shelf&redir_token=QUlxb01IWk5TemFJQUFWWkQyNFNXODhOQWZRUnxBSTVJdTV2WlBWYktqaUhKX0hXYkRRdjRlX0xQVVJmVk45cW96Rk5zeDB5YzJma1JsZG1XLVUwRWJaZzNGMEdycUZEczk2djdUckEwWkkyRmFoaGplWTZxbFlWbHU0VXVZTlVP&q=https%3A%2F%2Fwww.bandsintown.com%2Ft%2F1040098067%3Fticket_id%3D526877989%26app_id%3Dyt_feed%26came_from%3D286%26utm_medium%3Dweb%26utm_source%3Dyt_feed%26utm_campaign%3Dticket",
+                    "target": "TARGET_NEW_WINDOW",
+                    "nofollow": true
+                   }
+                  }
+                 }
+                },
+                {
+                 "menuCustomIconItemRenderer": {
+                  "actionText": {
+                   "simpleText": "Find on AXS"
+                  },
+                  "command": {
+                   "commandMetadata": {
+                    "webCommandMetadata": {
+                     "url": "https://www.youtube.com/redirect?event=ticket_shelf&redir_token=QUlxb01IWWdtYUJRQktxcWlaYnkteURqYWNRSnxBSTVJdTV0eVI2M3B1Y2RqTVhGU2RKNHdacFY2Wm10d0V0UlR5SXJKTHZ6WEl1eE83THBZR1dfcWtPTHdqREk0RkhjVktybERidGk5eVp4Q184X25sM0VNV1JCMU41WklWb1hq&q=https%3A%2F%2Fwww.bandsintown.com%2Ft%2F1040098067%3Fticket_id%3D774625781%26app_id%3Dyt_feed%26came_from%3D286%26utm_medium%3Dweb%26utm_source%3Dyt_feed%26utm_campaign%3Dticket",
+                     "webPageType": "WEB_PAGE_TYPE_UNKNOWN",
+                     "rootVe": 83769
+                    }
+                   },
+                   "urlEndpoint": {
+                    "url": "https://www.youtube.com/redirect?event=ticket_shelf&redir_token=QUlxb01IWWdtYUJRQktxcWlaYnkteURqYWNRSnxBSTVJdTV0eVI2M3B1Y2RqTVhGU2RKNHdacFY2Wm10d0V0UlR5SXJKTHZ6WEl1eE83THBZR1dfcWtPTHdqREk0RkhjVktybERidGk5eVp4Q184X25sM0VNV1JCMU41WklWb1hq&q=https%3A%2F%2Fwww.bandsintown.com%2Ft%2F1040098067%3Fticket_id%3D774625781%26app_id%3Dyt_feed%26came_from%3D286%26utm_medium%3Dweb%26utm_source%3Dyt_feed%26utm_campaign%3Dticket",
+                    "target": "TARGET_NEW_WINDOW",
+                    "nofollow": true
+                   }
+                  }
+                 }
+                }
+               ]
+              }
+             },
+             "popupType": "DROPDOWN"
+            }
+           },
+           "subtitle1": "May 29, Sat 12:00 PM",
+           "subtitle2": "Warrington, United Kingdom · Park Manor Weddings",
+           "timeDate": "May 29",
+           "timeTime": "12:00 PM",
+           "timeWeekday": "Sat",
+           "buttonAccessibilityText": "View ticket options",
+           "hasMultipleOffers": true
+          }
+         },
+         {
+          "ticketEventRenderer": {
+           "timeMonth": "May",
+           "timeDay": "29",
+           "linkText": "Bandsintown",
+           "buttonText": "VIEW TICKETS",
+           "buttonCommand": {
+            "commandMetadata": {
+             "webCommandMetadata": {
+              "url": "https://www.youtube.com/redirect?event=ticket_shelf&redir_token=QUlxb01IYnhTVElSNWVDMFlPZmRQc3RhWUE0NnxBSTVJdTVzV2xBWnU3c3hrRGY0YkhCMWVKNEJ6dE1xSkd2bVRzQjhxdkg3R1ZIOTlmbzBweHowdWxja2MwLWJvaVJRMGY3X0F4alVtdjRkSUtac3JvTWpmeDRoak9pNUxya0N6&q=https%3A%2F%2Fwww.bandsintown.com%2Ff%2F237651%3Fapp_id%3Dyt_feed%26came_from%3D286%26utm_medium%3Dweb%26utm_source%3Dyt_feed%26utm_campaign%3Devent",
+              "webPageType": "WEB_PAGE_TYPE_UNKNOWN",
+              "rootVe": 83769
+             }
+            },
+            "urlEndpoint": {
+             "url": "https://www.youtube.com/redirect?event=ticket_shelf&redir_token=QUlxb01IYnhTVElSNWVDMFlPZmRQc3RhWUE0NnxBSTVJdTVzV2xBWnU3c3hrRGY0YkhCMWVKNEJ6dE1xSkd2bVRzQjhxdkg3R1ZIOTlmbzBweHowdWxja2MwLWJvaVJRMGY3X0F4alVtdjRkSUtac3JvTWpmeDRoak9pNUxya0N6&q=https%3A%2F%2Fwww.bandsintown.com%2Ff%2F237651%3Fapp_id%3Dyt_feed%26came_from%3D286%26utm_medium%3Dweb%26utm_source%3Dyt_feed%26utm_campaign%3Devent",
+             "target": "TARGET_NEW_WINDOW",
+             "nofollow": true
+            }
+           },
+           "subtitle1": "May 29, Sat 5:00 PM",
+           "subtitle2": "Chipping Sodbury, Bristol, United Kingdom · The Royal Oak, Chipping Sodbury",
+           "timeDate": "May 29",
+           "timeTime": "5:00 PM",
+           "timeWeekday": "Sat",
+           "buttonAccessibilityText": "Find tickets on Bandsintown",
+           "hasMultipleOffers": false
+          }
+         },
+         {
+          "ticketEventRenderer": {
+           "timeMonth": "May",
+           "timeDay": "30",
+           "linkText": "View tickets",
+           "buttonText": "VIEW TICKETS",
+           "buttonCommand": {
+            "openPopupAction": {
+             "popup": {
+              "menuPopupRenderer": {
+               "items": [
+                {
+                 "menuCustomIconItemRenderer": {
+                  "actionText": {
+                   "simpleText": "Find on See Tickets"
+                  },
+                  "command": {
+                   "commandMetadata": {
+                    "webCommandMetadata": {
+                     "url": "https://www.youtube.com/redirect?event=ticket_shelf&redir_token=QUlxb01IYWsydG5qRWtiSWlQb09UQTlZTzU0cnxBSTVJdTVzUERGWWlWeExmbjdJNGRRZmliZEN0VDA4aTBmWWNwbUlreE5sUUdZNGRIYlFocmVsOHZFZy1WOGlDclg1U0k5Z3VySjhTS1daeVEwUGhyU3pEcG9LYXRhZkRzbm9S&q=https%3A%2F%2Fwww.bandsintown.com%2Ft%2F1040106891%3Fticket_id%3D835380124%26app_id%3Dyt_feed%26came_from%3D286%26utm_medium%3Dweb%26utm_source%3Dyt_feed%26utm_campaign%3Dticket",
+                     "webPageType": "WEB_PAGE_TYPE_UNKNOWN",
+                     "rootVe": 83769
+                    }
+                   },
+                   "urlEndpoint": {
+                    "url": "https://www.youtube.com/redirect?event=ticket_shelf&redir_token=QUlxb01IYWsydG5qRWtiSWlQb09UQTlZTzU0cnxBSTVJdTVzUERGWWlWeExmbjdJNGRRZmliZEN0VDA4aTBmWWNwbUlreE5sUUdZNGRIYlFocmVsOHZFZy1WOGlDclg1U0k5Z3VySjhTS1daeVEwUGhyU3pEcG9LYXRhZkRzbm9S&q=https%3A%2F%2Fwww.bandsintown.com%2Ft%2F1040106891%3Fticket_id%3D835380124%26app_id%3Dyt_feed%26came_from%3D286%26utm_medium%3Dweb%26utm_source%3Dyt_feed%26utm_campaign%3Dticket",
+                    "target": "TARGET_NEW_WINDOW",
+                    "nofollow": true
+                   }
+                  }
+                 }
+                },
+                {
+                 "menuCustomIconItemRenderer": {
+                  "actionText": {
+                   "simpleText": "Find on AXS"
+                  },
+                  "command": {
+                   "commandMetadata": {
+                    "webCommandMetadata": {
+                     "url": "https://www.youtube.com/redirect?event=ticket_shelf&redir_token=QUlxb01IYkxNcHhFdkY4bHFDQ004bTZFUXc1S3xBSTVJdTVzUEhjQmJaazRMWG9HaHd2VW8wYmJBUl9jei1HR0loNHFQanR0em02b09qaEtyTjl0Z0x3SV9jNmZFelZCWG5hXzhrMjdvUEFRdlVrRHlWREV0Y05zcUtySmtOZFgt&q=https%3A%2F%2Fwww.bandsintown.com%2Ft%2F1040098008%3Fticket_id%3D774623952%26app_id%3Dyt_feed%26came_from%3D286%26utm_medium%3Dweb%26utm_source%3Dyt_feed%26utm_campaign%3Dticket",
+                     "webPageType": "WEB_PAGE_TYPE_UNKNOWN",
+                     "rootVe": 83769
+                    }
+                   },
+                   "urlEndpoint": {
+                    "url": "https://www.youtube.com/redirect?event=ticket_shelf&redir_token=QUlxb01IYkxNcHhFdkY4bHFDQ004bTZFUXc1S3xBSTVJdTVzUEhjQmJaazRMWG9HaHd2VW8wYmJBUl9jei1HR0loNHFQanR0em02b09qaEtyTjl0Z0x3SV9jNmZFelZCWG5hXzhrMjdvUEFRdlVrRHlWREV0Y05zcUtySmtOZFgt&q=https%3A%2F%2Fwww.bandsintown.com%2Ft%2F1040098008%3Fticket_id%3D774623952%26app_id%3Dyt_feed%26came_from%3D286%26utm_medium%3Dweb%26utm_source%3Dyt_feed%26utm_campaign%3Dticket",
+                    "target": "TARGET_NEW_WINDOW",
+                    "nofollow": true
+                   }
+                  }
+                 }
+                }
+               ]
+              }
+             },
+             "popupType": "DROPDOWN"
+            }
+           },
+           "subtitle1": "May 30, Sun 12:00 PM",
+           "subtitle2": "Warrington, United Kingdom · Park Manor Weddings",
+           "timeDate": "May 30",
+           "timeTime": "12:00 PM",
+           "timeWeekday": "Sun",
+           "buttonAccessibilityText": "View ticket options",
+           "hasMultipleOffers": true
+          }
+         }
+        ],
+        "upcomingTitle": "Upcoming events",
+        "showMore": "Show more",
+        "showLess": "Show less",
+        "informationText": "Concert events listed are based on the artist featured in the video you are watching, channels you have subscribed to, your past activity while signed in to YouTube, including artists you search for, or your general area.\n\nYour general area is estimated from your IP address. An IP address is assigned to your device by your internet service provider, and it’s required to connect to websites and online services.\n\nConcert event information (including any price or offer) is determined by ticket sellers or event organizers and may change. YouTube does not sell tickets to these events and is not responsible for the concert events or the event information provided by these third parties. Click on the events below to visit the third party site for more information, including any price, offers, and or additional fees that you may be charged, and how to make a purchase. YouTube has no control over, and assumes no responsibility for, information on such websites and online services. YouTube suggests you read the terms and privacy policy of each third-party website and online service that you visit.\n\nIf there are multiple sources of ticketing information for a given event, they will be listed in alphabetical order.",
+        "useCalendarAvatar": true
+       }
+      },
+      {
+       "videoPrimaryInfoRenderer": {
+        "title": {
+         "runs": [
+          {
+           "text": "Rick Astley - Never Gonna Give You Up (Official Video) (4K Remaster)"
+          }
+         ]
+        }
+       }
+      },
+      {
+       "videoSecondaryInfoRenderer": {
+        "owner": {
+         "videoOwnerRenderer": {
+          "thumbnail": {
+           "thumbnails": [
+            {
+             "url": "https://yt3.ggpht.com/_ShEGOdg-t5YGJse14Ooq6FYBZqX_QSlhaTNjG06miYusm5lWm1UroLyVxnYtahADfRTVLtuVQ=s48-c-k-c0x00ffffff-no-rj",
+             "width": 48,
+             "height": 48
+            },
+            {
+             "url": "https://yt3.ggpht.com/_ShEGOdg-t5YGJse14Ooq6FYBZqX_QSlhaTNjG06miYusm5lWm1UroLyVxnYtahADfRTVLtuVQ=s88-c-k-c0x00ffffff-no-rj",
+             "width": 88,
+             "height": 88
+            },
+            {
+             "url": "https://yt3.ggpht.com/_ShEGOdg-t5YGJse14Ooq6FYBZqX_QSlhaTNjG06miYusm5lWm1UroLyVxnYtahADfRTVLtuVQ=s176-c-k-c0x00ffffff-no-rj",
+             "width": 176,
+             "height": 176
+            }
+           ]
+          },
+          "title": {
+           "runs": [
+            {
+             "text": "Rick Astley",
+             "navigationEndpoint": {
+              "clickTrackingParams": "COcBEOE5IhMIhOieo93blwMVHaC5BR17hDvhygEE4no_kA==",
+              "commandMetadata": {
+               "webCommandMetadata": {
+                "url": "/channel/UCuAXFkgsw1L7xaCfnd5JJOw",
+                "webPageType": "WEB_PAGE_TYPE_CHANNEL",
+                "rootVe": 3611,
+                "apiUrl": "/youtubei/v1/browse"
+               }
+              },
+              "browseEndpoint": {
+               "browseId": "UCuAXFkgsw1L7xaCfnd5JJOw",
+               "canonicalBaseUrl": "/channel/UCuAXFkgsw1L7xaCfnd5JJOw"
+              }
+             }
+            }
+           ]
+          }
+         }
+        }
+       }
+      }
+     ]
+    }
+   },
+   "secondaryResults": {
+    "secondaryResults": {
+     "results": [
+      {
+       "itemSectionRenderer": {
+        "contents": [
+         {
+          "lockupViewModel": {
+           "contentImage": {
+            "thumbnailViewModel": {
+             "image": {
+              "sources": [
+               {
+                "url": "https://i.ytimg.com/vi/NWItxGY5NNk/hqdefault.jpg?sqp=-oaymwEiCKgBEF5IWvKriqkDFQgBFQAAAAAYASUAAMhCPQCAokN4AQ==&rs=AOn4CLC-Zzmhg89odYbca8KcIm9hy4wH_Q",
+                "width": 168,
+                "height": 94
+               },
+               {
+                "url": "https://i.ytimg.com/vi/NWItxGY5NNk/hqdefault.jpg?sqp=-oaymwEjCNACELwBSFryq4qpAxUIARUAAAAAGAElAADIQj0AgKJDeAE=&rs=AOn4CLA3Z5EZDuQjL6CvzRvT4-c9fF0TWw",
+                "width": 336,
+                "height": 188
+               }
+              ]
+             },
+             "overlays": [
+              {
+               "thumbnailBottomOverlayViewModel": {
+                "badges": [
+                 {
+                  "thumbnailBadgeViewModel": {
+                   "icon": {
+                    "sources": [
+                     {
+                      "clientResource": {
+                       "imageName": "MUSIC"
+                      }
+                     }
+                    ]
+                   },
+                   "text": "2:16:49",
+                   "badgeStyle": "THUMBNAIL_OVERLAY_BADGE_STYLE_DEFAULT",
+                   "animationActivationTargetId": "NWItxGY5NNk",
+                   "animationActivationEntityKey": "Eh8veW91dHViZS9hcHAvd2F0Y2gvcGxheWVyX3N0YXRlIMMCKAE%3D",
+                   "animatedText": "Now playing",
+                   "animationActivationEntitySelectorType": "THUMBNAIL_BADGE_ANIMATION_ENTITY_SELECTOR_TYPE_PLAYER_STATE",
+                   "inlinePlaybackBadgeData": {
+                    "replicateAsTimestamp": true
+                   }
+                  }
+                 }
+                ]
+               }
+              }
+             ]
+            }
+           },
+           "metadata": {
+            "lockupMetadataViewModel": {
+             "title": {
+              "content": "80'S MUSIC ON THE ROAD | 2 Hours of Classic '80s Hits"
+             },
+             "image": {
+              "decoratedAvatarViewModel": {
+               "avatar": {
+                "avatarViewModel": {
+                 "image": {
+                  "sources": [
+                   {
+                    "url": "https://yt3.ggpht.com/PBrTMUZS0DS61MZfbrbDpV5AUr2KboQ_LTKHi5CUidFD4oM6QxbQ1jKuxyyJ5icxGvYJGva_6w=s68-c-k-c0x00ffffff-no-rj",
+                    "width": 68,
+                    "height": 68
+                   }
+                  ]
+                 },
+                 "avatarImageSize": "AVATAR_SIZE_M"
+                }
+               },
+               "a11yLabel": "Go to channel every song is a scar"
+              }
+             },
+             "metadata": {
+              "contentMetadataViewModel": {
+               "metadataRows": [
+                {
+                 "metadataParts": [
+                  {
+                   "text": {
+                    "content": "every song is a scar"
+                   }
+                  }
+                 ]
+                },
+                {
+                 "metadataParts": [
+                  {
+                   "text": {
+                    "content": "4.4M"
+                   },
+                   "accessibilityLabel": "4.4 million views",
+                   "leadingIcon": {
+                    "name": "PLAY_ARROW_OUTLINED",
+                    "height": 12,
+                    "width": 12,
+                    "marginEndToken": {
+                     "spacing": 2
+                    }
+                   }
+                  },
+                  {
+                   "text": {
+                    "content": "4mo ago"
+                   },
+                   "accessibilityLabel": "4 months ago"
+                  }
+                 ]
+                }
+               ],
+               "delimiter": " "
+              }
+             }
+            }
+           },
+           "contentId": "NWItxGY5NNk",
+           "contentType": "LOCKUP_CONTENT_TYPE_VIDEO"
+          }
+         },
+         {
+          "lockupViewModel": {
+           "contentImage": {
+            "thumbnailViewModel": {
+             "image": {
+              "sources": [
+               {
+                "url": "https://i.ytimg.com/vi/6GXShyGholE/hqdefault.jpg?sqp=-oaymwEiCKgBEF5IWvKriqkDFQgBFQAAAAAYASUAAMhCPQCAokN4AQ==&rs=AOn4CLDUxSyE3lCNgcwBayoE6hW4wVjekA",
+                "width": 168,
+                "height": 94
+               },
+               {
+                "url": "https://i.ytimg.com/vi/6GXShyGholE/hqdefault.jpg?sqp=-oaymwEjCNACELwBSFryq4qpAxUIARUAAAAAGAElAADIQj0AgKJDeAE=&rs=AOn4CLDplvvoMaaUtGhBrqky7a1tMFQ27Q",
+                "width": 336,
+                "height": 188
+               }
+              ]
+             },
+             "overlays": [
+              {
+               "thumbnailBottomOverlayViewModel": {
+                "badges": [
+                 {
+                  "thumbnailBadgeViewModel": {
+                   "icon": {
+                    "sources": [
+                     {
+                      "clientResource": {
+                       "imageName": "MUSIC"
+                      }
+                     }
+                    ]
+                   },
+                   "text": "4:08:58",
+                   "badgeStyle": "THUMBNAIL_OVERLAY_BADGE_STYLE_DEFAULT",
+                   "animationActivationTargetId": "6GXShyGholE",
+                   "animationActivationEntityKey": "Eh8veW91dHViZS9hcHAvd2F0Y2gvcGxheWVyX3N0YXRlIMMCKAE%3D",
+                   "animatedText": "Now playing",
+                   "animationActivationEntitySelectorType": "THUMBNAIL_BADGE_ANIMATION_ENTITY_SELECTOR_TYPE_PLAYER_STATE",
+                   "inlinePlaybackBadgeData": {
+                    "replicateAsTimestamp": true
+                   }
+                  }
+                 }
+                ]
+               }
+              }
+             ]
+            }
+           },
+           "metadata": {
+            "lockupMetadataViewModel": {
+             "title": {
+              "content": "1987: THE GREATEST YEAR OF 80s MUSIC?"
+             },
+             "image": {
+              "decoratedAvatarViewModel": {
+               "avatar": {
+                "avatarViewModel": {
+                 "image": {
+                  "sources": [
+                   {
+                    "url": "https://yt3.ggpht.com/6YiglJ6KpXN88lqn-K3zh0ktgzBgNLxY_vQdfeHtF1wEkJgTolOjTa4aV8EUug0CxfFDUjnqdg=s68-c-k-c0x00ffffff-no-rj",
+                    "width": 68,
+                    "height": 68
+                   }
+                  ]
+                 },
+                 "avatarImageSize": "AVATAR_SIZE_M"
+                }
+               },
+               "a11yLabel": "Go to channel Zone07"
+              }
+             },
+             "metadata": {
+              "contentMetadataViewModel": {
+               "metadataRows": [
+                {
+                 "metadataParts": [
+                  {
+                   "text": {
+                    "content": "Zone07"
+                   },
+                   "icon": {
+                    "name": "CHECK_CIRCLE_FILLED",
+                    "height": 14,
+                    "width": 14,
+                    "accessibilityLabel": "Verified"
+                   }
+                  }
+                 ]
+                },
+                {
+                 "metadataParts": [
+                  {
+                   "text": {
+                    "content": "186K"
+                   },
+                   "accessibilityLabel": "186 thousand views",
+                   "leadingIcon": {
+                    "name": "PLAY_ARROW_OUTLINED",
+                    "height": 12,
+                    "width": 12,
+                    "marginEndToken": {
+                     "spacing": 2
+                    }
+                   }
+                  },
+                  {
+                   "text": {
+                    "content": "2mo ago"
+                   },
+                   "accessibilityLabel": "2 months ago"
+                  }
+                 ]
+                }
+               ],
+               "delimiter": " "
+              }
+             }
+            }
+           },
+           "contentId": "6GXShyGholE",
+           "contentType": "LOCKUP_CONTENT_TYPE_VIDEO"
+          }
+         },
+         {
+          "lockupViewModel": {
+           "contentImage": {
+            "thumbnailViewModel": {
+             "image": {
+              "sources": [
+               {
+                "url": "https://i.ytimg.com/vi/yPYZpwSpKmA/hqdefault.jpg?sqp=-oaymwEiCKgBEF5IWvKriqkDFQgBFQAAAAAYASUAAMhCPQCAokN4AQ==&rs=AOn4CLBrzvFaTRzvwIA3oz89vS4ODrDJnw",
+                "width": 168,
+                "height": 94
+               },
+               {
+                "url": "https://i.ytimg.com/vi/yPYZpwSpKmA/hqdefault.jpg?sqp=-oaymwEjCNACELwBSFryq4qpAxUIARUAAAAAGAElAADIQj0AgKJDeAE=&rs=AOn4CLAIYA0llYwvjijecWwCYJgXMx6YWA",
+                "width": 336,
+                "height": 188
+               }
+              ]
+             },
+             "overlays": [
+              {
+               "thumbnailBottomOverlayViewModel": {
+                "badges": [
+                 {
+                  "thumbnailBadgeViewModel": {
+                   "icon": {
+                    "sources": [
+                     {
+                      "clientResource": {
+                       "imageName": "MUSIC"
+                      }
+                     }
+                    ]
+                   },
+                   "text": "3:24",
+                   "badgeStyle": "THUMBNAIL_OVERLAY_BADGE_STYLE_DEFAULT",
+                   "animationActivationTargetId": "yPYZpwSpKmA",
+                   "animationActivationEntityKey": "Eh8veW91dHViZS9hcHAvd2F0Y2gvcGxheWVyX3N0YXRlIMMCKAE%3D",
+                   "animatedText": "Now playing",
+                   "animationActivationEntitySelectorType": "THUMBNAIL_BADGE_ANIMATION_ENTITY_SELECTOR_TYPE_PLAYER_STATE",
+                   "inlinePlaybackBadgeData": {
+                    "replicateAsTimestamp": true
+                   }
+                  }
+                 }
+                ]
+               }
+              }
+             ]
+            }
+           },
+           "metadata": {
+            "lockupMetadataViewModel": {
+             "title": {
+              "content": "Rick Astley - Together Forever (Official Video) [4K Remaster]"
+             },
+             "image": {
+              "decoratedAvatarViewModel": {
+               "avatar": {
+                "avatarViewModel": {
+                 "image": {
+                  "sources": [
+                   {
+                    "url": "https://yt3.ggpht.com/_ShEGOdg-t5YGJse14Ooq6FYBZqX_QSlhaTNjG06miYusm5lWm1UroLyVxnYtahADfRTVLtuVQ=s88-c-k-c0x00ffffff-no-rj",
+                    "width": 68,
+                    "height": 68
+                   }
+                  ]
+                 },
+                 "avatarImageSize": "AVATAR_SIZE_M"
+                }
+               },
+               "a11yLabel": "Go to channel Rick Astley"
+              }
+             },
+             "metadata": {
+              "contentMetadataViewModel": {
+               "metadataRows": [
+                {
+                 "metadataParts": [
+                  {
+                   "text": {
+                    "content": "Rick Astley"
+                   },
+                   "icon": {
+                    "name": "AUDIO_BADGE",
+                    "height": 14,
+                    "width": 14,
+                    "accessibilityLabel": "Official Artist Channel"
+                   }
+                  }
+                 ]
+                },
+                {
+                 "metadataParts": [
+                  {
+                   "text": {
+                    "content": "208M"
+                   },
+                   "accessibilityLabel": "208 million views",
+                   "leadingIcon": {
+                    "name": "PLAY_ARROW_OUTLINED",
+                    "height": 12,
+                    "width": 12,
+                    "marginEndToken": {
+                     "spacing": 2
+                    }
+                   }
+                  },
+                  {
+                   "text": {
+                    "content": "17y ago"
+                   },
+                   "accessibilityLabel": "17 years ago"
+                  }
+                 ]
+                }
+               ],
+               "delimiter": " "
+              }
+             }
+            }
+           },
+           "contentId": "yPYZpwSpKmA",
+           "contentType": "LOCKUP_CONTENT_TYPE_VIDEO"
+          }
+         }
+        ]
+       }
+      }
+     ]
+    }
+   }
+  }
+ }
+}

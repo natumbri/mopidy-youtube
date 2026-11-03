@@ -1,0 +1,908 @@
+{
+ "contents": {
+  "twoColumnSearchResultsRenderer": {
+   "primaryContents": {
+    "sectionListRenderer": {
+     "contents": [
+      {
+       "itemSectionRenderer": {
+        "contents": [
+         {
+          "lockupViewModel": {
+           "contentImage": {
+            "collectionThumbnailViewModel": {
+             "primaryThumbnail": {
+              "thumbnailViewModel": {
+               "image": {
+                "sources": [
+                 {
+                  "url": "https://i.ytimg.com/vi/dQw4w9WgXcQ/hq720.jpg?sqp=-oaymwEXCOgCEMoBSFryq4qpAwkIARUAAIhCGAE=&rs=AOn4CLAmcb8rtMhEjuYeigpkSaXOltKOwg",
+                  "width": 360,
+                  "height": 202
+                 },
+                 {
+                  "url": "https://i.ytimg.com/vi/dQw4w9WgXcQ/hq720.jpg?sqp=-oaymwEXCNAFEJQDSFryq4qpAwkIARUAAIhCGAE=&rs=AOn4CLDX3LgTmArIBIk6uvvz4y5p95MOcg",
+                  "width": 720,
+                  "height": 404
+                 }
+                ]
+               },
+               "overlays": [
+                {
+                 "thumbnailOverlayBadgeViewModel": {
+                  "thumbnailBadges": [
+                   {
+                    "thumbnailBadgeViewModel": {
+                     "icon": {
+                      "sources": [
+                       {
+                        "clientResource": {
+                         "imageName": "PLAYLISTS"
+                        }
+                       }
+                      ]
+                     },
+                     "text": "56 videos",
+                     "badgeStyle": "THUMBNAIL_OVERLAY_BADGE_STYLE_DEFAULT",
+                     "backgroundColor": {
+                      "lightTheme": 1581363,
+                      "darkTheme": 1581363
+                     }
+                    }
+                   }
+                  ],
+                  "position": "THUMBNAIL_OVERLAY_BADGE_POSITION_BOTTOM_END"
+                 }
+                },
+                {
+                 "thumbnailHoverOverlayViewModel": {
+                  "icon": {
+                   "sources": [
+                    {
+                     "clientResource": {
+                      "imageName": "PLAY_ALL"
+                     }
+                    }
+                   ]
+                  },
+                  "text": {
+                   "content": "Play all",
+                   "styleRuns": [
+                    {
+                     "startIndex": 0,
+                     "length": 8
+                    }
+                   ]
+                  },
+                  "style": "THUMBNAIL_HOVER_OVERLAY_STYLE_COVER"
+                 }
+                }
+               ],
+               "backgroundColor": {
+                "lightTheme": 2372172,
+                "darkTheme": 2372172
+               }
+              }
+             },
+             "stackColor": {
+              "lightTheme": 7043993,
+              "darkTheme": 7766163
+             }
+            }
+           },
+           "metadata": {
+            "lockupMetadataViewModel": {
+             "title": {
+              "content": "Rick Astley - Never Gonna Give You Up"
+             },
+             "metadata": {
+              "contentMetadataViewModel": {
+               "metadataRows": [
+                {
+                 "metadataParts": [
+                  {
+                   "text": {
+                    "content": "Seh",
+                    "commandRuns": [
+                     {
+                      "startIndex": 0,
+                      "length": 3,
+                      "onTap": {
+                       "innertubeCommand": {
+                        "commandMetadata": {
+                         "webCommandMetadata": {
+                          "url": "/@ReSehh",
+                          "webPageType": "WEB_PAGE_TYPE_CHANNEL",
+                          "rootVe": 3611,
+                          "apiUrl": "/youtubei/v1/browse"
+                         }
+                        },
+                        "browseEndpoint": {
+                         "browseId": "UCXhPrL3sla_Iaabtx5X5CAw",
+                         "canonicalBaseUrl": "/@ReSehh"
+                        }
+                       }
+                      }
+                     }
+                    ],
+                    "styleRuns": [
+                     {
+                      "startIndex": 0,
+                      "length": 3,
+                      "weightLabel": "FONT_WEIGHT_NORMAL"
+                     }
+                    ]
+                   }
+                  },
+                  {
+                   "text": {
+                    "content": "Playlist",
+                    "commandRuns": [
+                     {
+                      "startIndex": 0,
+                      "length": 8,
+                      "onTap": {
+                       "innertubeCommand": {
+                        "commandMetadata": {
+                         "webCommandMetadata": {
+                          "url": "/@ReSehh",
+                          "webPageType": "WEB_PAGE_TYPE_CHANNEL",
+                          "rootVe": 3611,
+                          "apiUrl": "/youtubei/v1/browse"
+                         }
+                        },
+                        "browseEndpoint": {
+                         "browseId": "UCXhPrL3sla_Iaabtx5X5CAw",
+                         "canonicalBaseUrl": "/@ReSehh"
+                        }
+                       }
+                      }
+                     }
+                    ],
+                    "styleRuns": [
+                     {
+                      "startIndex": 0,
+                      "length": 8,
+                      "weightLabel": "FONT_WEIGHT_NORMAL"
+                     }
+                    ]
+                   }
+                  }
+                 ],
+                 "lockupContentMetadataRowExtension": {
+                  "contentType": "METADATA_ROW_CONTENT_TYPE_BYLINE"
+                 }
+                },
+                {
+                 "isSpacerRow": true
+                },
+                {
+                 "metadataParts": [
+                  {
+                   "text": {
+                    "content": "Rick Astley - Never Gonna Give You Up (Official Video) (4K Remaster) · 3:34",
+                    "commandRuns": [
+                     {
+                      "startIndex": 0,
+                      "length": 76,
+                      "onTap": {
+                       "innertubeCommand": {
+                        "commandMetadata": {
+                         "webCommandMetadata": {
+                          "url": "/watch?v=dQw4w9WgXcQ&list=PLl8RNOyzcwBjjIajUplE6oV8Vi5Od65H2",
+                          "webPageType": "WEB_PAGE_TYPE_WATCH",
+                          "rootVe": 3832
+                         }
+                        },
+                        "watchEndpoint": {
+                         "videoId": "dQw4w9WgXcQ",
+                         "playlistId": "PLl8RNOyzcwBjjIajUplE6oV8Vi5Od65H2",
+                         "watchEndpointSupportedOnesieConfig": {
+                          "html5PlaybackOnesieConfig": {
+                           "commonConfig": {
+                            "url": "https://rr5---sn-u2bpouxgoxu-hxael.googlevideo.com/initplayback?source=youtube&oeis=1&c=WEB&oad=3200&ovd=3200&oaad=11000&oavd=11000&ocs=700&oewis=1&oputc=1&oehoh5=1&epbp=1&msp=1&odepv=1&id=750c38c3d5a05dc4&ip=120.21.43.150&initcwndbps=1763875&mt=1793156228&oweuc=&pxtags=Cg4KAnR4Egg1MTkyOTU2Ng&rxtags=Cg4KAnR4Egg1MTkyOTU2Ng%2CCg4KAnR4Egg1MTkyOTU2Nw%2CCg4KAnR4Egg1MTkyOTU2OA"
+                           }
+                          }
+                         }
+                        }
+                       }
+                      }
+                     }
+                    ]
+                   }
+                  }
+                 ]
+                },
+                {
+                 "metadataParts": [
+                  {
+                   "text": {
+                    "content": "Rick Astley - Gonna Give You Up · 3:37",
+                    "commandRuns": [
+                     {
+                      "startIndex": 0,
+                      "length": 39,
+                      "onTap": {
+                       "innertubeCommand": {
+                        "commandMetadata": {
+                         "webCommandMetadata": {
+                          "url": "/watch?v=doEqUhFiQS4&list=PLl8RNOyzcwBjjIajUplE6oV8Vi5Od65H2",
+                          "webPageType": "WEB_PAGE_TYPE_WATCH",
+                          "rootVe": 3832
+                         }
+                        },
+                        "watchEndpoint": {
+                         "videoId": "doEqUhFiQS4",
+                         "playlistId": "PLl8RNOyzcwBjjIajUplE6oV8Vi5Od65H2",
+                         "watchEndpointSupportedOnesieConfig": {
+                          "html5PlaybackOnesieConfig": {
+                           "commonConfig": {
+                            "url": "https://rr1---sn-u2bpouxgoxu-hxay.googlevideo.com/initplayback?source=youtube&oeis=1&c=WEB&oad=3200&ovd=3200&oaad=11000&oavd=11000&ocs=700&oewis=1&oputc=1&oehoh5=1&epbp=1&msp=1&odepv=1&id=76812a521162412e&ip=120.21.43.150&initcwndbps=1763875&mt=1793156240&oweuc=&pxtags=Cg4KAnR4Egg1MTkyOTU2Ng&rxtags=Cg4KAnR4Egg1MTkyOTU2Ng%2CCg4KAnR4Egg1MTkyOTU2Nw%2CCg4KAnR4Egg1MTkyOTU2OA"
+                           }
+                          }
+                         }
+                        }
+                       }
+                      }
+                     }
+                    ]
+                   }
+                  }
+                 ]
+                },
+                {
+                 "metadataParts": [
+                  {
+                   "text": {
+                    "content": "View full playlist",
+                    "commandRuns": [
+                     {
+                      "startIndex": 0,
+                      "length": 18,
+                      "onTap": {
+                       "innertubeCommand": {
+                        "commandMetadata": {
+                         "webCommandMetadata": {
+                          "url": "/playlist?list=PLl8RNOyzcwBjjIajUplE6oV8Vi5Od65H2",
+                          "webPageType": "WEB_PAGE_TYPE_PLAYLIST",
+                          "rootVe": 5754,
+                          "apiUrl": "/youtubei/v1/browse"
+                         }
+                        },
+                        "browseEndpoint": {
+                         "browseId": "VLPLl8RNOyzcwBjjIajUplE6oV8Vi5Od65H2"
+                        }
+                       }
+                      }
+                     }
+                    ],
+                    "styleRuns": [
+                     {
+                      "startIndex": 0,
+                      "length": 18,
+                      "weightLabel": "FONT_WEIGHT_MEDIUM"
+                     }
+                    ]
+                   }
+                  }
+                 ]
+                }
+               ],
+               "delimiter": " • "
+              }
+             }
+            }
+           },
+           "contentId": "PLl8RNOyzcwBjjIajUplE6oV8Vi5Od65H2",
+           "contentType": "LOCKUP_CONTENT_TYPE_PLAYLIST"
+          }
+         },
+         {
+          "lockupViewModel": {
+           "contentImage": {
+            "collectionThumbnailViewModel": {
+             "primaryThumbnail": {
+              "thumbnailViewModel": {
+               "image": {
+                "sources": [
+                 {
+                  "url": "https://i.ytimg.com/vi/dQw4w9WgXcQ/hq720.jpg?sqp=-oaymwEXCOgCEMoBSFryq4qpAwkIARUAAIhCGAE=&rs=AOn4CLAmcb8rtMhEjuYeigpkSaXOltKOwg",
+                  "width": 360,
+                  "height": 202
+                 },
+                 {
+                  "url": "https://i.ytimg.com/vi/dQw4w9WgXcQ/hq720.jpg?sqp=-oaymwEXCNAFEJQDSFryq4qpAwkIARUAAIhCGAE=&rs=AOn4CLDX3LgTmArIBIk6uvvz4y5p95MOcg",
+                  "width": 720,
+                  "height": 404
+                 }
+                ]
+               },
+               "overlays": [
+                {
+                 "thumbnailOverlayBadgeViewModel": {
+                  "thumbnailBadges": [
+                   {
+                    "thumbnailBadgeViewModel": {
+                     "icon": {
+                      "sources": [
+                       {
+                        "clientResource": {
+                         "imageName": "PLAYLISTS"
+                        }
+                       }
+                      ]
+                     },
+                     "text": "52 videos",
+                     "badgeStyle": "THUMBNAIL_OVERLAY_BADGE_STYLE_DEFAULT",
+                     "backgroundColor": {
+                      "lightTheme": 1581363,
+                      "darkTheme": 1581363
+                     }
+                    }
+                   }
+                  ],
+                  "position": "THUMBNAIL_OVERLAY_BADGE_POSITION_BOTTOM_END"
+                 }
+                },
+                {
+                 "thumbnailHoverOverlayViewModel": {
+                  "icon": {
+                   "sources": [
+                    {
+                     "clientResource": {
+                      "imageName": "PLAY_ALL"
+                     }
+                    }
+                   ]
+                  },
+                  "text": {
+                   "content": "Play all",
+                   "styleRuns": [
+                    {
+                     "startIndex": 0,
+                     "length": 8
+                    }
+                   ]
+                  },
+                  "style": "THUMBNAIL_HOVER_OVERLAY_STYLE_COVER"
+                 }
+                }
+               ],
+               "backgroundColor": {
+                "lightTheme": 2372172,
+                "darkTheme": 2372172
+               }
+              }
+             },
+             "stackColor": {
+              "lightTheme": 7043993,
+              "darkTheme": 7766163
+             }
+            }
+           },
+           "metadata": {
+            "lockupMetadataViewModel": {
+             "title": {
+              "content": "Never Gonna Give You Up"
+             },
+             "metadata": {
+              "contentMetadataViewModel": {
+               "metadataRows": [
+                {
+                 "metadataParts": [
+                  {
+                   "text": {
+                    "content": "ゆうきtvメイン",
+                    "commandRuns": [
+                     {
+                      "startIndex": 0,
+                      "length": 8,
+                      "onTap": {
+                       "innertubeCommand": {
+                        "commandMetadata": {
+                         "webCommandMetadata": {
+                          "url": "/@T8Loh",
+                          "webPageType": "WEB_PAGE_TYPE_CHANNEL",
+                          "rootVe": 3611,
+                          "apiUrl": "/youtubei/v1/browse"
+                         }
+                        },
+                        "browseEndpoint": {
+                         "browseId": "UCzJzKSc4piSVLTESpyODt6A",
+                         "canonicalBaseUrl": "/@T8Loh"
+                        }
+                       }
+                      }
+                     }
+                    ],
+                    "styleRuns": [
+                     {
+                      "startIndex": 0,
+                      "length": 8,
+                      "weightLabel": "FONT_WEIGHT_NORMAL"
+                     }
+                    ]
+                   }
+                  },
+                  {
+                   "text": {
+                    "content": "Playlist",
+                    "commandRuns": [
+                     {
+                      "startIndex": 0,
+                      "length": 8,
+                      "onTap": {
+                       "innertubeCommand": {
+                        "commandMetadata": {
+                         "webCommandMetadata": {
+                          "url": "/@T8Loh",
+                          "webPageType": "WEB_PAGE_TYPE_CHANNEL",
+                          "rootVe": 3611,
+                          "apiUrl": "/youtubei/v1/browse"
+                         }
+                        },
+                        "browseEndpoint": {
+                         "browseId": "UCzJzKSc4piSVLTESpyODt6A",
+                         "canonicalBaseUrl": "/@T8Loh"
+                        }
+                       }
+                      }
+                     }
+                    ],
+                    "styleRuns": [
+                     {
+                      "startIndex": 0,
+                      "length": 8,
+                      "weightLabel": "FONT_WEIGHT_NORMAL"
+                     }
+                    ]
+                   }
+                  }
+                 ],
+                 "lockupContentMetadataRowExtension": {
+                  "contentType": "METADATA_ROW_CONTENT_TYPE_BYLINE"
+                 }
+                },
+                {
+                 "isSpacerRow": true
+                },
+                {
+                 "metadataParts": [
+                  {
+                   "text": {
+                    "content": "Rick Astley - Never Gonna Give You Up (Official Video) (4K Remaster) · 3:34",
+                    "commandRuns": [
+                     {
+                      "startIndex": 0,
+                      "length": 76,
+                      "onTap": {
+                       "innertubeCommand": {
+                        "commandMetadata": {
+                         "webCommandMetadata": {
+                          "url": "/watch?v=dQw4w9WgXcQ&list=PLd5Vfgy_sILZXNGHKlAHnwPOEhboVQNBG&pp=0gcJCRMF0aJEHMZM",
+                          "webPageType": "WEB_PAGE_TYPE_WATCH",
+                          "rootVe": 3832
+                         }
+                        },
+                        "watchEndpoint": {
+                         "videoId": "dQw4w9WgXcQ",
+                         "playlistId": "PLd5Vfgy_sILZXNGHKlAHnwPOEhboVQNBG",
+                         "playerParams": "0gcJCRMF0aJEHMZM",
+                         "watchEndpointSupportedOnesieConfig": {
+                          "html5PlaybackOnesieConfig": {
+                           "commonConfig": {
+                            "url": "https://rr5---sn-u2bpouxgoxu-hxael.googlevideo.com/initplayback?source=youtube&oeis=1&c=WEB&oad=3200&ovd=3200&oaad=11000&oavd=11000&ocs=700&oewis=1&oputc=1&oehoh5=1&epbp=1&msp=1&odepv=1&id=750c38c3d5a05dc4&ip=120.21.43.150&initcwndbps=1763875&mt=1793156228&oweuc=&pxtags=Cg4KAnR4Egg1MTkyOTU2Ng&rxtags=Cg4KAnR4Egg1MTkyOTU2Ng%2CCg4KAnR4Egg1MTkyOTU2Nw%2CCg4KAnR4Egg1MTkyOTU2OA"
+                           }
+                          }
+                         }
+                        }
+                       }
+                      }
+                     }
+                    ]
+                   }
+                  }
+                 ]
+                },
+                {
+                 "metadataParts": [
+                  {
+                   "text": {
+                    "content": "Rick Astley - Never Gonna Give You Up (Live 1987) · 3:11",
+                    "commandRuns": [
+                     {
+                      "startIndex": 0,
+                      "length": 57,
+                      "onTap": {
+                       "innertubeCommand": {
+                        "commandMetadata": {
+                         "webCommandMetadata": {
+                          "url": "/watch?v=ghGoI7xVtSI&list=PLd5Vfgy_sILZXNGHKlAHnwPOEhboVQNBG",
+                          "webPageType": "WEB_PAGE_TYPE_WATCH",
+                          "rootVe": 3832
+                         }
+                        },
+                        "watchEndpoint": {
+                         "videoId": "ghGoI7xVtSI",
+                         "playlistId": "PLd5Vfgy_sILZXNGHKlAHnwPOEhboVQNBG",
+                         "watchEndpointSupportedOnesieConfig": {
+                          "html5PlaybackOnesieConfig": {
+                           "commonConfig": {
+                            "url": "https://rr2---sn-u2bpouxgoxu-hxael.googlevideo.com/initplayback?source=youtube&oeis=1&c=WEB&oad=3200&ovd=3200&oaad=11000&oavd=11000&ocs=700&oewis=1&oputc=1&oehoh5=1&epbp=1&msp=1&odepv=1&id=8211a823bc55b522&ip=120.21.43.150&initcwndbps=1763875&mt=1793156228&oweuc=&pxtags=Cg4KAnR4Egg1MTkyOTU2Ng&rxtags=Cg4KAnR4Egg1MTkyOTU2Ng%2CCg4KAnR4Egg1MTkyOTU2Nw%2CCg4KAnR4Egg1MTkyOTU2OA"
+                           }
+                          }
+                         }
+                        }
+                       }
+                      }
+                     }
+                    ]
+                   }
+                  }
+                 ]
+                },
+                {
+                 "metadataParts": [
+                  {
+                   "text": {
+                    "content": "View full playlist",
+                    "commandRuns": [
+                     {
+                      "startIndex": 0,
+                      "length": 18,
+                      "onTap": {
+                       "innertubeCommand": {
+                        "commandMetadata": {
+                         "webCommandMetadata": {
+                          "url": "/playlist?list=PLd5Vfgy_sILZXNGHKlAHnwPOEhboVQNBG",
+                          "webPageType": "WEB_PAGE_TYPE_PLAYLIST",
+                          "rootVe": 5754,
+                          "apiUrl": "/youtubei/v1/browse"
+                         }
+                        },
+                        "browseEndpoint": {
+                         "browseId": "VLPLd5Vfgy_sILZXNGHKlAHnwPOEhboVQNBG"
+                        }
+                       }
+                      }
+                     }
+                    ],
+                    "styleRuns": [
+                     {
+                      "startIndex": 0,
+                      "length": 18,
+                      "weightLabel": "FONT_WEIGHT_MEDIUM"
+                     }
+                    ]
+                   }
+                  }
+                 ]
+                }
+               ],
+               "delimiter": " • "
+              }
+             }
+            }
+           },
+           "contentId": "PLd5Vfgy_sILZXNGHKlAHnwPOEhboVQNBG",
+           "contentType": "LOCKUP_CONTENT_TYPE_PLAYLIST"
+          }
+         },
+         {
+          "lockupViewModel": {
+           "contentImage": {
+            "collectionThumbnailViewModel": {
+             "primaryThumbnail": {
+              "thumbnailViewModel": {
+               "image": {
+                "sources": [
+                 {
+                  "url": "https://i.ytimg.com/vi/dQw4w9WgXcQ/hq720.jpg?sqp=-oaymwEXCOgCEMoBSFryq4qpAwkIARUAAIhCGAE=&rs=AOn4CLAmcb8rtMhEjuYeigpkSaXOltKOwg",
+                  "width": 360,
+                  "height": 202
+                 },
+                 {
+                  "url": "https://i.ytimg.com/vi/dQw4w9WgXcQ/hq720.jpg?sqp=-oaymwEXCNAFEJQDSFryq4qpAwkIARUAAIhCGAE=&rs=AOn4CLDX3LgTmArIBIk6uvvz4y5p95MOcg",
+                  "width": 720,
+                  "height": 404
+                 }
+                ]
+               },
+               "overlays": [
+                {
+                 "thumbnailOverlayBadgeViewModel": {
+                  "thumbnailBadges": [
+                   {
+                    "thumbnailBadgeViewModel": {
+                     "icon": {
+                      "sources": [
+                       {
+                        "clientResource": {
+                         "imageName": "PLAYLISTS"
+                        }
+                       }
+                      ]
+                     },
+                     "text": "18 videos",
+                     "badgeStyle": "THUMBNAIL_OVERLAY_BADGE_STYLE_DEFAULT",
+                     "backgroundColor": {
+                      "lightTheme": 1581363,
+                      "darkTheme": 1581363
+                     }
+                    }
+                   }
+                  ],
+                  "position": "THUMBNAIL_OVERLAY_BADGE_POSITION_BOTTOM_END"
+                 }
+                },
+                {
+                 "thumbnailHoverOverlayViewModel": {
+                  "icon": {
+                   "sources": [
+                    {
+                     "clientResource": {
+                      "imageName": "PLAY_ALL"
+                     }
+                    }
+                   ]
+                  },
+                  "text": {
+                   "content": "Play all",
+                   "styleRuns": [
+                    {
+                     "startIndex": 0,
+                     "length": 8
+                    }
+                   ]
+                  },
+                  "style": "THUMBNAIL_HOVER_OVERLAY_STYLE_COVER"
+                 }
+                }
+               ],
+               "backgroundColor": {
+                "lightTheme": 2372172,
+                "darkTheme": 2372172
+               }
+              }
+             },
+             "stackColor": {
+              "lightTheme": 7043993,
+              "darkTheme": 7766163
+             }
+            }
+           },
+           "metadata": {
+            "lockupMetadataViewModel": {
+             "title": {
+              "content": "Never Gonna Give You Up version 1 - 16 Variant"
+             },
+             "metadata": {
+              "contentMetadataViewModel": {
+               "metadataRows": [
+                {
+                 "metadataParts": [
+                  {
+                   "text": {
+                    "content": "Iris Trismegistus",
+                    "commandRuns": [
+                     {
+                      "startIndex": 0,
+                      "length": 17,
+                      "onTap": {
+                       "innertubeCommand": {
+                        "commandMetadata": {
+                         "webCommandMetadata": {
+                          "url": "/@timetochronicle",
+                          "webPageType": "WEB_PAGE_TYPE_CHANNEL",
+                          "rootVe": 3611,
+                          "apiUrl": "/youtubei/v1/browse"
+                         }
+                        },
+                        "browseEndpoint": {
+                         "browseId": "UCgXzKCXWHKEqA3ltv6TUwMw",
+                         "canonicalBaseUrl": "/@timetochronicle"
+                        }
+                       }
+                      }
+                     }
+                    ],
+                    "styleRuns": [
+                     {
+                      "startIndex": 0,
+                      "length": 17,
+                      "weightLabel": "FONT_WEIGHT_NORMAL"
+                     }
+                    ]
+                   }
+                  },
+                  {
+                   "text": {
+                    "content": "Playlist",
+                    "commandRuns": [
+                     {
+                      "startIndex": 0,
+                      "length": 8,
+                      "onTap": {
+                       "innertubeCommand": {
+                        "commandMetadata": {
+                         "webCommandMetadata": {
+                          "url": "/@timetochronicle",
+                          "webPageType": "WEB_PAGE_TYPE_CHANNEL",
+                          "rootVe": 3611,
+                          "apiUrl": "/youtubei/v1/browse"
+                         }
+                        },
+                        "browseEndpoint": {
+                         "browseId": "UCgXzKCXWHKEqA3ltv6TUwMw",
+                         "canonicalBaseUrl": "/@timetochronicle"
+                        }
+                       }
+                      }
+                     }
+                    ],
+                    "styleRuns": [
+                     {
+                      "startIndex": 0,
+                      "length": 8,
+                      "weightLabel": "FONT_WEIGHT_NORMAL"
+                     }
+                    ]
+                   }
+                  }
+                 ],
+                 "lockupContentMetadataRowExtension": {
+                  "contentType": "METADATA_ROW_CONTENT_TYPE_BYLINE"
+                 }
+                },
+                {
+                 "isSpacerRow": true
+                },
+                {
+                 "metadataParts": [
+                  {
+                   "text": {
+                    "content": "Rick Astley - Never Gonna Give You Up (Official Video) (4K Remaster) · 3:34",
+                    "commandRuns": [
+                     {
+                      "startIndex": 0,
+                      "length": 76,
+                      "onTap": {
+                       "innertubeCommand": {
+                        "commandMetadata": {
+                         "webCommandMetadata": {
+                          "url": "/watch?v=dQw4w9WgXcQ&list=PLL8jFEKG82Z7vNDMUamdAcNL4JwGZ8CMG&pp=0gcJCRMF0aJEHMZM",
+                          "webPageType": "WEB_PAGE_TYPE_WATCH",
+                          "rootVe": 3832
+                         }
+                        },
+                        "watchEndpoint": {
+                         "videoId": "dQw4w9WgXcQ",
+                         "playlistId": "PLL8jFEKG82Z7vNDMUamdAcNL4JwGZ8CMG",
+                         "playerParams": "0gcJCRMF0aJEHMZM",
+                         "watchEndpointSupportedOnesieConfig": {
+                          "html5PlaybackOnesieConfig": {
+                           "commonConfig": {
+                            "url": "https://rr5---sn-u2bpouxgoxu-hxael.googlevideo.com/initplayback?source=youtube&oeis=1&c=WEB&oad=3200&ovd=3200&oaad=11000&oavd=11000&ocs=700&oewis=1&oputc=1&oehoh5=1&epbp=1&msp=1&odepv=1&id=750c38c3d5a05dc4&ip=120.21.43.150&initcwndbps=1763875&mt=1793156228&oweuc=&pxtags=Cg4KAnR4Egg1MTkyOTU2Ng&rxtags=Cg4KAnR4Egg1MTkyOTU2Ng%2CCg4KAnR4Egg1MTkyOTU2Nw%2CCg4KAnR4Egg1MTkyOTU2OA"
+                           }
+                          }
+                         }
+                        }
+                       }
+                      }
+                     }
+                    ]
+                   }
+                  }
+                 ]
+                },
+                {
+                 "metadataParts": [
+                  {
+                   "text": {
+                    "content": "Rick Astley - Never Gonna Give You Up | Piano Cover by Pianistmiri 이미리 · 4:10",
+                    "commandRuns": [
+                     {
+                      "startIndex": 0,
+                      "length": 84,
+                      "onTap": {
+                       "innertubeCommand": {
+                        "commandMetadata": {
+                         "webCommandMetadata": {
+                          "url": "/watch?v=9dQ8yygs0Ys&list=PLL8jFEKG82Z7vNDMUamdAcNL4JwGZ8CMG",
+                          "webPageType": "WEB_PAGE_TYPE_WATCH",
+                          "rootVe": 3832
+                         }
+                        },
+                        "watchEndpoint": {
+                         "videoId": "9dQ8yygs0Ys",
+                         "playlistId": "PLL8jFEKG82Z7vNDMUamdAcNL4JwGZ8CMG",
+                         "watchEndpointSupportedOnesieConfig": {
+                          "html5PlaybackOnesieConfig": {
+                           "commonConfig": {
+                            "url": "https://rr2---sn-u2bpouxgoxu-hxay.googlevideo.com/initplayback?source=youtube&oeis=1&c=WEB&oad=3200&ovd=3200&oaad=11000&oavd=11000&ocs=700&oewis=1&oputc=1&oehoh5=1&epbp=1&msp=1&odepv=1&id=f5d43ccb282cd18b&ip=120.21.43.150&initcwndbps=1763875&mt=1793156240&oweuc=&pxtags=Cg4KAnR4Egg1MTkyOTU2Ng&rxtags=Cg4KAnR4Egg1MTkyOTU2Ng%2CCg4KAnR4Egg1MTkyOTU2Nw%2CCg4KAnR4Egg1MTkyOTU2OA"
+                           }
+                          }
+                         }
+                        }
+                       }
+                      }
+                     }
+                    ]
+                   }
+                  }
+                 ]
+                },
+                {
+                 "metadataParts": [
+                  {
+                   "text": {
+                    "content": "View full playlist",
+                    "commandRuns": [
+                     {
+                      "startIndex": 0,
+                      "length": 18,
+                      "onTap": {
+                       "innertubeCommand": {
+                        "commandMetadata": {
+                         "webCommandMetadata": {
+                          "url": "/playlist?list=PLL8jFEKG82Z7vNDMUamdAcNL4JwGZ8CMG",
+                          "webPageType": "WEB_PAGE_TYPE_PLAYLIST",
+                          "rootVe": 5754,
+                          "apiUrl": "/youtubei/v1/browse"
+                         }
+                        },
+                        "browseEndpoint": {
+                         "browseId": "VLPLL8jFEKG82Z7vNDMUamdAcNL4JwGZ8CMG"
+                        }
+                       }
+                      }
+                     }
+                    ],
+                    "styleRuns": [
+                     {
+                      "startIndex": 0,
+                      "length": 18,
+                      "weightLabel": "FONT_WEIGHT_MEDIUM"
+                     }
+                    ]
+                   }
+                  }
+                 ]
+                }
+               ],
+               "delimiter": " • "
+              }
+             }
+            }
+           },
+           "contentId": "PLL8jFEKG82Z7vNDMUamdAcNL4JwGZ8CMG",
+           "contentType": "LOCKUP_CONTENT_TYPE_PLAYLIST"
+          }
+         }
+        ]
+       }
+      },
+      {
+       "continuationItemRenderer": {
+        "trigger": "CONTINUATION_TRIGGER_ON_ITEM_SHOWN",
+        "continuationEndpoint": {
+         "commandMetadata": {
+          "webCommandMetadata": {
+           "sendPost": true,
+           "apiUrl": "/youtubei/v1/search"
+          }
+         },
+         "continuationCommand": {
+          "token": "EtYHEhduZXZlciBnb25uYSBnaXZlIHlvdSB1cBq6B0VnSVFBMGdVZ2dFaVVFeHNPRkpPVDNsNlkzZENhbXBKWVdwVmNHeEZObTlXT0ZacE5VOWtOalZJTW9JQklsQk1aRFZXWm1kNVgzTkpURnBZVGtkSVMyeEJTRzUzVUU5RmFHSnZWbEZPUWtlQ0FTSlFURXc0YWtaRlMwYzRNbG8zZGs1RVRWVmhiV1JCWTA1TU5FcDNSMW80UTAxSGdnRWlVRXcyVkc5TVJuWk1OMk5SYWtObVExOU1kMVJpVEZaaGVqVkhUbUo1WVhwU1ZJSUJJbEJNVDBKdGEzbFBTakZ6Y3pCbExVdFJhSGRYYlU5dlVWZGthbFJ2V1ROMFF6S0NBU0pRVEVVd2FHY3RUR1JUWm5samNuQlVkRTFKYlZCVGNVWk1iR1UwZVZsT2VsZEVnZ0VpVUV3Mk5rNWFRVEZmVVVsUlRrVkJjakYyUldGaGREVldRVzFZVUhRMFFtTnROb0lCSWxCTVgzWklRbDgxV25jNU9IWkphRTkzUjJaaFRGbDBaek5YVkVWSmVucG5VWFdDQVNKUVREbEtUVEpoUXpNM1FrY3dNM1pzY1hsb2FWbFlOVFJPUjE5MGFIRnhkbUpuZ2dFaVVFeHpWelUzTTJzM1kxVkJZVzlNZG10aWFFNDVjbWN3VDBkRE0waENjbUYyV0lJQklsQk1OamxFUTBkeWNYUlFVMEUxUnpsNlpXaFNSa2MwVWpWQ1MzVkpkVlV0TkRLQ0FRMVFUR1ZCVFVOalpFZFVRVmhqZ2dFaVVFeHNiM2R5Wm1GWGVuRTJOVzFDVjFOM2REQnFSV2x6VDJKWlMwbHlUVkppUm9JQklsQk1PVEJzTFVSd2NVcGtXRlV5Y0U1V01VWlRjbFZLVDFBelJGbElVSE15U2tPQ0FTSlFURzVVVVZWUVl6SnVOREJYU0c1a1QwdDNlbTFrVTI1V1RHVmlZVEZVZFdKd2dnRWlVRXh3ZURNdFdYSXRhSFJoTVhkbFVHOHROMnBTZG1wek5IcHhjVFZ6WnpSS1dJSUJJbEJNWlZWWVJ6aDJNbkpvTVd4R1lrSmpNV1Y0V25Sa1pqVkNTSFZ3UkVKVFdGQ0NBU0pRVEhsWmNrMXFXR3BDV1hacWRtTnhlRk41VmxCMlExTmhiemd6V0c5a1dqZExnZ0VpVUV4b2EzQkpWRE5pTW1WaFRIaHlVVE4xWW1kbWMyeEljRTlKWTBGTmMxbFFUNElCRFZCTVVVeEJWbEZsYmxvM1YzZXlBUVlLQkFnVUVBSSUzRBiB4OgYIgtzZWFyY2gtZmVlZA%3D%3D",
+          "request": "CONTINUATION_REQUEST_TYPE_SEARCH"
+         }
+        },
+        "loggingDirectives": {}
+       }
+      }
+     ]
+    }
+   }
+  }
+ }
+}
