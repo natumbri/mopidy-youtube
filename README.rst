@@ -121,24 +121,27 @@ To enable YouTube Premium high quality streaming you must set up the `musicapi_c
 This requires `yt-dlp` and the `youtube_dl_package` setting shown above.
 
 Setup a `cookies.txt` (Netscape HTTP Cookie File) containing YouTube cookies:
-- Download an extension to dump YouTube cookies. For example:  
+
+- Download an extension to dump YouTube cookies. For example:
+
   - Firefox: https://addons.mozilla.org/en-US/firefox/addon/cookies-txt/
   - Chrome: https://chrome.google.com/webstore/detail/get-cookiestxt-locally/cclelndahbckbenkjhflpdbgdldlbecc
+
 - Navigate to youtube.com and ensure you are logged in.
 - Open the extension and export cookies using the "Only for this site" option.
 - Save the file and reference it in `musicapi_cookiefile`.
-    
-mopidy-youtube can automatically play 'related' tracks after the last track in the play queue
-is played.  If you want mopidy-youtube to autoplay related videos, set autoplay_enabled = true::
 
-	[youtube]
-	autoplay_enabled = true
-	
+mopidy-youtube can automatically play 'related' tracks after the last track in the play queue
+is played. If you want mopidy-youtube to autoplay related videos, set autoplay_enabled = true::
+
+    [youtube]
+    autoplay_enabled = true
+
 If autoplay is enabled, other options are::
 
-	strict_autoplay = [true/false]
-	max_autoplay_length = [maximum length of track in seconds or None]  : defaults to 600s
-	max_degrees_of_separation = [defaults to 3]
+    strict_autoplay = [true/false]
+    max_autoplay_length = [maximum length of track in seconds or None] : defaults to 600s
+    max_degrees_of_separation = [defaults to 3]
 
 If the option strict_autoplay is set, the current tracklist is ignored and the
 most related video automatically played afterwards.
