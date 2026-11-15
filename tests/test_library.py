@@ -469,6 +469,33 @@ def test_a_playlist_is_not_loaded_again_by_the_next_lookup(
     assert len(site.requests) == requests_made
 
 
+def test_looking_up_a_playlist_takes_one_request(
+    library: Library, japi: jAPI, site: YouTubeSite
+):
+    tracks = library.lookup(f"youtube:playlist:{JAPI_PLAYLIST_ID}")
+
+    assert tracks
+    assert {track.album.name for track in tracks if track.album} == {
+        "Popular Music Videos"
+    }
+    # the page of the playlist tells what the playlist is: nobody asks for it again
+    assert [str(request.url).split("?")[0] for request in site.requests] == [
+        BASE + "playlist"
+    ]
+
+
+def test_the_cover_of_a_playlist_is_only_looked_up_when_it_is_asked_for(
+    library: Library, japi: jAPI, site: YouTubeSite
+):
+    library.lookup(f"youtube:playlist:{JAPI_PLAYLIST_ID}")
+    assert site.calls("GET", BASE + "results") == []
+
+    library.get_images([f"youtube:playlist:{JAPI_PLAYLIST_ID}"])
+
+    # (the page only has the avatar of its owner, which is not the cover)
+    assert len(site.calls("GET", BASE + "results")) == 1
+
+
 def test_a_playlist_of_youtube_music_has_its_tracks_and_artists(
     library: Library, ytmusic: Any
 ):
@@ -942,6 +969,31 @@ def test_a_search_finds_the_videos_and_playlists_of_youtube(
             num_tracks=18,
         ),
     ]
+
+
+def test_a_search_does_not_load_the_videos_of_the_playlists_it_finds(
+    library: Library, japi: jAPI, site: YouTubeSite
+):
+    result = library.search({"any": ["never gonna give you up"]})
+    finish_background_loads()
+
+    assert result is not None
+    assert result.albums  # there are playlists, ...
+    assert site.calls("GET", BASE + "playlist") == []  # ... and none was opened
+
+
+def test_a_playlist_found_by_a_search_loads_its_videos_when_it_is_opened(
+    library: Library, japi: jAPI, site: YouTubeSite
+):
+    result = library.search({"any": ["never gonna give you up"]})
+    assert result is not None
+    finish_background_loads()
+    assert site.calls("GET", BASE + "playlist") == []
+
+    tracks = library.lookup(result.albums[0].uri)
+
+    assert tracks
+    assert len(site.calls("GET", BASE + "playlist")) == 1
 
 
 def test_the_number_of_tracks_of_an_album_is_capped_at_the_playlist_maximum(

@@ -468,7 +468,7 @@ class jAPI(Client):  # noqa: N801 - public class name, used by backend and tests
 
     @staticmethod
     def _playlist_from_sidebar(
-        playlist_id: str, yt_data: dict[str, Any]
+        playlist_id: str, yt_data: dict[str, Any], *, quiet: bool = False
     ) -> dict[str, Any] | None:
         """A playlist described by the sidebar of its page, None if it has none."""
         try:
@@ -492,10 +492,11 @@ class jAPI(Client):  # noqa: N801 - public class name, used by backend and tests
                 },
             }
         except (KeyError, IndexError, TypeError, ValueError, AttributeError) as e:
-            logger.warning(
-                f"jAPI 'list_playlists' found no playlist {playlist_id} on its page: "
-                f"{e!r}"
-            )
+            if not quiet:
+                logger.warning(
+                    f"jAPI 'list_playlists' found no playlist {playlist_id} on its "
+                    f"page: {e!r}"
+                )
             return None
 
     def list_playlistitems(
@@ -519,13 +520,15 @@ class jAPI(Client):  # noqa: N801 - public class name, used by backend and tests
             if "playlistVideoListRenderer" in contents[0]:  # the older layout
                 contents = contents[0]["playlistVideoListRenderer"]["contents"]
             items = self.json_to_items(contents)[:max_results]
-            return json.loads(
-                json.dumps(
-                    {"nextPageToken": None, "items": items},
-                    sort_keys=False,
-                    indent=1,
-                )
-            )
+            response: dict[str, Any] = {"nextPageToken": None, "items": items}
+            # The page also says what the playlist is, which saves asking again. Not
+            # its thumbnail: the sidebar only has the avatar of its owner, and the
+            # cover of the playlist is looked up if somebody wants it.
+            details = self._playlist_from_sidebar(playlist_id, yt_data, quiet=True)
+            if details:
+                details["snippet"].pop("thumbnails", None)
+                response["playlist"] = details
+            return json.loads(json.dumps(response, sort_keys=False, indent=1))
 
         return {"items": []}
 

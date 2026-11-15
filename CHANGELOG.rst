@@ -5,6 +5,10 @@ Changelog
 Unreleased
 ========================================
 
+- download a track from the extraction that found it instead of extracting it a second time: caching an uncached track takes 8 requests and about 6 s instead of 13 and 9 s, so playback starts sooner
+- stop a jAPI search loading the videos of every playlist it finds (15 requests that are mostly never used); a playlist loads its videos when it is opened
+- look a jAPI playlist up with one request: its page also says what the playlist is
+- fetch no more albums in a YouTube Music search than are shown (ytmusicapi answers in pages of 20) and keep them in the order of the search instead of the order in which the requests finished
 - make autoplay with YouTube Music cost 4 requests instead of 24: the related songs are described by what the related-songs and watch-playlist lists already say (watch playlist tracks keep the length they come with), a length is only looked up for a video that is asked about, and the autoplayer tries its candidates in random order and stops at the first that fits instead of loading all of them
 - fix the autoplay length limit, which never applied: lengths are in seconds but the limit was compared in milliseconds
 - stop autoplay's log messages from loading the title of the current track

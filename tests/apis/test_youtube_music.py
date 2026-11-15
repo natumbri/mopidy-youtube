@@ -14,6 +14,7 @@ To refresh a fixture, call the same ytmusicapi method with the same arguments
 from __future__ import annotations
 
 import logging
+import threading
 from concurrent.futures import Future
 from typing import TYPE_CHECKING, Any
 from unittest import mock
@@ -291,6 +292,67 @@ def test_search_songs_converts_songs_and_skips_those_without_an_id(
     assert songs[0]["snippet"]["title"] == "Bohemian Rhapsody"
     assert songs[0]["snippet"]["channelTitle"] == "Queen"
     assert songs[0]["contentDetails"]["duration"] == "PT5M55S"
+
+
+def twenty_albums() -> list[dict[str, Any]]:
+    """What ytmusicapi answers for any `limit`: a whole page of 20 albums."""
+    template = fixture("search_albums")[0]
+    return [{**template, "browseId": f"MPREb_album{n:02}"} for n in range(20)]
+
+
+def test_a_search_fetches_no_more_albums_than_it_shows(
+    music: Music, ytmusic: mock.MagicMock
+):
+    ytmusic.search.side_effect = lambda **kwargs: (
+        twenty_albums() if kwargs["filter"] == "albums" else []
+    )
+    ytmusic.get_album.side_effect = get_album
+    context.search_results = 15
+
+    albums = music.search_albums("queen")
+
+    assert ytmusic.get_album.call_count == 15
+    assert [a["id"]["playlistId"] for a in albums] == [
+        f"MPREb_album{n:02}" for n in range(15)
+    ]
+
+
+def test_albums_keep_the_order_of_the_search_however_the_requests_finish(
+    music: Music, ytmusic: mock.MagicMock
+):
+    albums = twenty_albums()[:6]
+    release = {a["browseId"]: threading.Event() for a in albums}
+
+    def get_album_when_released(browse_id: str) -> dict[str, Any]:
+        release[browse_id].wait(timeout=10)
+        return get_album(browse_id)
+
+    ytmusic.get_album.side_effect = get_album_when_released
+    done = threading.Thread(
+        target=lambda: results.extend(music.process_albums(albums)), daemon=True
+    )
+    results: list[dict[str, Any]] = []
+    done.start()
+    for browse_id in reversed(list(release)):  # the last one arrives first
+        release[browse_id].set()
+    done.join(timeout=10)
+
+    assert [a["id"]["playlistId"] for a in results] == [a["browseId"] for a in albums]
+
+
+def test_the_whole_search_shows_and_fetches_the_same_albums(
+    music: Music, ytmusic: mock.MagicMock
+):
+    ytmusic.search.side_effect = lambda **kwargs: (
+        twenty_albums() if kwargs["filter"] == "albums" else []
+    )
+    ytmusic.get_album.side_effect = get_album
+    context.search_results = 4
+
+    items = music.search("queen")["items"]
+
+    assert len(items) == 4
+    assert ytmusic.get_album.call_count == 4
 
 
 def test_search_albums_returns_playlists_named_by_their_browse_id(

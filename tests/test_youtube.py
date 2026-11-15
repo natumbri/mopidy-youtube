@@ -2566,3 +2566,24 @@ def test_unusable_details_do_not_stop_the_items_being_loaded(api: FakeApi):
     serve_listing(api, 1)
 
     assert ids_of(got(Playlist.get("PL1").videos)) == ["v00"]
+
+
+def test_details_without_a_count_or_a_cover_leave_those_to_be_looked_up(api: FakeApi):
+    details = {
+        "id": "PLdetails",
+        "snippet": {"title": "Just a title", "channelTitle": "Its owner"},
+    }
+    api.respond("list_playlistitems", {"playlist": details, "items": []})
+    api.respond(
+        "list_playlists",
+        {"items": [listed_playlist("PLdetails", title="Just a title", count=7)]},
+    )
+    playlist = Playlist.get("PLdetails")
+    got(playlist.videos)
+
+    assert got(playlist.title) == "Just a title"
+    assert got(playlist.channel) == "Its owner"
+    assert api.calls_to("list_playlists") == []  # nothing that was known is asked
+
+    assert got(playlist.video_count) == 7  # what was not known is
+    assert api.calls_to("list_playlists") == [(["PLdetails"],)]

@@ -126,10 +126,9 @@ class YouTubeLibraryProvider(backend.LibraryProvider):
 
         tracks = [convert_video_to_track(video) for video in videos]
 
-        albums = []
-        for pl in playlists:
-            albums.append(convert_playlist_to_album(pl))
-            pl.videos  # noqa: B018 - starts the background load
+        # The videos of the playlists are not loaded here: one request each, and the
+        # few playlists that get opened load theirs then (see `Playlist.videos`).
+        albums = [convert_playlist_to_album(pl) for pl in playlists]
 
         return SearchResult(
             uri=Uri("youtube:search"),

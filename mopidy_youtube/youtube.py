@@ -656,9 +656,13 @@ class Playlist(Entry):
     def _adopt_details(self, details: dict[str, Any]) -> None:
         """Take over what an api tells about a playlist along with its items."""
         try:
-            self._set_api_data(
-                ["title", "video_count", "thumbnails", "channel"], details
-            )
+            fields = ["title", "channel"]
+            if "itemCount" in (details.get("contentDetails") or {}):
+                fields.append("video_count")
+            # a field the details do not have is not resolved: it is looked up
+            if (details.get("snippet") or {}).get("thumbnails"):
+                fields.append("thumbnails")
+            self._set_api_data(fields, details)
         except Exception as e:
             logger.warning(f"Ignoring the details of playlist {self.id}: {e!r}")
 

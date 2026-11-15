@@ -1477,6 +1477,43 @@ def test_list_playlistitems_reads_a_current_playlist_page(
     ]
 
 
+def test_list_playlistitems_also_describes_the_playlist_by_its_sidebar(
+    japi: jAPI, youtube_site: FakeYouTube
+):
+    youtube_site.add("GET", BASE + "playlist", body=page("playlist_page.json"))
+
+    result = japi.list_playlistitems(PLAYLIST_ID, None, 50)
+
+    details = result["playlist"]
+    assert details["id"] == PLAYLIST_ID
+    assert details["snippet"]["title"] == "Popular Music Videos"
+    assert details["snippet"]["channelTitle"]
+    assert details["contentDetails"] == {"itemCount": 182}
+    # the sidebar's picture is the avatar of the owner, not the cover of the playlist
+    assert "thumbnails" not in details["snippet"]
+
+
+def test_list_playlistitems_of_a_page_without_a_sidebar_has_no_details(
+    japi: jAPI,
+    youtube_site: FakeYouTube,
+    caplog: pytest.LogCaptureFixture,
+):
+    youtube_site.add(
+        "GET",
+        BASE + "playlist",
+        body=yt_initial_data_page(
+            playlist_doc([video_renderer("abc123defgh", kind="playlistVideoRenderer")])
+        ),
+    )
+
+    with caplog.at_level(logging.WARNING, logger="mopidy_youtube"):
+        result = japi.list_playlistitems(PLAYLIST_ID, None, 50)
+
+    assert "playlist" not in result
+    assert len(result["items"]) == 1
+    assert "found no playlist" not in caplog.text  # that is not a problem here
+
+
 # -- list_channelplaylists ----------------------------------------------------
 
 

@@ -436,26 +436,35 @@ class Music(Client):
         results = self.ytmusic.search(
             query=q, filter="albums", limit=context.search_results
         )
-        return self.process_albums(results)
+        # `limit` is only a minimum: ytmusicapi answers in pages of 20, and every
+        # album is fetched below. Fetch no more of them than will be shown.
+        return self.process_albums(results[: context.search_results])
 
     def process_albums(self, results: list[dict[str, Any]]) -> list[dict[str, Any]]:
         albums = []
 
         def job(result: dict[str, Any]) -> dict[str, Any]:
-            # the album itself is needed to get the number of tracks
+            # COST: this is one request per album, made for every album of a search,
+            # and only the one the user opens needs more than the search result says.
+            # It is made to learn the number of tracks (`Album.num_tracks`, see
+            # `convert_playlist_to_album`); as a side effect the tracks come with
+            # the album, so opening it costs nothing more. If that count is not worth
+            # a request per album, drop this fetch from searches (the album is then
+            # fetched, once, when it is opened) and leave `num_tracks` unknown.
             ytmusic_album = self._album(result["browseId"])
             ytmusic_album.update({"playlistId": result["browseId"]})
             return self.yt_listitem_to_playlist(ytmusic_album)
 
         executor = self.executor
         futures = {executor.submit(job, result): result for result in results}
-        for future in as_completed(futures):
+        # all are in flight; the albums are taken in the order of the search results,
+        # not in the order in which they happened to arrive
+        for future, result in futures.items():
             try:
                 albums.append(future.result())
             except Exception as e:
                 logger.error(
-                    "youtube_music process_albums get_album error "
-                    f"{e}, {futures[future]}"
+                    f"youtube_music process_albums get_album error {e}, {result}"
                 )
 
         # the albums carry their tracks, which the entities take over from here

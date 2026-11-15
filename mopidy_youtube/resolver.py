@@ -30,37 +30,29 @@ def resolve_audio_url(
         if cached_audio:
             return cached_audio
 
-        with _youtube_dl(ytdl_options) as ydl:
-            probe_info = ydl.extract_info(
-                **ytdl_extract_info_options,
-                download=False,
-            )
+        options = {
+            **ytdl_options,
+            "outtmpl": str(Path(cache_location) / "%(id)s.%(ext)s"),
+        }
+        with _youtube_dl(options) as ydl:
+            info = ydl.extract_info(**ytdl_extract_info_options, download=False)
 
-        if is_live_info(probe_info):
-            logger.info(
-                "Skipping YouTube live/upcoming playback resolution: %s",
-                video.id,
-            )
-            return None
+            if is_live_info(info):
+                logger.info(
+                    "Skipping YouTube live/upcoming playback resolution: %s",
+                    video.id,
+                )
+                return None
 
-        logger.debug(f"caching track {video.id}")
-        ytdl_options["outtmpl"] = str(Path(cache_location) / "%(id)s.%(ext)s")
-
-        with _youtube_dl(ytdl_options) as ydl:
-            info = ydl.extract_info(
-                **ytdl_extract_info_options,
-                download=True,
-            )
-
-        if is_live_info(info):
-            logger.info(
-                "Skipping YouTube live/upcoming playback resolution: %s",
-                video.id,
-            )
-            return None
+            # Extracting is most of what it costs to find out about a video: download
+            # what was extracted instead of extracting it all over again.
+            logger.debug(f"caching track {video.id}")
+            downloaded = ydl.process_ie_result(info, download=True)
 
         cache_image(video, cache_location)
-        cache_metadata(video, cache_location, cast("dict[str, Any]", info))
+        cache_metadata(
+            video, cache_location, cast("dict[str, Any]", downloaded or info)
+        )
         return None
 
     with _youtube_dl(ytdl_options) as ydl:
