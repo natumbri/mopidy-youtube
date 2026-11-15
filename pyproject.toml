@@ -21,7 +21,7 @@ dependencies = [
     "httpx >= 0.27",
     "mopidy >= 4.0.0",
     "pykka >= 4.1",
-    "yt-dlp",
+    "yt-dlp >= 2025.6.30",
 ]
 
 [project.optional-dependencies]

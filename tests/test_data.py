@@ -1,5 +1,7 @@
 import json
 
+from mopidy.config import Deprecated
+
 from mopidy_youtube import Extension
 from mopidy_youtube.data import (
     extract_playlist_id,
@@ -8,10 +10,11 @@ from mopidy_youtube.data import (
 )
 
 
-def test_default_config_uses_yt_dlp_backend():
-    config = Extension().get_default_config()
+def test_the_removed_youtube_dl_package_option_is_deprecated_not_rejected():
+    schema = Extension().get_config_schema()
 
-    assert "youtube_dl_package = yt_dlp" in config
+    assert isinstance(schema["youtube_dl_package"], Deprecated)
+    assert "youtube_dl_package" not in Extension().get_default_config()
 
 
 def test_extract_video_id_handles_standard_uri_variants():

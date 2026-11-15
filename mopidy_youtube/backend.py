@@ -52,7 +52,6 @@ class YouTubeBackend(
         context.playlist_max_videos = max(1, int(youtube_config["playlist_max_videos"]))
         context.channel = youtube_config["channel_id"]
         context.http_port = config["http"]["port"]
-        context.youtube_dl_package = youtube_config["youtube_dl_package"] or "yt_dlp"
         context.musicapi_enabled = bool(youtube_config["musicapi_enabled"])
         if context.musicapi_enabled:
             context.musicapi_browser_authentication_file = youtube_config[

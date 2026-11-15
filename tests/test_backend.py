@@ -42,7 +42,6 @@ def make_config(tmp_path: pathlib.Path) -> dict[str, Any]:
             "strict_autoplay": False,
             "max_autoplay_length": 600,
             "max_degrees_of_separation": 3,
-            "youtube_dl_package": "yt_dlp",
         },
         "proxy": {},
     }
@@ -82,14 +81,12 @@ def test_backend_publishes_its_settings_to_the_shared_context(
 ):
     config = make_config(tmp_path)
     config["youtube"]["channel_id"] = "UC123"
-    config["youtube"]["youtube_dl_package"] = None
     config["http"]["port"] = 7777
 
     backend.YouTubeBackend(config=config, audio=None)
 
     assert context.channel == "UC123"
     assert context.http_port == 7777
-    assert context.youtube_dl_package == "yt_dlp"
     assert context.musicapi_enabled is False
 
 
@@ -434,7 +431,7 @@ def test_ytmusic_item_to_video_uses_song_duration_and_thumbnail_payload():
 
     converted = ytm_item_to_video(item)
 
-    assert converted["contentDetails"]["duration"] == "PT0H03M45S"
+    assert converted["contentDetails"]["duration"] == "PT3M45S"
     assert (
         converted["snippet"]["thumbnails"]["default"]["url"]
         == "https://example.com/thumb.jpg"
@@ -633,8 +630,7 @@ def test_video_audio_url_uses_requested_formats_url_when_direct_url_missing():
         "requested_formats": [{"url": "https://example.com/audio.mp4"}],
     }
 
-    with mock.patch("mopidy_youtube.context.importlib.import_module") as import_module:
-        import_module.return_value.YoutubeDL.return_value = fake_ydl
+    with mock.patch("mopidy_youtube.resolver.yt_dlp.YoutubeDL", return_value=fake_ydl):
         assert video.audio_url.get() == "https://example.com/audio.mp4"
 
 

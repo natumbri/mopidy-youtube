@@ -3,7 +3,7 @@ from __future__ import annotations
 import os
 import threading
 import time
-from concurrent.futures.thread import ThreadPoolExecutor
+from concurrent.futures import ThreadPoolExecutor
 from typing import TYPE_CHECKING, Any, ClassVar, Self
 
 import pykka

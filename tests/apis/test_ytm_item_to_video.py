@@ -15,7 +15,7 @@ from mopidy_youtube.apis.ytm_item_to_video import ytm_item_to_video
 
 from tests.support import load_fixture
 
-NO_DURATION = "PT0H00M00S"
+NO_DURATION = "PT0S"
 
 
 def fixture(name: str) -> Any:
@@ -65,7 +65,7 @@ def test_a_get_song_response_is_read_from_its_video_details():
     assert video["id"]["videoId"] == "fJ9rUzIMcZQ"
     assert video["snippet"]["title"] == details["title"]
     assert video["snippet"]["channelTitle"] == "Queen"
-    assert video["contentDetails"]["duration"] == "PT0H05M59S"
+    assert video["contentDetails"]["duration"] == "PT5M59S"
     assert (
         video["snippet"]["thumbnails"]["default"]
         == (details["thumbnail"]["thumbnails"][-1])
@@ -97,19 +97,19 @@ def test_the_track_number_is_passed_through():
     ("fields", "expected"),
     [
         ({"duration": "3:44"}, "PT3M44S"),
-        ({"duration": "1:02:03"}, "PT1H02M03S"),
-        ({"length": "6:00"}, "PT6M00S"),
-        ({"lengthMs": 225000}, "PT0H03M45S"),
-        ({"lengthMs": "225000"}, "PT0H03M45S"),
+        ({"duration": "1:02:03"}, "PT1H2M3S"),
+        ({"length": "6:00"}, "PT6M"),
+        ({"lengthMs": 225000}, "PT3M45S"),
+        ({"lengthMs": "225000"}, "PT3M45S"),
         ({"lengthMs": 0}, NO_DURATION),
-        ({"lengthSeconds": "359"}, "PT0H05M59S"),
-        ({"song_duration": 225}, "PT0H03M45S"),
+        ({"lengthSeconds": "359"}, "PT5M59S"),
+        ({"song_duration": 225}, "PT3M45S"),
         # the first usable key wins
-        ({"duration": "1:00", "lengthSeconds": "3600"}, "PT1M00S"),
+        ({"duration": "1:00", "lengthSeconds": "3600"}, "PT1M"),
         # empty values are skipped
-        ({"duration": None, "length": "", "lengthSeconds": "61"}, "PT0H01M01S"),
+        ({"duration": None, "length": "", "lengthSeconds": "61"}, "PT1M1S"),
         # as are numbers that cannot be parsed
-        ({"lengthSeconds": "n/a", "lengthMs": 61000}, "PT0H01M01S"),
+        ({"lengthSeconds": "n/a", "lengthMs": 61000}, "PT1M1S"),
         ({"lengthSeconds": None, "song_duration": [1]}, NO_DURATION),
         ({"lengthMs": "n/a"}, NO_DURATION),
     ],

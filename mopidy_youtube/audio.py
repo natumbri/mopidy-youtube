@@ -34,20 +34,16 @@ class AudioResolver:
         self._published = False
 
     def run(self) -> None:
-        ytdl = context.youtube_dl()
-        logger.debug(f"using {context.youtube_dl_package} package for youtube_dl")
-
         options: dict[str, Any] = {
             "format": "bestaudio/ogg/mp3/m4a/best",
             "proxy": context.proxy,
             "cachedir": False,
             "retries": 10,
+            "no_color": True,
             "progress_hooks": [self.on_progress],
         }
         if context.musicapi_cookiefile:
             options["cookiefile"] = context.musicapi_cookiefile
-        if context.youtube_dl_package == "yt_dlp":
-            options["no_color"] = True
 
         # High quality music streams are only available to YouTube Premium users
         # when using YouTube Music.
@@ -69,7 +65,6 @@ class AudioResolver:
             ytdl_options=options,
             ytdl_extract_info_options=extract_options,
             cache_location=context.cache_location,
-            youtube_dl=ytdl,
         )
         self._publish(resolved)
 

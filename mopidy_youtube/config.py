@@ -22,5 +22,5 @@ def apply_config_schema(
     schema["strict_autoplay"] = mopidy_config.Boolean(optional=True)
     schema["max_autoplay_length"] = mopidy_config.Integer(optional=True)
     schema["max_degrees_of_separation"] = mopidy_config.Integer(minimum=0)
-    schema["youtube_dl_package"] = mopidy_config.String(optional=True)
+    schema["youtube_dl_package"] = mopidy_config.Deprecated()  # since 4.1
     return schema

@@ -195,7 +195,6 @@ def test_resolver_hands_the_cache_location_to_the_resolver(
     video = new_video("vid11")
 
     with (
-        mock.patch.object(context, "youtube_dl") as ytdl,
         mock.patch("mopidy_youtube.audio.resolve_audio_url") as resolve,
     ):
         resolve.return_value = "https://example.com/a.webm"
@@ -203,7 +202,7 @@ def test_resolver_hands_the_cache_location_to_the_resolver(
 
     kwargs = resolve.call_args.kwargs
     assert kwargs["cache_location"] == (tmp_path if cached else None)
-    assert kwargs["youtube_dl"] is ytdl.return_value
+    assert kwargs["ytdl_options"]["no_color"] is True
     assert kwargs["ytdl_extract_info_options"]["url"].endswith("watch?v=vid11")
     assert "nopart" not in kwargs["ytdl_options"]
     assert video._audio_url.get(timeout=0) == "https://example.com/a.webm"

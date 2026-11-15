@@ -18,4 +18,3 @@ class YouTubeConfig(TypedDict):
     strict_autoplay: bool | None
     max_autoplay_length: int | None
     max_degrees_of_separation: int
-    youtube_dl_package: str | None

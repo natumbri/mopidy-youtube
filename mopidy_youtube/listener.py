@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from concurrent.futures.thread import ThreadPoolExecutor
+from concurrent.futures import ThreadPoolExecutor
 from typing import TYPE_CHECKING, ClassVar, override
 
 import pykka

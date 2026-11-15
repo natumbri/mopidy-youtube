@@ -3,34 +3,33 @@ from __future__ import annotations
 from typing import Any
 
 from mopidy_youtube import logger
-from mopidy_youtube.timeformat import convert_Millis, format_duration
+from mopidy_youtube.timeformat import clock_to_seconds, iso_duration
+
+NO_DURATION = "PT0S"
 
 
 def _resolve_duration(item: dict[str, Any]) -> str:
     for key in ("duration", "length", "lengthMs", "lengthSeconds", "song_duration"):
-        if key not in item:
-            continue
-
-        value = item[key]
+        value = item.get(key)
         if value is None or value == "":
             continue
 
         if key in {"lengthSeconds", "song_duration"}:
             try:
-                return "PT" + format_duration(convert_Millis(int(value) * 1000))
+                return iso_duration(int(value))
             except (TypeError, ValueError):
                 continue
 
         if key == "lengthMs":
             try:
-                return "PT" + format_duration(convert_Millis(int(value)))
+                return iso_duration(int(value) // 1000)
             except (TypeError, ValueError):
                 continue
 
-        return "PT" + format_duration(value)
+        return iso_duration(clock_to_seconds(value))
 
     logger.warning("duration missing: %s", item)
-    return "PT0H00M00S"
+    return NO_DURATION
 
 
 def _resolve_thumbnail(item: dict[str, Any]) -> dict[str, Any]:
@@ -48,7 +47,7 @@ def ytm_item_to_video(item: dict[str, Any]) -> dict[str, Any]:
         duration = _resolve_duration(item)
     except Exception as e:
         logger.error("youtube_music yt_item_to_video duration error %s: %s", e, item)
-        duration = "PT0H00M00S"
+        duration = NO_DURATION
 
     try:
         if item.get("artists"):

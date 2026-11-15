@@ -2,41 +2,29 @@ from __future__ import annotations
 
 import re
 
-from mopidy_youtube import logger
+_CLOCK = re.compile(r"(?:(\d+):)?(\d+):(\d{2})")
 
 
-def convert_Millis(milliseconds: float | str) -> str:
-    try:
-        hours, miliseconds = divmod(int(milliseconds), 3600000)
-    except Exception as e:
-        logger.error(f"convert_Millis error: {e}, {milliseconds}")
-        return "00:00:00"
-    minutes, miliseconds = divmod(miliseconds, 60000)
-    seconds = int(miliseconds) / 1000
-    return f"{hours}:{minutes:02}:{int(seconds):02}"
-
-
-def format_duration(duration_text: str) -> str:
-    time_regex = (
-        r"(?:(?:(?P<durationHours>[0-9]+)\:)?"
-        r"(?P<durationMinutes>[0-9]+)\:"
-        r"(?P<durationSeconds>[0-9]{2}))"
-    )
-
-    match = re.match(time_regex, duration_text)
+def clock_to_seconds(text: str) -> int:
+    """Convert `3:45` or `1:02:03` to seconds; raise ValueError for anything else."""
+    match = _CLOCK.fullmatch(text.strip())
     if match is None:
-        msg = f"Invalid duration text: {duration_text!r}"
+        msg = f"Invalid duration text: {text!r}"
         raise ValueError(msg)
+    hours, minutes, seconds = match.groups()
+    return int(hours or 0) * 3600 + int(minutes) * 60 + int(seconds)
 
-    duration = ""
-    if match.group("durationHours") is not None:
-        duration += match.group("durationHours") + "H"
-    if match.group("durationMinutes") is not None:
-        duration += match.group("durationMinutes") + "M"
-    if match.group("durationSeconds") is not None:
-        duration += match.group("durationSeconds") + "S"
 
-    return duration
+def iso_duration(seconds: int) -> str:
+    """Convert seconds to an ISO 8601 duration such as `PT1H2M3S`."""
+    hours, rest = divmod(seconds, 3600)
+    minutes, seconds = divmod(rest, 60)
+    parts = [
+        f"{value}{unit}"
+        for value, unit in ((hours, "H"), (minutes, "M"), (seconds, "S"))
+        if value
+    ]
+    return "PT" + "".join(parts) if parts else "PT0S"
 
 
 def ISO8601_to_seconds(iso_duration: str) -> int:

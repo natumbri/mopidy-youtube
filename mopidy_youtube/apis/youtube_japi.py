@@ -20,7 +20,7 @@ from mopidy_youtube.apis.json_paths import (
     traverse_or_none,
 )
 from mopidy_youtube.context import context
-from mopidy_youtube.timeformat import format_duration
+from mopidy_youtube.timeformat import clock_to_seconds, iso_duration
 
 if TYPE_CHECKING:
     from collections.abc import Collection
@@ -51,7 +51,7 @@ def _duration_from_candidates(candidates: list[str], video_id: str) -> str:
             return "PT0S"
 
         if re.fullmatch(r"\d+:\d{2}(:\d{2})?", candidate):
-            duration = "PT" + format_duration(candidate)
+            duration = iso_duration(clock_to_seconds(candidate))
             logger.debug(f"video {video_id} duration: {duration}")
             return duration
 

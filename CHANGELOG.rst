@@ -5,6 +5,8 @@ Changelog
 Unreleased
 ========================================
 
+- deprecate the ``youtube_dl_package`` option: yt-dlp is a dependency and is imported directly (a configured value is ignored with a warning)
+- write durations as canonical ISO 8601 (``PT3M45S``) straight from seconds instead of converting through several string forms
 - use httpx instead of requests for all HTTP requests, with the same retries; ``requests`` is now only needed by the optional ``musicapi`` extra, because ytmusicapi requires it
 
 

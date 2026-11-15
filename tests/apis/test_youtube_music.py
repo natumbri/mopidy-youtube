@@ -391,7 +391,7 @@ def test_related_videos_take_album_and_artists_from_the_related_track(
         == "Somewhere Over The Rainbow/What A Wonderful World"
     )
     assert rainbow["snippet"]["channelTitle"] == "Israel Kamakawiwo'ole"
-    assert rainbow["contentDetails"]["duration"] == "PT0H05M08S"
+    assert rainbow["contentDetails"]["duration"] == "PT5M8S"
     assert rainbow["album"] == {
         "name": "Facing Future",
         "uri": "yt:playlist:MPREb_4EH1Eo0cgGr",
@@ -561,7 +561,7 @@ def test_list_videos_returns_a_video_per_id_in_order(
         "Bohemian Rhapsody (Live At Milton Keynes Bowl / June 1982)"
     )
     assert live["snippet"]["channelTitle"] == "Queen"
-    assert live["contentDetails"]["duration"] == "PT0H05M59S"
+    assert live["contentDetails"]["duration"] == "PT5M59S"
     assert live["snippet"]["thumbnails"]["default"]["url"].startswith(
         "https://i.ytimg.com/vi/fJ9rUzIMcZQ/"
     )
@@ -595,7 +595,7 @@ def test_an_unavailable_video_is_described_by_the_reason(
     (item,) = music.list_videos([UNAVAILABLE_ID])["items"]
 
     assert item["snippet"]["title"] == "Video unavailable"
-    assert item["contentDetails"]["duration"] == "PT0H00M00S"
+    assert item["contentDetails"]["duration"] == "PT0S"
     assert item["snippet"]["thumbnails"]["default"] == {
         "url": "https://s.ytimg.com/yts/img/meh7-vflGevej7.png",
         "width": 140,

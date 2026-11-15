@@ -1,8 +1,8 @@
 from __future__ import annotations
 
 import logging
-import pathlib
 from importlib.metadata import PackageNotFoundError, version
+from pathlib import Path
 from typing import TYPE_CHECKING, Any, override
 
 from mopidy import config as mopidy_config
@@ -31,7 +31,7 @@ class Extension(ext.Extension):
 
     @override
     def get_default_config(self) -> str:
-        return mopidy_config.read(pathlib.Path(__file__).parent / "ext.conf")
+        return mopidy_config.read(Path(__file__).parent / "ext.conf")
 
     @override
     def get_config_schema(self) -> mopidy_config.ConfigSchema:

@@ -293,11 +293,11 @@ def overlay(text: Any) -> dict[str, Any]:
     ("video", "expected"),
     [
         ({"lengthText": {"simpleText": "3:34"}}, "PT3M34S"),
-        ({"lengthText": {"simpleText": "1:02:03"}}, "PT1H02M03S"),
+        ({"lengthText": {"simpleText": "1:02:03"}}, "PT1H2M3S"),
         ({"lengthText": {"simpleText": " 3:34 "}}, "PT3M34S"),
         ({"lengthText": {"runs": [{"text": "4:15"}]}}, "PT4M15S"),
-        ({"thumbnailOverlays": [overlay({"simpleText": "2:00"})]}, "PT2M00S"),
-        ({"thumbnailOverlays": [overlay({"runs": [{"text": "5:01"}]})]}, "PT5M01S"),
+        ({"thumbnailOverlays": [overlay({"simpleText": "2:00"})]}, "PT2M"),
+        ({"thumbnailOverlays": [overlay({"runs": [{"text": "5:01"}]})]}, "PT5M1S"),
         (
             {
                 "lengthText": {"simpleText": "1:11"},
@@ -1645,7 +1645,7 @@ def test_a_video_lockup_becomes_a_video_item():
                 },
                 "channelTitle": "Use Your Screen As Light",
             },
-            "contentDetails": {"duration": "PT2H00M00S"},
+            "contentDetails": {"duration": "PT2H"},
         }
     ]
 

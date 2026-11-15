@@ -1,8 +1,7 @@
 from __future__ import annotations
 
 import json
-from concurrent.futures import as_completed
-from concurrent.futures.thread import ThreadPoolExecutor
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from itertools import repeat
 from typing import TYPE_CHECKING, Any, override
 
