@@ -285,19 +285,22 @@ def make_music(fallback: Any = None) -> Music:
         return Music(None, {"Cookie": "PREF=hl=en; CONSENT=YES+20210329;"}, fallback)
 
 
-def test_music_list_related_videos_submits_playlist_lookup_in_background():
-    executor = mock.Mock()
-    with mock.patch(
-        "mopidy_youtube.apis.youtube_music.ThreadPoolExecutor", return_value=executor
-    ):
-        music = make_music(
-            fallback=mock.Mock(**{"list_related_videos.return_value": {"items": []}})
-        )
-
+def test_music_list_related_videos_fetches_no_albums_and_no_playlists():
+    music = make_music(
+        fallback=mock.Mock(**{"list_related_videos.return_value": {"items": []}})
+    )
     ytmusic = music.ytmusic
     ytmusic.get_watch_playlist.return_value = {"related": "related-id"}
     ytmusic.get_song_related.return_value = [
-        {"contents": [{"videoId": "abc123", "title": "Example Track"}]}
+        {
+            "contents": [
+                {
+                    "videoId": "abc123",
+                    "title": "Example Track",
+                    "album": {"name": "An Album", "id": "MPREb_album"},
+                }
+            ]
+        }
     ]
     ytmusic.get_song.return_value = {
         "videoDetails": {
@@ -309,10 +312,12 @@ def test_music_list_related_videos_submits_playlist_lookup_in_background():
         }
     }
 
-    music.list_related_videos("video-id")
+    items = music.list_related_videos("video-id")["items"]
 
-    assert executor.submit.call_args[0][0] == music.list_playlists
-    assert isinstance(executor.submit.call_args[0][1], set)
+    # the album is known from the track, and is only fetched once it is opened
+    assert items[0]["album"]["uri"] == "yt:playlist:MPREb_album"
+    ytmusic.get_album.assert_not_called()
+    ytmusic.get_playlist.assert_not_called()
 
 
 def test_music_list_related_videos_survives_a_failing_watch_playlist():
@@ -357,15 +362,15 @@ def test_music_client_uses_its_own_session_and_credentials():
     assert json.loads(kwargs["auth"]) == {"Cookie": "secret"}
 
 
-def test_music_close_shuts_down_both_executors():
+def test_music_close_shuts_down_its_executor_and_sessions():
     music = make_music()
-    music._lookup_executor = mock.Mock()
     music.executor = mock.Mock()
+    music.ytmusic_session = mock.Mock()
 
     music.close()
 
-    music._lookup_executor.shutdown.assert_called_once()
     music.executor.shutdown.assert_called_once()
+    music.ytmusic_session.close.assert_called_once_with()
 
 
 def test_japi_returns_an_empty_result_when_a_playlist_cannot_be_fetched():
@@ -452,7 +457,7 @@ def test_video_track_number_uses_playlist_index_for_album_tracks():
         ]
     }
 
-    assert video.track_no.get() == 1
+    assert video.track_no.get() == 2
     context.api.list_playlistitems.assert_called_once_with("PL1234567890", "", 50)
 
 

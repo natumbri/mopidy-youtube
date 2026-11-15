@@ -5,6 +5,8 @@ Changelog
 Unreleased
 ========================================
 
+- stop ``Music`` reaching into ``Video`` and ``Playlist``: it returns data (playlists carry their tracks, and the answer to ``list_playlistitems`` describes the playlist), and the entities take it over; ``Music`` keeps the albums and playlists it fetched for an hour, so each is requested once, and no longer fetches the albums of related tracks that nobody opened
+- number tracks from 1 everywhere (``Video.track_no`` used to count from 0 when it had to work the number out)
 - deprecate the ``youtube_dl_package`` option: yt-dlp is a dependency and is imported directly (a configured value is ignored with a warning)
 - write durations as canonical ISO 8601 (``PT3M45S``) straight from seconds instead of converting through several string forms
 - use httpx instead of requests for all HTTP requests, with the same retries; ``requests`` is now only needed by the optional ``musicapi`` extra, because ytmusicapi requires it

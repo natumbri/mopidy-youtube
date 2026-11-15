@@ -1,12 +1,14 @@
 from __future__ import annotations
 
+import copy
 import json
-from concurrent.futures import ThreadPoolExecutor, as_completed
+import threading
+from concurrent.futures import as_completed
 from itertools import repeat
 from typing import TYPE_CHECKING, Any, override
 
-import pykka
 import requests
+from cachetools import TTLCache
 from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
 from ytmusicapi import YTMusic
@@ -16,12 +18,17 @@ from mopidy_youtube.apis.client import Client
 from mopidy_youtube.apis.json_paths import YTM_ERROR_THUMBNAIL_PATH, traverse
 from mopidy_youtube.apis.ytm_item_to_video import ytm_item_to_video
 from mopidy_youtube.context import context
-from mopidy_youtube.youtube import Playlist, Video
 
 if TYPE_CHECKING:
-    from collections.abc import Collection
+    from collections.abc import Callable, Collection
 
     from mopidy_youtube.apis import YouTubeApi
+
+
+# albums and playlists stay in memory for this long, so that a playlist that has
+# been searched for or listed is not fetched again when its videos are loaded
+CONTENT_TTL = 3600
+CONTENT_MAX = 128
 
 
 # Access to YouTube Music API through ytmusicapi package
@@ -38,7 +45,11 @@ class Music(Client):
         super().__init__(proxy, headers)
         # used when YouTube Music returns too few related videos
         self.fallback = fallback
-        self._lookup_executor = ThreadPoolExecutor(max_workers=1)
+        self._content: TTLCache[Any, Any] = TTLCache(
+            maxsize=CONTENT_MAX, ttl=CONTENT_TTL
+        )
+        self._content_lock = threading.Lock()
+        self._fetching: dict[tuple[str, str], threading.Lock] = {}
         auth = (
             None
             if headers.get("Cookie") == "PREF=hl=en; CONSENT=YES+20210329;"
@@ -76,7 +87,6 @@ class Music(Client):
     def close(self) -> None:
         super().close()
         self.ytmusic_session.close()
-        self._lookup_executor.shutdown(wait=False, cancel_futures=True)
 
     def search(self, q: str) -> dict[str, Any]:
         """
@@ -162,19 +172,14 @@ class Music(Client):
             except Exception as e:
                 logger.error(f"youtube_music list_related_videos error:{e}")
 
-        related_albums = set()
         for item in related_videos:
             for related_track in get_song_related_tracks:
                 if item["videoId"] == related_track["videoId"]:
                     album = related_track.get("album")
                     if album:  # a song without an album has `album: None`
                         item["album"] = album
-                        if album.get("id"):
-                            related_albums.add(album["id"])
                     if "artists" in related_track:
                         item["artists"] = related_track["artists"]
-
-        self._lookup_executor.submit(self.list_playlists, related_albums)
 
         tracks = [
             ytm_item_to_video(track)
@@ -294,13 +299,11 @@ class Music(Client):
             logger.debug(f"list_playlists for {ids} returned no results")
             return {"items": []}
 
-        # these the playlists that are returned
+        # these the playlists that are returned, each with its tracks so that nobody
+        # has to ask for them again
         items = [self.yt_listitem_to_playlist(result) for result in results if result]
-
-        # create the playlist objects and video objects for each track in
-        # the playlist, and add the videos to the playlist to avoid
-        # list_playlistitems calling self.ytmusic.get_playlist
-        self._create_playlist_objects(items)
+        for item in items:
+            item["id"] = item["id"]["playlistId"]
 
         return json.loads(json.dumps({"items": items}, sort_keys=False, indent=1))
 
@@ -319,9 +322,6 @@ class Music(Client):
         result["playlistId"] = playlist_id
         playlist = self.yt_listitem_to_playlist(result)
 
-        pl = Playlist.get(playlist["id"]["playlistId"])
-        pl._set_api_data(["title", "video_count", "thumbnails", "channel"], playlist)
-
         items = [
             track for track in playlist["tracks"] if track["id"]["videoId"] is not None
         ]
@@ -333,10 +333,12 @@ class Music(Client):
         ]
 
         items = items[:max_results]
-        ajax = None
+        # the playlist itself comes with its items: what the caller needs to know
+        # about it is not asked for again
+        details = {key: value for key, value in playlist.items() if key != "tracks"}
         return json.loads(
             json.dumps(
-                {"nextPageToken": ajax, "items": items},
+                {"nextPageToken": None, "playlist": details, "items": items},
                 sort_keys=False,
                 indent=1,
             )
@@ -370,6 +372,7 @@ class Music(Client):
                     )
                     results = self.ytmusic.get_library_playlists()
                     albums = self.ytmusic.get_library_albums()
+                    # their videos are loaded next: fetch the albums in parallel now
                     self.process_albums(albums)
                     results.extend(albums)
                     if channel_id:
@@ -454,12 +457,8 @@ class Music(Client):
         albums = []
 
         def job(result: dict[str, Any]) -> dict[str, Any]:
-            logger.debug(
-                f"youtube_music process_albums triggered "
-                f"ytmusic.get_album: {result['browseId']}"
-            )
-            # self.ytmusic.get_album is necessary to get the number of tracks
-            ytmusic_album = self.ytmusic.get_album(result["browseId"])
+            # the album itself is needed to get the number of tracks
+            ytmusic_album = self._album(result["browseId"])
             ytmusic_album.update({"playlistId": result["browseId"]})
             return self.yt_listitem_to_playlist(ytmusic_album)
 
@@ -474,10 +473,7 @@ class Music(Client):
                     f"{e}, {futures[future]}"
                 )
 
-        # given we're calling self.ytmusic.get_album, which returns tracks, we might
-        # as well create the playlist objects and the related video objects.
-        self._create_playlist_objects(albums)
-
+        # the albums carry their tracks, which the entities take over from here
         return albums
 
     @staticmethod
@@ -553,71 +549,69 @@ class Music(Client):
 
         return playlist
 
+    def _cached(self, key: tuple[str, str], fetch: Callable[[], Any]) -> Any:
+        """Fetch something once: concurrent and later requests share the result.
+
+        Callers get their own copy, because they add to what they are given.
+        """
+        with self._content_lock:
+            if key in self._content:
+                return copy.deepcopy(self._content[key])
+            fetching = self._fetching.setdefault(key, threading.Lock())
+        with fetching:
+            with self._content_lock:
+                if key in self._content:
+                    return copy.deepcopy(self._content[key])
+            value = fetch()  # a failure is not remembered
+            with self._content_lock:
+                self._content[key] = value
+                self._fetching.pop(key, None)
+        return copy.deepcopy(value)
+
+    def _album(self, browse_id: str) -> dict[str, Any]:
+        def fetch() -> dict[str, Any]:
+            logger.debug(f"youtube_music triggered ytmusic.get_album: {browse_id}")
+            return self.ytmusic.get_album(browse_id)
+
+        return self._cached(("album", browse_id), fetch)
+
+    def _playlist(self, playlist_id: str) -> dict[str, Any]:
+        def fetch() -> dict[str, Any]:
+            logger.debug(f"youtube_music triggered ytmusic.get_playlist: {playlist_id}")
+            return self.ytmusic.get_playlist(playlist_id)
+
+        return self._cached(("playlist", playlist_id), fetch)
+
+    def _album_browse_id(self, audio_playlist_id: str) -> str:
+        """The browse id of the album of an `OLAK5uy_` audio playlist."""
+
+        def fetch() -> str:
+            logger.debug(
+                "youtube_music triggered ytmusic.get_album_browse_id: "
+                f"{audio_playlist_id}"
+            )
+            browse_id = YTMusic.get_album_browse_id(self.ytmusic, audio_playlist_id)
+            if browse_id is None:
+                msg = f"no album for audio playlist {audio_playlist_id}"
+                raise LookupError(msg)
+            return browse_id
+
+        return self._cached(("browse_id", audio_playlist_id), fetch)
+
     def _get_playlist_or_album(self, playlist_id: str) -> dict[str, Any]:
         # OLAK5uy_lUNm1YMm972Rvy0LpDg3ORQFjtN_8oBtc
         if playlist_id.startswith("OLAK5uy_"):
-            playlist_id = YTMusic.get_album_browse_id(YTMusic(), playlist_id)  # pyright: ignore[reportAssignmentType]
+            playlist_id = self._album_browse_id(playlist_id)
 
         if playlist_id.startswith("PL"):
-            logger.debug(
-                "youtube_music _get_playlist_or_album triggered "
-                f"ytmusic.get_playlist: {playlist_id}"
-            )
-            result = self.ytmusic.get_playlist(playlist_id)
+            result = self._playlist(playlist_id)
             result["playlistId"] = result["id"]
             result["artists"] = [result["author"]]
-
         else:
-            logger.debug(
-                "youtube_music _get_playlist_or_album triggered "
-                f"ytmusic.get_album: {playlist_id}"
-            )
-            result = self.ytmusic.get_album(playlist_id)
+            result = self._album(playlist_id)
             if "artists" not in result:
                 result["artists"] = result["artist"]
             if "playlistId" not in result:
                 result["playlistId"] = playlist_id
 
         return result
-
-    @staticmethod
-    def _create_playlist_objects(items: list[dict[str, Any]]) -> None:
-        for item in items:
-            plvideos = []
-            pl = Playlist.get(item["id"]["playlistId"])
-            pl._set_api_data(["title", "video_count", "thumbnails", "channel"], item)
-
-            pl._videos = pykka.ThreadingFuture()
-
-            for track in item["tracks"]:
-                if "album" not in track:
-                    track.update(
-                        {
-                            "album": {
-                                "name": item["snippet"]["title"],
-                                "id": item["id"]["playlistId"],
-                            }
-                        }
-                    )
-                video = Video.get(track["snippet"]["resourceId"]["videoId"])
-                fields = [
-                    "title",
-                    "channel",
-                    "length",
-                    "thumbnails",
-                    "album",
-                    "artists",
-                ]
-                if "track_no" in track:
-                    fields.append("track_no")
-                video._set_api_data(fields, track)
-                plvideos.append(video)
-
-            pl._videos.set(
-                [
-                    x
-                    for _, x in zip(
-                        range(context.playlist_max_videos), plvideos, strict=False
-                    )
-                ]
-            )

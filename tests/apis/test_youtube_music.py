@@ -149,8 +149,6 @@ def fallback() -> mock.Mock:
 @pytest.fixture
 def music(ytm_class: mock.MagicMock, fallback: mock.Mock) -> Iterator[Music]:
     client = Music(None, ANONYMOUS, fallback)
-    client._lookup_executor.shutdown()
-    client._lookup_executor = InlineExecutor()  # type: ignore[assignment]
     yield client
     client.close()
 
@@ -317,17 +315,32 @@ def test_search_albums_returns_playlists_named_by_their_browse_id(
 # process_albums
 
 
-def test_process_albums_creates_the_playlist_and_video_entities(
+def test_process_albums_returns_the_albums_with_their_numbered_tracks(
+    music: Music, ytmusic: mock.MagicMock
+):
+    ytmusic.get_album.side_effect = get_album
+
+    (album,) = music.process_albums(fixture("search_albums")[:1])
+
+    assert album["snippet"]["title"] == ALBUM_TITLE
+    assert video_ids(album["tracks"]) == ALBUM_TRACK_IDS
+    first = album["tracks"][0]
+    assert first["snippet"]["title"] == "Death On Two Legs (Dedicated To...)"
+    assert [track["track_no"] for track in album["tracks"]] == [1, 2, 3, 4]
+    assert first["album"] == {"name": ALBUM_TITLE, "uri": f"yt:playlist:{ALBUM_ID}"}
+
+
+def test_an_album_is_fetched_once_however_often_it_is_asked_for(
     music: Music, ytmusic: mock.MagicMock
 ):
     ytmusic.get_album.side_effect = get_album
 
     music.process_albums(fixture("search_albums")[:1])
+    music.process_albums(fixture("search_albums")[:1])
+    music.list_playlists([ALBUM_ID])
+    music.list_playlistitems(ALBUM_ID, None, 50)
 
-    assert playlist_value(ALBUM_ID, "title") == ALBUM_TITLE
-    assert playlist_video_ids(ALBUM_ID) == ALBUM_TRACK_IDS
-    assert video_value("kqVpk0qxmfA", "title") == "Death On Two Legs (Dedicated To...)"
-    assert video_value("kqVpk0qxmfA", "track_no") == 1
+    assert ytmusic.get_album.call_count == 1
 
 
 def test_process_albums_skips_an_album_that_cannot_be_fetched(
@@ -410,24 +423,19 @@ def test_related_videos_take_album_and_artists_from_the_related_track(
     ]
 
 
-def test_related_videos_look_up_the_albums_of_the_related_tracks(
+def test_related_videos_do_not_fetch_the_albums_of_the_related_tracks(
     music: Music, ytmusic: mock.MagicMock
 ):
     answer_related_calls(ytmusic)
 
     music.list_related_videos(SONG_ID)
 
-    assert {call.args[0] for call in ytmusic.get_album.call_args_list} == (
-        RELATED_ALBUM_IDS
-    )
-    # ... which creates the playlists, so that opening one needs no request
-    assert music._lookup_executor.submitted == [music.list_playlists]  # type: ignore[attr-defined]
-    for album_id in RELATED_ALBUM_IDS:
-        assert playlist_value(album_id, "title") == ALBUM_TITLE
-        assert len(playlist_value(album_id, "videos")) == 4
+    # an album is only fetched once somebody opens it
+    ytmusic.get_album.assert_not_called()
+    ytmusic.get_playlist.assert_not_called()
 
 
-def test_a_related_album_without_an_id_is_not_looked_up(
+def test_a_related_track_with_an_album_without_an_id_is_still_listed(
     music: Music, ytmusic: mock.MagicMock
 ):
     answer_related_calls(ytmusic)
@@ -438,9 +446,7 @@ def test_a_related_album_without_an_id_is_not_looked_up(
     items = music.list_related_videos(SONG_ID)["items"]
 
     assert len(items) == 7
-    assert {call.args[0] for call in ytmusic.get_album.call_args_list} == (
-        RELATED_ALBUM_IDS - {"MPREb_4EH1Eo0cgGr"}
-    )
+    ytmusic.get_album.assert_not_called()
 
 
 def test_a_related_track_without_an_album_is_still_returned(
@@ -637,7 +643,7 @@ def test_list_playlists_describes_a_playlist(music: Music, ytmusic: mock.MagicMo
     (item,) = music.list_playlists([PLAYLIST_ID])["items"]
 
     ytmusic.get_playlist.assert_called_once_with(PLAYLIST_ID)
-    assert item["id"] == {"kind": "youtube#playlist", "playlistId": PLAYLIST_ID}
+    assert item["id"] == PLAYLIST_ID
     assert item["snippet"]["title"] == "Top 100 Songs South Korea"
     assert item["snippet"]["channelTitle"] == "YouTube Charts"
     assert item["snippet"]["resourceId"] == {"playlistId": PLAYLIST_ID}
@@ -652,21 +658,19 @@ def test_list_playlists_describes_a_playlist(music: Music, ytmusic: mock.MagicMo
     }
 
 
-def test_list_playlists_creates_the_entities_of_the_playlist_and_its_videos(
+def test_list_playlists_returns_the_data_of_the_playlist_and_its_videos(
     music: Music, ytmusic: mock.MagicMock
 ):
     ytmusic.get_playlist.side_effect = lambda _: fixture("playlist")
 
     (item,) = music.list_playlists([PLAYLIST_ID])["items"]
 
-    track_ids = [t["id"]["videoId"] for t in item["tracks"]]
-    assert playlist_value(PLAYLIST_ID, "title") == "Top 100 Songs South Korea"
-    assert playlist_value(PLAYLIST_ID, "video_count") == 50  # the 100 are capped
-    assert playlist_value(PLAYLIST_ID, "channel") == "YouTube Charts"
-    assert playlist_video_ids(PLAYLIST_ID) == track_ids
-    assert video_value("D968qfUZMUE", "title") == "NEON"
-    assert video_value("D968qfUZMUE", "length") == 223
-    assert video_value("D968qfUZMUE", "channel") == "A2O LITE"
+    assert video_ids(item["tracks"]) == PLAYLIST_TRACK_IDS
+    neon = next(t for t in item["tracks"] if t["id"]["videoId"] == "D968qfUZMUE")
+    assert neon["snippet"]["title"] == "NEON"
+    assert neon["contentDetails"]["duration"] == "PT3M43S"
+    assert neon["snippet"]["channelTitle"] == "A2O LITE"
+    assert item["contentDetails"]["itemCount"] == 100
 
 
 def test_list_playlists_looks_albums_up_by_the_browse_id_of_their_audio_playlist(
@@ -695,7 +699,7 @@ def test_list_playlists_returns_an_album_under_the_requested_id(
 
     items = music.list_playlists([OLAK_ID])["items"]
 
-    assert [item["id"]["playlistId"] for item in items] == [OLAK_ID]
+    assert [item["id"] for item in items] == [OLAK_ID]
 
 
 def test_list_playlists_returns_what_it_found_of_a_mixed_request(
@@ -717,7 +721,7 @@ def test_list_playlists_returns_what_it_found_of_a_mixed_request(
     with caplog.at_level(logging.ERROR, logger="mopidy_youtube"):
         items = music.list_playlists([PLAYLIST_ID, OLAK_ID, "PLgone"])["items"]
 
-    titles = {item["id"]["playlistId"]: item["snippet"]["title"] for item in items}
+    titles = {item["id"]: item["snippet"]["title"] for item in items}
     assert titles == {
         PLAYLIST_ID: "Top 100 Songs South Korea",
         OLAK_ID: ALBUM_TITLE,
@@ -754,19 +758,19 @@ def test_list_playlistitems_returns_the_videos_of_a_playlist(
     assert first["contentDetails"]["duration"] == "PT3M43S"
 
 
-def test_list_playlistitems_fills_in_the_playlist_entity(
+def test_list_playlistitems_also_describes_the_playlist(
     music: Music, ytmusic: mock.MagicMock
 ):
     ytmusic.get_playlist.side_effect = lambda _: fixture("playlist")
 
-    music.list_playlistitems(PLAYLIST_ID, None, 50)
+    result = music.list_playlistitems(PLAYLIST_ID, None, 50)
 
-    assert playlist_value(PLAYLIST_ID, "title") == "Top 100 Songs South Korea"
-    assert playlist_value(PLAYLIST_ID, "video_count") == 50
-    assert playlist_value(PLAYLIST_ID, "channel") == "YouTube Charts"
-    assert [image.width for image in playlist_value(PLAYLIST_ID, "thumbnails")] == [
-        1200
-    ]
+    details = result["playlist"]
+    assert details["snippet"]["title"] == "Top 100 Songs South Korea"
+    assert details["snippet"]["channelTitle"] == "YouTube Charts"
+    assert details["snippet"]["thumbnails"]["default"]["width"] == 1200
+    assert details["contentDetails"]["itemCount"] == 100
+    assert "tracks" not in details  # they are the items
 
 
 @pytest.mark.parametrize("max_results", [1, 3, 4, 10])
@@ -809,7 +813,6 @@ def test_list_playlistitems_numbers_the_tracks_of_an_album(
     assert items[0]["snippet"]["channelTitle"] == "Queen"
     # the tracks have no thumbnails of their own: they show the album's
     assert items[0]["snippet"]["thumbnails"]["default"]["width"] == 544
-    assert playlist_value(ALBUM_ID, "title") == ALBUM_TITLE
 
 
 def test_list_playlistitems_of_an_album_audio_playlist_keeps_the_requested_id(
@@ -818,10 +821,11 @@ def test_list_playlistitems_of_an_album_audio_playlist_keeps_the_requested_id(
     ytm_class.get_album_browse_id.return_value = ALBUM_ID
     ytmusic.get_album.side_effect = get_album
 
-    items = music.list_playlistitems(OLAK_ID, None, 50)["items"]
+    result = music.list_playlistitems(OLAK_ID, None, 50)
 
+    items = result["items"]
     assert len(items) == 4
-    assert playlist_value(OLAK_ID, "title") == ALBUM_TITLE
+    assert result["playlist"]["id"]["playlistId"] == OLAK_ID
     assert items[0]["album"]["uri"] == f"yt:playlist:{OLAK_ID}"
 
 
@@ -924,12 +928,11 @@ def test_the_library_is_the_playlists_of_the_own_channel(
     assert favourites["snippet"]["channelTitle"] == "Me"
     assert album["snippet"]["title"] == ALBUM_TITLE
     assert album["snippet"]["channelTitle"] == "Queen"
-    # the albums of the library were fetched, which creates their playlists
-    assert {call.args[0] for call in ytmusic.get_album.call_args_list} == {
+    # the albums of the library were fetched, once each, ready to be opened
+    assert sorted(call.args[0] for call in ytmusic.get_album.call_args_list) == [
         ALBUM_ID,
         OTHER_ALBUM_ID,
-    }
-    assert playlist_value(ALBUM_ID, "title") == ALBUM_TITLE
+    ]
 
 
 def test_the_library_of_an_unnamed_channel_has_an_unknown_owner(
@@ -1166,79 +1169,16 @@ def test_an_audio_playlist_is_resolved_to_its_album(
 
 
 # ---------------------------------------------------------------------------
-# _create_playlist_objects
-
-
-def test_the_playlist_and_video_entities_are_filled_from_the_converted_playlist():
-    playlist = Music.yt_listitem_to_playlist(album_item())
-
-    Music._create_playlist_objects([playlist])
-
-    assert playlist_value(ALBUM_ID, "title") == ALBUM_TITLE
-    assert playlist_value(ALBUM_ID, "video_count") == 12
-    assert playlist_value(ALBUM_ID, "channel") == "Queen"
-    (image,) = playlist_value(ALBUM_ID, "thumbnails")
-    assert (image.width, image.height) == (544, 544)
-    assert playlist_video_ids(ALBUM_ID) == ALBUM_TRACK_IDS
-    assert len(playlist_value(ALBUM_ID, "videos")) == 4
-
-    track = fixture("album")["tracks"][1]
-    assert video_value(track["videoId"], "title") == "Lazing On A Sunday Afternoon"
-    assert video_value(track["videoId"], "channel") == "Queen"
-    assert video_value(track["videoId"], "length") == 68
-    assert video_value(track["videoId"], "track_no") == 2
-    assert video_value(track["videoId"], "album") == {
-        "name": ALBUM_TITLE,
-        "uri": f"yt:playlist:{ALBUM_ID}",
-    }
-    assert video_value(track["videoId"], "artists") == [
-        {"name": "Queen", "uri": f"yt:channel:{ARTIST_ID}"}
-    ]
-    # the track has none of its own: it shows the thumbnail of the album
-    assert [i.width for i in video_value(track["videoId"], "thumbnails")] == [544]
-
-
-def test_a_playlist_shows_no_more_videos_than_the_configured_maximum():
-    context.playlist_max_videos = 3
-    playlist = Music.yt_listitem_to_playlist(album_item())
-
-    Music._create_playlist_objects([playlist])
-
-    assert len(playlist_value(ALBUM_ID, "videos")) == 3
-    assert playlist_value(ALBUM_ID, "video_count") == 3
-
-
-def test_a_playlist_without_tracks_has_an_empty_video_list():
-    item = {**fixture("playlist"), "playlistId": PLAYLIST_ID, "tracks": []}
-    item["artists"] = [item["author"]]
-
-    Music._create_playlist_objects([Music.yt_listitem_to_playlist(item)])
-
-    assert playlist_value(PLAYLIST_ID, "videos") == []
-
-
-def test_a_track_without_an_album_belongs_to_the_playlist():
-    playlist = Music.yt_listitem_to_playlist(album_item())
-    for track in playlist["tracks"]:
-        del track["album"]
-
-    Music._create_playlist_objects([playlist])
-
-    assert video_value(ALBUM_TRACK_IDS[0], "album") == {
-        "name": ALBUM_TITLE,
-        "id": ALBUM_ID,
-    }
 
 
 # ---------------------------------------------------------------------------
 # close
 
 
-def test_closing_ends_both_thread_pools(ytm_class: mock.MagicMock, fallback: mock.Mock):
+def test_closing_ends_the_thread_pool(ytm_class: mock.MagicMock, fallback: mock.Mock):
     music = Music(None, ANONYMOUS, fallback)
 
     music.close()
 
-    for executor in (music.executor, music._lookup_executor):
-        with pytest.raises(RuntimeError, match="after shutdown"):
-            executor.submit(int)
+    with pytest.raises(RuntimeError, match="after shutdown"):
+        music.executor.submit(int)

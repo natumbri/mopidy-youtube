@@ -16,6 +16,14 @@ class YouTubeApi(Protocol):
     (`youtube_music.Music`). All of them return payloads shaped like Data API v3
     responses (`{"items": [...]}` with `snippet` and `contentDetails`), and
     `{"items": []}`, never `None`, when there is nothing to return.
+
+    An api that already has more than was asked for hands it over instead of
+    making the entity layer ask again:
+
+    - a playlist item (from `search`, `list_playlists` or `list_channelplaylists`)
+      may carry a `tracks` list of video items, which become the playlist's videos;
+    - the answer of `list_playlistitems` may carry a `playlist` item describing the
+      playlist (title, thumbnails, item count), without its tracks.
     """
 
     @property

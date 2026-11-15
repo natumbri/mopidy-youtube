@@ -1134,8 +1134,18 @@ def test_the_track_number_is_the_position_in_the_playlist_of_the_album(
 
     video = album_video("second", album_uri)
 
-    assert got(video.track_no) == 1
+    assert got(video.track_no) == 2
     assert api.calls_to("list_playlistitems") == [("PLalbum", "", 50)]
+
+
+def test_track_numbers_start_at_one(api: FakeApi):
+    api.respond(
+        "list_playlistitems",
+        {"items": [{"id": "first"}, {"id": "second"}, {"id": "third"}]},
+    )
+
+    assert got(album_video("first", "yt:playlist:PLalbum").track_no) == 1
+    assert got(album_video("third", "yt:playlist:PLalbum").track_no) == 3
 
 
 @pytest.mark.parametrize(
@@ -1161,7 +1171,7 @@ def test_the_track_number_is_found_in_every_shape_of_playlist_items(
 ):
     api.respond("list_playlistitems", {"items": items})
 
-    assert got(album_video("second", "yt:playlist:PLalbum").track_no) == 1
+    assert got(album_video("second", "yt:playlist:PLalbum").track_no) == 2
 
 
 @pytest.mark.parametrize(
@@ -1792,6 +1802,12 @@ ARTIST_ALBUM_IDS = [
 ]
 
 
+def album_playlist_item() -> dict[str, Any]:
+    """An album as `Music` describes it: a playlist that carries its tracks."""
+    album = {**load_fixture("music/album.json"), "playlistId": "MPREb_eEpQf8QskKl"}
+    return Music.yt_listitem_to_playlist(album)
+
+
 def music_fixture(name: str) -> Any:
     return load_fixture(f"music/{name}.json")
 
@@ -1884,10 +1900,6 @@ def rig() -> Iterator[MusicRig]:
         ytm_class.get_album_browse_id.side_effect = lambda _ytmusic, audio_id: (
             browse_id_of(audio_id)
         )
-        # the albums of related tracks are looked up in the background: wait for them
-        if hasattr(music, "_lookup_executor"):
-            music._lookup_executor.shutdown()
-            music._lookup_executor = InlineExecutor()  # type: ignore[assignment]
         context.api = music
         try:
             yield MusicRig(music, ytmusic, fallback)
@@ -2387,3 +2399,134 @@ def test_jAPI_channel_playlists_start_loading_their_videos(site: JapiSite):
     assert len(site.gets(BASE + "playlist")) == 3
     assert not site.gets(BASE + "results")
     assert not site.gets(BASE + "watch")
+
+
+# ---------------------------------------------------------------------------
+# Playlists that come with their tracks (as an album from Music does)
+
+ALBUM = "MPREb_eEpQf8QskKl"
+ALBUM_TRACKS = ["kqVpk0qxmfA", "OU6EyXcFBxA", "oaEM4JYFPfw", "HaZpZQG2z10"]
+
+
+def test_a_playlist_that_comes_with_its_tracks_knows_its_videos(api: FakeApi):
+    playlist = Entry.create_object(album_playlist_item())
+
+    assert isinstance(playlist, Playlist)
+    assert ids_of(got(playlist.videos)) == ALBUM_TRACKS
+    assert got(playlist.title) == "A Night At The Opera"
+    assert got(playlist.channel) == "Queen"
+    assert api.calls == []
+
+
+def test_the_videos_of_such_a_playlist_know_everything_about_themselves(api: FakeApi):
+    playlist = Entry.create_object(album_playlist_item())
+    assert isinstance(playlist, Playlist)
+
+    video = got(playlist.videos)[1]
+
+    assert video.id == "OU6EyXcFBxA"
+    assert got(video.title) == "Lazing On A Sunday Afternoon"
+    assert got(video.channel) == "Queen"
+    assert got(video.length) == 68
+    assert got(video.track_no) == 2
+    assert got(video.album) == {
+        "name": "A Night At The Opera",
+        "uri": f"yt:playlist:{ALBUM}",
+    }
+    assert got(video.artists) == [
+        {"name": "Queen", "uri": "yt:channel:UCEPMVbUzImPl4p8k4LkGevA"}
+    ]
+    assert [image.width for image in got(video.thumbnails)] == [544]
+    assert api.calls == []
+
+
+def test_a_playlist_shows_no_more_videos_than_the_configured_maximum(api: FakeApi):
+    context.playlist_max_videos = 3
+
+    playlist = Entry.create_object(album_playlist_item())
+
+    assert isinstance(playlist, Playlist)
+    assert len(got(playlist.videos)) == 3
+    assert got(playlist.video_count) == 3
+
+
+def test_a_playlist_that_comes_with_no_tracks_has_no_videos(api: FakeApi):
+    item = album_playlist_item()
+    item["tracks"] = []
+
+    playlist = Entry.create_object(item)
+
+    assert isinstance(playlist, Playlist)
+    assert got(playlist.videos) == []
+    assert api.calls == []
+
+
+def test_a_track_without_an_album_belongs_to_the_playlist(api: FakeApi):
+    item = album_playlist_item()
+    for track in item["tracks"]:
+        del track["album"]
+
+    playlist = Entry.create_object(item)
+
+    assert isinstance(playlist, Playlist)
+    assert got(got(playlist.videos)[0].album) == {
+        "name": "A Night At The Opera",
+        "uri": f"yt:playlist:{ALBUM}",
+    }
+
+
+def test_a_playlist_without_a_tracks_key_is_still_loaded_from_the_api(api: FakeApi):
+    item = album_playlist_item()
+    del item["tracks"]
+    serve_pages(api, {"": page_of("v00")})
+    serve_listing(api, 1)
+
+    playlist = Entry.create_object(item)
+
+    assert isinstance(playlist, Playlist)
+    assert ids_of(got(playlist.videos)) == ["v00"]
+
+
+def test_load_info_takes_over_the_tracks_that_come_with_a_listed_playlist(
+    api: FakeApi,
+):
+    item = album_playlist_item()
+    item["id"] = ALBUM  # `list_playlists` describes playlists by their id
+    api.respond("list_playlists", {"items": [item]})
+
+    playlist = Playlist.get(ALBUM)
+
+    assert got(playlist.title) == "A Night At The Opera"
+    assert ids_of(got(playlist.videos)) == ALBUM_TRACKS
+    assert api.calls_to("list_playlists") == [(["MPREb_eEpQf8QskKl"],)]
+    assert api.calls_to("list_playlistitems") == []
+
+
+def test_the_details_that_come_with_the_items_of_a_playlist_are_taken_over(
+    api: FakeApi,
+):
+    details = album_playlist_item()
+    del details["tracks"]
+    api.respond(
+        "list_playlistitems",
+        {"nextPageToken": None, "playlist": details, "items": [playlist_entry("v00")]},
+    )
+    serve_listing(api, 1)
+
+    playlist = Playlist.get("PLdetails")
+
+    assert ids_of(got(playlist.videos)) == ["v00"]
+    assert got(playlist.title) == "A Night At The Opera"
+    assert got(playlist.channel) == "Queen"
+    assert got(playlist.video_count) == 12
+    assert api.calls_to("list_playlists") == []
+
+
+def test_unusable_details_do_not_stop_the_items_being_loaded(api: FakeApi):
+    api.respond(
+        "list_playlistitems",
+        {"playlist": {"snippet": "broken"}, "items": [playlist_entry("v00")]},
+    )
+    serve_listing(api, 1)
+
+    assert ids_of(got(Playlist.get("PL1").videos)) == ["v00"]

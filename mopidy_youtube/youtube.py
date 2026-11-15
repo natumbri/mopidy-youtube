@@ -99,6 +99,8 @@ class Entry:
         minimum_fields = ["title", "channel"]
         item, extended_fields = cls.extend_fields(item, minimum_fields)
         obj._set_api_data(extended_fields, item)
+        if isinstance(obj, Playlist) and item:
+            obj._adopt_tracks(item)
         return obj
 
     @classmethod
@@ -484,7 +486,7 @@ class Video(Entry):
 
                 video_id = self.id
                 try:
-                    track_no = video_ids.index(video_id)
+                    track_no = video_ids.index(video_id) + 1
                 except ValueError:
                     track_no = None
                 set_once(self._track_no, track_no)
@@ -628,6 +630,8 @@ class Playlist(Entry):
                         item_dict.get(pl.id), minimum_fields
                     )
                     pl._set_api_data(extended_fields, item)
+                    if item:
+                        pl._adopt_tracks(item)
                 except Exception as e:
                     logger.warning(f"Error {e} setting api data for playlist {pl.id}")
                     pl._settle(minimum_fields)
@@ -647,6 +651,47 @@ class Playlist(Entry):
             job,
             [playlists[i : i + 50] for i in range(0, len(playlists), 50)],
         )
+
+    def _adopt_details(self, details: dict[str, Any]) -> None:
+        """Take over what an api tells about a playlist along with its items."""
+        try:
+            self._set_api_data(
+                ["title", "video_count", "thumbnails", "channel"], details
+            )
+        except Exception as e:
+            logger.warning(f"Ignoring the details of playlist {self.id}: {e!r}")
+
+    def _adopt_tracks(self, item: dict[str, Any]) -> None:
+        """Take over the tracks that come with a playlist.
+
+        Their videos get everything the api knows about them, and the videos of
+        the playlist are known without asking for them (or for them one by one).
+        """
+        tracks = item.get("tracks")
+        if tracks is None:
+            return
+
+        playlist_title = (item.get("snippet") or {}).get("title")
+        videos = []
+        for listed in tracks:
+            try:
+                if playlist_title is not None:
+                    # a track on its own is on the playlist as if it were an album
+                    listed.setdefault(
+                        "album",
+                        {"name": playlist_title, "uri": f"yt:playlist:{self.id}"},
+                    )
+                track, fields = self.extend_fields(listed, ["title", "channel"])
+                if track is None:
+                    continue
+                video = Video.get(track["snippet"]["resourceId"]["videoId"])
+                video._set_api_data(fields, track)
+            except Exception as e:
+                logger.warning(f"Skipping a track of playlist {self.id}: {e!r}")
+                continue
+            videos.append(video)
+
+        set_once(self._ensure_future("videos"), videos[: context.playlist_max_videos])
 
     @async_property
     def videos(self) -> None:
@@ -684,6 +729,8 @@ class Playlist(Entry):
                     )
                     break
                 page = result.get("nextPageToken") or None
+                if "playlist" in result:
+                    self._adopt_details(result["playlist"])
 
                 # remove private and deleted videos from items
                 filtered_result = [
@@ -765,6 +812,7 @@ class Channel(Entry):
             for item in data["items"]:
                 pl = Playlist.get(item["id"])
                 pl._set_api_data(minimum_fields, item)
+                pl._adopt_tracks(item)
                 pl.videos  # noqa: B018 - starts the background load
                 channel_playlists.append(pl)
         except Exception as e:
