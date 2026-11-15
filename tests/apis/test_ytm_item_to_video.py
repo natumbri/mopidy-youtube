@@ -242,3 +242,23 @@ def test_the_thumbnail_is_the_last_of_the_available_ones(
     fields: dict[str, Any], expected: dict[str, Any]
 ):
     assert convert(**fields)["snippet"]["thumbnails"] == {"default": expected}
+
+
+def test_an_unknown_duration_can_be_left_out_instead_of_read_as_zero(
+    caplog: pytest.LogCaptureFixture,
+):
+    item = {"videoId": "abc123defgh", "title": "Title", "artists": []}
+
+    with caplog.at_level(logging.WARNING, logger="mopidy_youtube"):
+        video = ytm_item_to_video(item, allow_unknown_duration=True)
+
+    assert "contentDetails" not in video
+    assert "duration missing" not in caplog.text
+
+
+def test_a_known_duration_is_kept_when_unknown_ones_are_allowed():
+    item = {"videoId": "abc123defgh", "title": "Title", "length": "3:45"}
+
+    video = ytm_item_to_video(item, allow_unknown_duration=True)
+
+    assert video["contentDetails"] == {"duration": "PT3M45S"}

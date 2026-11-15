@@ -8,7 +8,9 @@ from mopidy_youtube.timeformat import clock_to_seconds, iso_duration
 NO_DURATION = "PT0S"
 
 
-def _resolve_duration(item: dict[str, Any]) -> str:
+def _resolve_duration(
+    item: dict[str, Any], *, allow_unknown: bool = False
+) -> str | None:
     for key in ("duration", "length", "lengthMs", "lengthSeconds", "song_duration"):
         value = item.get(key)
         if value is None or value == "":
@@ -28,6 +30,8 @@ def _resolve_duration(item: dict[str, Any]) -> str:
 
         return iso_duration(clock_to_seconds(value))
 
+    if allow_unknown:
+        return None
     logger.warning("duration missing: %s", item)
     return NO_DURATION
 
@@ -39,12 +43,20 @@ def _resolve_thumbnail(item: dict[str, Any]) -> dict[str, Any]:
     return thumbnails[-1]
 
 
-def ytm_item_to_video(item: dict[str, Any]) -> dict[str, Any]:
+def ytm_item_to_video(
+    item: dict[str, Any], *, allow_unknown_duration: bool = False
+) -> dict[str, Any]:
+    """Describe a song or video like a Data API video resource.
+
+    A duration that is not known is an error, and reads as zero, unless
+    `allow_unknown_duration` is set: the item then has no `contentDetails`, and
+    the length of the video is left to be looked up when somebody needs it.
+    """
     if "videoDetails" in item:
         item = item["videoDetails"]
 
     try:
-        duration = _resolve_duration(item)
+        duration = _resolve_duration(item, allow_unknown=allow_unknown_duration)
     except Exception as e:
         logger.error("youtube_music yt_item_to_video duration error %s: %s", e, item)
         duration = NO_DURATION
@@ -71,7 +83,6 @@ def ytm_item_to_video(item: dict[str, Any]) -> dict[str, Any]:
 
     video: dict[str, Any] = {
         "id": {"kind": "youtube#video", "videoId": item["videoId"]},
-        "contentDetails": {"duration": duration},
         "snippet": {
             "title": item["title"],
             "resourceId": {"kind": "youtube#video", "videoId": item["videoId"]},
@@ -80,6 +91,8 @@ def ytm_item_to_video(item: dict[str, Any]) -> dict[str, Any]:
         },
         "track_no": item.get("track_no"),
     }
+    if duration is not None:
+        video["contentDetails"] = {"duration": duration}
 
     if "album" in item and item["album"] is not None:
         video["album"] = {

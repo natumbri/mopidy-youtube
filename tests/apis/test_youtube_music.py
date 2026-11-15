@@ -22,6 +22,7 @@ import pytest
 
 from mopidy_youtube.apis.youtube_music import Music
 from mopidy_youtube.context import context
+from mopidy_youtube.timeformat import ISO8601_to_seconds
 from mopidy_youtube.youtube import Entry, Playlist, Video
 
 from tests.support import load_fixture
@@ -404,7 +405,8 @@ def test_related_videos_take_album_and_artists_from_the_related_track(
         == "Somewhere Over The Rainbow/What A Wonderful World"
     )
     assert rainbow["snippet"]["channelTitle"] == "Israel Kamakawiwo'ole"
-    assert rainbow["contentDetails"]["duration"] == "PT5M8S"
+    # the related songs come without a length: it is looked up when it is needed
+    assert "contentDetails" not in rainbow
     assert rainbow["album"] == {
         "name": "Facing Future",
         "uri": "yt:playlist:MPREb_4EH1Eo0cgGr",
@@ -415,11 +417,13 @@ def test_related_videos_take_album_and_artists_from_the_related_track(
             "uri": "yt:channel:UCDrbjok3kk04f-SByjhpLYg",
         }
     ]
-    # a song of the watch playlist is not a related track: only the uploader is known
+    # a song of the watch playlist is not a related track: it has no album, and its
+    # artists are the ones the watch playlist names
     live = by_id[SONG_ID]
+    assert live["contentDetails"]["duration"]  # ... but it comes with its length
     assert "album" not in live
     assert live["artists"] == [
-        {"name": "Queen", "uri": "yt:channel:UCiMhD4jzUqG-IgPzUmmytRQ"}
+        {"name": "Queen", "uri": f"yt:channel:{ARTIST_ID}"},
     ]
 
 
@@ -474,17 +478,9 @@ def test_enough_related_songs_need_neither_the_watch_playlist_nor_the_jAPI(
     ]
     ytmusic.get_song_related.side_effect = lambda _: template
 
-    def song(video_id: str) -> dict[str, Any]:
-        response = get_song("U-Ooxpz0Eqk")
-        response["videoDetails"]["videoId"] = video_id
-        return response
-
-    ytmusic.get_song.side_effect = song
-
     items = music.list_related_videos(SONG_ID)["items"]
 
     assert video_ids(items) == ids
-    assert ytmusic.get_song.call_count == 10
     fallback.list_related_videos.assert_not_called()
 
 
@@ -505,24 +501,51 @@ def test_a_failing_related_song_lookup_falls_back_to_the_watch_playlist(
     fallback.list_related_videos.assert_called_once_with(SONG_ID)
 
 
-def test_a_failing_song_lookup_loses_the_related_songs_but_not_the_result(
+def test_a_related_song_that_cannot_be_described_loses_the_related_songs_only(
     music: Music, ytmusic: mock.MagicMock, caplog: pytest.LogCaptureFixture
 ):
     answer_related_calls(ytmusic)
-
-    def get_song_or_fail(video_id: str) -> dict[str, Any]:
-        if video_id == RELATED_VIDEO_IDS[1]:
-            msg = "private video"
-            raise RuntimeError(msg)
-        return get_song(video_id)
-
-    ytmusic.get_song.side_effect = get_song_or_fail
+    related = fixture("song_related")
+    del related[0]["contents"][1]["title"]
+    ytmusic.get_song_related.side_effect = lambda _: related
 
     with caplog.at_level(logging.ERROR, logger="mopidy_youtube"):
         items = music.list_related_videos(SONG_ID)["items"]
 
     assert video_ids(items) == WATCH_VIDEO_IDS
-    assert "private video" in caplog.text
+    assert "list_related_videos error" in caplog.text
+
+
+def test_related_videos_need_no_song_lookups(music: Music, ytmusic: mock.MagicMock):
+    answer_related_calls(ytmusic)
+
+    items = music.list_related_videos(SONG_ID)["items"]
+
+    assert len(items) == len(RELATED_VIDEO_IDS) + len(WATCH_VIDEO_IDS)
+    ytmusic.get_song.assert_not_called()
+
+
+def test_the_length_of_a_watch_playlist_track_is_the_one_it_came_with(
+    music: Music, ytmusic: mock.MagicMock
+):
+    answer_related_calls(ytmusic)
+    expected = {
+        track["videoId"]: track["length"]
+        for track in fixture("watch_playlist")["tracks"]
+        if track.get("length")
+    }
+
+    items = {
+        item["id"]["videoId"]: item
+        for item in music.list_related_videos(SONG_ID)["items"]
+    }
+
+    for video_id in WATCH_VIDEO_IDS:
+        minutes, seconds = expected[video_id].split(":")
+        wanted = int(minutes) * 60 + int(seconds)
+        assert (
+            ISO8601_to_seconds(items[video_id]["contentDetails"]["duration"]) == wanted
+        )
 
 
 def test_a_failing_watch_playlist_leaves_the_related_songs(

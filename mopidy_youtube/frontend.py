@@ -35,6 +35,13 @@ class YouTubeAutoplayer(pykka.ThreadingActor, CoreListener):
 
     """Autoplay the next related YouTube video when the queue is exhausted."""
 
+    def _is_fit_to_autoplay(self, video: youtube.Video) -> bool:
+        length = video.length.get()
+        if not length:  # 0 is probably a live video, None is unknown
+            return False
+        # lengths are in seconds, the limit is kept in milliseconds
+        return not self.max_autoplay_length or length * 1000 < self.max_autoplay_length
+
     @override
     def track_playback_started(self, tl_track: TlTrack) -> None:  # noqa: PLR0911 - early exits keep the autoplay checks flat
         if not self.autoplay_enabled:
@@ -96,41 +103,30 @@ class YouTubeAutoplayer(pykka.ThreadingActor, CoreListener):
             current_track.related_videos  # noqa: B018 - starts the background load
             logger.debug("getting related videos")
             related_videos = current_track.related_videos.get()
-            logger.debug(
-                f"autoplayer is adding a track related to {current_track.title.get()}"
-            )
+            logger.debug(f"autoplayer is adding a track related to {current_track.id}")
             logger.debug(f"related videos {related_videos}")
-            # remove already autoplayed
-            related_videos[:] = [
+            # not already autoplayed, in a random order
+            candidates = [
                 related_video
                 for related_video in related_videos
                 if related_video.id not in (*self.autoplayed, self.base_track_id)
             ]
-            logger.debug(f"related videos edit 1 {related_videos}")
-            # remove if track_length is 0 (probably a live video) or None
-            related_videos[:] = [
-                related_video
-                for related_video in related_videos
-                if related_video.length.get()
-            ]
-            logger.debug(f"related videos edit 2 {related_videos}")
-            # remove if too long
-            if self.max_autoplay_length:
-                related_videos[:] = [
-                    related_video
-                    for related_video in related_videos
-                    if related_video.length.get() < self.max_autoplay_length
-                ]
-            logger.debug(f"related videos edit 3{related_videos}")
+            random.shuffle(candidates)
+            logger.debug(f"related videos edit 1 {candidates}")
 
-            if not related_videos:
+            # The first one that is a fit is as good a pick as any other, and a
+            # length may cost a request: ask for them one at a time, not all at once.
+            next_video = next(
+                (video for video in candidates if self._is_fit_to_autoplay(video)),
+                None,
+            )
+            if next_video is None:
                 logger.warning(
-                    f"could not get videos related to"
-                    f"{current_track.title.get()}: ending autoplay"
+                    f"could not get videos related to {current_track.id}: "
+                    "ending autoplay"
                 )
                 return
 
-            next_video = random.choice(related_videos)  # noqa: S311 - not security sensitive
             logger.debug(f"next video {next_video.id}")
             self.autoplayed.append(next_video.id)
             uri = [format_video_uri(next_video.id)]

@@ -388,10 +388,13 @@ class Video(Entry):
     @async_property(default_factory=list)
     def related_videos(self) -> None:
         """
-        loads title, thumbnails, channel (and, optionally, length) of videos
+        loads title, thumbnails, channel (and, if the api knows it, length) of videos
         that are related to a video.  Number of related videos returned is
         uncertain. Usually between 1 and 19.  Does not return related
         playlists.
+
+        A length that the api did not give is not looked up here: there are many
+        related videos and few are used, so each loads its own when it is asked for.
         """
 
         requires_related_videos = self._add_futures([self], ["related_videos"])
@@ -414,8 +417,6 @@ class Video(Entry):
                 video._set_api_data(extended_fields, extended_item)
                 related_videos.append(video)
 
-            # start loading video info in the background
-            Video.load_info(related_videos)
             set_once(self._related_videos, related_videos)
 
     @async_property

@@ -747,7 +747,7 @@ def test_autoplay_uses_mopidy_4_tl_track_object(tmp_path: pathlib.Path):
         mock.Mock(
             id="next-video",
             title=mock.Mock(get=mock.Mock(return_value="Next")),
-            length=mock.Mock(get=mock.Mock(return_value=180000)),
+            length=mock.Mock(get=mock.Mock(return_value=180)),
         )
     ]
 
@@ -786,3 +786,114 @@ def test_library_lookup_returns_single_track_for_video_uri():
     assert len(result) == 1
     assert result[0].uri == "youtube:video:nvlTJrNJ5lA"
     convert.assert_called_once_with(video)
+
+
+def make_player(tmp_path: pathlib.Path, *, max_length: int | None = 600):
+    config = make_config(tmp_path)
+    config["youtube"]["autoplay_enabled"] = True
+    config["youtube"]["strict_autoplay"] = False
+    config["youtube"]["max_autoplay_length"] = max_length
+    core = mock.Mock()
+    core.tracklist.get_repeat.return_value.get.return_value = False
+    core.tracklist.get_random.return_value.get.return_value = False
+    core.tracklist.get_consume.return_value.get.return_value = False
+    core.tracklist.get_tl_tracks.return_value.get.return_value = [
+        TlTrack(tlid=1, track=Track(uri="youtube:video:current", name="Current"))
+    ]
+    return frontend.YouTubeAutoplayer(config=config, core=core), core
+
+
+def related_video(video_id: str, length: int | None) -> mock.Mock:
+    return mock.Mock(id=video_id, length=mock.Mock(get=mock.Mock(return_value=length)))
+
+
+def autoplay(player: Any, related: list[mock.Mock], *, shuffled: bool = False) -> None:
+    current = mock.Mock(id="current")
+    current.title.get.return_value = "Current"
+    current.related_videos.get.return_value = related
+    tl_track = TlTrack(tlid=1, track=Track(uri="youtube:video:current", name="Current"))
+    with (
+        mock.patch("mopidy_youtube.frontend.youtube.Video.get", return_value=current),
+        mock.patch(
+            "mopidy_youtube.frontend.random.shuffle",
+            side_effect=(lambda items: items.reverse()) if shuffled else None,
+        ),
+    ):
+        player.track_playback_started(tl_track)
+
+
+def test_autoplay_looks_up_lengths_only_until_it_has_a_fit_video(
+    tmp_path: pathlib.Path,
+):
+    player, core = make_player(tmp_path)
+    related = [related_video(f"r{n}", 180) for n in range(20)]
+
+    autoplay(player, related)
+
+    assert core.tracklist.add.call_args.kwargs["uris"] == ["youtube:video:r0"]
+    assert related[0].length.get.call_count == 1
+    for video in related[1:]:
+        video.length.get.assert_not_called()
+
+
+def test_autoplay_picks_among_the_candidates_in_a_random_order(tmp_path: pathlib.Path):
+    player, core = make_player(tmp_path)
+    related = [related_video(f"r{n}", 180) for n in range(3)]
+
+    autoplay(player, related, shuffled=True)
+
+    assert core.tracklist.add.call_args.kwargs["uris"] == ["youtube:video:r2"]
+
+
+def test_autoplay_skips_live_unknown_and_too_long_videos(tmp_path: pathlib.Path):
+    player, core = make_player(tmp_path, max_length=600)  # seconds
+    related = [
+        related_video("live", 0),
+        related_video("unknown", None),
+        related_video("too-long", 601),
+        related_video("just-long-enough", 600),
+        related_video("fits", 599),
+    ]
+
+    autoplay(player, related)
+
+    assert core.tracklist.add.call_args.kwargs["uris"] == ["youtube:video:fits"]
+
+
+def test_autoplay_has_no_length_limit_when_none_is_configured(tmp_path: pathlib.Path):
+    player, core = make_player(tmp_path, max_length=None)
+
+    autoplay(player, [related_video("very-long", 36000)])
+
+    assert core.tracklist.add.call_args.kwargs["uris"] == ["youtube:video:very-long"]
+
+
+def test_autoplay_ends_when_no_related_video_is_fit(tmp_path: pathlib.Path):
+    player, core = make_player(tmp_path)
+
+    autoplay(player, [related_video("live", 0), related_video("too-long", 9999)])
+
+    core.tracklist.add.assert_not_called()
+
+
+def test_autoplay_does_not_look_up_videos_that_were_already_played(
+    tmp_path: pathlib.Path,
+):
+    player, core = make_player(tmp_path)
+    player.autoplayed.append("played")
+    related = [related_video("played", 180), related_video("new", 180)]
+
+    autoplay(player, related)
+
+    assert core.tracklist.add.call_args.kwargs["uris"] == ["youtube:video:new"]
+    related[0].length.get.assert_not_called()
+
+
+def test_autoplay_leaves_the_related_videos_of_the_track_alone(tmp_path: pathlib.Path):
+    player, _ = make_player(tmp_path)
+    related = [related_video("a", 0), related_video("b", 180)]
+    before = list(related)
+
+    autoplay(player, related, shuffled=True)
+
+    assert related == before

@@ -1240,7 +1240,9 @@ def test_related_videos_are_videos_that_know_their_title_and_channel(api: FakeAp
     assert api.calls_to("list_related_videos") == [("v0",)]
 
 
-def test_the_length_of_related_videos_comes_in_one_further_api_call(api: FakeApi):
+def test_the_length_of_a_related_video_is_only_looked_up_when_it_is_asked_for(
+    api: FakeApi,
+):
     api.respond(
         "list_related_videos",
         {"items": [video_item(f"r{n}", duration=None) for n in range(3)]},
@@ -1248,11 +1250,22 @@ def test_the_length_of_related_videos_comes_in_one_further_api_call(api: FakeApi
     serve_videos(api, *(listed_video(f"r{n}") for n in range(3)))
 
     related = got(Video.get("v0").related_videos)
-    for video in related:
-        got(video.length)
-
     settle()
-    assert api.calls_to("list_videos") == [(["r0", "r1", "r2"],)]
+    assert api.calls_to("list_videos") == []  # nobody wants a length yet
+
+    assert got(related[1].length) == 180  # PT3M
+    settle()
+    assert api.calls_to("list_videos") == [(["r1"],)]  # and only that one
+
+
+def test_a_related_video_that_comes_with_its_length_needs_no_lookup(api: FakeApi):
+    api.respond("list_related_videos", {"items": [video_item("r0", duration="PT1M")]})
+
+    (video,) = got(Video.get("v0").related_videos)
+
+    assert got(video.length) == 60
+    settle()
+    assert api.calls_to("list_videos") == []
 
 
 def test_related_videos_that_come_with_a_length_need_no_further_api_call(
@@ -2088,7 +2101,10 @@ def test_related_videos_of_music(rig: MusicRig):
         "Sweet Child O' Mine",
         "Wake Me up When September Ends",
     ]
-    assert [got(v.length) for v in related] == [308, 254, 356, 286, 359, 185, 266]
+    # the last three come from the watch playlist, which rounds to whole minutes and
+    # seconds: it says 6:00 for a song that is 359 seconds long
+    assert [got(v.length) for v in related] == [308, 254, 356, 286, 360, 185, 266]
+    assert rig.calls("get_song") == 4  # the related songs: the others have a length
     assert [got(v.channel) for v in related] == [
         "Israel Kamakawiwo'ole",
         "The Police",
@@ -2111,22 +2127,42 @@ def test_related_videos_of_music(rig: MusicRig):
     assert got(related[0].artists) == [
         {"name": "Israel Kamakawiwo'ole", "uri": "yt:channel:UCDrbjok3kk04f-SByjhpLYg"}
     ]
+    # a watch playlist track has the artists the playlist names
     assert got(related[4].artists) == [
-        {"name": "Queen", "uri": "yt:channel:UCiMhD4jzUqG-IgPzUmmytRQ"}
+        {"name": "Queen", "uri": "yt:channel:UCEPMVbUzImPl4p8k4LkGevA"}
     ]
     assert [got(v.track_no) for v in related] == [None] * 7
     assert all(got(v.thumbnails) for v in related)
 
 
-def test_related_videos_of_music_cost_one_song_lookup_each(rig: MusicRig):
+def test_related_videos_of_music_cost_no_song_lookups(rig: MusicRig):
     got(Video.get(SONG_ID).related_videos)
     settle()
 
     assert rig.calls("get_watch_playlist") == 1
     assert rig.calls("get_song_related") == 1
-    # the 4 related songs and the 3 of the watch playlist, and none to load them
-    assert rig.calls("get_song") == 7
+    # the songs are described by the lists themselves
+    assert rig.calls("get_song") == 0
     rig.fallback.list_related_videos.assert_called_once_with(SONG_ID)
+
+
+def test_the_length_of_a_related_song_costs_one_song_lookup(rig: MusicRig):
+    related = got(Video.get(SONG_ID).related_videos)
+
+    assert got(related[0].length) == 308
+    assert got(related[0].length) == 308
+    settle()
+
+    assert rig.calls("get_song") == 1
+
+
+def test_the_length_of_a_watch_playlist_track_costs_no_lookup(rig: MusicRig):
+    related = got(Video.get(SONG_ID).related_videos)
+
+    assert [got(v.length) for v in related[4:]] == [360, 185, 266]
+    settle()
+
+    assert rig.calls("get_song") == 0
 
 
 def test_the_album_of_a_related_video_opens_without_song_lookups(rig: MusicRig):
@@ -2138,7 +2174,7 @@ def test_the_album_of_a_related_video_opens_without_song_lookups(rig: MusicRig):
     assert got(album.title) == album_title(RELATED_ALBUM_IDS[0])
     assert_album_videos(videos, RELATED_ALBUM_IDS[0])
     settle()
-    assert rig.calls("get_song") == 7
+    assert rig.calls("get_song") == 0
 
 
 def test_the_playlists_of_an_artist_of_music_are_its_albums(rig: MusicRig):

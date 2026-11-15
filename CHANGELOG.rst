@@ -5,6 +5,9 @@ Changelog
 Unreleased
 ========================================
 
+- make autoplay with YouTube Music cost 4 requests instead of 24: the related songs are described by what the related-songs and watch-playlist lists already say (watch playlist tracks keep the length they come with), a length is only looked up for a video that is asked about, and the autoplayer tries its candidates in random order and stops at the first that fits instead of loading all of them
+- fix the autoplay length limit, which never applied: lengths are in seconds but the limit was compared in milliseconds
+- stop autoplay's log messages from loading the title of the current track
 - stop ``Music`` reaching into ``Video`` and ``Playlist``: it returns data (playlists carry their tracks, and the answer to ``list_playlistitems`` describes the playlist), and the entities take it over; ``Music`` keeps the albums and playlists it fetched for an hour, so each is requested once, and no longer fetches the albums of related tracks that nobody opened
 - number tracks from 1 everywhere (``Video.track_no`` used to count from 0 when it had to work the number out)
 - deprecate the ``youtube_dl_package`` option: yt-dlp is a dependency and is imported directly (a configured value is ignored with a warning)

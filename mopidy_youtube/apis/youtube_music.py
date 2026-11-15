@@ -126,66 +126,43 @@ class Music(Client):
                 f"error:{e}. videoId: {video_id}"
             )
 
-        related_videos = []
-        get_song_related_tracks = []
+        # The songs are described by what the lists of related songs and of the
+        # watch playlist say about them. Neither is complete: the related songs have
+        # no length, which is left to be looked up for the few that are used (see
+        # `list_videos`), and the watch playlist's tracks have no album.
+        tracks: list[dict[str, Any]] = []
         try:
             logger.debug(
                 f"youtube_music list_related_videos triggered "
                 f"ytmusic.get_song_related ({related_browse_id})"
             )
-            get_song_related_tracks = self.ytmusic.get_song_related(related_browse_id)[
-                0
-            ]["contents"]
-
-            logger.debug(
-                f"youtube_music list_related_videos triggered "
-                f"ytmusic.get_song for {len(related_videos)} tracks."
-            )
-            related_videos = [
-                self.ytmusic.get_song(track["videoId"])["videoDetails"]
-                for track in get_song_related_tracks
+            related_tracks = self.ytmusic.get_song_related(related_browse_id)[0][
+                "contents"
             ]
-
+            tracks = [
+                ytm_item_to_video(track, allow_unknown_duration=True)
+                for track in related_tracks
+                if track.get("videoId") is not None
+            ]
         except Exception as e:
             logger.error(
                 f"youtube_music list_related_videos error:{e} "
                 f"Related_browseId: {related_browse_id}"
             )
 
-        if len(related_videos) < 10:
+        if len(tracks) < 10:
             logger.warning(
-                f"get_song_related returned {len(related_videos)} tracks. "
+                f"get_song_related returned {len(tracks)} tracks. "
                 f"Trying get_watch_playlist['tracks'] for more"
             )
             try:
-                logger.debug(
-                    f"youtube_music list_related_videos triggered "
-                    f"ytmusic.get_song for {len(get_watch_playlist['tracks'])} tracks"
-                )
-
-                related_videos.extend(
-                    [
-                        self.ytmusic.get_song(track["videoId"])["videoDetails"]
-                        for track in get_watch_playlist["tracks"]
-                    ]
+                tracks.extend(
+                    self._watch_track_to_video(track)
+                    for track in get_watch_playlist["tracks"]
+                    if track.get("videoId") is not None
                 )
             except Exception as e:
                 logger.error(f"youtube_music list_related_videos error:{e}")
-
-        for item in related_videos:
-            for related_track in get_song_related_tracks:
-                if item["videoId"] == related_track["videoId"]:
-                    album = related_track.get("album")
-                    if album:  # a song without an album has `album: None`
-                        item["album"] = album
-                    if "artists" in related_track:
-                        item["artists"] = related_track["artists"]
-
-        tracks = [
-            ytm_item_to_video(track)
-            for track in related_videos
-            if track["videoId"] is not None
-        ]
 
         # sometimes, self.ytmusic.get_watch_playlist seems to return very few, or even
         # only one, related video, which may be the original video, itself.  If this
@@ -203,6 +180,14 @@ class Music(Client):
         )
 
         return json.loads(json.dumps({"items": tracks}, sort_keys=False, indent=1))
+
+    @staticmethod
+    def _watch_track_to_video(track: dict[str, Any]) -> dict[str, Any]:
+        """A track of a watch playlist: it has a length, and thumbnails as a list."""
+        track = dict(track)
+        if isinstance(track.get("thumbnail"), list):
+            track["thumbnails"] = track.pop("thumbnail")
+        return ytm_item_to_video(track, allow_unknown_duration=True)
 
     def list_videos(self, ids: list[str]) -> dict[str, Any]:
         """List videos by fetching each requested item individually."""
