@@ -2,6 +2,12 @@
 Changelog
 *********
 
+Unreleased
+========================================
+
+- use httpx instead of requests for all HTTP requests, with the same retries; ``requests`` is now only needed by the optional ``musicapi`` extra, because ytmusicapi requires it
+
+
 v4.0.4 (2026-11-03)
 ========================================
 

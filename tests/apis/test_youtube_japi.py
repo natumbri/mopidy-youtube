@@ -25,7 +25,7 @@ from tests.support import FakeYouTube, load_fixture, yt_initial_data_page
 if TYPE_CHECKING:
     from collections.abc import Iterator
 
-    import requests
+    import httpx
 
 BASE = "https://www.youtube.com/"
 SEARCH_URL = BASE + "youtubei/v1/search"
@@ -59,8 +59,8 @@ def page(name: str) -> str:
     return yt_initial_data_page(load_fixture(f"japi/{name}"))
 
 
-def query_of(request: requests.PreparedRequest) -> dict[str, str]:
-    return {k: v[0] for k, v in parse_qs(urlparse(request.url).query).items()}
+def query_of(request: httpx.Request) -> dict[str, str]:
+    return {k: v[0] for k, v in parse_qs(urlparse(str(request.url)).query).items()}
 
 
 def only_call(youtube_site: FakeYouTube, method: str, url: str) -> dict[str, str]:
@@ -220,13 +220,13 @@ class SearchSite(FakeYouTube):
     def ok(data: Any) -> tuple[int, str]:
         return 200, json.dumps(data)
 
-    def send(self, request: requests.PreparedRequest, *args: Any, **kwargs: Any):
+    def send(self, request: httpx.Request, *args: Any, **kwargs: Any):
         if len(self.requests) >= self.max_requests:
             self.requests.append(request)
             msg = "runaway request loop"
             raise RuntimeError(msg)
         sp = query_of(request)["params"]
-        is_continuation = "continuation" in json.loads(request.body or b"{}")
+        is_continuation = "continuation" in json.loads(request.content or b"{}")
         if (sp, is_continuation) in self.pages:
             status, body = self.pages[sp, is_continuation]
             self._routes = [("POST", SEARCH_URL, body.encode(), status)]
@@ -837,7 +837,7 @@ def test_run_search_posts_the_query_to_the_search_endpoint(
     assert query["key"]
     assert query["contentCheckOk"] == "True"
     assert query["racyCheckOk"] == "True"
-    assert json.loads(request.body) == {
+    assert json.loads(request.content) == {
         "context": {
             "client": {"clientName": "WEB", "clientVersion": "2.20200720.00.02"}
         }
@@ -873,8 +873,8 @@ def test_run_search_follows_the_continuation_until_it_has_enough_results(
         "OU3UfgKJoCk",
     ]
     first_request, second_request = search_site.requests
-    assert "continuation" not in json.loads(first_request.body)
-    assert json.loads(second_request.body)["continuation"] == token
+    assert "continuation" not in json.loads(first_request.content)
+    assert json.loads(second_request.content)["continuation"] == token
 
 
 def test_run_search_stops_when_the_results_run_out(japi: jAPI, search_site: SearchSite):

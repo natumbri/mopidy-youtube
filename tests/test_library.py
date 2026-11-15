@@ -17,7 +17,6 @@ from typing import TYPE_CHECKING, Any
 from unittest import mock
 
 import pytest
-import requests
 from mopidy.models import Album, Artist, Image, Ref, SearchResult, Track
 from mopidy.types import Uri
 
@@ -34,6 +33,8 @@ from tests.support import FakeYouTube, load_fixture, yt_initial_data_page
 if TYPE_CHECKING:
     from collections.abc import Callable, Iterator
     from pathlib import Path
+
+    import httpx
 
 TIMEOUT = 10  # seconds
 
@@ -190,29 +191,18 @@ def page(name: str) -> str:
 class YouTubeSite(FakeYouTube):
     """youtube.com: the search is answered by kind, the rest by `add`."""
 
-    def send(  # noqa: PLR0917 - signature of requests' BaseAdapter
-        self,
-        request: requests.PreparedRequest,
-        stream: bool = False,
-        timeout: Any = None,
-        verify: Any = True,
-        cert: Any = None,
-        proxies: Any = None,
-    ) -> requests.Response:
-        url = request.url or ""
+    def send(self, request: httpx.Request, *args: Any, **kwargs: Any) -> httpx.Response:
+        url = str(request.url)
         if not url.startswith(SEARCH_URL):
-            return super().send(request, stream, timeout, verify, cert, proxies)
+            return super().send(request, *args, **kwargs)
         self.requests.append(request)
         is_video_search = "EgIQAQ" in url
         fixture = (
             "search_videos.json" if is_video_search else "search_playlists_lockups.json"
         )
-        response = requests.Response()
-        response.status_code = 200
-        response._content = json.dumps(load_fixture(f"japi/{fixture}")).encode()
-        response.url = url
-        response.request = request
-        return response
+        return self.respond(
+            request, json.dumps(load_fixture(f"japi/{fixture}")).encode()
+        )
 
 
 @pytest.fixture
@@ -1093,7 +1083,7 @@ def test_the_playlists_of_another_channel_are_listed_by_its_uri(
     }
     assert {ref.type for ref in refs} == {Ref.PLAYLIST}
     (request,) = site.calls("GET", BASE + "channel/")
-    assert request.url == BASE + f"channel/{CHANNEL_ID}/playlists"
+    assert str(request.url) == BASE + f"channel/{CHANNEL_ID}/playlists"
 
 
 def test_the_albums_of_an_artist_are_the_playlists_of_its_channel(

@@ -13,8 +13,7 @@ import json
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
-import requests
-from requests.adapters import BaseAdapter
+import httpx
 
 if TYPE_CHECKING:
     from mopidy_youtube.apis.client import Client
@@ -32,13 +31,13 @@ def yt_initial_data_page(data: Any) -> str:
     return f"<html><script>var ytInitialData = {json.dumps(data)};</script></html>"
 
 
-class FakeYouTube(BaseAdapter):
-    """A requests transport that serves canned responses."""
+class FakeYouTube(httpx.BaseTransport):
+    """An httpx transport that serves canned responses."""
 
     def __init__(self) -> None:
         super().__init__()
         self._routes: list[tuple[str, str, bytes, int]] = []
-        self.requests: list[requests.PreparedRequest] = []
+        self.requests: list[httpx.Request] = []
 
     def add(
         self,
@@ -57,36 +56,36 @@ class FakeYouTube(BaseAdapter):
         self._routes.append((method.upper(), url_prefix, body, status))
 
     def attach(self, client: Client) -> None:
-        client.session.mount("https://", self)
-        client.session.mount("http://", self)
+        """Serve the requests of `client`, which keeps its headers."""
+        old = client.session
+        client.session = httpx.Client(
+            transport=self, headers=old.headers, follow_redirects=True
+        )
+        old.close()
 
-    def send(  # noqa: PLR0917 - signature of requests' BaseAdapter
-        self,
-        request: requests.PreparedRequest,
-        stream: bool = False,
-        timeout: Any = None,
-        verify: Any = True,
-        cert: Any = None,
-        proxies: Any = None,
-    ) -> requests.Response:
+    def handle_request(self, request: httpx.Request) -> httpx.Response:
+        return self.send(request)
+
+    def send(
+        self, request: httpx.Request, *_args: Any, **_kwargs: Any
+    ) -> httpx.Response:
         self.requests.append(request)
         for method, prefix, body, status in self._routes:
-            if request.method == method and (request.url or "").startswith(prefix):
-                response = requests.Response()
-                response.status_code = status
-                response._content = body
-                response.url = request.url or ""
-                response.request = request
-                return response
+            if request.method == method and str(request.url).startswith(prefix):
+                return httpx.Response(status, content=body, request=request)
         msg = f"no fake response for {request.method} {request.url}"
-        raise requests.ConnectionError(msg)
+        raise httpx.ConnectError(msg, request=request)
 
-    def close(self) -> None:
-        pass
+    def respond(
+        self, request: httpx.Request, body: str | bytes, status: int = 200
+    ) -> httpx.Response:
+        """A response to `request`, for subclasses that answer it themselves."""
+        content = body.encode() if isinstance(body, str) else body
+        return httpx.Response(status, content=content, request=request)
 
-    def calls(self, method: str, url_prefix: str) -> list[requests.PreparedRequest]:
+    def calls(self, method: str, url_prefix: str) -> list[httpx.Request]:
         return [
             r
             for r in self.requests
-            if r.method == method.upper() and (r.url or "").startswith(url_prefix)
+            if r.method == method.upper() and str(r.url).startswith(url_prefix)
         ]

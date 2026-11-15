@@ -7,6 +7,9 @@ from itertools import repeat
 from typing import TYPE_CHECKING, Any, override
 
 import pykka
+import requests
+from requests.adapters import HTTPAdapter
+from urllib3.util.retry import Retry
 from ytmusicapi import YTMusic
 
 from mopidy_youtube import logger
@@ -42,15 +45,38 @@ class Music(Client):
             if headers.get("Cookie") == "PREF=hl=en; CONSENT=YES+20210329;"
             else json.dumps(headers)
         )
+        # ytmusicapi only works with a requests session
+        self.ytmusic_session = self._create_ytmusic_session(proxy, headers)
         try:
-            self.ytmusic = YTMusic(auth=auth, requests_session=self.session)
+            self.ytmusic = YTMusic(auth=auth, requests_session=self.ytmusic_session)
         except Exception as e:
             logger.error("YTMusic init error: %s", str(e))
             self.ytmusic = YTMusic()
 
+    @staticmethod
+    def _create_ytmusic_session(
+        proxy: str | None, headers: dict[str, str]
+    ) -> requests.Session:
+        session = requests.Session()
+        if proxy:
+            session.proxies.update({"http": proxy, "https": proxy})
+        session.headers.update(headers)
+        adapter = HTTPAdapter(
+            max_retries=Retry(
+                total=3,
+                backoff_factor=0.3,
+                status_forcelist=(500, 502, 503, 504),
+                respect_retry_after_header=True,
+            )
+        )
+        session.mount("http://", adapter)
+        session.mount("https://", adapter)
+        return session
+
     @override
     def close(self) -> None:
         super().close()
+        self.ytmusic_session.close()
         self._lookup_executor.shutdown(wait=False, cancel_futures=True)
 
     def search(self, q: str) -> dict[str, Any]:

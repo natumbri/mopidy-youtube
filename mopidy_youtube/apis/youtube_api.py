@@ -9,6 +9,8 @@ from mopidy_youtube.context import context
 if TYPE_CHECKING:
     from collections.abc import Collection
 
+    import httpx
+
 
 class API(Client):
     """
@@ -23,6 +25,12 @@ class API(Client):
     ) -> None:
         super().__init__(proxy, headers)
         self.api_key = api_key
+
+    def _get(self, url: str, params: dict[str, Any]) -> httpx.Response:
+        # like requests, leave out the parameters that have no value
+        return self.session.get(
+            url, params={k: v for k, v in params.items() if v is not None}
+        )
 
     def search(self, q: str) -> dict[str, Any]:
         """
@@ -39,7 +47,7 @@ class API(Client):
             "key": self.api_key,
         }
         logger.debug(f"youtube_api 'search' triggered session.get: {q}")
-        result = self.session.get(self.endpoint + "search", params=query)
+        result = self._get(self.endpoint + "search", params=query)
         return result.json()
 
     def list_related_videos(self, video_id: str) -> dict[str, Any]:
@@ -58,7 +66,7 @@ class API(Client):
         logger.debug(
             f"youtube_api 'list_related_videos' triggered session.get: {video_id}"
         )
-        result = self.session.get(self.endpoint + "search", params=query)
+        result = self._get(self.endpoint + "search", params=query)
         return result.json()
 
     def list_videos(self, ids: list[str]) -> dict[str, Any]:
@@ -75,7 +83,7 @@ class API(Client):
             "key": self.api_key,
         }
         logger.debug(f"youtube_api 'list_videos' triggered session.get: {ids}")
-        result = self.session.get(self.endpoint + "videos", params=query)
+        result = self._get(self.endpoint + "videos", params=query)
         return result.json()
 
     def list_playlists(self, ids: Collection[str]) -> dict[str, Any]:
@@ -92,7 +100,7 @@ class API(Client):
             "key": self.api_key,
         }
         logger.debug(f"youtube_api 'list_playlists' triggered session.get: {ids}")
-        result = self.session.get(self.endpoint + "playlists", params=query)
+        result = self._get(self.endpoint + "playlists", params=query)
         return result.json()
 
     def list_playlistitems(
@@ -115,7 +123,7 @@ class API(Client):
         logger.debug(
             f"youtube_api 'list_playlistitems' triggered session.get: {playlist_id}"
         )
-        result = self.session.get(self.endpoint + "playlistItems", params=query)
+        result = self._get(self.endpoint + "playlistItems", params=query)
         return result.json()
 
     def list_channelplaylists(self, channel_id: str | None) -> dict[str, Any]:
@@ -134,5 +142,5 @@ class API(Client):
         logger.debug(
             f"youtube_api 'list_channelplaylists' triggered session.get: {channel_id}"
         )
-        result = self.session.get(self.endpoint + "playlists", params=query)
+        result = self._get(self.endpoint + "playlists", params=query)
         return result.json()

@@ -33,7 +33,7 @@ class Entry:
     The Video / Playlist classes can be used to load YouTube data. If
     'api_enabled' is true (and a valid youtube_api_key supplied), most data are
     loaded using the (very much faster) YouTube Data API. If 'api_enabled' is
-    false, most data are loaded using requests and regex. Requests and regex
+    false, most data are scraped from the website using httpx and regex, which
     is many times slower than using the API.
 
     eg

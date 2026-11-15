@@ -3,9 +3,9 @@ import pathlib
 from typing import Any
 from unittest import mock
 
+import httpx
 import pykka
 import pytest
-import requests
 from mopidy import backend as backend_api
 from mopidy.models import TlTrack, Track
 
@@ -356,7 +356,7 @@ def test_music_client_uses_its_own_session_and_credentials():
 
     assert music.ytmusic is ytmusic_factory.return_value
     kwargs = ytmusic_factory.call_args.kwargs
-    assert kwargs["requests_session"] is music.session
+    assert kwargs["requests_session"] is music.ytmusic_session
     assert json.loads(kwargs["auth"]) == {"Cookie": "secret"}
 
 
@@ -513,8 +513,6 @@ def test_client_instances_do_not_share_a_single_session_state():
     second = Client(proxy="http://proxy-b.example:8080", headers={"x-test": "second"})
 
     assert first.session is not second.session
-    assert first.session.proxies["http"] == "http://proxy-a.example:8080"
-    assert second.session.proxies["http"] == "http://proxy-b.example:8080"
     assert first.session.headers["x-test"] == "first"
     assert second.session.headers["x-test"] == "second"
 
@@ -530,17 +528,96 @@ def test_client_close_shuts_down_its_executor_and_session():
     client.session.close.assert_called_once_with()
 
 
-def test_client_session_preserves_existing_headers_and_adds_configured_ones():
-    session = requests.Session()
-    session.headers.update({"Accept-Encoding": "gzip"})
+def make_session(
+    handler: Any, **options: Any
+) -> tuple[httpx.Client, list[httpx.Request]]:
+    seen: list[httpx.Request] = []
 
-    Client._create_session(
-        proxy="http://proxy.example:8080", headers={"x-test": "yes"}, session=session
+    def record(request: httpx.Request) -> httpx.Response:
+        seen.append(request)
+        return handler(request, len(seen))
+
+    session = Client._create_session(
+        transport=httpx.MockTransport(record), backoff_factor=0, **options
+    )
+    return session, seen
+
+
+def test_client_session_sends_the_configured_headers_and_follows_redirects():
+    def handler(request: httpx.Request, attempt: int) -> httpx.Response:
+        if request.url.path == "/old":
+            return httpx.Response(302, headers={"location": "https://example.com/new"})
+        return httpx.Response(200, text=request.headers["x-test"])
+
+    session, seen = make_session(handler, headers={"x-test": "yes"})
+
+    response = session.get("https://example.com/old")
+
+    assert response.text == "yes"
+    assert [r.url.path for r in seen] == ["/old", "/new"]
+
+
+def test_client_session_retries_server_errors_of_idempotent_requests():
+    def handler(request: httpx.Request, attempt: int) -> httpx.Response:
+        return httpx.Response(503 if attempt < 3 else 200, text="ok")
+
+    session, seen = make_session(handler)
+
+    assert session.get("https://example.com/").status_code == 200
+    assert len(seen) == 3
+
+
+def test_client_session_gives_up_after_the_configured_retries():
+    session, seen = make_session(lambda *_: httpx.Response(500), retries=2)
+
+    assert session.get("https://example.com/").status_code == 500
+    assert len(seen) == 3
+
+
+def test_client_session_does_not_repeat_a_post_that_got_a_server_error():
+    session, seen = make_session(lambda *_: httpx.Response(500))
+
+    assert session.post("https://example.com/", content=b"x").status_code == 500
+    assert len(seen) == 1
+
+
+def test_client_session_retries_a_connection_error():
+    def handler(request: httpx.Request, attempt: int) -> httpx.Response:
+        if attempt == 1:
+            msg = "refused"
+            raise httpx.ConnectError(msg, request=request)
+        return httpx.Response(200)
+
+    session, seen = make_session(handler)
+
+    assert session.post("https://example.com/", content=b"x").status_code == 200
+    assert len(seen) == 2
+
+
+def test_client_session_raises_when_the_connection_keeps_failing():
+    def handler(request: httpx.Request, attempt: int) -> httpx.Response:
+        msg = "refused"
+        raise httpx.ConnectError(msg, request=request)
+
+    session, seen = make_session(handler, retries=2)
+
+    with pytest.raises(httpx.ConnectError):
+        session.get("https://example.com/")
+    assert len(seen) == 3
+
+
+def test_client_session_honours_retry_after():
+    sleeps: list[float] = []
+    session, _ = make_session(
+        lambda _, attempt: httpx.Response(
+            503 if attempt == 1 else 200, headers={"retry-after": "7"}
+        )
     )
 
-    assert session.headers["Accept-Encoding"] == "gzip"
-    assert session.headers["x-test"] == "yes"
-    assert session.proxies["http"] == "http://proxy.example:8080"
+    with mock.patch("mopidy_youtube.apis.client.time.sleep", sleeps.append):
+        session.get("https://example.com/")
+
+    assert sleeps == [7.0]
 
 
 def test_video_audio_url_uses_requested_formats_url_when_direct_url_missing():

@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING, Any, Protocol
 if TYPE_CHECKING:
     from collections.abc import Collection
 
-    import requests
+    import httpx
 
 
 class YouTubeApi(Protocol):
@@ -19,7 +19,7 @@ class YouTubeApi(Protocol):
     """
 
     @property
-    def session(self) -> requests.Session: ...
+    def session(self) -> httpx.Client: ...
 
     def search(self, q: str) -> dict[str, Any]: ...
 
@@ -42,7 +42,7 @@ class UnconfiguredApi:
     """Stands in for the api until the backend has started."""
 
     @property
-    def session(self) -> requests.Session:
+    def session(self) -> httpx.Client:
         raise self._error()
 
     def search(self, q: str) -> dict[str, Any]:

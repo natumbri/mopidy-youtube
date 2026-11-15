@@ -25,7 +25,7 @@ def api(youtube_site: FakeYouTube) -> API:
 
 def query_of(youtube_site: FakeYouTube, endpoint: str) -> dict[str, str]:
     (request,) = youtube_site.calls("GET", BASE + endpoint)
-    return {k: v[0] for k, v in parse_qs(urlparse(request.url).query).items()}
+    return {k: v[0] for k, v in parse_qs(urlparse(str(request.url)).query).items()}
 
 
 def test_it_satisfies_the_api_protocol(api: API):

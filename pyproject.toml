@@ -18,14 +18,14 @@ classifiers = [
 ]
 dependencies = [
     "cachetools >= 5.5",
+    "httpx >= 0.27",
     "mopidy >= 4.0.0",
     "pykka >= 4.1",
-    "requests >= 2.32",
     "yt-dlp",
 ]
 
 [project.optional-dependencies]
-musicapi = ["ytmusicapi >= 1.0"]
+musicapi = ["requests >= 2.32", "ytmusicapi >= 1.0"]
 
 [project.urls]
 Homepage = "https://github.com/natumbri/mopidy-youtube"
@@ -48,7 +48,7 @@ dev = [
     { include-group = "typing" },
 ]
 ruff = ["ruff"]
-tests = ["pytest >= 8.3", "pytest-cov >= 5.0", "ytmusicapi >= 1.0"]
+tests = ["pytest >= 8.3", "pytest-cov >= 5.0", "requests >= 2.32", "ytmusicapi >= 1.0"]
 typing = ["pyright"]
 
 

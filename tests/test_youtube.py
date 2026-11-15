@@ -46,7 +46,7 @@ if TYPE_CHECKING:
     from collections.abc import Callable, Iterator
     from concurrent.futures import Executor
 
-    import requests
+    import httpx
 
 TIMEOUT = 5
 # for futures that are expected never to resolve (known bugs): fail fast
@@ -121,7 +121,7 @@ class FakeApi:
         return copy.deepcopy(response)
 
     @property
-    def session(self) -> requests.Session:
+    def session(self) -> httpx.Client:
         raise NotImplementedError
 
     def search(self, q: str) -> dict[str, Any]:
@@ -2188,11 +2188,9 @@ class JapiSite(FakeYouTube):
         super().__init__()
         self.searches: dict[str, str] = {}
 
-    def send(
-        self, request: requests.PreparedRequest, *args: Any, **kwargs: Any
-    ) -> requests.Response:
-        if (request.url or "").startswith(SEARCH_URL):
-            sp = parse_qs(urlparse(request.url).query)["params"][0]
+    def send(self, request: httpx.Request, *args: Any, **kwargs: Any) -> httpx.Response:
+        if str(request.url).startswith(SEARCH_URL):
+            sp = parse_qs(urlparse(str(request.url)).query)["params"][0]
             body = json.dumps(load_fixture(f"japi/{self.searches[sp]}")).encode()
             self._routes = [("POST", SEARCH_URL, body, 200)]
         return super().send(request, *args, **kwargs)
@@ -2201,7 +2199,7 @@ class JapiSite(FakeYouTube):
         self.add("GET", url, body=yt_initial_data_page(load_fixture(f"japi/{fixture}")))
 
     def gets(self, url: str) -> list[str]:
-        return [r.url or "" for r in self.calls("GET", url)]
+        return [str(r.url) for r in self.calls("GET", url)]
 
 
 @pytest.fixture
@@ -2311,7 +2309,7 @@ def test_jAPI_playlist_videos_are_complete_without_loading_each_video(site: Japi
     assert [got(v.track_no) for v in videos] == [None] * 3
     settle()
     # the playlist page, and nothing for any of its videos
-    assert [r.url for r in site.requests] == [
+    assert [str(r.url) for r in site.requests] == [
         f"{BASE}playlist?list={JAPI_PLAYLIST_ID}&app=desktop&persist_app=1"
     ]
 
@@ -2355,7 +2353,7 @@ def test_jAPI_related_videos_are_complete_without_loading_each_video(site: JapiS
         [(336, 188)]
     ] * 3
     settle()
-    assert [r.url for r in site.requests] == [
+    assert [str(r.url) for r in site.requests] == [
         f"{BASE}watch?v={ZOO_ID}&app=desktop&persist_app=1"
     ]
 

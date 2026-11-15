@@ -596,7 +596,7 @@ class jAPI(Client):  # noqa: N801 - public class name, used by backend and tests
 
             result = self.session.post(
                 url=url,
-                data=bytes(json.dumps(payload), encoding="utf-8"),
+                content=json.dumps(payload).encode("utf-8"),
                 headers=headers,
             )
 

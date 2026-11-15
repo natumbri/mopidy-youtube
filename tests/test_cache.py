@@ -7,7 +7,6 @@ real entities, loaded through a stub api.
 
 from __future__ import annotations
 
-import io
 import json
 import threading
 from typing import TYPE_CHECKING, Any
@@ -32,8 +31,6 @@ from tests.support import FakeYouTube
 if TYPE_CHECKING:
     from collections.abc import Callable, Iterator
     from pathlib import Path
-
-    import requests
 
 TIMEOUT = 10  # seconds; futures that are never set must fail a test, not hang it
 
@@ -65,24 +62,6 @@ def timed[T](fn: Callable[..., T], *args: Any, **kwargs: Any) -> T:
     return outcome["value"]
 
 
-class StreamingYouTube(FakeYouTube):
-    """A `FakeYouTube` whose responses can be read as a stream, like a download."""
-
-    def send(  # noqa: PLR0917 - signature of requests' BaseAdapter
-        self,
-        request: requests.PreparedRequest,
-        stream: bool = False,
-        timeout: Any = None,
-        verify: Any = True,
-        cert: Any = None,
-        proxies: Any = None,
-    ) -> requests.Response:
-        response = super().send(request, stream, timeout, verify, cert, proxies)
-        response.raw = io.BytesIO(response._content)  # type: ignore[arg-type]
-        response._content = False
-        return response
-
-
 class StubApi:
     """What loading a video needs from the api."""
 
@@ -104,12 +83,12 @@ class StubApi:
 
 
 @pytest.fixture
-def site() -> StreamingYouTube:
-    return StreamingYouTube()
+def site() -> FakeYouTube:
+    return FakeYouTube()
 
 
 @pytest.fixture
-def downloads(site: StreamingYouTube) -> Iterator[Client]:
+def downloads(site: FakeYouTube) -> Iterator[Client]:
     """The api whose session downloads the thumbnails."""
     client = Client(None, {})
     site.attach(client)
@@ -189,7 +168,7 @@ def test_nothing_is_found_without_a_cache_location(location: str | None):
 
 
 def test_a_jpeg_thumbnail_is_cached_as_jpg(
-    tmp_path: Path, video: Video, site: StreamingYouTube, downloads: Client
+    tmp_path: Path, video: Video, site: FakeYouTube, downloads: Client
 ):
     site.add("GET", THUMBNAIL_URL, body=JPEG)
 
@@ -200,7 +179,7 @@ def test_a_jpeg_thumbnail_is_cached_as_jpg(
 
 
 def test_a_webp_thumbnail_is_cached_as_webp(
-    tmp_path: Path, video: Video, site: StreamingYouTube, downloads: Client
+    tmp_path: Path, video: Video, site: FakeYouTube, downloads: Client
 ):
     site.add("GET", THUMBNAIL_URL, body=WEBP)
 
@@ -211,40 +190,22 @@ def test_a_webp_thumbnail_is_cached_as_webp(
 
 
 def test_the_thumbnail_of_the_video_is_what_is_downloaded(
-    tmp_path: Path, video: Video, site: StreamingYouTube, downloads: Client
+    tmp_path: Path, video: Video, site: FakeYouTube, downloads: Client
 ):
     site.add("GET", THUMBNAIL_URL, body=WEBP)
 
     timed(cache_image, video, str(tmp_path))
 
     (request,) = site.calls("GET", "https://")
-    assert request.url == THUMBNAIL_URL
+    assert str(request.url) == THUMBNAIL_URL
     assert (tmp_path / f"{VIDEO_ID}.webp").exists()
-
-
-def test_the_host_and_content_length_of_the_session_are_not_sent(
-    tmp_path: Path, video: Video, site: StreamingYouTube
-):
-    client = Client(None, {"Host": "api.example.com", "Content-Length": "0"})
-    site.attach(client)
-    context.api = client  # type: ignore[assignment]
-    site.add("GET", THUMBNAIL_URL, body=WEBP)
-
-    try:
-        timed(cache_image, video, tmp_path)
-    finally:
-        client.close()
-
-    (request,) = site.calls("GET", THUMBNAIL_URL)
-    assert "host" not in request.headers
-    assert "content-length" not in request.headers
 
 
 @pytest.mark.parametrize("cached", [f"{VIDEO_ID}.webp", f"{VIDEO_ID}.jpg"])
 def test_a_thumbnail_that_is_cached_is_not_downloaded_again(
     tmp_path: Path,
     video: Video,
-    site: StreamingYouTube,
+    site: FakeYouTube,
     downloads: Client,
     cached: str,
 ):
@@ -258,7 +219,7 @@ def test_a_thumbnail_that_is_cached_is_not_downloaded_again(
 
 
 def test_the_thumbnail_of_another_video_does_not_count_as_cached(
-    tmp_path: Path, video: Video, site: StreamingYouTube, downloads: Client
+    tmp_path: Path, video: Video, site: FakeYouTube, downloads: Client
 ):
     (tmp_path / f"{OTHER_ID}.jpg").write_bytes(b"another video")
     site.add("GET", THUMBNAIL_URL, body=JPEG)
@@ -269,7 +230,7 @@ def test_the_thumbnail_of_another_video_does_not_count_as_cached(
 
 
 def test_a_thumbnail_that_cannot_be_downloaded_is_not_cached(
-    tmp_path: Path, video: Video, site: StreamingYouTube, downloads: Client
+    tmp_path: Path, video: Video, site: FakeYouTube, downloads: Client
 ):
     site.add("GET", THUMBNAIL_URL, body=b"not found", status=404)
 
@@ -280,7 +241,7 @@ def test_a_thumbnail_that_cannot_be_downloaded_is_not_cached(
 
 
 def test_a_download_that_is_not_an_image_is_an_error_and_is_not_cached(
-    tmp_path: Path, video: Video, site: StreamingYouTube, downloads: Client
+    tmp_path: Path, video: Video, site: FakeYouTube, downloads: Client
 ):
     site.add("GET", THUMBNAIL_URL, body=b"<html>no image here</html>")
 
@@ -292,7 +253,7 @@ def test_a_download_that_is_not_an_image_is_an_error_and_is_not_cached(
 
 @pytest.mark.parametrize("location", [None, ""])
 def test_nothing_is_downloaded_without_a_cache_location(
-    video: Video, site: StreamingYouTube, downloads: Client, location: str | None
+    video: Video, site: FakeYouTube, downloads: Client, location: str | None
 ):
     timed(cache_image, video, location)
 

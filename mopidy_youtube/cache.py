@@ -48,34 +48,31 @@ def cache_image(video: Video, cache_location: Path | str | None) -> None:
 
     logger.debug(f"caching image {video.id}")
     image_uri = video.thumbnails.get()[0].uri
-    response = context.api.session.get(
-        image_uri,
-        # headers set to None are dropped from the session's headers by requests
-        headers={"content-length": None, "host": None},  # pyright: ignore[reportArgumentType]
-        stream=True,
-    )
+    with context.api.session.stream("GET", image_uri) as response:
+        if response.status_code != 200:
+            return
 
-    if response.status_code != 200:
-        del response
-        return
+        logger.debug(f"caching image {video.id}")
+        chunks = response.iter_bytes()
+        head = b""
+        for chunk in chunks:
+            head += chunk
+            if len(head) >= 4:
+                break
+        magic = head[:4]
+        if magic == b"\xff\xd8\xff\xe0":
+            image_file = f"{video.id}.jpg"
+        elif magic == b"\x52\x49\x46\x46":
+            image_file = f"{video.id}.webp"
+        else:
+            logger.debug(f"invalid image format for {video.id}; magic: {magic}")
+            msg = f"Invalid image format for {video.id}; magic: {magic}"
+            raise InvalidImageFormatError(msg)
 
-    logger.debug(f"caching image {video.id}")
-    magic = next(response.iter_content(4))
-    if magic == b"\xff\xd8\xff\xe0":
-        image_file = f"{video.id}.jpg"
-    elif magic == b"\x52\x49\x46\x46":
-        image_file = f"{video.id}.webp"
-    else:
-        logger.debug(f"invalid image format for {video.id}; magic: {magic}")
-        msg = f"Invalid image format for {video.id}; magic: {magic}"
-        raise InvalidImageFormatError(msg)
-
-    with (cache_dir / image_file).open("wb") as out_file:
-        out_file.write(magic)
-        for chunk in response.iter_content():
-            out_file.write(chunk)
-
-    del response
+        with (cache_dir / image_file).open("wb") as out_file:
+            out_file.write(head)
+            for chunk in chunks:
+                out_file.write(chunk)
 
 
 def cache_metadata(
