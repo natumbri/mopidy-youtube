@@ -39,17 +39,10 @@ Install from github by running::
     python3 -m pip install https://github.com/natumbri/mopidy-youtube/archive/develop.zip
 
 
-Install the modern YouTube extraction backend from PyPI by running::
+`yt-dlp` is a required dependency and is used for audio extraction.
+To update it from PyPI, run::
 
     python3 -m pip install --upgrade yt-dlp
-
-The extension prefers `yt-dlp` for audio extraction and will use it by default.
-If you need to override the package name, set `youtube_dl_package` in the
-configuration file::
-
-    [youtube]
-    youtube_dl_package = yt_dlp
-
 
 Make sure you already have the GStreamer plugins, especially the "bad"
 collection of plugins. For example, on Debian/Ubuntu you can install it
@@ -96,11 +89,11 @@ musicapi_enabled = true::
 
 The musicapi may be used with or without the youtube api.  
 
-To use the YouTube Music api, you will also need to install an additional python
-package (`ytmusicapi` >= 0.19).  Install `ytmusicapi` from PyPI, for example, 
-by running::
+To use the YouTube Music API, install Mopidy-YouTube's `musicapi` extra::
 
-    python3 -m pip install --upgrade ytmusicapi   
+    python3 -m pip install "Mopidy-Youtube[musicapi]"
+
+The extra installs `ytmusicapi` >= 1.0 and its dependencies.
 
 If you want to see the YouTube playlists of a channel in your mopidy library,
 you need to include the channel ID in your config file::
@@ -118,7 +111,7 @@ You can obtain the musicapi browser authentication file by process
 mentioned in the `ytmusicapi readme <https://ytmusicapi.readthedocs.io/en/stable/setup/browser.html>`_.
 
 To enable YouTube Premium high quality streaming you must set up the `musicapi_cookiefile`.
-This requires `yt-dlp` and the `youtube_dl_package` setting shown above.
+This requires `yt-dlp`, which is included as a dependency.
 
 Setup a `cookies.txt` (Netscape HTTP Cookie File) containing YouTube cookies:
 
@@ -147,7 +140,7 @@ If the option strict_autoplay is set, the current tracklist is ignored and the
 most related video automatically played afterwards.
 
 The max_autoplay_length option sets the maximum length of a track that will be played
-by the autoplayer.  Any interger value is acceptable; the default is 600s.
+by the autoplayer.  Any integer value is acceptable; the default is 600s.
 If you don't want a maximum length, include the following in mopidy.conf::
 
         max_autoplay_length =
@@ -163,7 +156,6 @@ track (back to one degree of separation).
 Other configuration options are::
 
     [youtube]
-    threads_max = 16            : number of parallel threads to run
     search_results = 15         : maximum number of search results to return
     playlist_max_videos = 20    : maximum number of videos in a playlist to return
 
@@ -190,7 +182,7 @@ Example for playlist::
 Troubleshooting
 ===============
 
-If the extension is slow, try setting lower values for threads_max, search_results 
+If the extension is slow, try setting lower values for search_results 
 and playlist_max_videos.
 
 If resolving of URIs stops working, always try updating `yt-dlp` first.
