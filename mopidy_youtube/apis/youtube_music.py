@@ -360,14 +360,10 @@ class Music(Client):
                     # their videos are loaded next: fetch the albums in parallel now
                     self.process_albums(albums)
                     results.extend(albums)
-                    if channel_id:
-                        logger.debug(
-                            f"youtube_music list_channelplaylists triggered "
-                            f"ytmusic.get_user: {channel_id}"
-                        )
-                        channel_title = self.ytmusic.get_user(channel_id)["name"]
-                    else:
-                        channel_title = "unknown"
+                    # Each item says who made it (`author`, or `artists` for an album).
+                    # That is not the same for the playlists of others that were saved
+                    # to the library, and it is known without asking for the user.
+                    channel_title = "unknown"
 
                 except Exception as e:
                     logger.debug(f"youtube_music.list_channelplaylists exception {e}")
@@ -487,6 +483,14 @@ class Music(Client):
             return "0"
 
     @staticmethod
+    def _owner_of(item: dict[str, Any]) -> str | None:
+        """The name of the owner of a library playlist (`author` is a list of them)."""
+        author = item.get("author")
+        if isinstance(author, list):
+            author = author[0] if author else None
+        return author.get("name") if isinstance(author, dict) else None
+
+    @staticmethod
     def _results_of(section: Any) -> list[dict[str, Any]]:
         """The results of a section of a user or artist; none if it has no such one."""
         return (section or {}).get("results") or []
@@ -508,6 +512,8 @@ class Music(Client):
                 channel_title = item["artists"][0]["name"]
             else:
                 channel_title = item["artists"]
+        elif owner := Music._owner_of(item):
+            channel_title = owner
 
         thumbnails = item.get("thumbnails") or []
         playlist = {

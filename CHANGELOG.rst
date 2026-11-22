@@ -6,6 +6,7 @@ Unreleased
 ========================================
 
 - fix browsing the playlists of a YouTube Music channel failing with ``'NoneType' object is not subscriptable``: a library playlist without a thumbnail (an empty or new one), or without a track count, made the whole list empty. Such playlists are now listed (without a cover), an item that cannot be read is skipped and logged instead of losing the rest, and a user or artist without public playlists or albums has none
+- name the owner of each library playlist from its own ``author`` instead of asking for the user's page: playlists saved from others now show their maker, a request is saved, and a failing user page can no longer hide the library
 - make failures say what failed: a missing step in a page is named (it was a bare ``KeyError``, which logged as ``error \"\"``), and caught exceptions are logged with their type
 - download a track from the extraction that found it instead of extracting it a second time: caching an uncached track takes 8 requests and about 6 s instead of 13 and 9 s, so playback starts sooner
 - stop a jAPI search loading the videos of every playlist it finds (15 requests that are mostly never used); a playlist loads its videos when it is opened

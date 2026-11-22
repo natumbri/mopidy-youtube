@@ -98,6 +98,14 @@ def library_playlists() -> list[dict[str, Any]]:
             "title": "My favourites",
             "thumbnails": [thumbnail],
             "count": "1,234",
+            "author": [{"name": "Me", "id": "UCme"}],
+        },
+        {
+            "playlistId": "PLsavedfromsomeone0001",
+            "title": "Saved from someone else",
+            "thumbnails": [thumbnail],
+            "count": "8",
+            "author": [{"name": "Someone Else", "id": "UCother"}],
         },
         {
             "playlistId": "LM",
@@ -997,20 +1005,22 @@ def test_the_library_is_the_playlists_of_the_own_channel(
     ytmusic.get_library_playlists.return_value = library_playlists()
     ytmusic.get_library_albums.return_value = fixture("search_albums")
     ytmusic.get_album.side_effect = get_album
-    ytmusic.get_user.return_value = {"name": "Me"}
 
     items = music.list_channelplaylists(OWN_CHANNEL)["items"]
 
-    ytmusic.get_user.assert_called_once_with(OWN_CHANNEL)
+    # who the owner is was not asked for: the items say it
+    ytmusic.get_user.assert_not_called()
     assert [item["id"] for item in items] == [
         "PLlibrary0000000000001",  # "LM", the liked music, is left out
+        "PLsavedfromsomeone0001",
         OLAK_ID,
         "OLAK5uy_nkyz8Kw10VZOtXbh5Owus0BOUOYQyS1AQ",
     ]
-    favourites, album = items[0], items[1]
+    favourites, saved, album = items[0], items[1], items[2]
     assert favourites["snippet"]["title"] == "My favourites"
     assert favourites["contentDetails"]["itemCount"] == 1234
     assert favourites["snippet"]["channelTitle"] == "Me"
+    assert saved["snippet"]["channelTitle"] == "Someone Else"
     assert album["snippet"]["title"] == ALBUM_TITLE
     assert album["snippet"]["channelTitle"] == "Queen"
     # the albums of the library were fetched, once each, ready to be opened
@@ -1024,14 +1034,20 @@ def test_the_library_of_an_unnamed_channel_has_an_unknown_owner(
     music: Music, ytmusic: mock.MagicMock
 ):
     ytmusic.get_artist.side_effect = AttributeError("a channel id is required")
-    ytmusic.get_library_playlists.return_value = library_playlists()
+    ytmusic.get_library_playlists.return_value = [
+        listed("PLlibrary0000000000001", "My favourites"),  # no author
+        listed("PLwithauthor", "Saved", author=[{"name": "Its Maker", "id": "UC1"}]),
+    ]
     ytmusic.get_library_albums.return_value = []
 
     items = music.list_channelplaylists(None)["items"]
 
     ytmusic.get_user.assert_not_called()
-    assert [item["id"] for item in items] == ["PLlibrary0000000000001"]
-    assert items[0]["snippet"]["channelTitle"] == "unknown"
+    assert [item["id"] for item in items] == ["PLlibrary0000000000001", "PLwithauthor"]
+    assert [item["snippet"]["channelTitle"] for item in items] == [
+        "unknown",
+        "Its Maker",
+    ]
 
 
 def library_without_login_setup(
@@ -1074,6 +1090,40 @@ def test_a_library_playlist_without_a_thumbnail_is_listed_like_the_others(
     assert without["snippet"]["title"] == "Without one"
     assert without["snippet"]["thumbnails"] == {}
     assert items[0]["snippet"]["thumbnails"]["default"]["width"] == 226
+
+
+def test_the_library_is_listed_whatever_becomes_of_the_user_page(
+    music: Music, ytmusic: mock.MagicMock
+):
+    library_without_login_setup(ytmusic, [listed("PL1", "One"), listed("PL2", "Two")])
+    ytmusic.get_user.side_effect = RuntimeError("a private account has no user page")
+
+    items = music.list_channelplaylists(OWN_CHANNEL)["items"]
+
+    assert [item["id"] for item in items] == ["PL1", "PL2"]
+    ytmusic.get_user.assert_not_called()
+
+
+@pytest.mark.parametrize(
+    ("author", "owner"),
+    [
+        ([{"name": "A Band", "id": "UC1"}, {"name": "Second", "id": "UC2"}], "A Band"),
+        ({"name": "Just One", "id": "UC1"}, "Just One"),
+        ([], "unknown"),
+        (None, "unknown"),
+        ("missing", "unknown"),
+        ([{"id": "UC1"}], "unknown"),
+        ("a string", "unknown"),
+    ],
+)
+def test_a_library_playlist_is_owned_by_its_author(
+    music: Music, ytmusic: mock.MagicMock, author: Any, owner: str
+):
+    library_without_login_setup(ytmusic, [listed("PL1", "One", author=author)])
+
+    (item,) = music.list_channelplaylists(OWN_CHANNEL)["items"]
+
+    assert item["snippet"]["channelTitle"] == owner
 
 
 def test_a_library_item_that_cannot_be_read_does_not_lose_the_rest(
