@@ -132,5 +132,5 @@ class YouTubeAutoplayer(pykka.ThreadingActor, CoreListener):
             uri = [format_video_uri(next_video.id)]
             tl.add(uris=uri).get()
         except Exception as e:
-            logger.error('Autoplayer error "%s"', e)
+            logger.error("Autoplayer error %r", e)
             return

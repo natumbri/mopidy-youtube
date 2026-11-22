@@ -116,7 +116,7 @@ class YouTubeLibraryProvider(backend.LibraryProvider):
         try:
             entries = youtube.Entry.search(search_query)
         except Exception as e:
-            logger.error('backend search error "%s"', e)
+            logger.error("backend search error %r", e)
             return None
 
         playlists = [entry for entry in entries if isinstance(entry, youtube.Playlist)]
@@ -142,7 +142,7 @@ class YouTubeLibraryProvider(backend.LibraryProvider):
             try:
                 track = read_cached_track(context.cache_location, video_id)
             except Exception as e:
-                logger.debug(f"Did not open {video_id}.json: {e}")
+                logger.debug(f"Did not open {video_id}.json: {e!r}")
             else:
                 return track
 

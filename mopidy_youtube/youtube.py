@@ -345,7 +345,7 @@ class Video(Entry):
                 data = context.api.list_videos([x.id for x in sublist])
                 item_dict = {item["id"]: item for item in data["items"]}
             except Exception as e:
-                logger.error('list_videos error "%s"', e)
+                logger.error("list_videos error %r", e)
                 item_dict = {}
 
             for video in sublist:
@@ -356,7 +356,7 @@ class Video(Entry):
                     video._set_api_data(extended_item[1], extended_item[0])
                 except Exception as e:
                     logger.warning(
-                        f"Error {e} setting api data for {video.id}; "
+                        f"Error {e!r} setting api data for {video.id}; "
                         f"probably private or deleted"
                     )
                     error_dict = {
@@ -617,7 +617,7 @@ class Playlist(Entry):
                 data = context.api.list_playlists([x.id for x in sublist])
             except Exception as e:
                 logger.error(
-                    f"Playlist.load_info list_playlists error {e}, "
+                    f"Playlist.load_info list_playlists error {e!r}, "
                     f"{[x.id for x in sublist]}"
                 )
             else:
@@ -634,7 +634,7 @@ class Playlist(Entry):
                     if item:
                         pl._adopt_tracks(item)
                 except Exception as e:
-                    logger.warning(f"Error {e} setting api data for playlist {pl.id}")
+                    logger.warning(f"Error {e!r} setting api data for playlist {pl.id}")
                     pl._settle(minimum_fields)
 
         def job(sublist: list[Playlist]) -> None:
@@ -725,7 +725,7 @@ class Playlist(Entry):
                     )
                     result = context.api.list_playlistitems(self.id, page, max_results)
                 except Exception as e:
-                    logger.error('Playlist.videos list_playlistitems error "%s"', e)
+                    logger.error("Playlist.videos list_playlistitems error %r", e)
                     break
                 if "error" in result:
                     logger.error(
@@ -805,7 +805,7 @@ class Channel(Entry):
         try:
             data = context.api.list_channelplaylists(channel_id)
         except Exception as e:
-            logger.error('Channel.playlists list_channelplaylists error "%s"', e)
+            logger.error("Channel.playlists list_channelplaylists error %r", e)
             return None
         if "error" in data:
             logger.error(
@@ -821,6 +821,6 @@ class Channel(Entry):
                 pl.videos  # noqa: B018 - starts the background load
                 channel_playlists.append(pl)
         except Exception as e:
-            logger.error('map error "%s"', e)
+            logger.error("map error %r", e)
             return None
         return channel_playlists

@@ -5,6 +5,7 @@ Changelog
 Unreleased
 ========================================
 
+- make failures say what failed: a missing step in a page is named (it was a bare ``KeyError``, which logged as ``error \"\"``), and caught exceptions are logged with their type
 - download a track from the extraction that found it instead of extracting it a second time: caching an uncached track takes 8 requests and about 6 s instead of 13 and 9 s, so playback starts sooner
 - stop a jAPI search loading the videos of every playlist it finds (15 requests that are mostly never used); a playlist loads its videos when it is opened
 - look a jAPI playlist up with one request: its page also says what the playlist is

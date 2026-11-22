@@ -39,7 +39,8 @@ def traverse(input_dict: Any, keys: Sequence[str | int]) -> Any:
         else:
             internal_dict_value = internal_dict_value.get(key, None)
         if internal_dict_value is None:
-            raise KeyError
+            # name the step: a bare KeyError has no message to show in a log
+            raise KeyError(key)
     return internal_dict_value
 
 

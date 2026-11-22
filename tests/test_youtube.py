@@ -2587,3 +2587,15 @@ def test_details_without_a_count_or_a_cover_leave_those_to_be_looked_up(api: Fak
 
     assert got(playlist.video_count) == 7  # what was not known is
     assert api.calls_to("list_playlists") == [(["PLdetails"],)]
+
+
+def test_an_error_without_a_message_is_logged_with_its_type(
+    api: FakeApi, caplog: pytest.LogCaptureFixture
+):
+    # str(KeyError()) is "": the log line used to read `list_playlistitems error ""`
+    api.respond("list_playlistitems", KeyError())
+
+    with caplog.at_level(logging.ERROR, logger="mopidy_youtube"):
+        assert got(Playlist.get("PL1").videos) == []
+
+    assert "list_playlistitems error KeyError()" in caplog.text
