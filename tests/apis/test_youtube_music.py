@@ -1034,6 +1034,104 @@ def test_the_library_of_an_unnamed_channel_has_an_unknown_owner(
     assert items[0]["snippet"]["channelTitle"] == "unknown"
 
 
+def library_without_login_setup(
+    ytmusic: mock.MagicMock, playlists: list[dict[str, Any]]
+):
+    context.channel = OWN_CHANNEL
+    ytmusic.get_artist.side_effect = KeyError("not an artist")
+    ytmusic.get_library_playlists.return_value = playlists
+    ytmusic.get_library_albums.return_value = []
+    ytmusic.get_user.return_value = {"name": "Me"}
+
+
+NO_THUMBNAILS = [None, [], "missing"]
+
+
+def listed(playlist_id: str, title: str, **fields: Any) -> dict[str, Any]:
+    thumbnail = {"url": "https://example.com/p.jpg", "width": 226, "height": 226}
+    item = {"playlistId": playlist_id, "title": title, "thumbnails": [thumbnail]}
+    item.update(fields)
+    return {k: v for k, v in item.items() if v != "missing"}
+
+
+@pytest.mark.parametrize("thumbnails", NO_THUMBNAILS)
+def test_a_library_playlist_without_a_thumbnail_is_listed_like_the_others(
+    music: Music, ytmusic: mock.MagicMock, thumbnails: Any
+):
+    library_without_login_setup(
+        ytmusic,
+        [
+            listed("PLwith", "With a thumbnail", count="3"),
+            listed("PLwithout", "Without one", count="0", thumbnails=thumbnails),
+            listed("PLafter", "Listed after it", count="5"),
+        ],
+    )
+
+    items = music.list_channelplaylists(OWN_CHANNEL)["items"]
+
+    assert [item["id"] for item in items] == ["PLwith", "PLwithout", "PLafter"]
+    without = items[1]
+    assert without["snippet"]["title"] == "Without one"
+    assert without["snippet"]["thumbnails"] == {}
+    assert items[0]["snippet"]["thumbnails"]["default"]["width"] == 226
+
+
+def test_a_library_item_that_cannot_be_read_does_not_lose_the_rest(
+    music: Music, ytmusic: mock.MagicMock, caplog: pytest.LogCaptureFixture
+):
+    library_without_login_setup(
+        ytmusic,
+        [
+            listed("PLfirst", "First"),
+            {"title": "Neither a playlist id nor a browse id"},
+            listed("PLlast", "Last"),
+        ],
+    )
+
+    with caplog.at_level(logging.WARNING, logger="mopidy_youtube"):
+        items = music.list_channelplaylists(OWN_CHANNEL)["items"]
+
+    assert [item["id"] for item in items] == ["PLfirst", "PLlast"]
+    assert "list_channelplaylists skipped" in caplog.text
+
+
+@pytest.mark.parametrize("section", [None, {}, {"results": None}, {"results": []}])
+def test_a_user_without_public_playlists_has_none(
+    music: Music, ytmusic: mock.MagicMock, section: Any
+):
+    context.channel = OWN_CHANNEL  # not the channel that is asked for: public ones
+    ytmusic.get_artist.side_effect = KeyError("not an artist")
+    user: dict[str, Any] = {"name": "Someone"}
+    if section is not None:
+        user["playlists"] = section
+    ytmusic.get_user.return_value = user
+
+    assert music.list_channelplaylists("UCsomeoneelse") == {"items": []}
+
+    ytmusic.get_user.assert_called_once_with("UCsomeoneelse")
+    ytmusic.get_library_playlists.assert_not_called()
+
+
+@pytest.mark.parametrize(
+    ("fields", "expected"),
+    [
+        ({"count": "1,234"}, 1234),
+        ({"count": "7"}, 7),
+        ({"count": None, "trackCount": 12}, 12),
+        ({"count": None}, "0"),
+        ({"count": "many"}, "0"),
+        ({"trackCount": 9}, 9),
+        ({}, "0"),
+    ],
+)
+def test_the_number_of_tracks_of_a_listed_item(fields: dict[str, Any], expected: Any):
+    item = listed("PL1", "A playlist", **fields)
+
+    playlist = Music.yt_listitem_to_playlist(item)
+
+    assert playlist["contentDetails"]["itemCount"] == expected
+
+
 def test_without_a_login_the_own_channel_has_no_playlists(
     music: Music, ytmusic: mock.MagicMock
 ):

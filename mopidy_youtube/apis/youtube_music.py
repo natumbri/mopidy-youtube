@@ -378,7 +378,7 @@ class Music(Client):
                             f"ytmusic.get_user: {channel_id}"
                         )
                         user = self.ytmusic.get_user(channel_id)
-                        results = user["playlists"]["results"]
+                        results = self._results_of(user.get("playlists"))
                         channel_title = user["name"]
 
             else:
@@ -390,7 +390,7 @@ class Music(Client):
                 )
                 try:
                     user = self.ytmusic.get_user(channel_id)
-                    results = user["playlists"]["results"]
+                    results = self._results_of(user.get("playlists"))
                     channel_title = user["name"]
                 except Exception:
                     logger.debug(
@@ -398,7 +398,7 @@ class Music(Client):
                         f"ytmusic.get_artist: {channel_id}"
                     )
                     user = self.ytmusic.get_artist(channel_id)
-                    results = user["albums"]["results"]
+                    results = self._results_of(user.get("albums"))
                     channel_title = user["name"]
 
         [
@@ -407,11 +407,16 @@ class Music(Client):
             if "browseId" in item
         ]
 
-        items = [
-            self.yt_listitem_to_playlist(item, channel_title)
-            for item in results
-            if item["playlistId"] != "LM"
-        ]
+        items = []
+        for result in results:
+            if result.get("playlistId") == "LM":  # the liked music
+                continue
+            try:
+                items.append(self.yt_listitem_to_playlist(result, channel_title))
+            except Exception as e:
+                logger.warning(
+                    f"youtube_music list_channelplaylists skipped {result!r}: {e!r}"
+                )
         [item.update({"id": item["id"]["playlistId"]}) for item in items]
         return json.loads(json.dumps({"items": items}, sort_keys=False, indent=1))
 
@@ -471,6 +476,22 @@ class Music(Client):
         return albums
 
     @staticmethod
+    def _item_count(item: dict[str, Any]) -> int | str:
+        """The number of tracks of a listed item: `1,234`, or what `trackCount` says."""
+        count = item.get("count")
+        if count is None:
+            return item.get("trackCount") or "0"
+        try:
+            return int(str(count).replace(",", ""))
+        except ValueError:
+            return "0"
+
+    @staticmethod
+    def _results_of(section: Any) -> list[dict[str, Any]]:
+        """The results of a section of a user or artist; none if it has no such one."""
+        return (section or {}).get("results") or []
+
+    @staticmethod
     def yt_listitem_to_playlist(
         item: dict[str, Any], channel_title: str | None = None
     ) -> dict[str, Any]:
@@ -480,10 +501,7 @@ class Music(Client):
             logger.error(f"yt_listitem_to_playlist, no playlistId: {item}, {e}")
             playlist_id = None  # or should it just stop and return?
 
-        if "count" in item:
-            item_count = int(item["count"].replace(",", ""))
-        else:
-            item_count = item.get("trackCount", "0")
+        item_count = Music._item_count(item)
 
         if item.get("artists"):
             if isinstance(item["artists"], list):
@@ -491,12 +509,14 @@ class Music(Client):
             else:
                 channel_title = item["artists"]
 
+        thumbnails = item.get("thumbnails") or []
         playlist = {
             "id": {"kind": "youtube#playlist", "playlistId": playlist_id},
             "snippet": {
                 "title": item.get("title", "Unknown"),
                 "resourceId": {"playlistId": item["playlistId"]},
-                "thumbnails": {"default": item["thumbnails"][-1]},
+                # an empty playlist or a new one may have no thumbnail at all
+                "thumbnails": {"default": thumbnails[-1]} if thumbnails else {},
                 "channelTitle": channel_title,
             },
             "contentDetails": {"itemCount": item_count},

@@ -251,7 +251,7 @@ class YouTubeLibraryProvider(backend.LibraryProvider):
         playlist_ids = [extract_playlist_id(uri) for uri in uri_list]
         images.update(
             {
-                uri: youtube.Playlist.get(playlist_id).thumbnails.get()
+                uri: youtube.Playlist.get(playlist_id).thumbnails.get() or []
                 for uri, playlist_id in zip(uri_list, playlist_ids, strict=False)
                 if playlist_id
             }

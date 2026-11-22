@@ -1086,6 +1086,57 @@ def test_without_a_channel_there_are_no_playlists_and_no_artists(
     assert library.browse("youtube:channel:artists") == []
 
 
+def set_up_library_with_a_playlist_without_a_thumbnail(ytmusic: Any) -> None:
+    """The own channel is not an artist, and has a new playlist with no picture yet."""
+    thumbnail = {"url": "https://example.com/p.jpg", "width": 226, "height": 226}
+    context.channel = USER_ID
+    ytmusic.get_artist.side_effect = KeyError("not an artist")
+    ytmusic.get_library_playlists.return_value = [
+        {
+            "playlistId": "PLold",
+            "title": "Old",
+            "thumbnails": [thumbnail],
+            "count": "2",
+        },
+        {"playlistId": "PLnew", "title": "New", "thumbnails": None, "count": "0"},
+        {"playlistId": "LM", "title": "Your Likes", "thumbnails": [thumbnail]},
+    ]
+    ytmusic.get_library_albums.return_value = []
+    ytmusic.get_user.return_value = {"name": "Me"}
+    # opening a playlist: the new one has no picture, and no tracks yet
+    ytmusic.get_playlist.side_effect = lambda playlist_id: {
+        **music_fixture("playlist"),
+        "id": playlist_id,
+        "thumbnails": None if playlist_id == "PLnew" else [thumbnail],
+        "tracks": [],
+    }
+
+
+def test_a_playlist_without_a_thumbnail_does_not_empty_the_list_of_playlists(
+    library: Library, ytmusic: Any
+):
+    set_up_library_with_a_playlist_without_a_thumbnail(ytmusic)
+
+    refs = library.browse("youtube:channel:root")
+
+    assert sorted((ref.name, ref.uri) for ref in refs) == [
+        ("New", "youtube:playlist:PLnew"),
+        ("Old", "youtube:playlist:PLold"),
+    ]
+
+
+def test_a_playlist_without_a_thumbnail_has_no_images(library: Library, ytmusic: Any):
+    set_up_library_with_a_playlist_without_a_thumbnail(ytmusic)
+    library.browse("youtube:channel:root")
+
+    images = library.get_images(["youtube:playlist:PLnew", "youtube:playlist:PLold"])
+
+    assert images["youtube:playlist:PLnew"] == []
+    assert [image.uri for image in images["youtube:playlist:PLold"]] == [
+        "https://example.com/p.jpg"
+    ]
+
+
 def test_the_playlists_of_the_channel_are_listed_by_name(
     library: Library, japi: jAPI, site: YouTubeSite
 ):
