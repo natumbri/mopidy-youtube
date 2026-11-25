@@ -28,31 +28,16 @@
 
 <body>
   <script>
-    // script to allow for right click to add to track list
-    // doing it per img prevents lazy loading
-    window.addEventListener("contextmenu", e => {
-        const target = e.target;
-        
-        // Safety check: ensure it's an image and has a source
-        if (target?.nodeName === "IMG" && target.src) {
-            e.preventDefault();
-            
-            try {
-                // Use native URL parser to safely extract the pathname
-                const urlObj = new URL(target.src);
-                const pathParts = urlObj.pathname.split('/');
-                
-                // Gets the filename without extension (e.g., "dQw4w9WgXcQ.jpg" -> "dQw4w9WgXcQ")
-                const filename = pathParts.pop() || '';
-                const ytid = filename.split('.')[0];
-                
-                if (ytid) {
-                    location.href = `?url=yt:video:${ytid}`;
-                }
-            } catch (err) {
-                console.error("Failed to parse image URL:", err);
-            }
-        }
+    const thumbnails = document.getElementById("thumbnails");
+
+    thumbnails.addEventListener("contextmenu", (event) => {
+      const image = event.target.closest("img[data-ytid]");
+      if (!image) {
+        return;
+      }
+
+      event.preventDefault();
+      location.href = `?url=yt:video:${image.dataset.ytid}`;
     });
   </script>
 
@@ -96,7 +81,9 @@
     <div id="thumbnails">
       {% for image in images %}
       <a href="?image={{image[0]}}&ext={{image[2]}}&track={{image[1]}}">
-        <img src="{{image[0]}}.{{image[2]}}" alt="Link to album art for {{image[1]}}" title="{{image[1]}}" loading="lazy">
+        <img src="{{image[0]}}.{{image[2]}}" data-ytid="{{image[0]}}"
+          alt="Link to album art for {{image[1]}}" title="{{image[1]}}"
+          loading="lazy" decoding="async" fetchpriority="low">
       </a>
       {% end %}
     </div>
