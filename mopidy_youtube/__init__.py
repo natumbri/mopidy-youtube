@@ -52,11 +52,21 @@ class Extension(ext.Extension):
     def webapp(
         self, config: mopidy_config.Config, core: CoreProxy
     ) -> list[tuple[str, type[RequestHandler], dict[str, Any]]]:
-        from .web import AudioHandler, ImageHandler, IndexHandler  # noqa: PLC0415
+        from .web import (  # noqa: PLC0415
+            AudioHandler,
+            CurrentTrackHandler,
+            ImageHandler,
+            IndexHandler,
+        )
 
         cache_dir = self.get_cache_dir(config)
 
         return [
+            (
+                r"/current-track",
+                CurrentTrackHandler,
+                {"core": core},
+            ),
             (
                 r"/(index.html|image.html)?",
                 IndexHandler,

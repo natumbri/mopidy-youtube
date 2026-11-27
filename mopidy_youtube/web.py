@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 import os
 import re
+from itertools import islice
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, cast, override
 
@@ -35,6 +36,8 @@ class ImageHandler(tornado.web.StaticFileHandler):
 
 
 class IndexHandler(tornado.web.RequestHandler):
+    PAGE_SIZE = 64
+
     @override
     def initialize(self, root: Path | str, core: CoreProxy, config: Config) -> None:
         self.root = Path(root)
@@ -113,25 +116,56 @@ class IndexHandler(tornado.web.RequestHandler):
                 album=album,
             )
 
+        try:
+            offset = max(int(self.get_argument("offset", 0)), 0)
+        except (TypeError, ValueError):
+            offset = 0
+
+        entries = list(self.uri_generator(offset=offset, limit=self.PAGE_SIZE + 1))
+        has_next = len(entries) > self.PAGE_SIZE
+        entries = entries[: self.PAGE_SIZE]
+
+        if self.get_argument("format", None) == "json":
+            self.set_header("Content-Type", "application/json")
+            self.write(
+                {
+                    "images": [
+                        {"id": image_id, "title": title, "ext": extension}
+                        for image_id, title, extension in entries
+                    ],
+                    "next_offset": (
+                        offset + self.PAGE_SIZE if has_next else None
+                    ),
+                }
+            )
+            return None
+
         return self.render(
-            "index.html", images=self.uri_generator(), version=__version__
+            "index.html",
+            images=entries,
+            version=__version__,
+            next_offset=offset + self.PAGE_SIZE if has_next else None,
         )
 
     @override
     def get_template_path(self) -> str:
         return str(Path(__file__).parent / "www")
 
-    def uri_generator(self) -> Iterator[tuple[str, str, str]]:
-        for metadata, image_id, extension in self.data_generator():
-            yield (image_id, self._track_title(metadata, image_id), extension)
+    def uri_generator(
+        self, offset: int = 0, limit: int | None = None
+    ) -> Iterator[tuple[str, str, str]]:
+        entries = (
+            (image_id, self._track_title(metadata, image_id), extension)
+            for metadata, image_id, extension in self.data_generator()
+        )
+        yield from islice(entries, offset, None if limit is None else offset + limit)
 
     def data_generator(self) -> Iterator[tuple[Any, str, str]]:
-        images = [path.name for path in self.root.glob("*.jpg")] + [
-            path.name for path in self.root.glob("*.webp")
-        ]
+        image_paths = set(self.root.glob("*.jpg")) | set(self.root.glob("*.webp"))
+        images = {path.name for path in image_paths}
 
         combo: list[tuple[Path, str, str]] = []
-        for json_path in self.root.glob("*.json"):
+        for json_path in sorted(self.root.glob("*.json")):
             if f"{json_path.stem}.jpg" in images:
                 combo.append((json_path, json_path.stem, "jpg"))
             elif f"{json_path.stem}.webp" in images:
@@ -268,3 +302,49 @@ class AudioHandler(tornado.web.RequestHandler):
     @override
     async def head(self, path: str) -> None:
         await self.get(path, include_body=False)
+
+
+class CurrentTrackHandler(tornado.web.RequestHandler):
+    @override
+    def initialize(self, core: CoreProxy) -> None:
+        self.core = core
+
+    @override
+    def get(self) -> None:
+        track = self.core.playback.get_current_track().get()
+        if track is None:
+            self.write({"track": None})
+            return
+
+        video_id = extract_video_id(track.uri)
+        if not video_id:
+            self.write({"track": None})
+            return
+
+        artists = [artist.name for artist in track.artists or []]
+        album = track.album.name if track.album and track.album.name else None
+        length = track.length if track.length and track.length > 0 else None
+
+        thumbnail = f"https://i.ytimg.com/vi/{video_id}/hqdefault.jpg"
+        try:
+            image_map = self.core.library.get_images([track.uri]).get()
+            for images in image_map.values():
+                if images:
+                    thumbnail = str(images[0].uri)
+                    break
+        except (AttributeError, TimeoutError, RuntimeError):
+            pass
+
+        self.write(
+            {
+                "track": {
+                    "id": video_id,
+                    "name": track.name or video_id,
+                    "artists": artists,
+                    "album": album,
+                    "length": length,
+                    "uri": str(track.uri),
+                    "thumbnail": thumbnail,
+                }
+            }
+        )

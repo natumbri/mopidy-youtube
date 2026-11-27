@@ -7,7 +7,7 @@ import httpx
 import pykka
 import pytest
 from mopidy import backend as backend_api
-from mopidy.models import TlTrack, Track
+from mopidy.models import Artist, TlTrack, Track
 
 from mopidy_youtube import backend, frontend, web, youtube
 from mopidy_youtube import listener as listener_lib
@@ -694,8 +694,19 @@ def test_index_template_uses_event_parameter_for_context_menu_target():
 
     html = html_path.read_text(encoding="utf-8")
 
-    assert "const target = e.target;" in html
-    assert "event.target" not in html
+    assert 'thumbnails.addEventListener("contextmenu"' in html
+    assert "event.target.closest" in html
+    assert "const target = e.target;" not in html
+
+
+def test_index_template_has_hidden_now_playing_layout():
+    html_path = pathlib.Path(__file__).resolve().parents[1] / "mopidy_youtube" / "www" / "index.html"
+    html = html_path.read_text(encoding="utf-8")
+
+    assert 'id="now-playing" hidden' in html
+    assert "#now-playing[hidden]" in html
+    assert "<h2>Now playing</h2>" in html
+    assert 'id="now-playing-layout"' in html
 
 
 def test_index_handler_handles_current_mopidy_track_metadata_shape(
@@ -897,3 +908,27 @@ def test_autoplay_leaves_the_related_videos_of_the_track_alone(tmp_path: pathlib
     autoplay(player, related, shuffled=True)
 
     assert related == before
+
+
+def test_current_track_handler_returns_only_youtube_tracks():
+    track = Track(
+        uri="yt:video:abcdefghijk",
+        name="Example Song",
+        artists=[Artist(name="Example Artist")],
+        length=123000,
+    )
+
+    handler = web.CurrentTrackHandler.__new__(web.CurrentTrackHandler)
+    handler.core = mock.Mock()
+    handler.core.playback.get_current_track.return_value.get.return_value = track
+    handler.core.library.get_images.return_value.get.return_value = {
+        track.uri: [mock.Mock(uri="https://i.ytimg.com/vi/abcdefghijk/hqdefault.jpg")]
+    }
+    handler.write = mock.Mock()
+
+    handler.get()
+
+    assert handler.write.call_args.args[0]["track"]["id"] == "abcdefghijk"
+    assert handler.write.call_args.args[0]["track"]["name"] == "Example Song"
+    assert handler.write.call_args.args[0]["track"]["artists"] == ["Example Artist"]
+    assert handler.write.call_args.args[0]["track"]["thumbnail"] == "https://i.ytimg.com/vi/abcdefghijk/hqdefault.jpg"

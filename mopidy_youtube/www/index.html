@@ -23,24 +23,34 @@
       width: 100%;
       aspect-ratio: 1;
     }
+
+    #now-playing {
+      display: block;
+    }
+
+    #now-playing[hidden] {
+      display: none;
+    }
+
+    #now-playing-layout {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-height: 96px;
+      margin-top: 8px;
+    }
+
+    #now-playing-image {
+      width: 96px;
+      height: 96px;
+      object-fit: cover;
+      border: none;
+      flex: 0 0 96px;
+    }
   </style>
 </head>
 
 <body>
-  <script>
-    const thumbnails = document.getElementById("thumbnails");
-
-    thumbnails.addEventListener("contextmenu", (event) => {
-      const image = event.target.closest("img[data-ytid]");
-      if (!image) {
-        return;
-      }
-
-      event.preventDefault();
-      location.href = `?url=yt:video:${image.dataset.ytid}`;
-    });
-  </script>
-
   <div class="box focus">
     <h1>Mopidy-YouTube</h1>
     <p>
@@ -73,12 +83,19 @@
       click that bookmark to add the current page to Mopidy.
     </p>
   </div>
+  <div class="box" id="now-playing" hidden>
+    <h2>Now playing</h2>
+    <div id="now-playing-layout">
+      <img id="now-playing-image" alt="" loading="eager" decoding="async">
+      <p id="now-playing-details"></p>
+    </div>
+  </div>
   <div class="box">
     <h2>Image cache</h2>
     <p>Images for YouTube videos will automatically appear here. Hover for title; click to enlarge; right click to add
       to tracklist.</p>
 
-    <div id="thumbnails">
+    <div id="thumbnails" data-next-offset="{% if next_offset is not None %}{{next_offset}}{% end %}">
       {% for image in images %}
       <a href="?image={{image[0]}}&ext={{image[2]}}&track={{image[1]}}">
         <img src="{{image[0]}}.{{image[2]}}" data-ytid="{{image[0]}}"
@@ -88,6 +105,147 @@
       {% end %}
     </div>
   </div>
+  <script>
+    const nowPlaying = document.getElementById("now-playing");
+
+    function formatLength(milliseconds) {
+      if (!milliseconds) {
+        return "";
+      }
+
+      const seconds = Math.floor(milliseconds / 1000);
+      const minutes = Math.floor(seconds / 60);
+      const remainder = String(seconds % 60).padStart(2, "0");
+      return `${minutes}:${remainder}`;
+    }
+
+    function showCurrentTrack(data) {
+      const track = data.track;
+      nowPlaying.hidden = !track;
+      if (!track) {
+        return;
+      }
+
+      const artist = track.artists.length ? `${track.artists.join(", ")} – ` : "";
+      const album = track.album ? ` · ${track.album}` : "";
+      const length = formatLength(track.length);
+      const duration = length ? ` · ${length}` : "";
+      const details = document.getElementById("now-playing-details");
+      details.textContent = "";
+
+      const link = document.createElement("a");
+      link.href = `https://www.youtube.com/watch?v=${encodeURIComponent(track.id)}`;
+      link.target = "_blank";
+      link.rel = "noopener noreferrer";
+      link.textContent = `${artist}${track.name}${album}${duration}`;
+      details.append(link);
+
+      const image = document.getElementById("now-playing-image");
+      image.alt = `Album art for ${track.name}`;
+      delete image.dataset.webpTried;
+      delete image.dataset.jpgTried;
+      image.src = track.thumbnail;
+      image.onerror = () => {
+        if (!image.dataset.jpgTried) {
+          image.dataset.jpgTried = "true";
+          image.src = `${encodeURIComponent(track.id)}.jpg`;
+        } else if (!image.dataset.webpTried) {
+          image.dataset.webpTried = "true";
+          image.src = `${encodeURIComponent(track.id)}.webp`;
+        }
+      };
+    }
+
+    function fetchCurrentTrack() {
+      fetch("current-track")
+        .then((response) => response.json())
+        .then(showCurrentTrack)
+        .catch(() => {});
+    }
+
+    fetchCurrentTrack();
+
+    const scheme = window.location.protocol === "https:" ? "wss:" : "ws:";
+    const socket = new WebSocket(`${scheme}//${window.location.host}/mopidy/ws`);
+    socket.onmessage = (message) => {
+      const event = JSON.parse(message.data);
+      if (event.event === "track_playback_started") {
+        fetchCurrentTrack();
+      } else if (event.event === "track_playback_ended" || event.event === "track_playback_paused") {
+        fetchCurrentTrack();
+      }
+    };
+    socket.onclose = () => setTimeout(fetchCurrentTrack, 30000);
+
+    const thumbnails = document.getElementById("thumbnails");
+
+    thumbnails.addEventListener("contextmenu", (event) => {
+      const image = event.target.closest("img[data-ytid]");
+      if (!image) {
+        return;
+      }
+
+      event.preventDefault();
+      location.href = `?url=yt:video:${image.dataset.ytid}`;
+    });
+
+    const nextOffsetValue = thumbnails.dataset.nextOffset;
+    let nextOffset = nextOffsetValue ? Number(nextOffsetValue) : null;
+    let loading = false;
+
+    const loadMore = document.createElement("div");
+    loadMore.id = "load-more";
+    loadMore.setAttribute("aria-hidden", "true");
+    thumbnails.after(loadMore);
+
+    async function loadNextBatch() {
+      if (loading || nextOffset === null) {
+        return;
+      }
+
+      loading = true;
+      try {
+        const response = await fetch(`?offset=${nextOffset}&format=json`);
+        if (!response.ok) {
+          return;
+        }
+
+        const batch = await response.json();
+        const fragment = document.createDocumentFragment();
+
+        for (const image of batch.images) {
+          const link = document.createElement("a");
+          link.href = `?image=${encodeURIComponent(image.id)}&ext=${encodeURIComponent(image.ext)}&track=${encodeURIComponent(image.title)}`;
+
+          const thumbnail = document.createElement("img");
+          thumbnail.src = `${image.id}.${image.ext}`;
+          thumbnail.dataset.ytid = image.id;
+          thumbnail.alt = `Link to album art for ${image.title}`;
+          thumbnail.title = image.title;
+          thumbnail.loading = "lazy";
+          thumbnail.decoding = "async";
+          thumbnail.fetchPriority = "low";
+
+          link.append(thumbnail);
+          fragment.append(link);
+        }
+
+        thumbnails.append(fragment);
+        nextOffset = batch.next_offset;
+      } finally {
+        loading = false;
+      }
+    }
+
+    if (nextOffset !== null) {
+      const observer = new IntersectionObserver((entries) => {
+        if (entries[0].isIntersecting) {
+          loadNextBatch();
+        }
+      }, {rootMargin: "500px"});
+      observer.observe(loadMore);
+    }
+  </script>
 </body>
 
 </html>
